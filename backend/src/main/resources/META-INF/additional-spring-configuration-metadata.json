@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "spring.security.admin.name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.admin.name'"
+  },
+  {
+    "name": "spring.security.admin.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.admin.password'"
+  },
+  {
+    "name": "spring.security.admin.roles",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.admin.roles'"
+  }
+]}

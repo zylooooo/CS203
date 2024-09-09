@@ -4,10 +4,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HelloController {
-
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello, Spring Boot!";
+public class UserController {
+    @GetMapping("/user/home")
+    public String userHome() {
+        return "userHome";
     }
 }
