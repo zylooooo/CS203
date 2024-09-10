@@ -1,32 +1,3 @@
-// package com.example.backend.config;
-
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-// import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-// import org.springframework.security.web.SecurityFilterChain;
-
-// @EnableWebSecurity
-// public class SecurityConfig {
-
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//         http
-//             .authorizeHttpRequests()
-//                 .requestMatchers("/health").permitAll()
-//                 .anyRequest().authenticated()
-//                 .and()
-//             .formLogin()
-//                 .loginPage("/login")
-//                 .defaultSuccessUrl("/hello", true) // Redirect to /hello after successful login
-//                 .permitAll()
-//                 .and()
-//             .logout()
-//                 .permitAll();
-
-//         return http.build();
-//     }
-// }
-
 package com.example.backend.config;
 
 import org.springframework.context.annotation.Bean;
@@ -43,24 +14,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasRole("USER")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .successHandler(customSuccessHandler())
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
-        return http.build();
-    }
+                .authorizeHttpRequests(authz -> authz
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasRole("USER")
+                    .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/user/hello", true)
+                    .permitAll()
+            )
+            .logout(logout -> logout
+                    .permitAll()
+            );
+    return http.build();
+}
 
     @Bean
     public AuthenticationSuccessHandler customSuccessHandler() {
         return new CustomAuthenticationSuccessHandler();
     }
 }
+
 
