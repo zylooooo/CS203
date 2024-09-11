@@ -5,6 +5,7 @@ export default {
         colors: {
             "primary-color-green": "#54C761",
             "primary-color-white": "#FFFFFF",
+            "secondary-color-dark-green": "#10574E",
         },
         extend: {},
     },
