@@ -19,7 +19,7 @@
     }
 
     .button {
-        @apply bg-primary-color-green text-primary-color-white shadow-md;
+        @apply bg-primary-color-green text-primary-color-white shadow-md hover:bg-secondary-color-dark-green;
         display: flex;
         justify-content: center;
         flex-direction: center;
