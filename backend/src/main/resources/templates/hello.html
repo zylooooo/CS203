@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,6 +34,8 @@
 </head>
 <body>
     <h1>HELLO SPRING BOOT</h1>
-    <a href="/login" class="login-btn">Go to Login</a>
+    <form th:action="@{/login}" method="get">
+        <button type="submit" class="login-btn">Go to Login</button>
+    </form>
 </body>
 </html>
