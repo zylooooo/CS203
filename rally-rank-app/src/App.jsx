@@ -1,12 +1,39 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PlayerLogin from "./pages/Home/Login";
 import "./index.css";
+import MainLayout from "./pages/Home/MainLayout";
+import Home from "./pages/Home/Home";
+import { PlayerLogin, AdminLogin } from "./pages/Home/Login";
 
 function App() {
     return (
-        <div className="h-screen flex flex-col justify-center items-center">
-            <PlayerLogin />
-        </div>
+        <Router>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <MainLayout>
+                            <Home />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        <MainLayout>
+                            <PlayerLogin />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/admin-login"
+                    element={
+                        <MainLayout>
+                            <AdminLogin />
+                        </MainLayout>
+                    }
+                />
+            </Routes>
+        </Router>
     );
 }
 
