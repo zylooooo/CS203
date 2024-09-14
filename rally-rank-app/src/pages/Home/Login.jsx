@@ -50,22 +50,22 @@ function PlayerLogin() {
                     </div>
                     <div className="text-xs text-blue-500">
                         Don't have a RallyRank account?
-                        <a
-                            href=""
+                        <Link
+                            to=""
                             className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                         >
                             Sign up as a new player
-                        </a>
+                        </Link>
                     </div>
                 </form>
                 <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
                     RallyRank Adminstrator?
-                    <a
-                        href=""
-                        className="hover:text-primary-color-green pl-2 font-bold underline text-secondary-color-dark-green"
+                    <Link
+                        to="/login-admin"
+                        className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                     >
-                        Log in Here!
-                    </a>
+                        Sign up as an admin
+                    </Link>
                 </div>
             </div>
         </>
@@ -122,21 +122,21 @@ function AdminLogin() {
                     </div>
                     <div className="text-xs text-blue-500">
                         Don't have a RallyRank Admin account?
-                        <a
-                            href=""
+                        <Link
+                            to=""
                             className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                         >
                             Sign up as an admin
-                        </a>
+                        </Link>
                     </div>
                 </form>
                 <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
                     Looking for player login?
                     <Link
-                        to="/admin-login"
+                        to="/login"
                         className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                     >
-                        Sign up as an admin
+                        Back to player login
                     </Link>
                 </div>
             </div>
