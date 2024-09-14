@@ -7,7 +7,6 @@ export default {
             "primary-color-white": "#FFFFFF",
             "secondary-color-dark-green": "#10574E",
         },
-        extend: {},
     },
     plugins: [],
 };
