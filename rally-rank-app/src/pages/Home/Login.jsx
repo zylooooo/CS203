@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
 
 function PlayerLogin() {
     return (
@@ -58,6 +60,7 @@ function PlayerLogin() {
                         </Link>
                     </div>
                 </form>
+                <DevTool control={control} />
                 <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
                     RallyRank Adminstrator?
                     <Link
@@ -73,11 +76,22 @@ function PlayerLogin() {
 }
 
 function AdminLogin() {
+    const form = useForm();
+    const { register, control, handleSubmit, formState } = form;
+    const { errors } = formState;
+
+    const onSubmit = (data) => {
+        // Remove the console.log statement
+        console.log("Form submitted", data);
+        // This is for API calls
+    };
+
     return (
         <>
             <h1 className="m-8 font-bold text-2xl">Admin Login</h1>
             <div>
-                <form action="POST" className="card">
+                <form className="card" onSubmit={handleSubmit(onSubmit)}
+                noValidate>
                     <div>
                         <label
                             htmlFor="email"
@@ -86,11 +100,18 @@ function AdminLogin() {
                             Email
                         </label>
                         <input
+                            className="input"
                             type="email"
                             id="email"
-                            className="input"
                             placeholder="you@example.com"
+                            {...register("email", {
+                                pattern: {
+                                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                    message: "Invalid email format",
+                                },
+                            })}
                         />
+                        <p className="error">{errors.email?.message}</p>
                     </div>
 
                     <div>
@@ -105,7 +126,11 @@ function AdminLogin() {
                             id="password"
                             className="input"
                             placeholder="••••••••"
+                            {...register("password", {
+                                required: "Password is required",
+                            })}
                         />
+                        <p className="error">{errors.password?.message}</p>
                     </div>
                     <button
                         type="submit"
@@ -130,6 +155,7 @@ function AdminLogin() {
                         </Link>
                     </div>
                 </form>
+                <DevTool control={control} />
                 <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
                     Looking for player login?
                     <Link
