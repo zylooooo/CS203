@@ -15,10 +15,15 @@ function PlayerLogin() {
 
     return (
         <>
-            <h1 className="m-8 font-bold text-2xl">Player Login</h1>
+            <h1 className="m-8 font-bold text-2xl bg-special-blue">
+                Player Login
+            </h1>
             <div>
-                <form className="card" onSubmit={handleSubmit(onSubmit)}
-                noValidate>
+                <form
+                    className="card"
+                    onSubmit={handleSubmit(onSubmit)}
+                    noValidate
+                >
                     <div>
                         <label
                             htmlFor="email"
@@ -112,8 +117,11 @@ function AdminLogin() {
         <>
             <h1 className="m-8 font-bold text-2xl">Admin Login</h1>
             <div>
-                <form className="card" onSubmit={handleSubmit(onSubmit)}
-                noValidate>
+                <form
+                    className="card"
+                    onSubmit={handleSubmit(onSubmit)}
+                    noValidate
+                >
                     <div>
                         <label
                             htmlFor="email"

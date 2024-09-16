@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
-import MainLayout from "./pages/Home/MainLayout";
-import Home from "./pages/Home/Home";
-import { PlayerLogin, AdminLogin } from "./pages/Home/Login";
+import MainLayout from "./pages/MainLayout";
+import Home from "./pages/Home";
+import { PlayerLogin, AdminLogin } from "./pages/Login";
+import { SignUp } from "./pages/SignUp";
+import { News } from "./pages/News";
 
 function App() {
     return (
@@ -29,6 +31,22 @@ function App() {
                     element={
                         <MainLayout>
                             <AdminLogin />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/signup"
+                    element={
+                        <MainLayout>
+                            <SignUp />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/News"
+                    element={
+                        <MainLayout>
+                            <News />
                         </MainLayout>
                     }
                 />
