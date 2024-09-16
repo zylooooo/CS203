@@ -3,18 +3,18 @@ import { NavLink } from "react-router-dom";
 
 function NavBar() {
     return (
-        <nav className="flex justify-around p-8">
-            <div className="text-3xl">RallyRank</div>
-            <div className="flex gap-8 text-xl">
+        <nav className="flex items-center justify-around py-10">
+            <img src="src/assets/Logo.svg" alt="RallyRank logo" />
+            <div className="flex text-xl gap-5">
                 <NavLink
                     to="/"
                     activeClassName="active"
                     className={
-                        "text-secondary-color-dark-green hover:text-primary-color-green hover:underline"
+                        "bg-primary-color-light-green text-secondary-color-dark-green hover:text-primary-color-green hover:underline"
                     }
                     exact
                 >
-                    Home
+                    Login
                 </NavLink>
 
                 <NavLink
@@ -24,16 +24,7 @@ function NavBar() {
                         "text-secondary-color-dark-green hover:text-primary-color-green"
                     }
                 >
-                    About
-                </NavLink>
-                <NavLink
-                    to="/contact"
-                    activeClassName="active"
-                    className={
-                        "text-secondary-color-dark-green hover:text-primary-color-green"
-                    }
-                >
-                    Contact
+                    Sign Up
                 </NavLink>
             </div>
         </nav>
