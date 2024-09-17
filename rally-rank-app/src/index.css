@@ -43,4 +43,9 @@
     .min-height-600px {
         min-height: 600px;
     }
+
+    .active {
+        font-weight: bold;
+        color: rgb(34 197 94);
+       }
 }

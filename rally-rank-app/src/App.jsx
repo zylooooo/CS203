@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import MainLayout from "./components/MainLayout";
 import AdminLogin from "./AdminView/Login";
-import { News } from "./PublicView/News";
+import News from "./PublicView/News";
 import { Home, PlayerLogin, SignUp } from "./PlayerView";
 
 function App() {
