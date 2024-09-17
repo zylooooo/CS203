@@ -48,4 +48,4 @@ function News() {
     );
 }
 
-export { News };
+export default News ;
