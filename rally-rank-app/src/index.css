@@ -48,4 +48,10 @@
         font-weight: bold;
         color: rgb(34 197 94);
     }
+    
+    .active-button {
+        font-weight: bold;
+        color: rgb(34 197 94);
+        text-underline-offset: 0.5rem;
+    }
 }
