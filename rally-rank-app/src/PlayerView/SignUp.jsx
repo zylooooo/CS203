@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
 const Step1 = ({ register, errors }) => (
-    <div className="p-10 border">
+    <div>
         <h2 className="h2 text-xl font-extrabold">
             Step 1: Personal Information
         </h2>
@@ -24,7 +24,9 @@ const Step1 = ({ register, errors }) => (
                         type="text"
                         id="firstName"
                         placeholder="First Name"
-                        {...register("firstName", { required: true })}
+                        {...register("firstName", {
+                            required: "First name is required",
+                        })}
                     />
                     <p className="error">{errors.firstName?.message}</p>
                 </div>
@@ -40,7 +42,9 @@ const Step1 = ({ register, errors }) => (
                         type="text"
                         id="lastName"
                         placeholder="Last Name"
-                        {...register("lastName", { required: true })}
+                        {...register("lastName", {
+                            required: "Last name is required",
+                        })}
                     />
                     <p className="error">{errors.lastName?.message}</p>
                 </div>
@@ -144,7 +148,7 @@ const SignUp = () => {
 
     return (
         <>
-            <div className="flex justify-center">
+            <div className="flex justify-center border p-10">
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {step === 1 && (
                         <Step1 register={register} errors={errors} />
@@ -153,16 +157,23 @@ const SignUp = () => {
                         <Step2 register={register} errors={errors} />
                     )}
 
-                    <button
-                        type="button"
-                        onClick={() => setStep(step - 1)}
-                        disabled={step === 1}
-                    >
-                        Back
-                    </button>
-                    <button type="submit">
-                        {step === 6 ? "Submit" : "Next"}
-                    </button>
+                    <div className="flex justify-evenly gap-5 pt-10">
+                        <button
+                            className="font-bold border px-14 py-2 bg-secondary-color-light-gray text-primary-color-white
+                            hover:bg-primary-color-green hover:cursor-pointer"
+                            type="button"
+                            onClick={() => setStep(step - 1)}
+                            disabled={step === 1}
+                        >
+                            Back
+                        </button>
+                        <button
+                            className="font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
+                            type="submit"
+                        >
+                            {step === 6 ? "Submit" : "Next"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </>
