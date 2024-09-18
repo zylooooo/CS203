@@ -5,16 +5,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class HomeController {
 
     @GetMapping("/")
-    public String showHome(Authentication authentication) {
+    public String redirectToAppropriateEndpoint(Authentication authentication, HttpServletRequest request) {
         if (authentication != null && authentication.isAuthenticated()) {
-            if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                return "redirect:/admin/home";
-            } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-                return "redirect:/user/home";
+            String referer = request.getHeader("Referer");
+            if (referer != null) {
+                return "redirect:" + referer;
+            } else {
+                if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+                    return "redirect:/admin/home";
+                } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+                    return "redirect:/user/home";
+                }
             }
         }
         return "redirect:/login";
