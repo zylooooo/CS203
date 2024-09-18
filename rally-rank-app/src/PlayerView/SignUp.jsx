@@ -1,14 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
 
 const Step1 = ({ register, errors }) => (
     <div>
-        <h2 className="h2 text-xl font-extrabold">
-            Step 1: Personal Information
-        </h2>
+        <h2 className="h2 text-xl font-extrabold">Personal Information</h2>
         <p>We love to know more about you!</p>
         <div className="flex flex-col gap-5 mt-8">
             <div className="flex gap-5">
@@ -123,11 +120,56 @@ Step1.propTypes = {
 
 const Step2 = ({ register, errors }) => (
     <div>
-        <h2>Step 2: Date of Birth</h2>
-        <input type="date" {...register("dob", { required: true })} />
-        {errors.dob && <p>Date of birth is required</p>}
+        <h2 className="h2 text-xl font-extrabold">Tennis Details</h2>
+        <p>Share with us your tennis details and experience!</p>
+        <div className="flex flex-col gap-5 mt-8">
+            <div className="flex flex-col gap-2">
+                <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-700"
+                >
+                    Elo Rating
+                </label>
+                <input
+                    className="border p-2"
+                    type="text"
+                    id="elo"
+                    placeholder="0"
+                    {...register("elo", {})}
+                />
+                <p className="text-sm font-xs text-gray-700">
+                    *Leave this blank if you are unranked
+                </p>
+            </div>
+            <div className="flex flex-col gap-2">
+                <label
+                    htmlFor="yearsOfExperience"
+                    className="text-sm font-medium text-gray-700"
+                >
+                    Elo Rating
+                </label>
+                <input
+                    className="border p-2"
+                    type="text"
+                    id="YearsOfExperience"
+                    placeholder="0"
+                    {...register("YearsOfExperience", {})}
+                />
+                <p className="error">{errors.YearsOfExperience?.message}</p>
+            </div>
+        </div>
     </div>
 );
+
+Step2.propTypes = {
+    register: PropTypes.func.isRequired,
+    errors: PropTypes.shape({
+        elo: PropTypes.object,
+        YearsOfExperience: PropTypes.object,
+    }).isRequired,
+};
+
+const onSubmit = (data) => {};
 
 const SignUp = () => {
     const form = useForm();
@@ -150,10 +192,13 @@ const SignUp = () => {
         <>
             <div className="flex justify-center border p-10">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    {step === 1 && (
+                    {/* {step === 1 && (
                         <Step1 register={register} errors={errors} />
-                    )}
-                    {step === 2 && (
+                    )} */}
+                    {/* {step === 2 && (
+                        <Step2 register={register} errors={errors} />
+                    )} */}
+                    {step === 3 && (
                         <Step2 register={register} errors={errors} />
                     )}
 
