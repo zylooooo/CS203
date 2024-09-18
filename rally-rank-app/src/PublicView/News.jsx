@@ -23,7 +23,7 @@ function News() {
                                 fugit sit nihil, quia accusamus tenetur a eum at
                                 nemo repellat, expedita provident!
                             </div>
-                            <div className="bg-primary-color-green border">
+                            <div className="bg-primary-color-gre en border">
                                 Lorem ipsum dolor sit amet consectetur,
                                 adipisicing elit. Quidem libero, dignissimos
                                 perferendis aspernatur minus sed ducimus animi
@@ -48,4 +48,4 @@ function News() {
     );
 }
 
-export default News ;
+export default News;

@@ -36,7 +36,7 @@
         border-radius: 1rem;
     }
 
-    .min-height-300px{
+    .min-height-300px {
         min-height: 300px;
     }
 
@@ -47,5 +47,5 @@
     .active {
         font-weight: bold;
         color: rgb(34 197 94);
-       }
+    }
 }

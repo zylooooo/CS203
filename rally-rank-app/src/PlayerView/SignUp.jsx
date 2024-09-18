@@ -1,107 +1,172 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
-function SignUp() {
-    return <h1>Signup</h1>;
-}
+const Step1 = ({ register, errors }) => (
+    <div className="p-10 border">
+        <h2 className="h2 text-xl font-extrabold">
+            Step 1: Personal Information
+        </h2>
+        <p>We love to know more about you!</p>
+        <div className="flex flex-col gap-5 mt-8">
+            <div className="flex gap-5">
+                <div className="flex flex-col gap-1">
+                    <label
+                        htmlFor="firstName"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        First Name
+                    </label>
+                    <input
+                        className="border p-2"
+                        type="text"
+                        id="firstName"
+                        placeholder="First Name"
+                        {...register("firstName", { required: true })}
+                    />
+                    <p className="error">{errors.firstName?.message}</p>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <label
+                        htmlFor="lastName"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Last Name
+                    </label>
+                    <input
+                        className="border p-2"
+                        type="text"
+                        id="lastName"
+                        placeholder="Last Name"
+                        {...register("lastName", { required: true })}
+                    />
+                    <p className="error">{errors.lastName?.message}</p>
+                </div>
+            </div>
 
-function PlayerLogin() {
+            <div className="flex flex-col gap-1">
+                <label
+                    htmlFor="gender"
+                    className="block text-sm font-medium text-gray-700"
+                >
+                    Gender
+                </label>
+                <select
+                    className="border p-2"
+                    id="gender"
+                    {...register("gender", {
+                        required: "Gender is required",
+                    })}
+                >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+
+                <p className="error">{errors.gender?.message}</p>
+            </div>
+            <div className="flex flex-col gap-1">
+                <label
+                    htmlFor="dob"
+                    className="block text-sm font-medium text-gray-700"
+                >
+                    Date of Birth
+                </label>
+                <input
+                    className="border p-2"
+                    type="date"
+                    id="dob"
+                    {...register("dob", {
+                        required: "Date of birth is required",
+                    })}
+                />
+                <p className="error">{errors.dob?.message}</p>
+            </div>
+            <div className="flex flex-col gap-1">
+                <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700"
+                >
+                    Phone Number
+                </label>
+                <input
+                    className="border p-2"
+                    type="tel"
+                    id="phone"
+                    placeholder="Phone Number"
+                    {...register("phone", {
+                        required: "Phone number is required",
+                    })}
+                />
+                <p className="error">{errors.phone?.message}</p>
+            </div>
+        </div>
+    </div>
+);
+
+Step1.propTypes = {
+    register: PropTypes.func.isRequired,
+    errors: PropTypes.shape({
+        firstName: PropTypes.object,
+        lastName: PropTypes.object,
+        gender: PropTypes.object,
+        dob: PropTypes.object,
+        phone: PropTypes.object,
+    }).isRequired,
+};
+
+const Step2 = ({ register, errors }) => (
+    <div>
+        <h2>Step 2: Date of Birth</h2>
+        <input type="date" {...register("dob", { required: true })} />
+        {errors.dob && <p>Date of birth is required</p>}
+    </div>
+);
+
+const SignUp = () => {
     const form = useForm();
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
 
+    const [step, setStep] = useState(1);
+
     const onSubmit = (data) => {
-        // Remove the console.log statement
-        console.log("Form submitted", data);
-        // This is for API calls
+        if (step === 2) {
+            // Final submission logic here
+            console.log("Form Data: ", data);
+        } else {
+            // Move to next step
+            setStep(step + 1);
+        }
     };
 
     return (
         <>
-            <h1 className="m-8 font-bold text-2xl">Player Login</h1>
-            <div>
-                <form
-                    className="card"
-                    onSubmit={handleSubmit(onSubmit)}
-                    noValidate
-                >
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Email
-                        </label>
-                        <input
-                            className="input"
-                            type="email"
-                            id="email"
-                            placeholder="you@example.com"
-                            {...register("email", {
-                                pattern: {
-                                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                    message: "Invalid email format",
-                                },
-                            })}
-                        />
-                        <p className="error">{errors.email?.message}</p>
-                    </div>
+            <div className="flex justify-center">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {step === 1 && (
+                        <Step1 register={register} errors={errors} />
+                    )}
+                    {step === 2 && (
+                        <Step2 register={register} errors={errors} />
+                    )}
 
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            className="input"
-                            placeholder="••••••••"
-                            {...register("password", {
-                                required: "Password is required",
-                            })}
-                        />
-                        <p className="error">{errors.password?.message}</p>
-                    </div>
                     <button
-                        type="submit"
-                        className="button mt-6 font-bold hover:shadow-inner"
+                        type="button"
+                        onClick={() => setStep(step - 1)}
+                        disabled={step === 1}
                     >
-                        Log In
+                        Back
                     </button>
-                    <div className="flex items-center justify-center py-6">
-                        <div className="border-t border-gray-100 flex-grow mr-3 opacity-50"></div>
-                        <span className="text-gray-199 text-xs opacity-50">
-                            OR
-                        </span>
-                        <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
-                    </div>
-                    <div className="text-xs text-blue-500">
-                        Don't have a RallyRank account?
-                        <Link
-                            to=""
-                            className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
-                        >
-                            Sign up as a new player
-                        </Link>
-                    </div>
+                    <button type="submit">
+                        {step === 6 ? "Submit" : "Next"}
+                    </button>
                 </form>
-                <DevTool control={control} />
-                <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
-                    RallyRank Adminstrator?
-                    <Link
-                        to="/login-admin"
-                        className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
-                    >
-                        Log in here!
-                    </Link>
-                </div>
             </div>
         </>
     );
-}
+};
 
 export { SignUp };
