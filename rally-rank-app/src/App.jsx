@@ -4,6 +4,7 @@ import MainLayout from "./components/MainLayout";
 import AdminLogin from "./AdminView/Login";
 import News from "./PublicView/News";
 import { Home, PlayerLogin, SignUp } from "./PlayerView";
+import Tournaments from "./PlayerView/Tournaments";
 
 function App() {
   return (
@@ -46,6 +47,14 @@ function App() {
           element={
             <MainLayout>
               <News />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/tournaments"
+          element={
+            <MainLayout>
+              <Tournaments />
             </MainLayout>
           }
         />
