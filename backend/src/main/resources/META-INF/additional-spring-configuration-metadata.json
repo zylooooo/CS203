@@ -1,17 +1,24 @@
-{"properties": [
-  {
-    "name": "spring.security.admin.name",
-    "type": "java.lang.String",
-    "description": "A description for 'spring.security.admin.name'"
-  },
-  {
-    "name": "spring.security.admin.password",
-    "type": "java.lang.String",
-    "description": "A description for 'spring.security.admin.password'"
-  },
-  {
-    "name": "spring.security.admin.roles",
-    "type": "java.lang.String",
-    "description": "A description for 'spring.security.admin.roles'"
-  }
-]}
+{
+  "properties": [
+    {
+      "name": "SPRING_SECURITY_USER",
+      "type": "java.lang.String",
+      "description": "The username for the default user."
+    },
+    {
+      "name": "SPRING_SECURITY_USER_PASSWORD",
+      "type": "java.lang.String",
+      "description": "The password for the default user."
+    },
+    {
+      "name": "SPRING_SECURITY_ADMIN",
+      "type": "java.lang.String",
+      "description": "The username for the admin user."
+    },
+    {
+      "name": "SPRING_SECURITY_ADMIN_PASSWORD",
+      "type": "java.lang.String",
+      "description": "The password for the admin user."
+    }
+  ]
+}
