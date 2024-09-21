@@ -1,4 +1,4 @@
-import ButtonGroup from "../components/ButtonGroup";
+import TournamentsButtons from "../components/TournamentsButtons";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
@@ -10,7 +10,7 @@ function Tournaments() {
 
             {/* LABELS */}
             <div className = "tournaments-labels">
-                <ButtonGroup buttons = {["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]} />
+                <TournamentsButtons buttons = {["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]} />
             </div>
 
             {/* SEARCH BAR */}
@@ -61,7 +61,7 @@ function Tournaments() {
         </div>
 
         <div className = "col-container">
-                test
+                Ongoing Tournaments
         </div>
 
     </div>

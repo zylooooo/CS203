@@ -54,4 +54,25 @@
         color: rgb(34 197 94);
         text-underline-offset: 0.5rem;
     }
+
+    .btn {
+        position: relative;
+        text-decoration: none; /* Remove default underline */
+    }
+    
+    .btn::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -3px; /* Adjust this value for the spacing */
+        height: 2px; /* Thickness of the underline */
+        background-color: currentColor; /* Use the text color */
+        transform: scaleX(0); /* Initially hide the underline */
+        transition: transform 0.3s ease;
+    }
+    
+    .btn:hover::after {
+        transform: scaleX(1); /* Show underline on hover */
+    }
 }
