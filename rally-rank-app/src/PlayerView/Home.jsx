@@ -3,8 +3,10 @@ import ButtonGroup from "../components/ButtonGroup";
 function Home() {
   return (
     <div className="home-container flex w-full p-9 gap-2 justify-evenly">
+
       {/* ROW CONTAINER: SCHEDULED TOURNAMENTS AND JOIN TOURNAMENTS */}
       <div className="row-container flex flex-col w-3/5 gap-8">
+      
         {/* SCHEDULED TOURNAMENTS CONTAINER */}
         <div className="scheduled-tournaments-container">
           <h2 className="mb-2"> Your Scheduled Tournaments </h2>
