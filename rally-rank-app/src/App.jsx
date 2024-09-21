@@ -5,6 +5,8 @@ import AdminLogin from "./AdminView/Login";
 import News from "./PublicView/News";
 import { Home, PlayerLogin, SignUp } from "./PlayerView";
 import Tournaments from "./PlayerView/Tournaments";
+import HomePage from "./PublicView/HomePage"; // Adjust the path as necessary
+
 
 function App() {
   return (
@@ -55,6 +57,14 @@ function App() {
           element={
             <MainLayout>
               <Tournaments />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/RallyRank"
+          element={
+            <MainLayout>
+              <HomePage />
             </MainLayout>
           }
         />
