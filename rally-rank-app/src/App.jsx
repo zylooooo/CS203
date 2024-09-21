@@ -5,6 +5,8 @@ import AdminLogin from "./AdminView/Login";
 import News from "./PublicView/News";
 import { Home, PlayerLogin, SignUp, Tournaments, Profile } from "./PlayerView";
 import HomePage from "./PublicView/HomePage"; // Adjust the path as necessary
+import AdminTools from "./AdminView/AdminTools"; // Adjust the path as necessary
+import AdminTournaments from "./AdminView/Tournaments";
 
 
 function App() {
@@ -14,7 +16,7 @@ function App() {
         <Route
           path="/"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {0}>
               <Home />
             </MainLayout>
           }
@@ -22,7 +24,7 @@ function App() {
         <Route
           path="/login"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {-1}>
               <PlayerLogin />
             </MainLayout>
           }
@@ -30,7 +32,7 @@ function App() {
         <Route
           path="/login-admin"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {1}>
               <AdminLogin />
             </MainLayout>
           }
@@ -38,7 +40,7 @@ function App() {
         <Route
           path="/signup"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {-1}>
               <SignUp />
             </MainLayout>
           }
@@ -46,7 +48,7 @@ function App() {
         <Route
           path="/News"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {0}>
               <News />
             </MainLayout>
           }
@@ -54,7 +56,7 @@ function App() {
         <Route
           path="/tournaments"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {0}>
               <Tournaments />
             </MainLayout>
           }
@@ -62,7 +64,7 @@ function App() {
         <Route
           path="/RallyRank"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {-1}>
               <HomePage />
             </MainLayout>
           }
@@ -70,8 +72,24 @@ function App() {
         <Route
           path="/your-profile"
           element={
-            <MainLayout>
+            <MainLayout isLoggedIn = {0}>
               <Profile />
+            </MainLayout>
+          }
+        />
+         <Route
+          path="/admin-tournaments"
+          element={
+            <MainLayout isLoggedIn = {1}>
+              <AdminTournaments /> 
+            </MainLayout>
+          }
+        />
+         <Route
+          path="/admin-tools"
+          element={
+            <MainLayout isLoggedIn = {1}>
+              <AdminTools />
             </MainLayout>
           }
         />
