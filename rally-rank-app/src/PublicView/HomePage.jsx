@@ -13,9 +13,14 @@ function HomePage() {
         navigate('/login'); 
     };
 
+    const handleEmailChange = (e) => {
+        setEmail(e.target.value);
+    }
+
     const handleSignUpClick = () => {
         navigate('/signup', { state: { email } }); 
     };
+
 
     return (
         <div className = "homepage flex flex-col w-full">
@@ -52,7 +57,7 @@ function HomePage() {
                     <h2 className = "ml-11 mt-1" style = {{ color : 'white' }}> Join RallyRank today. </h2> 
                     <div className ="quick-sign-up flex ml-4">
                         <input
-                            type = "text"
+                            type = "text" onChange = { handleEmailChange }
                             placeholder = "Enter your email"
                             className = "mt-7 ml-6 rounded-l-[10px] rounded-r-none border border-gray-300 w-[450px] p-3 pl-4"
                         />
