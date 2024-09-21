@@ -3,8 +3,7 @@ import "./index.css";
 import MainLayout from "./components/MainLayout";
 import AdminLogin from "./AdminView/Login";
 import News from "./PublicView/News";
-import { Home, PlayerLogin, SignUp } from "./PlayerView";
-import Tournaments from "./PlayerView/Tournaments";
+import { Home, PlayerLogin, SignUp, Tournaments, Profile } from "./PlayerView";
 import HomePage from "./PublicView/HomePage"; // Adjust the path as necessary
 
 
@@ -65,6 +64,14 @@ function App() {
           element={
             <MainLayout>
               <HomePage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/your-profile"
+          element={
+            <MainLayout>
+              <Profile />
             </MainLayout>
           }
         />

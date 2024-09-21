@@ -1,5 +1,3 @@
-// i was trying to see how to transfer the inputted email address in the homepage to the sign up page
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
