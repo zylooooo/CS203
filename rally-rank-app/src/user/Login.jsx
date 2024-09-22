@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
-function AdminLogin() {
+function UserLogin() {
     const form = useForm();
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
@@ -15,7 +15,9 @@ function AdminLogin() {
 
     return (
         <>
-            <h1 className="m-8 font-bold text-2xl">Admin Login</h1>
+            <h1 className="m-8 font-bold text-2xl bg-special-blue">
+                Player Login
+            </h1>
             <div>
                 <form
                     className="card"
@@ -75,24 +77,25 @@ function AdminLogin() {
                         </span>
                         <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
                     </div>
-                    <div className="text-xs text-blue-500">
-                        Don't have a RallyRank Admin account?
+                    <div className="text-xs text-blue-500 items-center">
+                        Don't have a RallyRank account?
                         <Link
                             to=""
                             className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                         >
-                            Sign up as an admin
+                        <br></br>
+                            Sign up as a new player
                         </Link>
                     </div>
                 </form>
                 <DevTool control={control} />
                 <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
-                    Looking for player login?
+                    RallyRank Adminstrator?
                     <Link
-                        to="/login"
+                        to="/administrator-login"
                         className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                     >
-                        Back to player login
+                        Log in here!
                     </Link>
                 </div>
             </div>
@@ -100,4 +103,4 @@ function AdminLogin() {
     );
 }
 
-export default AdminLogin;
+export default UserLogin;

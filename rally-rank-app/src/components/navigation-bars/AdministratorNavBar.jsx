@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
 
-function AdminNavBar() {
+function AdministratorNavBar() {
     return (
         <nav className = "flex items-center py-10 pl-10 gap-5">
 
-            <img src = "src/assets/Logo.svg" alt = "RallyRank-Logo"/>
+            <img src = "src/assets/Rally-Rank-Logo.svg" alt = "RallyRank Logo"/>
 
             <div className = "flex text-xl gap-5">
 
@@ -17,17 +17,17 @@ function AdminNavBar() {
                     Tournaments
                 </NavLink>
 
-                {/* ADMIN TOOLS */}
+                {/* ADMINISTRATOR TOOLS */}
                 <NavLink
-                    to = "/admin-tools"
+                    to = "/administrator-tools"
                     activeClassName = "active"
                     className = {"text-secondary-color-dark-green hover:text-primary-color-green"}
                 >
-                    Admin Tools
+                    Administrator Tools
                 </NavLink>
             </div>
         </nav>
     );
 }
 
-export default AdminNavBar;
+export default AdministratorNavBar;

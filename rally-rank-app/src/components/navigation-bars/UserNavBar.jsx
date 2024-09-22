@@ -1,16 +1,16 @@
 import { NavLink } from "react-router-dom";
 
-function NavBar() {
+function UserNavBar() {
     return (
         <nav className = "flex items-center py-10 pl-10 gap-5">
 
-            <img src = "src/assets/Logo.svg" alt = "RallyRank-Logo"/>
+            <img src = "src/assets/Rally-Rank-Logo.svg" alt = "RallyRank Logo"/>
 
             <div className = "flex text-xl gap-5">
 
                 {/* HOME */}
                 <NavLink
-                    to = "/"
+                    to = "/home"
                     activeClassName = "active"
                     className = {"text-secondary-color-dark-green hover:text-primary-color-green hover:underline"}
                     exact
@@ -20,7 +20,7 @@ function NavBar() {
 
                 {/* TOURNAMENTS */}
                 <NavLink
-                    to = "/tournaments"
+                    to = "/user-tournaments"
                     activeClassName = "active"
                     className = {"text-secondary-color-dark-green hover:text-primary-color-green"}
                 >
@@ -38,7 +38,7 @@ function NavBar() {
 
                 {/* YOUR PROFILE */}
                 <NavLink
-                    to = "/your-profile"
+                    to = "/user-profile"
                     activeClassName = "active"
                     className = {"text-secondary-color-dark-green hover:text-primary-color-green"}
                 >
@@ -49,4 +49,4 @@ function NavBar() {
     );
 }
 
-export default NavBar;
+export default UserNavBar;

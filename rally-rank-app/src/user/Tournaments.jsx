@@ -2,7 +2,7 @@ import TournamentsButtons from "../components/TournamentsButtons";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
-function Tournaments() {
+function UserTournaments() {
   return (
     <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
 
@@ -68,6 +68,6 @@ function Tournaments() {
   );
 }
 
-export default Tournaments;
+export default UserTournaments;
 
 
