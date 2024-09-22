@@ -1,7 +1,7 @@
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import { useState } from "react";
 
-function Profile() {
+function UserProfile() {
     const [activeSection, setActiveSection] = useState("profile");
 
     const handlePersonalInfoClick = () => {
@@ -86,4 +86,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default UserProfile;

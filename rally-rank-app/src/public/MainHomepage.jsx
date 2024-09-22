@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function HomePage() {
+function MainHomePage() {
 
     const [email, setEmail] = useState('');
 
@@ -62,4 +62,4 @@ function HomePage() {
     );
 }
 
-export default HomePage;
+export default MainHomePage;

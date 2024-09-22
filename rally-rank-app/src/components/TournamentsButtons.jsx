@@ -8,7 +8,7 @@ function TournamentsButtons({ buttons }) {
     };
 
     return (
-        <div className="tournaments-buttons flex gap-5">
+        <div className = "tournaments-buttons flex gap-5">
             {buttons.map((buttonLabel, index) => (
                 <button 
                     key = {index}
