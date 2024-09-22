@@ -14,7 +14,7 @@ function App() {
                 <Route 
                     path = "/"
                     element = {
-                        <MainLayout isLoggedIn = {-1}>
+                        <MainLayout>
                             <MainHomepage/>
                         </MainLayout>
                     }
@@ -24,7 +24,7 @@ function App() {
                 <Route 
                     path = "/news"
                     element = {
-                        <MainLayout isLoggedIn = {-1}>
+                        <MainLayout>
                             <News/>
                         </MainLayout>
                     }
@@ -34,7 +34,7 @@ function App() {
                 <Route 
                     path = "/sign-up"
                     element = {
-                        <MainLayout isLoggedIn = {-1}>
+                        <MainLayout>
                             <SignUp/>
                         </MainLayout>
                     }
@@ -44,7 +44,7 @@ function App() {
                 <Route 
                     path = "/user-login"
                     element = {
-                        <MainLayout isLoggedIn = {-1}>
+                        <MainLayout>
                             <UserLogin/>
                         </MainLayout>
                     }
@@ -54,7 +54,7 @@ function App() {
                 <Route 
                     path = "/administrator-login"
                     element = {
-                        <MainLayout isLoggedIn = {-1}>
+                        <MainLayout>
                             <AdministratorLogin/>
                         </MainLayout>
                     }
@@ -64,7 +64,7 @@ function App() {
                 <Route 
                     path = "/home"
                     element = {
-                        <MainLayout isLoggedIn = {0}>
+                        <MainLayout>
                             <UserHome/>
                         </MainLayout>
                     }
@@ -74,7 +74,7 @@ function App() {
                 <Route 
                     path = "/user-tournaments"  //yes?
                     element = {
-                        <MainLayout isLoggedIn = {0}>
+                        <MainLayout>
                             <UserTournaments/>
                         </MainLayout>
                     }
@@ -84,7 +84,7 @@ function App() {
                 <Route 
                     path = "/user-profile"  //yes?
                     element = {
-                        <MainLayout isLoggedIn = {0}>
+                        <MainLayout>
                             <UserProfile/>
                         </MainLayout>
                     }
@@ -94,7 +94,7 @@ function App() {
                 <Route 
                     path = "/administrator-tools"
                     element = {
-                        <MainLayout isLoggedIn = {1}>
+                        <MainLayout>
                             <AdministratorTools/>
                         </MainLayout>
                     }
@@ -104,7 +104,7 @@ function App() {
                 <Route 
                     path = "/administrator-tournaments"
                     element = {
-                        <MainLayout isLoggedIn = {1}>
+                        <MainLayout>
                             <AdministratorTournaments/>
                         </MainLayout>
                     }

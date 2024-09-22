@@ -7,16 +7,22 @@ function MainHomePage() {
 
     const navigate = useNavigate();
 
-    const handleLoginClick = () => {
-        navigate('/login'); 
-    };
+    // const handleLoginClick = () => {
+    //     navigate('/login'); 
+    // };
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
     }
 
     const handleSignUpClick = () => {
-        navigate('/signup', { state: { email } }); 
+        navigate('/sign-up', { state: { email } }); 
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && email.trim() !== '') {
+          handleSignUpClick();
+        }
     };
 
 
@@ -37,7 +43,9 @@ function MainHomePage() {
                     <h2 className = "ml-11 mt-1" style = {{ color : 'white' }}> Join RallyRank today. </h2> 
                     <div className ="quick-sign-up flex ml-4">
                         <input
-                            type = "text" onChange = {handleEmailChange}
+                            type = "text" 
+                            onChange = {handleEmailChange} 
+                            onKeyDown={handleKeyDown}
                             placeholder = "Enter your email"
                             className = "mt-7 ml-6 rounded-l-[10px] rounded-r-none border border-gray-300 w-[450px] p-3 pl-4 focus:outline-none focus:border-blue-500"
                         />
@@ -52,7 +60,7 @@ function MainHomePage() {
             </div>
 
             {/* About RallyRank */}
-            <div className = "section-three mt-10 border w-[1350px] h-[800px] mx-auto bg-blue-100">
+            <div className = "section-three mt-10 border w-[1350px] h-[800px] mx-auto bg-blue-100 p-5">
                 <h2 className = "text-5xl font-bold text-gray-800"> About RallyRank </h2>
                 <p className = "mt-4 text-lg text-gray-700">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis rem totam error commodi enim iste nulla fugit, dolores voluptatem cupiditate quasi necessitatibus! Autem suscipit, minima quasi voluptatem commodi nostrum est.

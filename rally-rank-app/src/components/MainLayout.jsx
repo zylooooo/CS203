@@ -1,14 +1,22 @@
 import UserNavBar from "./navigation-bars/UserNavBar";
 import PublicNavBar from "./navigation-bars/PublicNavBar";
 import AdministratorNavBar from "./navigation-bars/AdministratorNavBar";
+import React, { useState, useEffect } from "react";
 
-function MainLayout({ isLoggedIn, children }) {
+function MainLayout({ children }) {
+    const [authenticatedUser, setAuthenticatedUser] = useState(0);
+
+    useEffect(() => {
+        // Set the initial authenticated user state
+        setAuthenticatedUser(0);
+      }, []);
+
   return (
     <>
         <div className = "flex flex-col min-h-screen">
-            {isLoggedIn === -1 ? (
+            {authenticatedUser === -1 ? (
                 <PublicNavBar />
-            ) : isLoggedIn === 0 ? (
+            ) : authenticatedUser === 0 ? (
                 <UserNavBar />
             ) : (
                 <AdministratorNavBar />
