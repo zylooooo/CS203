@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AdministratorLogin, AdministratorTools, AdministratorTournaments } from "./administrator";
-import { MainHomepage, News, SignUp } from "./public";
-import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user";
+import { AdministratorLogin, AdministratorTools, AdministratorTournaments } from "./administrator/AdministratorIndex";
+import { MainHomepage, News, SignUp } from "./public/PublicIndex";
+import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user/UserIndex";
 import MainLayout from "./components/MainLayout";
 import "./index.css";
 

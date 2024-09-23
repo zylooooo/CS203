@@ -5,6 +5,9 @@ function TournamentsButtons({ buttons }) {
 
     const handleButtonClick = (index) => {
         setActiveButton(index);
+        if (index === 0) {
+            
+        }
     };
 
     return (
