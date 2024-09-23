@@ -41,16 +41,19 @@ public class UserService {
     public User updateUser(String id, User userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
+    
+        user.setUserId(userDetails.getUserId());
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setDateOfBirth(userDetails.getDateOfBirth());
+        user.setPhoneNumber(userDetails.getPhoneNumber());
         user.setElo(userDetails.getElo());
         user.setGender(userDetails.getGender());
-        user.setTournamentHistory(userDetails.getTournamentHistory());
-
+        user.setDateOfBirth(userDetails.getDateOfBirth());
+        user.setParticipatedTournaments(userDetails.getParticipatedTournaments());
+        user.setMedicalInformation(userDetails.getMedicalInformation());
+        user.setProfilePic(userDetails.getProfilePic());
+        user.setSuspensions(userDetails.getSuspensions());
+    
         return userRepository.save(user);
     }
 
