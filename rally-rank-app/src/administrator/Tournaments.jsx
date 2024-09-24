@@ -1,6 +1,6 @@
 import React from "react";
 
-const AdminTournamentForm = ({ register, errors }) => (
+const AdminTournamentsForm = ({ register, errors }) => (
   <div>
     <h2 className="text-xl font-extrabold">Create Tournament</h2>
     <div className="flex flex-col gap-5 mt-8">
@@ -155,16 +155,16 @@ const AdminTournamentForm = ({ register, errors }) => (
   </div>
 );
 
-const UserTournaments = () => {
+const AdminTournaments = () => {
   return (
     <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
       <div className="row-container flex flex-col w-3/5 gap-8">
         {/* Form for admin to create a tournament */}
-        <AdminTournamentForm register={() => {}} errors={{}} />
+        <AdminTournamentsForm register={() => {}} errors={{}} />
       </div>
     </div>
   );
 };
 
-export default UserTournaments;
+export default AdminTournaments;
 
