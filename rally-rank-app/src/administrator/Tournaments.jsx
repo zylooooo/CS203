@@ -1,191 +1,240 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import profilePictureTest1 from "../assets/profile-picture-one.jpg";
+import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
-import React from "react";
+// Replace with API call
+const allTournaments = [
+    {
+      name: "Tournament 3",
+      organizerProfilePicture: profilePictureTest1,
+      organizerName: "Puff Diddy",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 4",
+      organizerProfilePicture: profilePictureTest2,
+      organizerName: "Justin Beiber",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 3",
+      organizerProfilePicture: profilePictureTest1,
+      organizerName: "Puff Diddy",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 4",
+      organizerProfilePicture: profilePictureTest2,
+      organizerName: "Justin Beiber",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 3",
+      organizerProfilePicture: profilePictureTest1,
+      organizerName: "Puff Diddy",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 4",
+      organizerProfilePicture: profilePictureTest2,
+      organizerName: "Justin Beiber",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+  ];
 
-const AdminTournamentsForm = ({ register, errors }) => (
-  <div>
-    <h2 className="text-xl font-extrabold">Create Tournament</h2>
-    <div className="flex flex-col gap-5 mt-8">
-      {/* Tournament Name */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="tournamentName" className="block text-sm font-medium text-gray-700">
-          Tournament Name
-        </label>
-        <input
-          className="border p-2 w-full"
-          type="text"
-          id="tournamentName"
-          placeholder="Enter Tournament Name"
-          {...register("tournamentName", { required: "Tournament name is required" })}
-        />
-        <p className="error">{errors.tournamentName?.message}</p>
-      </div>
+  // Replace with API call
+const myTournaments = [
+    {
+      name: "Tournament 5",
+      organizerProfilePicture: profilePictureTest1,
+      organizerName: "Puff Diddy",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 6",
+      organizerProfilePicture: profilePictureTest2,
+      organizerName: "Justin Beiber",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+  ];
 
-      {/* Date Range */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
-          Date Range
-        </label>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 w-full"
-            type="date"
-            id="startDate"
-            placeholder="Start Date"
-            {...register("startDate", { required: "Start date is required" })}
-          />
-          <span>-</span>
-          <input
-            className="border p-2 w-full"
-            type="date"
-            id="endDate"
-            placeholder="End Date"
-            {...register("endDate", { required: "End date is required" })}
-          />
-        </div>
-        <p className="error">{errors.startDate?.message || errors.endDate?.message}</p>
-      </div>
+  // Replace with API call
+  const draftTournaments = [
+    {
+      name: "Tournament 1",
+      organizerProfilePicture: profilePictureTest1,
+      organizerName: "Puff Diddy",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+    {
+      name: "Tournament 2",
+      organizerProfilePicture: profilePictureTest2,
+      organizerName: "Justin Beiber",
+      startDate: "03/09/2024",
+      endDate: "17/09/2024",
+      eloRatingRange: "1200 - 1500",
+      venue: "Choa Chu Kang Stadium, Singapore 689236",
+    },
+  ];
 
-      {/* Venue */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
-          Venue
-        </label>
-        <input
-          className="border p-2 w-full"
-          type="text"
-          id="venue"
-          placeholder="Enter Venue"
-          {...register("venue", { required: "Venue is required" })}
-        />
-        <p className="error">{errors.venue?.message}</p>
-      </div>
-
-      {/* Gender */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
-          Gender Specification
-        </label>
-        <select
-          className="border p-2 w-full"
-          id="gender"
-          {...register("gender", { required: "Gender specification is required" })}
-        >
-          <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Both">Both</option>
-        </select>
-        <p className="error">{errors.gender?.message}</p>
-      </div>
-
-      {/* Age Range */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="minAge" className="block text-sm font-medium text-gray-700">
-          Age Range
-        </label>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="minAge"
-            placeholder="Min Age"
-            {...register("minAge", { required: "Minimum age is required" })}
-          />
-          <span>-</span>
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="maxAge"
-            placeholder="Max Age"
-            {...register("maxAge", { required: "Maximum age is required" })}
-          />
-        </div>
-        <p className="error">{errors.minAge?.message || errors.maxAge?.message}</p>
-      </div>
-
-      {/* Elo Rating Range */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="minElo" className="block text-sm font-medium text-gray-700">
-          Elo Rating Range
-        </label>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="minElo"
-            placeholder="Min Elo"
-            {...register("minElo", { required: "Minimum Elo rating is required" })}
-          />
-          <span>-</span>
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="maxElo"
-            placeholder="Max Elo"
-            {...register("maxElo", { required: "Maximum Elo rating is required" })}
-          />
-        </div>
-        <p className="error">{errors.minElo?.message || errors.maxElo?.message}</p>
-      </div>
-
-      {/* Number of Players */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="minPlayers" className="block text-sm font-medium text-gray-700">
-          Number of Players
-        </label>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="minPlayers"
-            placeholder="Min Players"
-            {...register("minPlayers", { required: "Minimum number of players is required" })}
-          />
-          <span>-</span>
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="maxPlayers"
-            placeholder="Max Players"
-            {...register("maxPlayers", { required: "Maximum number of players is required" })}
-          />
-        </div>
-        <p className="error">{errors.minPlayers?.message || errors.maxPlayers?.message}</p>
-      </div>
-      {/* Remarks */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
-          Remarks
-        </label>
-        <input
-          className="border p-2 w-full"
-          type="text"
-          id="Remarks"
-          placeholder="Enter Remarks"
-        />
-      </div>
-      <div className = "flex justify-evenly gap-5 pt-10">
-            <button
-              className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
-              type="submit"
-            >
-              Create Tournament
-            </button>
-    </div>
-  </div>
-  </div>
-);
-
-const AdminTournaments = () => {
+// Define the Tournaments component - format to display tournaments
+const Tournaments = ({ tournamentTest }) => {
   return (
-    <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
-      <div className="row-container flex flex-col w-3/5 gap-8">
-        {/* Form for admin to create a tournament */}
-        <AdminTournamentsForm register={() => {}} errors={{}} />
+    <div className="tournaments-list flex flex-col space-y-8">
+      {tournamentTest.map((tournament, index) => (
+        <div
+          key={index}
+          className="tournament border rounded-lg p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition flex w-4/5"
+        >
+          <div className="flex-1 pr-4">
+            <h3 className="section-one text-xl font-bold mb-2">
+              {tournament.name}
+            </h3>
+            <div className="tournament-organiser-details flex items-center mb-2">
+              <img
+                src={tournament.organizerProfilePicture}
+                alt="Organizer"
+                className="organiser-picture w-8 h-8 rounded-full mr-2"
+              />
+              <p className="organiser-name text-gray-600">
+                Organiser: {tournament.organizerName}
+              </p>
+            </div>
+            <p className="tournament-date text-gray-500 mb-2">
+              Date: {tournament.startDate} to {tournament.endDate}
+            </p>
+            <p className="tournament-elo-rating-range text-gray-500">
+              Elo Rating: {tournament.eloRatingRange}
+            </p>
+          </div>
+          <div className="section-two border-l border-gray-300 pl-4 flex-none w-1/3">
+            <p className="text-gray-600 font-semibold">Venue</p>
+            <p className="text-gray-500">{tournament.venue}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Define the TournamentsButtons component
+const TournamentsButtons = ({ buttons, onAllClick, onMyClick, onDraftsClick }) => {
+  const [activeButton, setActiveButton] = useState(0); // "Upcoming Button" will be the first active button
+
+  const handleButtonClick = (index) => {
+    setActiveButton(index);
+    if (index === 0) {
+      onAllClick();
+    } else if (index === 1) {
+      onMyClick();
+    } else {
+      onDraftsClick();
+    }
+  };
+
+  return (
+      <div className = "tournaments-buttons flex gap-5">
+          {buttons.map((buttonLabel, index) => (
+              <button 
+                  key = {index}
+                  className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'text-gray-700 hover:text-blue-500 hover:text-red-500'}`} 
+                  onClick = {() => handleButtonClick(index)}>
+                      {buttonLabel}
+              </button>
+          ))}
+      </div>
+  );
+}
+
+// Define the AdministratorTournaments component
+function AdministratorTournaments() {
+  const [tournamentTest, setTournamentTest] = useState(allTournaments);
+
+  const handleAllClick = () => {
+    setTournamentTest(allTournaments);
+  };
+
+  const handleMyClick = () => {
+    setTournamentTest(myTournaments);
+  };
+
+  const handleDraftsClick = () => {
+    setTournamentTest(draftTournaments);
+  };
+
+  const navigate = useNavigate();
+
+  const handleCreateClick = () => {
+    navigate("/administrator-create-tournaments");
+  };
+
+  return (
+    <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
+      <div className = "row-container flex flex-col w-full p-14 gap-8">
+
+        {/* LABELS */}
+        <TournamentsButtons
+            buttons={["All Tournaments", "My Tournaments", "Tournament Drafts"]}
+            onAllClick={handleAllClick}
+            onMyClick={handleMyClick}
+            onDraftsClick={handleDraftsClick}
+          />
+
+
+        {/* SEARCH BAR */}
+        <div className = "tournaments-search-bar flex gap-3">
+          <input
+            className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="text"
+            placeholder = "Search tournaments..."
+          />
+          <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+            Search
+          </button>
+        </div>
+
+        {/* TOURNAMENTS LIST */}
+        <Tournaments tournamentTest={tournamentTest} />
+      </div>
+
+      <div className = "create-tournament-btn fixed right-11 bottom-11 ">
+        {/* Sign Up Button */}
+        <button 
+            onClick = {handleCreateClick}
+            className = "create-tournament-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 shadow-md transition duration-300 ease-in-out">
+                Create Tournament
+        </button>
       </div>
     </div>
   );
 };
 
-export default AdminTournaments;
-
+export default AdministratorTournaments;

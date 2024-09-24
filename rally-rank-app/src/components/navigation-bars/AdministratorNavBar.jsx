@@ -12,7 +12,7 @@ function AdministratorNavBar() {
                 <NavLink
                     to = "/administrator-tournaments"
                         activeClassName = "active"
-                        className = {"text-secondary-color-dark-green hover:text-primary-color-green hover:underline"}
+                        className = {"text-secondary-color-dark-green hover:text-primary-color-green"}
                 >
                     Tournaments
                 </NavLink>
