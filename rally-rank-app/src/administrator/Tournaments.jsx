@@ -1,3 +1,4 @@
+
 import React from "react";
 
 const AdminTournamentsForm = ({ register, errors }) => (
@@ -151,7 +152,27 @@ const AdminTournamentsForm = ({ register, errors }) => (
         </div>
         <p className="error">{errors.minPlayers?.message || errors.maxPlayers?.message}</p>
       </div>
+      {/* Remarks */}
+      <div className="flex flex-col gap-1">
+        <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
+          Remarks
+        </label>
+        <input
+          className="border p-2 w-full"
+          type="text"
+          id="Remarks"
+          placeholder="Enter Remarks"
+        />
+      </div>
+      <div className = "flex justify-evenly gap-5 pt-10">
+            <button
+              className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
+              type="submit"
+            >
+              Create Tournament
+            </button>
     </div>
+  </div>
   </div>
 );
 
