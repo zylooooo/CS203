@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,9 @@ public class MongoConfig {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new LocalDateToDateConverter());
         converters.add(new DateToLocalDateConverter());
+
+        converters.add(new StringToLocalDateTimeConverter());
+    converters.add(new LocalDateTimeToStringConverter());
         return new MongoCustomConversions(converters);
     }
 
@@ -34,6 +39,22 @@ public class MongoConfig {
         @Override
         public LocalDate convert(@NonNull Date source) {
             return source.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+    }
+
+        private static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+        @Override
+        public LocalDateTime convert(String source) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return LocalDateTime.parse(source, formatter);
+        }
+    }
+
+    private static class LocalDateTimeToStringConverter implements Converter<LocalDateTime, String> {
+        @Override
+        public String convert(LocalDateTime source) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return source.format(formatter);
         }
     }
 }

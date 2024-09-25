@@ -42,7 +42,6 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     
-        user.setUserId(userDetails.getUserId());
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
         user.setPhoneNumber(userDetails.getPhoneNumber());
@@ -53,6 +52,9 @@ public class UserService {
         user.setMedicalInformation(userDetails.getMedicalInformation());
         user.setProfilePic(userDetails.getProfilePic());
         user.setSuspensions(userDetails.getSuspensions());
+        user.setUserName(userDetails.getUserName());
+        user.setFirstName(userDetails.getFirstName());
+        user.setLastName(userDetails.getLastName());
     
         return userRepository.save(user);
     }
