@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,13 +36,15 @@ public class TournamentService {
     }
 
     public Tournament createTournament(Tournament tournament) {
+        tournament.setCreatedAt(LocalDateTime.now());
+        tournament.setUpdatedAt(LocalDateTime.now());
         return tournamentRepository.save(tournament);
     }
-
+    
     public Tournament updateTournament(String id, Tournament tournamentDetails) {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found with id: " + id));
-
+    
         tournament.setName(tournamentDetails.getName());
         tournament.setStartDate(tournamentDetails.getStartDate());
         tournament.setEndDate(tournamentDetails.getEndDate());
@@ -50,7 +53,8 @@ public class TournamentService {
         tournament.setGender(tournamentDetails.getGender());
         tournament.setPlayersPool(tournamentDetails.getPlayersPool());
         tournament.setMatches(tournamentDetails.getMatches());
-
+        tournament.setUpdatedAt(LocalDateTime.now());
+    
         return tournamentRepository.save(tournament);
     }
 
