@@ -37,7 +37,7 @@ Step1.propTypes = {
     errors: PropTypes.shape({
         email: PropTypes.object,
     }).isRequired,
-    email: PropTypes.func.isRequired,
+    email: PropTypes.string,
 };
 
 export default Step1;
