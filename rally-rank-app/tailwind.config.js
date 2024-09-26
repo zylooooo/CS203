@@ -9,6 +9,7 @@ export default {
             "secondary-color-dark-green": "#10574E",
             "secondary-color-light-gray": "#525252",
             "secondary-color-light-green": "#CDF731",
+            "red-color": "#FF0000",
         },
     },
     plugins: [],

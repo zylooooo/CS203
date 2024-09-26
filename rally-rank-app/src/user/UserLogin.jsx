@@ -37,6 +37,17 @@ function UserLogin() {
 
     return (
         <>
+            {/* TESTING CODE REMOVE LATER */}
+        <button
+    type="button"
+    className="button mt-6 font-bold hover:shadow-inner"
+    onClick={() => {
+        loginUser({ name: "Test User", role: "user" });
+        navigate("/home");
+    }}
+>
+    Manual User Login
+</button>
             <h1 className="m-8 font-bold text-2xl bg-special-blue">
                 Player Login
             </h1>
