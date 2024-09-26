@@ -57,11 +57,11 @@ function News() {
         </div>
 
         {/* Recent News Cards Main Container */}
-        <div className="all-news-cards grid grid-cols-3 gap-5">
+        {/* <div className="all-news-cards grid grid-cols-3 gap-5">
           {newsArticles.map((article, index) => (
             <NewsCards key={index} newsContent={article} />
           ))}
-        </div>
+        </div> */}
         
       </div>
 
