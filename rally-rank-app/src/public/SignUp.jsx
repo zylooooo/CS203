@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Step1, Step2, Step3, Step4, Step5, Step6, Step7 } from "./sign-up-components";
+import { Step1, Step2, Step3, Step4, Step5, Step6, Step7 } from "./sign-up-components/SignUpSteps";
 
 const SignUp = () => {
   const navigate = useNavigate();
