@@ -14,6 +14,7 @@ function MainLayout({ children }) {
     const [authenticatedUser, setAuthenticatedUser] = useState(0);
 
     useEffect(() => {
+
         // temp implementation
         // replace with actual authentication logic
         if (children.type === UserHome || children.type === UserProfile
@@ -25,6 +26,7 @@ function MainLayout({ children }) {
             setAuthenticatedUser(-1);
         }
       }, [children]);
+    
 
   return (
     <>
