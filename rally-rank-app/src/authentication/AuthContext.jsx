@@ -49,6 +49,17 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('admin');
     };
 
+    // TESTING CODE REMOVE LATER
+    const manualLoginUser = () => {
+        const testUser = { name: "Test User", role: "user" };
+        loginUser(testUser);
+    };
+    
+    const manualLoginAdmin = () => {
+        const testAdmin = { name: "Test Admin", role: "admin" };
+        loginAdmin(testAdmin);
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -60,6 +71,9 @@ export const AuthProvider = ({ children }) => {
                 logoutAdmin,
                 isLoggedIn: !!user,
                 isAdminLoggedIn: !!admin,
+
+                manualLoginUser, // TESTING CODE REMOVE LATER
+                manualLoginAdmin, // TESTING CODE REMOVE LATER
             }}
         >
             {children}
