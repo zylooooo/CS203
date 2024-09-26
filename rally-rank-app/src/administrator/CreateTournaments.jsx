@@ -217,7 +217,7 @@ const AdminTournamentsForm = ({ register, errors }) => (
   </div>
 );
 
-const AdministratorCreateTournaments = () => {
+function AdministratorCreateTournaments() {
   return (
     <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
       <div className="row-container flex flex-col w-3/5 gap-8">

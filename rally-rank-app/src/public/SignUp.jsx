@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Step1, Step2, Step3, Step4, Step5, Step6, Step7 } from "./sign-up-components";
 
-const SignUp = () => {
+function SignUp() {
   const navigate = useNavigate();
 
   const location = useLocation(); // Use useLocation to access the state
