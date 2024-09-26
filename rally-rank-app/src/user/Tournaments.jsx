@@ -1,4 +1,4 @@
-import React, { useState }from "react";
+import React, { useState } from "react";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
@@ -68,7 +68,7 @@ const pastTournaments = [
     },
   ];
 
-// Define the Tournaments component
+// Define the Tournaments component - format to display tournaments
 const Tournaments = ({ tournamentTest }) => {
   return (
     <div className="tournaments-list flex flex-col space-y-8">
@@ -108,59 +108,72 @@ const Tournaments = ({ tournamentTest }) => {
   );
 };
 
-// Define the UserTournaments component
-const UserTournaments = () => {
-    const [tournamentTest, setTournamentTest] = useState(upcomingTournaments);
+// Define the TournamentsButtons component
+const TournamentsButtons = ({ buttons, onUpcomingClick, onPastClick, onMyClick }) => {
+  const [activeButton, setActiveButton] = useState(0); // "Upcoming Button" will be the first active button
 
-    const handleUpcomingClick = () => {
-        setTournamentTest(upcomingTournaments);
-    };
-
-    const handlePastClick = () => {
-        setTournamentTest(pastTournaments);
-    };
-
-    const handleMyClick = () => {
-        setTournamentTest(myTournaments);
-    };
+  const handleButtonClick = (index) => {
+    setActiveButton(index);
+    if (index === 0) {
+      onUpcomingClick();
+    } else if (index === 1) {
+      onPastClick();
+    } else {
+      onMyClick();
+    }
+  };
 
   return (
-    <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
-      <div className="row-container flex flex-col w-3/5 gap-8">
-        {/* LABELS */}
-        <div className="tournaments-labels">
-          <button
-            activeClassName="active-button underline"
-            className={"text-gray-700 hover:text-blue-500 hover:text-red-500"}
-            onClick={() => handleUpcomingClick()}
-          >
-            Upcoming Tournaments
-          </button>
+      <div className = "tournaments-buttons flex gap-5">
+          {buttons.map((buttonLabel, index) => (
+              <button 
+                  key = {index}
+                  className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'text-gray-700 hover:text-blue-500 hover:text-red-500'}`} 
+                  onClick = {() => handleButtonClick(index)}>
+                      {buttonLabel}
+              </button>
+          ))}
+      </div>
+  );
+}
 
-          <button
-            activeClassName="active-button underline"
-            className={"text-gray-700 hover:text-blue-500 hover:text-red-500"}
-            onClick={() => handlePastClick()}
-          >
-            Past Tournaments 
-          </button>
-          <button
-            activeClassName="active-button underline"
-            className={"text-gray-700 hover:text-blue-500 hover:text-red-500"}
-            onClick={() => handleMyClick()}
-          >
-            My Tournaments
-          </button>
-        </div>
+// Define the UserTournaments component
+const UserTournaments = () => {
+  const [tournamentTest, setTournamentTest] = useState(upcomingTournaments);
+
+  const handleUpcomingClick = () => {
+    setTournamentTest(upcomingTournaments);
+  };
+
+  const handlePastClick = () => {
+    setTournamentTest(pastTournaments);
+  };
+
+  const handleMyClick = () => {
+    setTournamentTest(myTournaments);
+  };
+
+  return (
+    <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
+      <div className = "row-container flex flex-col w-3/5 gap-8">
+
+        {/* LABELS */}
+        <TournamentsButtons
+            buttons={["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]}
+            onUpcomingClick={handleUpcomingClick}
+            onPastClick={handlePastClick}
+            onMyClick={handleMyClick}
+          />
+
 
         {/* SEARCH BAR */}
-        <div className="tournaments-search-bar flex gap-3">
+        <div className = "tournaments-search-bar flex gap-3">
           <input
-            className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
-            placeholder="Search tournaments..."
+            placeholder = "Search tournaments..."
           />
-          <button className="border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+          <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
             Search
           </button>
         </div>
@@ -169,7 +182,7 @@ const UserTournaments = () => {
         <Tournaments tournamentTest={tournamentTest} />
       </div>
 
-      <div className="col-container">Ongoing Tournaments</div>
+      <div className = "col-container">Ongoing Tournaments</div>
     </div>
   );
 };
