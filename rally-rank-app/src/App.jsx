@@ -16,123 +16,152 @@ import MainLayout from "./components/MainLayout";
 // User imports
 import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user/UserIndex";
 
+// Authentication imports
+import { AuthProvider } from "./authentication/AuthContext";
+import PrivateRoute from "./authentication/PrivateRoute";
+import AdminRoute from "./authentication/AdminRoute";
+
+// NotFound import
+import NotFound from "./NotFound";
+
 
 function App() {
     return (
-        <Router>
-            <Routes>
+        <AuthProvider>       
+            <Router>
+                <Routes>
 
-                {/* MainHomepage */}
-                <Route 
-                    path = "/"
-                    element = {
-                        <MainLayout>
-                            <MainHomepage/>
-                        </MainLayout>
-                    }
-                />
+                    {/* Public Routes */}
+                    {/* MainHomepage */}
+                    <Route 
+                        path = "/"
+                        element = {
+                            <MainLayout>
+                                <MainHomepage/>
+                            </MainLayout>
+                        }
+                    />
 
-                {/* News */}
-                <Route 
-                    path = "/news"
-                    element = {
-                        <MainLayout>
-                            <News/>
-                        </MainLayout>
-                    }
-                />
+                    {/* News */}
+                    <Route 
+                        path = "/news"
+                        element = {
+                            <MainLayout>
+                                <News/>
+                            </MainLayout>
+                        }
+                    />
 
-                {/* SignUp */}
-                <Route 
-                    path = "/sign-up"
-                    element = {
-                        <MainLayout>
-                            <SignUp/>
-                        </MainLayout>
-                    }
-                />
+                    {/* SignUp */}
+                    <Route 
+                        path = "/sign-up"
+                        element = {
+                            <MainLayout>
+                                <SignUp/>
+                            </MainLayout>
+                        }
+                    />
 
-                {/* UserLogin */}
-                <Route 
-                    path = "/user-login"
-                    element = {
-                        <MainLayout>
-                            <UserLogin/>
-                        </MainLayout>
-                    }
-                />
+                    {/* UserLogin */}
+                    <Route 
+                        path = "/user-login"
+                        element = {
+                            <MainLayout>
+                                <UserLogin/>
+                            </MainLayout>
+                        }
+                    />
 
-                {/* AdministratorLogin */}
-                <Route 
-                    path = "/administrator-login"
-                    element = {
-                        <MainLayout>
-                            <AdministratorLogin/>
-                        </MainLayout>
-                    }
-                />
+                    {/* AdministratorLogin */}
+                    <Route 
+                        path = "/administrator-login"
+                        element = {
+                            <MainLayout>
+                                <AdministratorLogin/>
+                            </MainLayout>
+                        }
+                    />
 
-                {/* UserHome */}
-                <Route 
-                    path = "/home"
-                    element = {
-                        <MainLayout>
-                            <UserHome/>
-                        </MainLayout>
-                    }
-                />
+                    {/* Protected Player Routes */}
+                    <Route
+                        path="/home"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserHome />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
 
-                {/* UserTournaments */}
-                <Route 
-                    path = "/user-tournaments"  //yes?
-                    element = {
-                        <MainLayout>
-                            <UserTournaments/>
-                        </MainLayout>
-                    }
-                />
+                    <Route
+                        path="/user-tournaments"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserTournaments />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
 
-                {/* UserProfile */}
-                <Route 
-                    path = "/user-profile"  //yes?
-                    element = {
-                        <MainLayout>
-                            <UserProfile/>
-                        </MainLayout>
-                    }
-                />
+                    <Route
+                        path="/user-profile"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserProfile />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
 
-                {/* AdministratorTools */}
-                <Route 
-                    path = "/administrator-tools"
-                    element = {
-                        <MainLayout>
-                            <AdministratorTools/>
-                        </MainLayout>
-                    }
-                />
+                    {/* Protected Admin Routes */}
+                    <Route
+                        path="/administrator-tools"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorTools />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
 
-                {/* AdministratorTournaments */}
-                <Route 
-                    path = "/administrator-view-tournaments"
-                    element = {
-                        <MainLayout>
-                            <AdministratorViewTournaments/>
-                        </MainLayout>
-                    }
-                />
+                    <Route
+                        path="/administrator-tournaments"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorViewTournaments />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
 
-                {/* CreateTournaments */}
-                <Route 
-                    path = "/administrator-create-tournaments"
-                    element = {
-                        <MainLayout>
-                            <AdministratorCreateTournaments/>
-                        </MainLayout>
-                    }
-                />
-            </Routes>
-        </Router>
+                    <Route
+                        path="/administrator-create-tournaments"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorCreateTournaments />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* Fallback Route */}
+                    <Route
+                        path="*"
+                        element={
+                            <MainLayout>
+                                <NotFound />
+                            </MainLayout>
+                        }
+                    />
+                </Routes>
+            </Router>
+        </AuthProvider>
     );
 }
 
