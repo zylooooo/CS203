@@ -37,6 +37,17 @@ function AdministratorLogin() {
 
     return (
         <>
+        {/* TESTING CODE REMOVE LATER */}
+        <button
+    type="button"
+    className="button mt-6 font-bold hover:shadow-inner"
+    onClick={() => {
+        loginAdmin({ name: "Test Admin", role: "admin" });
+        navigate("/administrator-tools");
+    }}
+>
+    Manual Admin Login
+</button>
             <h1 className="m-8 font-bold text-2xl bg-special-blue">
                 Administrator Login
             </h1>

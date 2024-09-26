@@ -1,10 +1,19 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../authentication/AuthContext";
 
 function UserNavBar() {
+    const {isUserLoggedIn, logoutUser} = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logoutUser();
+        navigate("/user-login");
+    };
+
     return (
-        <nav className="flex items-center py-10 pl-10 gap-5">
+        <nav className="flex justify-around py-10 pl-10 gap-5">
             <img src="src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
-            <div className="flex text-xl gap-5">
+            <div className="flex items-center text-xl gap-5">
                 <NavLink
                     to="/home"
                     activeClassName="active"
@@ -34,6 +43,13 @@ function UserNavBar() {
                 >
                     Your Profile
                 </NavLink>
+                <button
+                    type="button"
+                    className="button bg-red-color font-bold hover:shadow-inner"
+                    onClick={handleLogout}
+                >
+                    Manual User Logout
+                </button>
             </div>
         </nav>
     );
