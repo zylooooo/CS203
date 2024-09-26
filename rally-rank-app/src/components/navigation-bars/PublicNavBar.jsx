@@ -1,6 +1,6 @@
 // import { NavLink } from "react-router-dom";
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function PublicNavBar() {
 
@@ -23,7 +23,9 @@ function PublicNavBar() {
     return (
         <nav className = "flex items-center py-10 pl-10 gap-5">
 
-            <img src = "src/assets/Rally-Rank-Logo.svg" alt = "RallyRank Logo"/>
+            <Link to = "/">
+                <img src = "src/assets/Rally-Rank-Logo.svg" alt = "RallyRank Logo"/>
+            </Link>
 
             <div className = "section-one absolute top-7 right-0 m-5 space-x-5">
 
