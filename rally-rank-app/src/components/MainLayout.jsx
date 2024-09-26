@@ -8,7 +8,7 @@ function MainLayout({ children }) {
 
     useEffect(() => {
         // Set the initial authenticated user state
-        setAuthenticatedUser(0);
+        setAuthenticatedUser(-1);
       }, []);
 
   return (
