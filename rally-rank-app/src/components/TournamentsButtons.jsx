@@ -5,9 +5,12 @@ function TournamentsButtons({ buttons }) {
 
     const handleButtonClick = (index) => {
         setActiveButton(index);
-        if (index === 0) {
-            
-        }
+        // if (index === 0) {
+        //     setTournamentTest(upcomingTournaments);
+        // } else if (index === 1) {
+        //     setTournamentTest(pastTournaments);
+        // } else {
+        //     setTournamentTest(myTournaments);
     };
 
     return (

@@ -12,7 +12,7 @@ function UserNavBar() {
                 <NavLink
                     to = "/home"
                     activeClassName = "active"
-                    className = {"text-secondary-color-dark-green hover:text-primary-color-green hover:underline"}
+                    className = {"text-secondary-color-dark-green hover:text-primary-color-green "}
                     exact
                 >
                     Home

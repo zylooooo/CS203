@@ -3,13 +3,34 @@ import PublicNavBar from "./navigation-bars/PublicNavBar";
 import AdministratorNavBar from "./navigation-bars/AdministratorNavBar";
 import React, { useState, useEffect } from "react";
 
-function MainLayout({ children }) {
+// temp imports
+import { AdministratorLogin, AdministratorTools, AdministratorTournaments } from "../administrator/AdministratorIndex";
+import { MainHomepage, News, SignUp } from "../public/PublicIndex";
+import { UserHome, UserLogin, UserProfile, UserTournaments } from "../user/UserIndex";
+
+
+function MainLayout({ children }) { 
+    
     const [authenticatedUser, setAuthenticatedUser] = useState(0);
 
     useEffect(() => {
+<<<<<<< HEAD
         // Set the initial authenticated user state
         setAuthenticatedUser(-1);
       }, []);
+=======
+        // temp implementation
+        // replace with actual authentication logic
+        if (children.type === UserHome || children.type === UserProfile
+            || children.type === UserTournaments || children.type === News) {
+          setAuthenticatedUser(0);
+        } else if (children.type === AdministratorTools || children.type === AdministratorTournaments) {
+          setAuthenticatedUser(1);
+        } else if (children.type === MainHomepage || children.type === SignUp || children.type === UserLogin || children.type === AdministratorLogin) {
+            setAuthenticatedUser(-1);
+        }
+      }, [children]);
+>>>>>>> 13765caafce4df36e6e43e3e23ece4ffcd412a01
 
   return (
     <>
