@@ -1,6 +1,6 @@
-import UserHome from "./Home";
-import UserLogin from "./Login";
-import UserProfile from "./Profile";
-import UserTournaments from "./Tournaments";
+import UserHome from "./UserHome";
+import UserLogin from "./UserLogin";
+import UserProfile from "./UserProfile";
+import UserTournaments from "./UserTournaments";
 
 export { UserHome, UserLogin, UserProfile, UserTournaments };
