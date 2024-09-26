@@ -138,7 +138,7 @@ const TournamentsButtons = ({ buttons, onUpcomingClick, onPastClick, onMyClick }
 }
 
 // Define the UserTournaments component
-const UserTournaments = () => {
+function UserTournaments() {
   const [tournamentTest, setTournamentTest] = useState(upcomingTournaments);
 
   const handleUpcomingClick = () => {
