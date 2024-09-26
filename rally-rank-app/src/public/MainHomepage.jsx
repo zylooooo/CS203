@@ -7,10 +7,6 @@ function MainHomePage() {
 
     const navigate = useNavigate();
 
-    // const handleLoginClick = () => {
-    //     navigate('/login'); 
-    // };
-
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
     }
