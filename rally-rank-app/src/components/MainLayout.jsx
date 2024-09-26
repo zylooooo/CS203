@@ -14,6 +14,11 @@ function MainLayout({ children }) {
     const [authenticatedUser, setAuthenticatedUser] = useState(0);
 
     useEffect(() => {
+<<<<<<< HEAD
+        // Set the initial authenticated user state
+        setAuthenticatedUser(-1);
+      }, []);
+=======
         // temp implementation
         // replace with actual authentication logic
         if (children.type === UserHome || children.type === UserProfile
@@ -25,6 +30,7 @@ function MainLayout({ children }) {
             setAuthenticatedUser(-1);
         }
       }, [children]);
+>>>>>>> 13765caafce4df36e6e43e3e23ece4ffcd412a01
 
   return (
     <>
