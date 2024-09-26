@@ -1,9 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AdministratorLogin, AdministratorTools, AdministratorTournaments, AdministratorCreateTournaments } from "./administrator/AdministratorIndex";
-import { MainHomepage, News, SignUp } from "./public/PublicIndex";
-import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user/UserIndex";
-import MainLayout from "./components/MainLayout";
+
+// CSS imports 
 import "./index.css";
+
+// Administrator imports
+import AdministratorLogin from "./administrator/AdministratorLogin";
+import AdministratorTools from "./administrator/AdministratorTools";
+import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
+import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
+
+// Public imports
+import { MainHomepage, News, SignUp } from "./public/PublicIndex";
+import MainLayout from "./components/MainLayout";
+
+// User imports
+import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user/UserIndex";
+
 
 function App() {
     return (
@@ -102,10 +114,10 @@ function App() {
 
                 {/* AdministratorTournaments */}
                 <Route 
-                    path = "/administrator-tournaments"
+                    path = "/administrator-view-tournaments"
                     element = {
                         <MainLayout>
-                            <AdministratorTournaments/>
+                            <AdministratorViewTournaments/>
                         </MainLayout>
                     }
                 />
