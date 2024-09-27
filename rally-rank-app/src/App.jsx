@@ -9,12 +9,20 @@ import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 
+// Component imports
+
 // Public imports
-import { MainHomepage, News, SignUp } from "./public/PublicIndex";
-import MainLayout from "./components/MainLayout";
+import MainHomepage from "./public/MainHomepage";
+import News from "./public/News";
+import SignUp from "./public/SignUp"
+
 
 // User imports
-import { UserHome, UserLogin, UserProfile, UserTournaments } from "./user/UserIndex";
+import UserHome from "./user/UserHome";
+import UserLogin from "./user/UserLogin";
+import UserProfile from "./user/UserProfile";
+import UserTournaments from "./user/UserTournaments";
+
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
