@@ -10,6 +10,7 @@ import AdministratorViewTournaments from "./administrator/AdministratorViewTourn
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 
 // Component imports
+import MainLayout from "./components/MainLayout"
 
 // Public imports
 import MainHomepage from "./public/MainHomepage";
