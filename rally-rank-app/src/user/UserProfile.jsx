@@ -20,9 +20,7 @@ function UserProfile() {
         bloodType: "C+",
     });
 
-    // const [calendarData, setCalendarData] = useState(null);
-
-    // to retrieve the system's current month (automatically updated)
+    // To retrieve the system's current month (automatically updated)
     const getCurrentMonth = () => {
         const monthLengthType = {month: "long"};
         return new Intl.DateTimeFormat('en-US', monthLengthType).format(new Date());
