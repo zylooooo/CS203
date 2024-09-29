@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import loginBackground from "../assets/login-picture.jpg";
 
 // Form imports
 import { useForm } from "react-hook-form";
@@ -37,23 +38,24 @@ function UserLogin() {
 
     return (
         <>
-            {/* TESTING CODE REMOVE LATER */}
+        <div className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center" style={{ backgroundImage: `url(${loginBackground})` }}>
+        {/* TESTING CODE REMOVE LATER */}
         <button
-    type="button"
-    className="button mt-6 font-bold hover:shadow-inner"
-    onClick={() => {
-        loginUser({ name: "Test User", role: "user" });
-        navigate("/home");
-    }}
->
-    Manual User Login
-</button>
-            <h1 className="m-8 font-bold text-2xl bg-special-blue">
-                Player Login
-            </h1>
-            <div>
+            type="button"
+            className="button mt-6 font-bold hover:shadow-inner"
+            onClick={() => {
+                loginUser({ name: "Test User", role: "user" });
+                navigate("/home");
+            }}
+        >
+        Manual User Login
+        </button>
+            <div className = "card rounded-none bg-primary-color-white items-center m-8">
+                <h1 className=" font-bold text-2xl bg-special-blue">
+                    Player Login
+                </h1>
                 <form
-                    className="card"
+                    className="card px-0 py-2 border-none shadow-none bg-primary-color-white"
                     onSubmit={handleSubmit(onSubmit)}
                     noValidate
                 >
@@ -116,7 +118,7 @@ function UserLogin() {
                         </span>
                         <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
                     </div>
-                    <div className="text-xs text-blue-500 text-center p-2">
+                    <div className="text-xs text-blue-500 text-center pt-2">
                         Don't have a RallyRank account?
                         <Link
                             to="/sign-up"
@@ -128,14 +130,17 @@ function UserLogin() {
                     </div>
                 </form>
                 <DevTool control={control} />
-                <div className="text-blue-500 text-ms flex flex-row justify-center align-item mt-10">
-                    RallyRank Administrator?
-                    <Link
-                        to="/administrator-login"
-                        className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
-                    >
-                        Log in here!
-                    </Link>
+                </div>
+                <div className = "card p-7 rounded-none bg-primary-color-white items-center">
+                    <div className="text-blue-500 text-ms flex flex-row justify-center align-item">
+                        RallyRank Administrator?
+                        <Link
+                            to="/administrator-login"
+                            className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
+                        >
+                            Log in here!
+                        </Link>
+                    </div>
                 </div>
             </div>
         </>

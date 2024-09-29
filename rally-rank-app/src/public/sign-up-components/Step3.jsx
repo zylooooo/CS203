@@ -35,6 +35,7 @@ const Step3 = ({ register, errors }) => (
           type="number"
           id="YearsOfExperience"
           placeholder="0"
+          min="0"
           {...register("YearsOfExperience", {
             required: "Years of Experience is required",
           })}
