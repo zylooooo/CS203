@@ -1,8 +1,11 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 const Step6 = ({ register, errors, watch }) => {
 
     const password = watch("password");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setConfirmShowPassword] = useState(false);
 
     return (
         <div>
@@ -52,7 +55,7 @@ const Step6 = ({ register, errors, watch }) => {
                     </label>
                     <input
                         className = "border p-2"
-                        type = "password"
+                        type = {showPassword ? "text" : "password"}
                         id = "password"
                         placeholder = "Enter your password"
                         {...register("password", {
@@ -70,6 +73,17 @@ const Step6 = ({ register, errors, watch }) => {
                         })}
                     />
                     <p className = "error"> {errors.password?.message} </p>
+                    <div className = "block text-sm font-normal text-gray-700 pl-3">
+                        <input
+                        type = "checkbox"
+                        id = "showPassword"
+                        checked = {showPassword}
+                        onChange = {() => setShowPassword(!showPassword)}
+                        />
+                        <label 
+                            htmlFor = "showPassword"> Show Password 
+                        </label>
+                    </div>
                 </div>
 
                 {/* CONFIRM PASSWORD */}
@@ -82,7 +96,7 @@ const Step6 = ({ register, errors, watch }) => {
                     </label>
                     <input
                         className = "border p-2"
-                        type = "password"
+                        type = {showConfirmPassword ? "text" : "password"}
                         id = "confirmPassword"
                         placeholder = "Re-enter your password"
                         {...register("confirmPassword", {
@@ -92,6 +106,17 @@ const Step6 = ({ register, errors, watch }) => {
                         })}
                     />
                     <p className = "error"> {errors.confirmPassword?.message} </p>
+                <div className = "block text-sm font-normal text-gray-700 pl-3">
+                        <input
+                        type = "checkbox"
+                        id = "showConfirmPassword"
+                        checked = {showConfirmPassword}
+                        onChange = {() => setConfirmShowPassword(!showConfirmPassword)}
+                        />
+                        <label 
+                            htmlFor = "showPassword"> Show Password 
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

@@ -91,11 +91,19 @@ const Step2 = ({ register, errors }) => (
         </label>
         <input
           className="border p-2"
-          type="number"
+          type="tel"
           id="phone"
           placeholder="Phone Number"
           {...register("phone", {
             required: "Phone number is required",
+            min: {
+              value: 0,
+              message: "Please enter a valid phone number",
+            },
+            pattern: {
+              value: /^[0-9]*$/,
+              message: "Please enter a valid phone number",
+            }
           })}
         />
         <p className="error">{errors.phone?.message}</p>
