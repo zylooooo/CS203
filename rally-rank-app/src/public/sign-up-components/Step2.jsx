@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 
 const Step2 = ({ register, errors }) => (
-  <div>
+  <div className="flex flex-col justify-center">
     <h2 className="text-xl font-extrabold">Personal Information</h2>
     <p>We love to know more about you!</p>
-    <div className="flex flex-col gap-5 mt-8">
-      <div className="flex gap-5">
-        <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-5 mt-8 justify-center">
+      <div className="flex gap-5 justify-center">
+        <div className="flex flex-col gap-1 w-1/2">
           <label
             htmlFor="firstName"
             className="block text-sm font-medium text-gray-700"
@@ -24,7 +24,7 @@ const Step2 = ({ register, errors }) => (
           />
           <p className="error">{errors.firstName?.message}</p>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 w-1/2">
           <label
             htmlFor="lastName"
             className="block text-sm font-medium text-gray-700"
