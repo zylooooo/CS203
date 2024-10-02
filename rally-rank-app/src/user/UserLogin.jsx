@@ -50,12 +50,12 @@ function UserLogin() {
         >
         Manual User Login
         </button>
-            <div className = "card rounded-none bg-primary-color-white items-center m-8">
+            <div className = "card rounded-none bg-primary-color-white border-none items-center m-8">
                 <h1 className=" font-bold text-2xl bg-special-blue">
                     Player Login
                 </h1>
                 <form
-                    className="card px-0 py-2 border-none shadow-none bg-primary-color-white"
+                    className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
                     onSubmit={handleSubmit(onSubmit)}
                     noValidate
                 >
@@ -131,7 +131,7 @@ function UserLogin() {
                 </form>
                 <DevTool control={control} />
                 </div>
-                <div className = "card p-7 rounded-none bg-primary-color-white items-center">
+                <div className = "card p-7 rounded-none bg-primary-color-white border-none items-center">
                     <div className="text-blue-500 text-ms flex flex-row justify-center align-item">
                         RallyRank Administrator?
                         <Link

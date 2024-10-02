@@ -39,7 +39,11 @@
 
     .h-screen-minus-navbar {
         @apply h-screen;
-        height: calc(100vh - 115px); /* Adjust 60px to match your navbar height */
+        height: calc(100vh - 115px); /* 115px is the height of the navbar */
+    }
+
+    .main-container {
+        @apply flex w-full p-9 gap-2 justify-evenly;
     }
 
 

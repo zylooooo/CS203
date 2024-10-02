@@ -2,7 +2,7 @@ import ButtonGroup from "../components/ButtonGroup";
 
 function UserHome() {
   return (
-    <div className = "home-container flex w-full p-9 gap-2 justify-evenly">
+    <div className = "home-container main-container">
 
       {/* ROW CONTAINER: SCHEDULED TOURNAMENTS AND JOIN TOURNAMENTS */}
       <div className = "row-container flex flex-col w-3/5 gap-8">

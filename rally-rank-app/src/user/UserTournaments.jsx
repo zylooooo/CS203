@@ -154,36 +154,38 @@ function UserTournaments() {
   };
 
   return (
-    <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
-      <div className = "row-container flex flex-col w-3/5 gap-8">
+    <>
+      <div className = "tournaments-page main-container">
+        <div className = "row-container flex flex-col w-3/5 gap-8">
 
-        {/* LABELS */}
-        <TournamentsButtons
-            buttons={["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]}
-            onUpcomingClick={handleUpcomingClick}
-            onPastClick={handlePastClick}
-            onMyClick={handleMyClick}
-          />
+          {/* LABELS */}
+          <TournamentsButtons
+              buttons={["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]}
+              onUpcomingClick={handleUpcomingClick}
+              onPastClick={handlePastClick}
+              onMyClick={handleMyClick}
+            />
 
 
-        {/* SEARCH BAR */}
-        <div className = "tournaments-search-bar flex gap-3">
-          <input
-            className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="text"
-            placeholder = "Search tournaments..."
-          />
-          <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-            Search
-          </button>
+          {/* SEARCH BAR */}
+          <div className = "tournaments-search-bar flex gap-3">
+            <input
+              className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              placeholder = "Search tournaments..."
+            />
+            <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+              Search
+            </button>
+          </div>
+
+          {/* TOURNAMENTS LIST */}
+          <Tournaments tournamentTest={tournamentTest} />
         </div>
 
-        {/* TOURNAMENTS LIST */}
-        <Tournaments tournamentTest={tournamentTest} />
+        <div className = "col-container">Ongoing Tournaments</div>
       </div>
-
-      <div className = "col-container">Ongoing Tournaments</div>
-    </div>
+    </>
   );
 };
 

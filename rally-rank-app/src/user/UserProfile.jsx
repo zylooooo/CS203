@@ -44,6 +44,7 @@ function UserProfile() {
     // <need API call or function to retrieve and send edited information>
 
     return (
+        <>
         <div className = "profile-page flex flex-col w-3/4 p-9 gap-5 justify-center">
             {activeSection === "profile" &&(
                 <>
@@ -264,6 +265,7 @@ function UserProfile() {
                 </div>
             )}
         </div>
+        </>
     );
 }
 
