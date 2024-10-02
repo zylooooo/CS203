@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 const Step1 = ({ register, errors, email }) => (
-    <div>
+    <div className="flex flex-col justify-center">
         <h2 className="text-xl font-extrabold">Create account</h2>
         <p>Please enter your email address for verification</p>
         <div className="flex flex-col gap-5 mt-8">
