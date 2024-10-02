@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Step1, Step2, Step3, Step4, Step5, Step6, Step7 } from "./sign-up-components/SignUpSteps";
+import { Step1, Step2, Step3, Step4, Step5 } from "./sign-up-components/SignUpSteps";
+import signupPicture from "../assets/sign-up-picture.jpg";
+
 
 function SignUp() {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ function SignUp() {
   const [step, setStep] = useState(1);
   
   const onSubmit = (data) => {
-    if (step === 6) {
+    if (step === 4) {
       // Final submission logic here
       console.log("Form Data: ", data);
 
@@ -67,34 +69,14 @@ function SignUp() {
         >
           4
         </div>
-        <div
-          className = {`font-bold text-xl flex justify-center items-center border rounded-full w-10 h-10 p-6 ${
-            step > 5
-              ? "bg-primary-color-green bg-opacity-85"
-              : "bg-secondary-color-light-gray bg-opacity-50"
-          } ${step === 5 ? "scale-110" : ""}`}
-        >
-          5
-        </div>
-        <div
-          className = {`font-bold text-xl flex justify-center items-center border rounded-full w-10 h-10 p-6 ${
-            step > 6
-              ? "bg-primary-color-green bg-opacity-85"
-              : "bg-secondary-color-light-gray bg-opacity-50"
-          } ${step === 6 ? "scale-110" : ""}`}
-        >
-          6
-        </div>
       </div>
       <div className = "flex justify-center border p-10">
         <form onSubmit={handleSubmit(onSubmit)}>
           {step === 1 && <Step1 register={register} errors={errors} email={email}/>}
           {step === 2 && <Step2 register={register} errors={errors} />}
           {step === 3 && <Step3 register={register} errors={errors} />}
-          {step === 4 && <Step4 register={register} errors={errors} />}
-          {step === 5 && <Step5 register={register} errors={errors} />}
-          {step === 6 && (
-            <Step6 register={register} errors={errors} watch={watch} />
+          {step === 4 && (
+            <Step4 register={register} errors={errors} watch={watch} />
           )}
 
           <div className = "flex justify-evenly gap-5 pt-10">
@@ -109,7 +91,7 @@ function SignUp() {
               className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
               type="submit"
             >
-              {step === 6 ? "Submit" : "Next"}
+              {step === 4 ? "Submit" : "Next"}
             </button>
           </div>
         </form>
