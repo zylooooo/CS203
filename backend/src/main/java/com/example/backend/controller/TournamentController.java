@@ -40,15 +40,26 @@ public class TournamentController {
     }
 
     @PostMapping
-    public Tournament createTournament(@RequestBody Tournament tournament) {
-        return tournamentService.createTournament(tournament);
+    public ResponseEntity<Tournament> createTournament(@RequestBody Tournament tournament) {
+        try {
+            Tournament createdTournament = tournamentService.createTournament(tournament);
+            return ResponseEntity.ok(createdTournament);
+        } catch (Exception e) {
+            logger.error("Error creating tournament", e);
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Tournament> updateTournament(@PathVariable String id, @RequestBody Tournament tournamentDetails) {
-        Tournament updatedTournament = tournamentService.updateTournament(id, tournamentDetails);
-        return ResponseEntity.ok(updatedTournament);
-    }
+        try {
+            Tournament updatedTournament = tournamentService.updateTournament(id, tournamentDetails);
+            return ResponseEntity.ok(updatedTournament);
+        } catch (RuntimeException e) {
+            logger.error("Error updating tournament", e);
+            return ResponseEntity.badRequest().body(null);
+        }
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTournament(@PathVariable String id) {

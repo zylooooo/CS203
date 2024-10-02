@@ -35,12 +35,25 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        if (userRepository.existsByUserName(user.getUserName())) {
+            throw new RuntimeException("Username already exists");
+        }
         return userRepository.save(user);
     }
 
     public User updateUser(String id, User userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    
+        if (!user.getEmail().equals(userDetails.getEmail()) && userRepository.existsByEmail(userDetails.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        if (!user.getUserName().equals(userDetails.getUserName()) && userRepository.existsByUserName(userDetails.getUserName())) {
+            throw new RuntimeException("Username already exists");
+        }
     
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
@@ -51,10 +64,11 @@ public class UserService {
         user.setParticipatedTournaments(userDetails.getParticipatedTournaments());
         user.setMedicalInformation(userDetails.getMedicalInformation());
         user.setProfilePic(userDetails.getProfilePic());
-        user.setSuspensions(userDetails.getSuspensions());
         user.setUserName(userDetails.getUserName());
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
+        user.setAvailable(userDetails.isAvailable());
+        user.setStrikeReport(userDetails.getStrikeReport());
     
         return userRepository.save(user);
     }

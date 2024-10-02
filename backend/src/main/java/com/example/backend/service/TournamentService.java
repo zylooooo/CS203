@@ -36,6 +36,9 @@ public class TournamentService {
     }
 
     public Tournament createTournament(Tournament tournament) {
+        if (tournamentRepository.existsByName(tournament.getName())) {
+            throw new RuntimeException("Tournament name already exists");
+        }
         tournament.setCreatedAt(LocalDateTime.now());
         tournament.setUpdatedAt(LocalDateTime.now());
         return tournamentRepository.save(tournament);
@@ -45,6 +48,11 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found with id: " + id));
     
+
+            if (!tournament.getName().equals(tournamentDetails.getName()) && 
+            tournamentRepository.existsByName(tournamentDetails.getName())) {
+            throw new RuntimeException("Tournament name already exists");
+            }
         tournament.setName(tournamentDetails.getName());
         tournament.setStartDate(tournamentDetails.getStartDate());
         tournament.setEndDate(tournamentDetails.getEndDate());
@@ -53,6 +61,7 @@ public class TournamentService {
         tournament.setGender(tournamentDetails.getGender());
         tournament.setPlayersPool(tournamentDetails.getPlayersPool());
         tournament.setMatches(tournamentDetails.getMatches());
+        tournament.setPlayerCapacity(tournamentDetails.getPlayerCapacity());
         tournament.setUpdatedAt(LocalDateTime.now());
     
         return tournamentRepository.save(tournament);
