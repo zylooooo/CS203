@@ -44,7 +44,7 @@ public class MongoConfig {
 
         private static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
         @Override
-        public LocalDateTime convert(String source) {
+        public LocalDateTime convert(@NonNull String source) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             return LocalDateTime.parse(source, formatter);
         }
@@ -52,7 +52,7 @@ public class MongoConfig {
 
     private static class LocalDateTimeToStringConverter implements Converter<LocalDateTime, String> {
         @Override
-        public String convert(LocalDateTime source) {
+        public String convert(@NonNull LocalDateTime source) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             return source.format(formatter);
         }
