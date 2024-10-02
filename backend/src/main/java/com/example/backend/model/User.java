@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 public class User {
     @Id
     private String id;
+    @Indexed(unique = true)
     private String email;
     private String password;
     private String phoneNumber;
@@ -24,10 +26,12 @@ public class User {
     private List<String> participatedTournaments;
     private MedicalInformation medicalInformation;
     private String profilePic;
-    private int suspensions;
+    @Indexed(unique = true)
     private String userName;
     private String firstName;
     private String lastName;
+    private boolean isAvailable;
+    private List<StrikeReport> strikeReport;
 
     @Data
     @NoArgsConstructor
@@ -35,7 +39,14 @@ public class User {
     public static class MedicalInformation {
         private String emergencyContact;
         private String relationship;
-        private String medicalHistory;
-        private String medications;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StrikeReport {
+        private String reportDetails;
+        private String dateCreated;
+        private String issuedBy;
     }
 }
