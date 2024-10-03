@@ -7,28 +7,60 @@ import signupPicture from "../assets/sign-up-picture.jpg";
 function SignUp() {
   const location = useLocation(); 
   const { email } = location.state || {}; 
-  const { register, handleSubmit, watch, formState: { errors , isValid}} = useForm();
+  const { register, handleSubmit, watch, trigger, formState: { errors , isValid}} = useForm();
 
   const [step, setStep] = useState(1);
   const [clickableSteps, setClickableSteps] = useState([]); // clickable steps, including current step
   const [completedSteps, setCompletedSteps] = useState([]); // completed steps, displayed as green
 
-  const onSubmit = (data) => {
-    if (step < 4) {
-      setCompletedSteps([...completedSteps, step]);
-      setClickableSteps([...clickableSteps, step]);
-      setStep(step + 1);
-    } else {
-      // Replace with POST request to backend
-      console.log(data);
-    }
+  const stepFields = {
+    1: ["email"],
+    2: ["firstName", "lastName", "gender", "dob", "phone"],
+    3: ["elo", "yearsOfExperience"],
+    4: ["username", "password", "confirmPassword"],
   };
 
-  const handleStepClick = (stepNumber) => {
-    if (clickableSteps.includes(stepNumber)) {
+  const onSubmit = async (data) => {
+
+    const fieldsToValidate = stepFields[step];
+    const isStepValid = await trigger(fieldsToValidate);
+  
+    if (isStepValid) {
+      if (step < 4) {
+        setCompletedSteps([...completedSteps, step]);
+        setClickableSteps([...clickableSteps, step]);
+        setStep(step + 1);
+      } else {
+        // Replace with POST request to backend
+        console.log(data);
+      }
+    } else {
+      console.log("Please fill all required fields.");
+    }
+
+    // if (step < 4) {
+    //   setCompletedSteps([...completedSteps, step]);
+    //   setClickableSteps([...clickableSteps, step]);
+    //   setStep(step + 1);
+    // } else {
+    //   // Replace with POST request to backend
+    //   console.log(data);
+    // }
+  };
+
+  const handleStepClick = async (stepNumber) => {
+
+    const fieldsToValidate = stepFields[step];
+    const isStepValid = await trigger(fieldsToValidate);
+
+    if (isStepValid && clickableSteps.includes(stepNumber)) {
       setClickableSteps([...clickableSteps, step]);
       setStep(stepNumber);
     }
+    // if (clickableSteps.includes(stepNumber)) {
+    //   setClickableSteps([...clickableSteps, step]);
+    //   setStep(stepNumber);
+    // }
   };
 
   const steps = [1, 2, 3, 4];
@@ -60,7 +92,7 @@ function SignUp() {
           ))}
         </div>
 
-          {/* bug: NEED TO ADD A CHECK BEFORE FINAL SUBMISSION OF THE FORM THAT ALL INPUTS ARE VALID/NOT NULL */}
+          {/* improve functionality: CHECK THAT ALL INPUTS ARE VALID/NOT NULL BEFORE SUBMITTING POST REQ */}
 
           {/* FORM CONTAINER */}
           <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
@@ -76,7 +108,7 @@ function SignUp() {
               {/* & REPLACE PREVIOUS/NEXT BUTTON WITH CHEVRONS NEXT TO THE NUMBERS -- IMPORT HEROICONS */}
 
                 <button
-                  type = "button"
+                  type = "submit"
                   // className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 shadow-md transition duration-300 ease-in-out"
                   className = "font-bold border px-14 py-2 bg-secondary-color-light-gray text-primary-color-white hover:bg-primary-color-green hover:cursor-pointer"
                   onClick = {() => setStep(step - 1)}
