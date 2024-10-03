@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 import { Step1, Step2, Step3, Step4, Step5 } from "./sign-up-components/SignUpSteps";
 import signupPicture from "../assets/sign-up-picture.jpg";
 
 function SignUp() {
-  const { register, handleSubmit, watch, formState: { errors }} = useForm();
+  const location = useLocation(); 
+  const { email } = location.state || {}; 
+  const { register, handleSubmit, watch, formState: { errors , isValid}} = useForm();
+
   const [step, setStep] = useState(1);
-  const [clickableSteps, setClickableSteps] = useState([]); // Keep track of clickable steps (including current step)
-  const [completedSteps, setCompletedSteps] = useState([]); // Keep track of completed steps to display as green
+  const [clickableSteps, setClickableSteps] = useState([]); // clickable steps, including current step
+  const [completedSteps, setCompletedSteps] = useState([]); // completed steps, displayed as green
 
   const onSubmit = (data) => {
     if (step < 4) {
@@ -15,7 +19,8 @@ function SignUp() {
       setClickableSteps([...clickableSteps, step]);
       setStep(step + 1);
     } else {
-      // Final submission logic
+      // Replace with POST request to backend
+      console.log(data);
     }
   };
 
@@ -30,36 +35,46 @@ function SignUp() {
 
   return (
     <>
-        <div className = "bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col items-center" style={{ backgroundImage: `url(${signupPicture})` }}>
-          <div className = "flex gap-9 p-10 mt-4">
-            {steps.map((num) => (
-              <div
-                key={num}
-                className = {`font-bold text-xl flex justify-center items-center rounded-full w-10 h-10 p-6 ${
+      {/* MAIN CONTAINER FOR BACKGROUND IMAGE */}
+      <div className = "bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col items-center" style={{ backgroundImage: `url(${signupPicture})` }}>
+        
+        {/* STEPS BUTTONS */}
+        <div className = "flex gap-9 p-10 mt-4">
+          {steps.map((num) => (
+            <div
+              key = { num }
+              className = {`font-bold text-xl flex justify-center items-center rounded-full w-10 h-10 p-6 
+                ${
                   completedSteps.includes(num)
                   ? "bg-primary-color-green border-opacity-50"
-                  : step > num
-                    ? "bg-primary-color-green border-opacity-50"
-                    : "bg-primary-color-white"
-                } ${step === num ? "scale-110" : ""} ${
-                  clickableSteps.includes(num)
-                    ? "cursor-pointer"
-                    : "cursor-default"
+                  : "bg-primary-color-white"
+                } 
+                ${ step === num ? "scale-125" : "" } 
+                ${
+                  clickableSteps.includes(num) ? "cursor-pointer" : "cursor-default"
                 }`}
-                onClick = {() => handleStepClick(num)}
-              >
-                {num}
-              </div>
-            ))}
-          </div>
+              onClick = {() => handleStepClick(num) }
+            >
+              { num }
+            </div>
+          ))}
+        </div>
+
+          {/* bug: NEED TO ADD A CHECK BEFORE FINAL SUBMISSION OF THE FORM THAT ALL INPUTS ARE VALID/NOT NULL */}
+
+          {/* FORM CONTAINER */}
           <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
             <form onSubmit={handleSubmit(onSubmit)}>
-              {step === 1 && <Step1 register = {register} errors = {errors} />}
+              {step === 1 && <Step1 register = {register} errors = {errors} email = {email} />}
               {step === 2 && <Step2 register = {register} errors = {errors} />}
               {step === 3 && <Step3 register = {register} errors = {errors} />}
               {step === 4 && <Step4 register = {register} errors = {errors} watch = {watch} />}
 
               <div className = "flex justify-evenly gap-5 pt-10">
+              
+              {/* CHANGE PREVIOUS/NEXT BUTTONS TO : CONTINUE (?) */}
+              {/* & REPLACE PREVIOUS/NEXT BUTTON WITH CHEVRONS NEXT TO THE NUMBERS -- IMPORT HEROICONS */}
+
                 <button
                   type = "button"
                   // className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 shadow-md transition duration-300 ease-in-out"
