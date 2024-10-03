@@ -7,7 +7,7 @@ const Step3 = ({ register, errors }) => (
     <div className="flex flex-col gap-5 mt-8">
       <div className="flex flex-col gap-2">
         <label
-          htmlFor="lastName"
+          htmlFor="elo"
           className="block text-sm font-medium text-gray-700"
         >
           Elo Rating
@@ -33,14 +33,14 @@ const Step3 = ({ register, errors }) => (
         <input
           className="border p-2"
           type="number"
-          id="YearsOfExperience"
+          id="yearsOfExperience"
           placeholder="0"
           min="0"
-          {...register("YearsOfExperience", {
+          {...register("yearsOfExperience", {
             required: "Years of Experience is required",
           })}
         />
-        <p className="error">{errors.YearsOfExperience?.message}</p>
+        <p className="error">{errors.yearsOfExperience?.message}</p>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@ Step3.propTypes = {
   register: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     elo: PropTypes.object,
-    YearsOfExperience: PropTypes.object,
+    yearsOfExperience: PropTypes.object,
   }).isRequired,
 };
 
