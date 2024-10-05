@@ -34,9 +34,7 @@ function SignUp() {
         // Replace with POST request to backend
         console.log(data);
       }
-    } else {
-      console.log("Please fill all required fields.");
-    }
+    } 
 
     // if (step < 4) {
     //   setCompletedSteps([...completedSteps, step]);
@@ -57,10 +55,12 @@ function SignUp() {
       setClickableSteps([...clickableSteps, step]);
       setStep(stepNumber);
     }
+
     // if (clickableSteps.includes(stepNumber)) {
     //   setClickableSteps([...clickableSteps, step]);
     //   setStep(stepNumber);
     // }
+    
   };
 
   const steps = [1, 2, 3, 4];
@@ -92,7 +92,7 @@ function SignUp() {
           ))}
         </div>
 
-          {/* improve functionality: CHECK THAT ALL INPUTS ARE VALID/NOT NULL BEFORE SUBMITTING POST REQ */}
+          {/* improve user experience: CHECK THAT ALL INPUTS ARE VALID/NOT NULL BEFORE SUBMITTING POST REQ */}
 
           {/* FORM CONTAINER */}
           <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
@@ -104,24 +104,23 @@ function SignUp() {
 
               <div className = "flex justify-evenly gap-5 pt-10">
               
-              {/* CHANGE PREVIOUS/NEXT BUTTONS TO : CONTINUE (?) */}
-              {/* & REPLACE PREVIOUS/NEXT BUTTON WITH CHEVRONS NEXT TO THE NUMBERS -- IMPORT HEROICONS */}
+              {/* REPLACE PREVIOUS/NEXT BUTTON WITH CHEVRONS NEXT TO THE NUMBERS (?) -- IMPORT HEROICONS */}
 
-                <button
-                  type = "submit"
+                {/* <button
+                  type = "button"
                   // className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 shadow-md transition duration-300 ease-in-out"
                   className = "font-bold border px-14 py-2 bg-secondary-color-light-gray text-primary-color-white hover:bg-primary-color-green hover:cursor-pointer"
                   onClick = {() => setStep(step - 1)}
                   disabled = {step === 1}
                 >
                   Previous
-                </button>
+                </button> */}
                 <button
                   type = "submit"
-                  // className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 shadow-md transition duration-300 ease-in-out"
-                  className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
+                  // className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
+                  className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
                 >
-                  {step === 4 ? "Submit" : "Next"}
+                  {step === 4 ? "Submit" : "Continue"}
                 </button>
               </div>
             </form>
