@@ -3,14 +3,14 @@ package com.example.backend.controller;
 import com.example.backend.model.User;
 import com.example.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
+import java.util.concurrent.CompletableFuture;
 
 @RestController // This annotation marks the class as a RESTful web service controller
 @RequestMapping("/users") // This annotation maps the class to the users endpoint
@@ -27,30 +27,36 @@ public class UsersController {
      * @return newly created user 
      */
     @PostMapping("/signup")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        try {
-            User createdUser = userService.createUser(user);
-            logger.info("User created successfully: {}", createdUser.getUserName());
-            return ResponseEntity.ok(createdUser);
-        } catch (IllegalArgumentException e) {
-            logger.error("Validation errors during user creation: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (RuntimeException e) {
-            logger.error("Error creating user: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public CompletableFuture<ResponseEntity<?>> createUser(@RequestBody User user) {
+        return userService.createUser(user)
+            .<ResponseEntity<?>>thenApply(createdUser -> {
+                logger.info("User created successfully: {}", createdUser.getUserName());
+                return ResponseEntity.ok(createdUser);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof IllegalArgumentException) {
+                    logger.error("Validation errors during user creation: {}", cause.getMessage());
+                    return ResponseEntity.badRequest().body(cause.getMessage());
+                } else {
+                    logger.error("Error creating user: {}", cause.getMessage(), cause);
+                    return ResponseEntity.badRequest().body("An error occurred while creating the user." + cause.getMessage());
+                }
+            });
     }
 
     // Health check endpoint
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
-        try {
-            logger.info("Received request to get all users");
-            List<User> users = userService.getAllUsers();
-            return ResponseEntity.ok(users);
-        } catch (Exception e) {
-            logger.error("Error getting all users", e);
-            return ResponseEntity.internalServerError().body("An error occurred while fetching users");
-        }
+    public CompletableFuture<ResponseEntity<?>> getAllUsers() {
+        return userService.getAllUsers()
+            .<ResponseEntity<?>>thenApply(users -> {
+                logger.info("Successfully fetched {} users!", users.size());
+                return ResponseEntity.ok(users);
+            })
+            .exceptionally(e -> {
+                logger.error("Error getting all users", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching users!");
+            });
     }
 }

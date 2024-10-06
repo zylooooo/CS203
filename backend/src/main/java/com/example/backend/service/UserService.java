@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -13,6 +14,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -23,18 +25,29 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public List<User> getAllUsers() {
-        try {
-            logger.info("Attempting to fetch all users");
-            List<User> users = userRepository.findAll();
-            logger.info("Successfully fetched {} users", users.size());
-            return users;
-        } catch (Exception e) {
-            logger.error("Error fetching all users", e);
-            throw new RuntimeException("Error fetching users", e);
-        }
+    /**
+     * Fetch all the users from the database
+     * @return List of Users
+     */
+    @Async("taskExecutor")
+    public CompletableFuture<List<User>> getAllUsers() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                List<User> users = userRepository.findAll();
+                logger.info("Retrieved {} users", users.size());
+                return users;
+            } catch (Exception e) {
+                logger.error("Error fetching all users", e);
+                throw new RuntimeException("Error fetching users", e);
+            }
+        });
     }
 
+    /**
+     * Fetch a user by their ID
+     * @param id
+     * @return Optional<User>
+     */
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
@@ -45,28 +58,41 @@ public class UserService {
      * @param user
      * @return newly created User
      */
-    public User createUser(User user) {
-        Errors errors = new BeanPropertyBindingResult(user, "user");
-        // Validates the user object against the User model and store it in the errors object
-        validator.validate(user, errors);
+    @Async("taskExecutor")
+    public CompletableFuture<User> createUser(User user) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Errors errors = new BeanPropertyBindingResult(user, "user");
+                validator.validate(user, errors);
+        
+                // Check for email and username uniqueness
+                if (userRepository.existsByEmail(user.getEmail())) {
+                    errors.rejectValue("email", "duplicate.email", "Email already exists");
+                }
+                if (userRepository.existsByUserName(user.getUserName())) {
+                    errors.rejectValue("userName", "duplicate.userName", "Username already exists");
+                }
+        
+                // Add any errors into a list and throw as an exception
+                if (errors.hasErrors()) {
+                    List<String> errorMessages = errors.getAllErrors().stream()
+                            .map(error -> error.getDefaultMessage())
+                            .collect(Collectors.toList());
+                    throw new IllegalArgumentException("Invalid user data: " + String.join(", ", errorMessages));
+                }
 
-        // Check for email and username uniqueness
-        if (userRepository.existsByEmail(user.getEmail())) {
-            errors.rejectValue("email", "duplicate.email", "Email already exists");
-        }
-        if (userRepository.existsByUserName(user.getUserName())) {
-            errors.rejectValue("userName", "duplicate.userName", "Username already exists");
-        }
-
-        // Add any errors into a list and throw as an exception
-        if (errors.hasErrors()) {
-            List<String> errorMessages = errors.getAllErrors().stream()
-                    .map(error -> error.getDefaultMessage())
-                    .collect(Collectors.toList());
-            throw new IllegalArgumentException("Invalid user data: " + String.join(", ", errorMessages));
-        }
-
-        return userRepository.save(user);
+                User createdUser = userRepository.save(user);
+                logger.info("User created successfully: {}", createdUser.getUserName());
+                return createdUser;
+            } catch (IllegalArgumentException e) {
+                // Throw the exception with the original message to be handled by the controller
+                logger.error("Validation errors during user creation: {}", e.getMessage(), e);
+                throw new IllegalArgumentException(e.getMessage(), e);
+            } catch (Exception e) {
+                logger.error("Error creating user: " + e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        });
     }
 
     public User updateUser(String id, User userDetails) {
