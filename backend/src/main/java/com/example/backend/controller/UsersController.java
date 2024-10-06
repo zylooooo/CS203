@@ -22,9 +22,18 @@ public class UsersController {
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     /**
-     * Router to create a new user and updates the user details in the database
-     * @param user
-     * @return newly created user 
+     * Asynchronously creates a new user and updates the user details in the database.
+     *
+     * This method handles the HTTP POST request to the "/signup" endpoint. It validates the user data
+     * and checks for any existing users with the same email or username. If validation fails, it returns
+     * a bad request response with the validation error messages. If the user is created successfully,
+     * it returns a success response with the created user details.
+     *
+     * @param user the User object containing the details of the user to be created.
+     * @return a CompletableFuture containing a ResponseEntity. If the user is created successfully,
+     *         it returns a ResponseEntity with HTTP status 200 (OK) and the created user. If there are
+     *         validation errors or other issues, it returns a ResponseEntity with HTTP status 400 (Bad Request)
+     *         and the corresponding error message.
      */
     @PostMapping("/signup")
     public CompletableFuture<ResponseEntity<?>> createUser(@RequestBody User user) {
@@ -45,7 +54,7 @@ public class UsersController {
             });
     }
 
-    // Health check endpoint
+    // Async health check endpoint to get all the users
     @GetMapping
     public CompletableFuture<ResponseEntity<?>> getAllUsers() {
         return userService.getAllUsers()
