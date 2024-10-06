@@ -13,38 +13,6 @@ const Step4 = ({ register, errors, watch }) => {
             <p> Last stage of your account registration! Please enter a username and password </p>
             <div className = "flex flex-col gap-5 mt-8">
 
-                {/* USERNAME INPUT */}
-                <div className = "flex flex-col gap-2">
-                    <label
-                        htmlFor = "username"
-                        className = "block text-sm font-medium text-gray-700"
-                    >
-                        Username
-                    </label>
-                    <input
-                        className = "border p-2"
-                        type = "text"
-                        id = "username"
-                        placeholder = "Enter your RallyRank username"
-                        {...register("username", {
-                            required: "A username is required.",
-                            minLength: {
-                                value: 5, 
-                                message: "Username must be at least 5 characters long",
-                            },
-                            maxLength: {
-                                value: 20,
-                                message: "Username cannot exceed 20 characters.",
-                            },
-                            pattern: {
-                                value: /^[a-zA-Z0-9_]*$/,
-                                message: "Username can only contain letters, numbers and underscores.",
-                            },
-                        })}
-                    />
-                    <p className = "error"> {errors.username?.message} </p>
-                </div>
-
                 {/* PASSWORD */}
                 <div className = "flex flex-col gap-2">
                     <label
