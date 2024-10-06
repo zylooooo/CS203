@@ -26,11 +26,15 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
-     * Fetch all the users from the database
-     * @return List of Users
+     * Fetch all the users from the database asynchronously.
+     *
+     * @return a CompletableFuture containing a list of Users. The list will be
+     *         empty if no users are found.
+     * @throws RuntimeException if there is an error fetching users from the
+     *                          database.
      */
     @Async("taskExecutor")
-    public CompletableFuture<List<User>> getAllUsers() {
+    public CompletableFuture<List<User>> getAllUsers() throws RuntimeException {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 List<User> users = userRepository.findAll();
@@ -45,6 +49,7 @@ public class UserService {
 
     /**
      * Fetch a user by their ID
+     * 
      * @param id
      * @return Optional<User>
      */
@@ -53,18 +58,24 @@ public class UserService {
     }
 
     /**
-     * Creating a new user
-     * Check for valid user detials input and at the same time check for uniqueness of the email and username
-     * @param user
-     * @return newly created User
+     * Create a new user in the database asynchronously.
+     * This method performs validation on the user data and checks for the
+     * uniqueness of the email and username.
+     *
+     * @param user the User object containing the details of the user to be created.
+     * @return a CompletableFuture containing the newly created User.
+     * @throws IllegalArgumentException if the user data is invalid or if the email
+     *                                  or username already exists for the controller to handle
+     * @throws RuntimeException         if there is an unexpected error during user
+     *                                  creation for the controller to handle
      */
     @Async("taskExecutor")
-    public CompletableFuture<User> createUser(User user) {
+    public CompletableFuture<User> createUser(User user) throws IllegalArgumentException, RuntimeException {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Errors errors = new BeanPropertyBindingResult(user, "user");
                 validator.validate(user, errors);
-        
+
                 // Check for email and username uniqueness
                 if (userRepository.existsByEmail(user.getEmail())) {
                     errors.rejectValue("email", "duplicate.email", "Email already exists");
@@ -72,7 +83,7 @@ public class UserService {
                 if (userRepository.existsByUserName(user.getUserName())) {
                     errors.rejectValue("userName", "duplicate.userName", "Username already exists");
                 }
-        
+
                 // Add any errors into a list and throw as an exception
                 if (errors.hasErrors()) {
                     List<String> errorMessages = errors.getAllErrors().stream()
