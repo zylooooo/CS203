@@ -46,9 +46,12 @@ public class User {
     @Past(message = "Date of birth must be in the past!")
     private LocalDate dateOfBirth;
 
+    @NotNull(message = "Age is required!")
+    @Min(value = 0, message = "Age must be greater than 0!")
+    private int age;
+
     private List<String> participatedTournaments;
 
-    @NotNull(message = "Medical information is required!")
     @Valid
     private MedicalInformation medicalInformation;
 
@@ -66,8 +69,7 @@ public class User {
 
     private boolean isAvailable;
     
-    // Create an empty list of strike reports when the user is created
-    private List<StrikeReport> strikeReport = new ArrayList<>();
+    private List<StrikeReport> strikeReport;
 
     @Data
     @NoArgsConstructor
@@ -88,8 +90,10 @@ public class User {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class StrikeReport {
+        @NotNull(message = "Report details is required!")
         private String reportDetails;
         private String dateCreated;
+        @NotNull(message = "Admin Name is required!")
         private String issuedBy;
     }
 }
