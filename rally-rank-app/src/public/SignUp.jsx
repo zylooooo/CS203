@@ -14,10 +14,10 @@ function SignUp() {
   const [completedSteps, setCompletedSteps] = useState([]); // completed steps, displayed as green
 
   const stepFields = {
-    1: ["email"],
+    1: ["email", "username"],
     2: ["firstName", "lastName", "gender", "dob", "phone"],
     3: ["elo", "yearsOfExperience"],
-    4: ["username", "password", "confirmPassword"],
+    4: ["password", "confirmPassword"],
   };
 
   const onSubmit = async (data) => {
