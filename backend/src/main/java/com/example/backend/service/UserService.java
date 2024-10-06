@@ -13,8 +13,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 
@@ -50,13 +49,37 @@ public class UserService {
     }
 
     /**
-     * Fetch a user by their ID
-     * 
-     * @param id
-     * @return Optional<User>
+     * Asynchronously checks if the provided username exists in the database.
+     *
+     * @param userName the username to check
+     * @return a CompletableFuture containing true if the username exists, false otherwise
+     * @throws IllegalArgumentException if the username is null or empty
      */
-    public Optional<User> getUserById(String id) {
-        return userRepository.findById(id);
+    @Async("taskExecutor")
+    public CompletableFuture<Boolean> checkIfUserNameExists(String userName) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (userName == null || userName.isEmpty()) {
+                throw new IllegalArgumentException("Username must be provided!");
+            }
+            return userRepository.existsByUserName(userName);
+        });
+    }
+    
+    /**
+     * Asynchronously checks if the provided email exists in the database.
+     *
+     * @param email the email to check
+     * @return a CompletableFuture containing true if the email exists, false otherwise
+     * @throws IllegalArgumentException if the email is null or empty
+     */
+    @Async("taskExecutor")
+    public CompletableFuture<Boolean> checkIfEmailExists(String email) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (email == null || email.isEmpty()) {
+                throw new IllegalArgumentException("Email must be provided!");
+            }
+            return userRepository.existsByEmail(email);
+        });
     }
 
     /**
@@ -109,38 +132,20 @@ public class UserService {
         });
     }
 
-    // public User updateUser(String id, User userDetails) {
-    // User user = userRepository.findById(id)
-    // .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-    // if (!user.getEmail().equals(userDetails.getEmail()) &&
-    // userRepository.existsByEmail(userDetails.getEmail())) {
-    // throw new RuntimeException("Email already exists");
-    // }
-    // if (!user.getUserName().equals(userDetails.getUserName())
-    // && userRepository.existsByUserName(userDetails.getUserName())) {
-    // throw new RuntimeException("Username already exists");
-    // }
-
-    // user.setEmail(userDetails.getEmail());
-    // user.setPassword(userDetails.getPassword());
-    // user.setPhoneNumber(userDetails.getPhoneNumber());
-    // user.setElo(userDetails.getElo());
-    // user.setGender(userDetails.getGender());
-    // user.setDateOfBirth(userDetails.getDateOfBirth());
-    // user.setParticipatedTournaments(userDetails.getParticipatedTournaments());
-    // user.setMedicalInformation(userDetails.getMedicalInformation());
-    // user.setProfilePic(userDetails.getProfilePic());
-    // user.setUserName(userDetails.getUserName());
-    // user.setFirstName(userDetails.getFirstName());
-    // user.setLastName(userDetails.getLastName());
-    // user.setAvailable(userDetails.isAvailable());
-    // user.setStrikeReport(userDetails.getStrikeReport());
-
-    // return userRepository.save(user);
-    // }
-
-    // Service to update user details
+    /**
+     * Asynchronously updates a user's details based on the provided user name
+     * 
+     * This method retrieves the user, validates the new details, and updates the user's information.
+     * The strikeReport and participatedTournaments field are intentionally left out becuase the users should not be able to update that.
+     * It returns an updated User Object.
+     * 
+     * @param userName
+     * @param newUserDetails
+     * @return a CompletableFuture with the updated User Object
+     * @throws UserNotFoundException
+     * @throws IllegalArgumentException
+     * @throws RuntimeException
+     */
     @Async("taskExecutor")
     public CompletableFuture<User> updateUser(String userName, User newUserDetails)
             throws UserNotFoundException, IllegalArgumentException, RuntimeException {
@@ -176,15 +181,13 @@ public class UserService {
                 user.setElo(newUserDetails.getElo());
                 user.setGender(newUserDetails.getGender());
                 user.setDateOfBirth(newUserDetails.getDateOfBirth());
-                user.setParticipatedTournaments(newUserDetails.getParticipatedTournaments());
                 user.setMedicalInformation(newUserDetails.getMedicalInformation());
                 user.setProfilePic(newUserDetails.getProfilePic());
                 user.setUserName(newUserDetails.getUserName());
                 user.setFirstName(newUserDetails.getFirstName());
                 user.setLastName(newUserDetails.getLastName());
                 user.setAvailable(newUserDetails.isAvailable());
-                user.setStrikeReport(newUserDetails.getStrikeReport());
-
+                
                 logger.info("User updated successfully: {}", userName);
                 return userRepository.save(user);
             } catch (IllegalArgumentException e) {
