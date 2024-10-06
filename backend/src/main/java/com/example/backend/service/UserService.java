@@ -2,6 +2,8 @@ package com.example.backend.service;
 
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.exception.UserNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +67,8 @@ public class UserService {
      * @param user the User object containing the details of the user to be created.
      * @return a CompletableFuture containing the newly created User.
      * @throws IllegalArgumentException if the user data is invalid or if the email
-     *                                  or username already exists for the controller to handle
+     *                                  or username already exists for the
+     *                                  controller to handle
      * @throws RuntimeException         if there is an unexpected error during user
      *                                  creation for the controller to handle
      */
@@ -106,34 +109,92 @@ public class UserService {
         });
     }
 
-    public User updateUser(String id, User userDetails) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    // public User updateUser(String id, User userDetails) {
+    // User user = userRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        if (!user.getEmail().equals(userDetails.getEmail()) && userRepository.existsByEmail(userDetails.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
-        if (!user.getUserName().equals(userDetails.getUserName())
-                && userRepository.existsByUserName(userDetails.getUserName())) {
-            throw new RuntimeException("Username already exists");
-        }
+    // if (!user.getEmail().equals(userDetails.getEmail()) &&
+    // userRepository.existsByEmail(userDetails.getEmail())) {
+    // throw new RuntimeException("Email already exists");
+    // }
+    // if (!user.getUserName().equals(userDetails.getUserName())
+    // && userRepository.existsByUserName(userDetails.getUserName())) {
+    // throw new RuntimeException("Username already exists");
+    // }
 
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
-        user.setPhoneNumber(userDetails.getPhoneNumber());
-        user.setElo(userDetails.getElo());
-        user.setGender(userDetails.getGender());
-        user.setDateOfBirth(userDetails.getDateOfBirth());
-        user.setParticipatedTournaments(userDetails.getParticipatedTournaments());
-        user.setMedicalInformation(userDetails.getMedicalInformation());
-        user.setProfilePic(userDetails.getProfilePic());
-        user.setUserName(userDetails.getUserName());
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setAvailable(userDetails.isAvailable());
-        user.setStrikeReport(userDetails.getStrikeReport());
+    // user.setEmail(userDetails.getEmail());
+    // user.setPassword(userDetails.getPassword());
+    // user.setPhoneNumber(userDetails.getPhoneNumber());
+    // user.setElo(userDetails.getElo());
+    // user.setGender(userDetails.getGender());
+    // user.setDateOfBirth(userDetails.getDateOfBirth());
+    // user.setParticipatedTournaments(userDetails.getParticipatedTournaments());
+    // user.setMedicalInformation(userDetails.getMedicalInformation());
+    // user.setProfilePic(userDetails.getProfilePic());
+    // user.setUserName(userDetails.getUserName());
+    // user.setFirstName(userDetails.getFirstName());
+    // user.setLastName(userDetails.getLastName());
+    // user.setAvailable(userDetails.isAvailable());
+    // user.setStrikeReport(userDetails.getStrikeReport());
 
-        return userRepository.save(user);
+    // return userRepository.save(user);
+    // }
+
+    // Service to update user details
+    @Async("taskExecutor")
+    public CompletableFuture<User> updateUser(String userName, User newUserDetails)
+            throws UserNotFoundException, IllegalArgumentException, RuntimeException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                User user = userRepository.findByUserName(userName)
+                        .orElseThrow(() -> new UserNotFoundException(userName));
+
+                // Check if the newUserDetails has valid inputs
+                Errors errors = new BeanPropertyBindingResult(newUserDetails, "user");
+                validator.validate(newUserDetails, errors);
+
+                if (!user.getEmail().equals(newUserDetails.getEmail())
+                        && userRepository.existsByEmail(newUserDetails.getEmail())) {
+                    errors.rejectValue("email", "duplicate.email", "Email already exists");
+                }
+                if (!user.getUserName().equals(newUserDetails.getUserName())
+                        && userRepository.existsByUserName(user.getUserName())) {
+                    errors.rejectValue("userName", "duplicate.userName", "Username already exists");
+                }
+
+                if (errors.hasErrors()) {
+                    List<String> errorMessages = errors.getAllErrors().stream()
+                            .map(error -> error.getDefaultMessage())
+                            .collect(Collectors.toList());
+                    throw new IllegalArgumentException("Invalid user data: " + String.join(", ", errorMessages));
+                }
+
+                // Update the user details
+                user.setEmail(newUserDetails.getEmail());
+                user.setPassword(newUserDetails.getPassword());
+                user.setPhoneNumber(newUserDetails.getPhoneNumber());
+                user.setElo(newUserDetails.getElo());
+                user.setGender(newUserDetails.getGender());
+                user.setDateOfBirth(newUserDetails.getDateOfBirth());
+                user.setParticipatedTournaments(newUserDetails.getParticipatedTournaments());
+                user.setMedicalInformation(newUserDetails.getMedicalInformation());
+                user.setProfilePic(newUserDetails.getProfilePic());
+                user.setUserName(newUserDetails.getUserName());
+                user.setFirstName(newUserDetails.getFirstName());
+                user.setLastName(newUserDetails.getLastName());
+                user.setAvailable(newUserDetails.isAvailable());
+                user.setStrikeReport(newUserDetails.getStrikeReport());
+
+                logger.info("User updated successfully: {}", userName);
+                return userRepository.save(user);
+            } catch (IllegalArgumentException e) {
+                logger.error("Validation errors during user update: {}", e.getMessage(), e);
+                throw new IllegalArgumentException(e.getMessage(), e);
+            } catch (Exception e) {
+                logger.error("Unexpected error during user update: {}", e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        });
     }
 
     public void deleteUser(String id) {
