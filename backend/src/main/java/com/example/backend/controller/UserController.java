@@ -44,11 +44,11 @@ public class UserController {
     //     return userService.createUser(user);
     // }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
-        return ResponseEntity.ok(updatedUser);
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
+    //     User updatedUser = userService.updateUser(id, userDetails);
+    //     return ResponseEntity.ok(updatedUser);
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
