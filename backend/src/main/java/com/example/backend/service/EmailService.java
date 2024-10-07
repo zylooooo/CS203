@@ -6,6 +6,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.MailException;
+import org.springframework.scheduling.annotation.Async;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EmailService {
@@ -16,7 +19,8 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    public boolean sendOtpEmail(String to, String otp) {
+    @Async("otpExecutor")
+    public CompletableFuture<Boolean> sendOtpEmail(String to, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(to);
@@ -24,10 +28,10 @@ public class EmailService {
         message.setText("Your OTP is: " + otp + ". This OTP will expire in 5 minutes.");
         try {
             mailSender.send(message);
-            return true;
+            return CompletableFuture.completedFuture(true);
         } catch (MailException e) {
             System.err.println("Failed to send email: " + e.getMessage());
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
     }
 }
