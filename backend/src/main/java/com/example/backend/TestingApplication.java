@@ -8,11 +8,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication
+@EnableAsync
 @ComponentScan(basePackages = "com.example.backend")
 public class TestingApplication {
 
