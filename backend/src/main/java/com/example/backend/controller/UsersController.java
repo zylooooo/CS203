@@ -155,6 +155,22 @@ public class UsersController {
                 });
     }
 
+    // Synchronous method to display the user profile
+    @GetMapping("/{userName}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String userName) {
+        try {
+            User user = userService.getUserByUsername(userName);
+            logger.info("User profile retrieved successfully: {}", userName);
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", userName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving user profile: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred while retrieving the user profile!");
+        }
+    }
+
     @PutMapping("/{userName}/update")
     public CompletableFuture<ResponseEntity<?>> updateUser(@PathVariable String userName, @RequestBody User newUserDetails) {
         return userService.updateUser(userName, newUserDetails)
