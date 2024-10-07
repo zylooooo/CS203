@@ -50,7 +50,8 @@ public class SecurityConfig {
                 .permitAll())
             .logout(logout -> logout
                 .permitAll())
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/otp/send"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/login", "/otp/send", "/otp/verify")); // FOR TESTING
+            // .csrf(csrf -> csrf.ignoringRequestMatchers("/otp/send"));
 
         return http.build();
     }
