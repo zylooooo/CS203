@@ -5,6 +5,7 @@ import com.example.backend.service.EmailService;
 import com.example.backend.service.OtpService;
 import com.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,12 +28,12 @@ public class OtpController {
     private UserService userService;
 
     @GetMapping("/verify")
-    public String showOtpVerificationPage() {
-        return "otp-verification";
+    public ResponseEntity<?> showOtpVerificationPage() {
+        return ResponseEntity.ok().body(Map.of("message", "Please enter your OTP"));
     }
 
     @PostMapping("/verify")
-    public String verifyOtp(@RequestParam String otp, HttpSession session, Authentication authentication, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<?> verifyOtp(@RequestParam String otp, HttpSession session, Authentication authentication) {
         String username = authentication.getName();
         System.out.println("Verifying OTP for user: " + username);
         if (otpService.validateOTP(username, otp)) {
@@ -40,14 +41,13 @@ public class OtpController {
             session.removeAttribute("needOtpVerification");
             session.setAttribute("otpVerified", true);
             if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                return "redirect:/admin/home";
+                return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/admin/home"));
             } else {
-                return "redirect:/user/home";
+                return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/user/home"));
             }
         } else {
             System.out.println("OTP verification failed for user: " + username);
-            redirectAttributes.addFlashAttribute("error", "Invalid OTP. Please try again.");
-            return "redirect:/otp/verify";
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid OTP. Please try again."));
         }
     }
 
@@ -57,7 +57,11 @@ public class OtpController {
         String username = authentication.getName();
         String email = userService.getUserByUsername(username).getEmail();
         String otp = otpService.generateOTP(username);
-        emailService.sendOtpEmail(email, otp);
-        return ResponseEntity.ok().body(Map.of("message", "OTP sent successfully. It will expire in 5 minutes."));
+        boolean emailSent = emailService.sendOtpEmail(email, otp);
+        if (emailSent) {
+            return ResponseEntity.ok().body(Map.of("message", "OTP sent successfully. It will expire in 5 minutes."));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP. Please try again."));
+        }
     }
 }
