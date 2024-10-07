@@ -45,9 +45,9 @@ public class OtpController {
                 session.removeAttribute("needOtpVerification");
                 session.setAttribute("otpVerified", true);
                 if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                    return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/admin/home"));
+                    return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/admins/home"));
                 } else {
-                    return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/user/home"));
+                    return ResponseEntity.ok().body(Map.of("message", "OTP verified successfully", "redirect", "/users/home"));
                 }
             } else {
                 System.out.println("OTP verification failed for user: " + username);

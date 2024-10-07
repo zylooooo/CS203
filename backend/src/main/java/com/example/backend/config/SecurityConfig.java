@@ -44,8 +44,8 @@ public class SecurityConfig {
             .addFilterAfter(new OtpVerificationFilter(), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/login", "/otp/verify", "/otp/send", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasRole("USER")
+                .requestMatchers("/admins/**").hasRole("ADMIN")
+                .requestMatchers("/users/**").hasRole("USER")
                 .anyRequest().authenticated())
             .formLogin(login -> login
                 .loginPage("/login")
