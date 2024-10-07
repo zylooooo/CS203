@@ -18,9 +18,9 @@ public class HomeController {
                 return "redirect:" + referer;
             } else {
                 if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-                    return "redirect:/admin/home";
+                    return "redirect:/admins/home";
                 } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-                    return "redirect:/user/home";
+                    return "redirect:/users/home";
                 }
             }
         }
