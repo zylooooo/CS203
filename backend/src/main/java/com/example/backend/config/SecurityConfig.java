@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,21 +38,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterAfter(new OtpVerificationFilter(), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/login").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/login", "/otp/verify", "/otp/send", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasRole("USER")
-                .requestMatchers("/users/**").hasRole("USER")
                 .anyRequest().authenticated())
             .formLogin(login -> login
                 .loginPage("/login")
                 .successHandler(customSuccessHandler())
                 .permitAll())
             .logout(logout -> logout
-                .permitAll());
+                .permitAll())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/otp/send"));
 
-        // http.csrf().disable(); // For testing purposes only!!!
         return http.build();
     }
 
