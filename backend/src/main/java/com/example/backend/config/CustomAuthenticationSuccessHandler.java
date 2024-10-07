@@ -42,7 +42,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         session.setAttribute("needOtpVerification", true);
 
         try {
-            String otp = otpFuture.get();
+            // String otp = otpFuture.get();
             boolean emailSent = emailSentFuture.get();
             if (emailSent) {
                 response.sendRedirect("/otp/verify");
