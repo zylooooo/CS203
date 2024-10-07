@@ -19,7 +19,8 @@ public class TestingApplication {
 	// List of environment variables to load
 	private static final String[] ENV_VARS = {
 		"MONGODB_URI", "SPRING_SECURITY_USER", "SPRING_SECURITY_USER_PASSWORD",
-		"SPRING_SECURITY_ADMIN", "SPRING_SECURITY_ADMIN_PASSWORD"
+		"SPRING_SECURITY_ADMIN", "SPRING_SECURITY_ADMIN_PASSWORD",
+		"SPRING_MAIL_USERNAME", "SPRING_MAIL_PASSWORD"
 	};
 
 	public static void main(String[] args) {

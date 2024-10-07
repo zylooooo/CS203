@@ -39,6 +39,11 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     /**
      * Creating a new user
      * Check for valid user detials input and at the same time check for uniqueness of the email and username
