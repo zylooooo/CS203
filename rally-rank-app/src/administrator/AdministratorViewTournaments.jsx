@@ -5,108 +5,90 @@ import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
 // Replace with API call
 const allTournaments = [
-    {
-      name: "Tournament 3",
-      organizerProfilePicture: profilePictureTest1,
-      organizerName: "Puff Diddy",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 4",
-      organizerProfilePicture: profilePictureTest2,
-      organizerName: "Justin Beiber",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 3",
-      organizerProfilePicture: profilePictureTest1,
-      organizerName: "Puff Diddy",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 4",
-      organizerProfilePicture: profilePictureTest2,
-      organizerName: "Justin Beiber",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 3",
-      organizerProfilePicture: profilePictureTest1,
-      organizerName: "Puff Diddy",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 4",
-      organizerProfilePicture: profilePictureTest2,
-      organizerName: "Justin Beiber",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-  ];
+  {
+    name: "Tournament 1",
+    organizerProfilePicture: profilePictureTest1,
+    organizerName: "Puff Diddy",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+  {
+    name: "Tournament 2",
+    organizerProfilePicture: profilePictureTest2,
+    organizerName: "Justin Beiber",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+  {
+    name: "Tournament 3",
+    organizerProfilePicture: profilePictureTest1,
+    organizerName: "Puff Diddy",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+  {
+    name: "Tournament 4",
+    organizerProfilePicture: profilePictureTest2,
+    organizerName: "Justin Beiber",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+];
 
-  // Replace with API call
+// Replace with API call
 const myTournaments = [
-    {
-      name: "Tournament 5",
-      organizerProfilePicture: profilePictureTest1,
-      organizerName: "Puff Diddy",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 6",
-      organizerProfilePicture: profilePictureTest2,
-      organizerName: "Justin Beiber",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-  ];
+  {
+    name: "Tournament 5",
+    organizerProfilePicture: profilePictureTest1,
+    organizerName: "Puff Diddy",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+  {
+    name: "Tournament 6",
+    organizerProfilePicture: profilePictureTest2,
+    organizerName: "Justin Beiber",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+];
 
-  // Replace with API call
-  const draftTournaments = [
-    {
-      name: "Tournament 1",
-      organizerProfilePicture: profilePictureTest1,
-      organizerName: "Puff Diddy",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-    {
-      name: "Tournament 2",
-      organizerProfilePicture: profilePictureTest2,
-      organizerName: "Justin Beiber",
-      startDate: "03/09/2024",
-      endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
-      venue: "Choa Chu Kang Stadium, Singapore 689236",
-    },
-  ];
+// Replace with API call
+const draftTournaments = [
+  {
+    name: "Tournament 7",
+    organizerProfilePicture: profilePictureTest1,
+    organizerName: "Puff Diddy",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+  {
+    name: "Tournament 8",
+    organizerProfilePicture: profilePictureTest2,
+    organizerName: "Justin Beiber",
+    startDate: "03/09/2024",
+    endDate: "17/09/2024",
+    eloRatingRange: "1200 - 1500",
+    venue: "Choa Chu Kang Stadium, Singapore 689236",
+  },
+];
 
 // Define the Tournaments component - format to display tournaments
-const Tournaments = ({ tournamentTest }) => {
+const Tournaments = ({ tournamentTest, onEditClick, isMyTournaments }) => {
   return (
     <div className="tournaments-list flex flex-col space-y-8">
       {tournamentTest.map((tournament, index) => (
@@ -139,6 +121,15 @@ const Tournaments = ({ tournamentTest }) => {
             <p className="text-gray-600 font-semibold">Venue</p>
             <p className="text-gray-500">{tournament.venue}</p>
           </div>
+          {/* Show the edit button only for tournaments in the My Tournaments tab */}
+          {isMyTournaments && onEditClick && (
+            <button
+              onClick={() => onEditClick(tournament.name)}
+              className="edit-tournament-button bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 shadow-md transition duration-300 ease-in-out ml-4"
+            >
+              Edit Tournament
+            </button>
+          )}
         </div>
       ))}
     </div>
@@ -161,33 +152,42 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick, onDraftsClick }) =
   };
 
   return (
-      <div className = "tournaments-buttons flex gap-5">
-          {buttons.map((buttonLabel, index) => (
-              <button 
-                  key = {index}
-                  className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'text-gray-700 hover:text-blue-500 hover:text-red-500'}`} 
-                  onClick = {() => handleButtonClick(index)}>
-                      {buttonLabel}
-              </button>
-          ))}
-      </div>
+    <div className="tournaments-buttons flex gap-5">
+      {buttons.map((buttonLabel, index) => (
+        <button
+          key={index}
+          className={`btn transition-colors duration-300 ${
+            activeButton === index
+              ? "active-button underline"
+              : "text-gray-700 hover:text-blue-500 hover:text-red-500"
+          }`}
+          onClick={() => handleButtonClick(index)}
+        >
+          {buttonLabel}
+        </button>
+      ))}
+    </div>
   );
-}
+};
 
 // Define the AdministratorTournaments component
 function AdministratorTournaments() {
   const [tournamentTest, setTournamentTest] = useState(allTournaments);
+  const [isMyTournaments, setIsMyTournaments] = useState(false); // State to track if we are viewing My Tournaments
 
   const handleAllClick = () => {
     setTournamentTest(allTournaments);
+    setIsMyTournaments(false); // Set to false for All Tournaments
   };
 
   const handleMyClick = () => {
     setTournamentTest(myTournaments);
+    setIsMyTournaments(true); // Set to true for My Tournaments
   };
 
   const handleDraftsClick = () => {
     setTournamentTest(draftTournaments);
+    setIsMyTournaments(false); // Set to false for Drafts
   };
 
   const navigate = useNavigate();
@@ -196,45 +196,52 @@ function AdministratorTournaments() {
     navigate("/administrator-create-tournaments");
   };
 
-  return (
-    <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
-      <div className = "row-container flex flex-col w-full p-14 gap-8">
+  const handleEditClick = (tournamentName) => {
+    // Navigate to the edit page with the tournament name or id as a parameter
+    navigate(`/administrator-edit-tournaments/${tournamentName}`);
+  };
 
+  return (
+    <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
+      <div className="row-container flex flex-col w-full p-14 gap-8">
         {/* LABELS */}
         <TournamentsButtons
-            buttons={["All Tournaments", "My Tournaments", "Tournament Drafts"]}
-            onAllClick={handleAllClick}
-            onMyClick={handleMyClick}
-            onDraftsClick={handleDraftsClick}
-          />
-
+          buttons={["All Tournaments", "My Tournaments", "Tournament Drafts"]}
+          onAllClick={handleAllClick}
+          onMyClick={handleMyClick}
+          onDraftsClick={handleDraftsClick}
+        />
 
         {/* SEARCH BAR */}
-        <div className = "tournaments-search-bar flex gap-3">
+        <div className="tournaments-search-bar flex gap-3">
           <input
-            className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
-            placeholder = "Search tournaments..."
+            placeholder="Search tournaments..."
           />
-          <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+          <button className="border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
             Search
           </button>
         </div>
 
-        {/* TOURNAMENTS LIST */}
-        <Tournaments tournamentTest={tournamentTest} />
-      </div>
+        {/* TOURNAMENT LISTS */}
+        <Tournaments tournamentTest={tournamentTest} onEditClick={handleEditClick} isMyTournaments={isMyTournaments} />
 
-      <div className = "create-tournament-btn fixed right-11 bottom-11 ">
-        {/* Sign Up Button */}
-        <button 
-            onClick = {handleCreateClick}
-            className = "create-tournament-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 shadow-md transition duration-300 ease-in-out">
-                Create Tournament
-        </button>
+        {/* BUTTONS AT THE BOTTOM */}
+        <div className="tournament-actions flex justify-end">
+          <button
+            onClick={handleCreateClick}
+            className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 shadow-md transition duration-300 ease-in-out"
+          >
+            Create Tournament
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default AdministratorTournaments;
+
+
+

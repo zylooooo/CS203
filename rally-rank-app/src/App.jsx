@@ -8,6 +8,7 @@ import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
+import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments"; // Import the new component
 
 // Component imports
 import MainLayout from "./components/MainLayout"
@@ -17,13 +18,11 @@ import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
 import SignUp from "./public/SignUp"
 
-
 // User imports
 import UserHome from "./user/UserHome";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
-
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
@@ -43,50 +42,50 @@ function App() {
                     {/* Public Routes */}
                     {/* MainHomepage */}
                     <Route 
-                        path = "/"
-                        element = {
+                        path="/"
+                        element={
                             <MainLayout>
-                                <MainHomepage/>
+                                <MainHomepage />
                             </MainLayout>
                         }
                     />
 
                     {/* News */}
                     <Route 
-                        path = "/news"
-                        element = {
+                        path="/news"
+                        element={
                             <MainLayout>
-                                <News/>
+                                <News />
                             </MainLayout>
                         }
                     />
 
                     {/* SignUp */}
                     <Route 
-                        path = "/sign-up"
-                        element = {
+                        path="/sign-up"
+                        element={
                             <MainLayout>
-                                <SignUp/>
+                                <SignUp />
                             </MainLayout>
                         }
                     />
 
                     {/* UserLogin */}
                     <Route 
-                        path = "/user-login"
-                        element = {
+                        path="/user-login"
+                        element={
                             <MainLayout>
-                                <UserLogin/>
+                                <UserLogin />
                             </MainLayout>
                         }
                     />
 
                     {/* AdministratorLogin */}
                     <Route 
-                        path = "/administrator-login"
-                        element = {
+                        path="/administrator-login"
+                        element={
                             <MainLayout>
-                                <AdministratorLogin/>
+                                <AdministratorLogin />
                             </MainLayout>
                         }
                     />
@@ -159,6 +158,18 @@ function App() {
                         }
                     />
 
+                    {/* New Route for Editing Tournaments */}
+                    <Route
+                        path="/administrator-edit-tournaments/:tournamentName" // Updated to include a parameter
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorEditTournaments />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
                     {/* Fallback Route */}
                     <Route
                         path="*"
@@ -175,3 +186,4 @@ function App() {
 }
 
 export default App;
+
