@@ -48,6 +48,28 @@ public class UsersController {
     }
 
     /**
+     * Retrieves the user profile based on the user name
+     * @param userName the username of the user to retrieve, must not be null or empty
+     * @return the user object associated with the specified username
+     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws RuntimeException if there is an unexpected error during the retrieval process
+     */
+    @GetMapping("/{userName}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String userName) {
+        try {
+            User user = userService.getUserByUsername(userName);
+            logger.info("User profile retrieved successfully: {}", userName);
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", userName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error retrieving user profile: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while retrieving the user profile!"));
+        }
+    }
+
+    /**
      * Asynchronously checks the availability of a username and/or email.
      * 
      * This method checks if username and/or email are available for sign up purposes.
@@ -164,28 +186,6 @@ public class UsersController {
     }
 
     /**
-     * Retrieves the user profile based on the user name
-     * @param userName the username of the user to retrieve, must not be null or empty
-     * @return the user object associated with the specified username
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the retrieval process
-     */
-    @GetMapping("/{userName}")
-    public ResponseEntity<?> getUserProfile(@PathVariable String userName) {
-        try {
-            User user = userService.getUserByUsername(userName);
-            logger.info("User profile retrieved successfully: {}", userName);
-            return ResponseEntity.ok(user);
-        } catch (UserNotFoundException e) {
-            logger.error("User not found: {}", userName);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Error retrieving user profile: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while retrieving the user profile!"));
-        }
-    }
-
-    /**
      * Updates the user details based on the user name
      * @param userName the username of the user to update, must not be null or empty
      * @param newUserDetails the new details of the user to be updated
@@ -238,6 +238,26 @@ public class UsersController {
         }
     }
 
+    // Async router to delete users
+    @DeleteMapping("/{userName}/delete")
+    public CompletableFuture<ResponseEntity<?>> deleteUser(@PathVariable String userName) {
+        return userService.deleteUser(userName)
+            .<ResponseEntity<?>>thenApply(v -> {
+                logger.info("User deleted successfully: {}", userName);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body((Map.of("message", "User deleted successfully!")));
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof UserNotFoundException) {
+                    logger.error("User not found: {}", userName);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error during user deletion: {}", cause.getMessage(), cause);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while deleting the user!"));
+                }
+            });
+    }
+    
     @PostMapping("/login")
     public CompletableFuture<ResponseEntity<Map<String, String>>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         return userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword())

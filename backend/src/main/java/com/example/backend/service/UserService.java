@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
 import com.example.backend.model.User;
+import com.example.backend.model.Tournament;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.TournamentRepository;
 import com.example.backend.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,9 @@ import java.util.concurrent.CompletableFuture;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TournamentRepository tournamentRepository;
+    private final TournamentService tournamentService;
+
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
 
@@ -237,8 +242,36 @@ public class UserService {
         }
     }
 
-    public void deleteUser(String id) {
-        userRepository.deleteById(id);
+    // Async service to delete users from the user database as well as the upcoming tournaments that they are participating in
+    @Async("taskExecutor")
+    public CompletableFuture<Void> deleteUser(String userName) throws UserNotFoundException, RuntimeException {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                User user = userRepository.findByUserName(userName)
+                    .orElseThrow(() -> new UserNotFoundException(userName));
+                    
+                List<Tournament> tournaments = tournamentService.getOngoingTournaments().get();
+
+                for (Tournament tournament : tournaments) {
+                    tournament.getPlayersPool().remove(userName);
+
+                    for (Tournament.Match match : tournament.getMatches()) {
+                        match.getPlayers().remove(userName);
+                    }
+
+                    tournamentRepository.save(tournament);
+                }
+
+                userRepository.delete(user);
+                logger.info("User deleted successfully: {}", userName);
+            } catch (UserNotFoundException e) {
+                logger.error("User not Found: {}", userName);
+                throw e;
+            } catch (Exception e) {
+                logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        });
     }
 
     @Async("taskExecutor")
