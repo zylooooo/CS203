@@ -5,6 +5,7 @@ import com.example.backend.service.EmailService;
 import com.example.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -35,23 +36,24 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         String email = userService.getUserByUsername(username).getEmail();
-        CompletableFuture<String> otpFuture = otpService.generateOTP(username);
-        CompletableFuture<Boolean> emailSentFuture = otpFuture.thenCompose(otp -> emailService.sendOtpEmail(email, otp));
-
-        HttpSession session = request.getSession();
-        session.setAttribute("needOtpVerification", true);
-
+        
         try {
-            // String otp = otpFuture.get();
-            boolean emailSent = emailSentFuture.get();
+            String otp = otpService.generateOTP(username).get();
+            boolean emailSent = emailService.sendOtpEmail(email, otp).get();
+            
             if (emailSent) {
-                response.sendRedirect("/otp/verify");
+                HttpSession session = request.getSession();
+                session.setAttribute("needOtpVerification", true);
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("{\"message\": \"OTP sent successfully\", \"redirect\": \"/otp/verify\"}");
             } else {
-                response.sendRedirect("/login?error=email");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Failed to send OTP email\"}");
             }
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Error during OTP generation or email sending", e);
-            response.sendRedirect("/login?error=otp");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"An internal error occurred\"}");
         }
     }
 }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -23,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final LocalValidatorFactoryBean validator;
+    private final PasswordEncoder passwordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -207,5 +209,19 @@ public class UserService {
 
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    @Async("taskExecutor")
+    public CompletableFuture<User> authenticateUser(String username, String password) {
+        return CompletableFuture.supplyAsync(() -> {
+            Optional<User> userOptional = userRepository.findByUserName(username);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                if (passwordEncoder.matches(password, user.getPassword())) {
+                    return user;
+                }
+            }
+            return null;
+        });
     }
 }

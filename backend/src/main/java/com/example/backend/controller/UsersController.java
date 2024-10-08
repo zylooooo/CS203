@@ -1,7 +1,13 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.LoginRequest;
 import com.example.backend.model.User;
+import com.example.backend.service.EmailService;
+import com.example.backend.service.OtpService;
 import com.example.backend.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.example.backend.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 public class UsersController {
 
     private final UserService userService;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
@@ -174,6 +182,31 @@ public class UsersController {
                     logger.error("Unexpected error updating user: {}", cause.getMessage(), cause);
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(cause.getMessage());
                 }
+            });
+    }
+
+    @PostMapping("/login")
+    public CompletableFuture<ResponseEntity<Map<String, String>>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+        return userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword())
+            .thenCompose(user -> {
+                if (user != null) {
+                    return otpService.generateOTP(user.getUserName())
+                        .thenCompose(otp -> emailService.sendOtpEmail(user.getEmail(), otp))
+                        .thenApply(emailSent -> {
+                            if (emailSent) {
+                                session.setAttribute("USER_ID", user.getId());
+                                session.setAttribute("needOtpVerification", true);
+                                return ResponseEntity.ok(Map.of("message", "OTP sent successfully", "redirect", "/otp/verify"));
+                            } else {
+                                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
+                            }
+                        });
+                } else {
+                    return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials")));
+                }
+            })
+            .exceptionally(e -> {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred"));
             });
     }
 }
