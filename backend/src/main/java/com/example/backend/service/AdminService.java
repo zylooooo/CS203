@@ -31,7 +31,7 @@ public class AdminService {
         if (adminRepository.findByEmail(admin.getEmail()) != null) {
             throw new RuntimeException("Email already exists");
         }
-        if (adminRepository.findByUserName(admin.getUserName()) != null) {
+        if (adminRepository.findByAdminName(admin.getAdminName()) != null) {
             throw new RuntimeException("Username already exists");
         }
         return adminRepository.save(admin);
@@ -44,7 +44,7 @@ public class AdminService {
         if (!admin.getEmail().equals(adminDetails.getEmail()) && adminRepository.findByEmail(adminDetails.getEmail()) != null) {
             throw new RuntimeException("Email already exists");
         }
-        if (!admin.getUserName().equals(adminDetails.getUserName()) && adminRepository.findByUserName(adminDetails.getUserName()) != null) {
+        if (!admin.getAdminName().equals(adminDetails.getAdminName()) && adminRepository.findByAdminName(adminDetails.getAdminName()) != null) {
             throw new RuntimeException("Username already exists");
         }
 
@@ -54,7 +54,7 @@ public class AdminService {
         admin.setPassword(adminDetails.getPassword());
         admin.setCreatedTournaments(adminDetails.getCreatedTournaments());
         admin.setProfilePic(adminDetails.getProfilePic());
-        admin.setUserName(adminDetails.getUserName());
+        admin.setAdminName(adminDetails.getAdminName());
 
         return adminRepository.save(admin);
     }
@@ -66,7 +66,8 @@ public class AdminService {
     @Async("taskExecutor")
     public CompletableFuture<Admin> authenticateAdmin(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
-            Admin admin = adminRepository.findByUserName(username);
+            Optional<Admin> adminOptional = adminRepository.findByAdminName(username);
+            Admin admin = adminOptional.isPresent() ? adminOptional.get() : null;
             if (admin != null && passwordEncoder.matches(password, admin.getPassword())) {
                 return admin;
             }

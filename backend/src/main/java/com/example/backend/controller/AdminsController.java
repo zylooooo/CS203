@@ -29,7 +29,7 @@ public class AdminsController {
         return adminService.authenticateAdmin(loginRequest.getUsername(), loginRequest.getPassword())
             .thenCompose(admin -> {
                 if (admin != null) {
-                    return otpService.generateOTP(admin.getUserName())
+                    return otpService.generateOTP(admin.getAdminName())
                         .thenCompose(otp -> emailService.sendOtpEmail(admin.getEmail(), otp))
                         .thenApply(emailSent -> {
                             if (emailSent) {

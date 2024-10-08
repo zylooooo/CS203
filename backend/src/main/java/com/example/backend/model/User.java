@@ -69,6 +69,7 @@ public class User {
 
     private boolean isAvailable;
     
+    @Valid
     private List<StrikeReport> strikeReport;
 
     @Data
