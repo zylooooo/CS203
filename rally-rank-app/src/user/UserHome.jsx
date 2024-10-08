@@ -1,10 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function UserHome() {
     const navigate = useNavigate();
 
     const [isTransitioning, setIsTransitioning] = useState(false);
+
+    const [isAvailable, setIsAvailable] = useState(false);
+
+    const handleToggle = () => {
+        setIsAvailable(!isAvailable);
+    };
+
+    useEffect(() => {
+        // Function to call the backend
+        const updateAvailability = async () => {
+            try {
+                console.log('Availability updated:'); 
+                // const response = await fetch('/api/update-availability', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ isAvailable }),
+                // });
+
+                // if (!response.ok) {
+                //     throw new Error('Network response was not ok');
+                // }
+
+                // const data = await response.json();
+                // console.log('Availability updated:', data);
+            } catch (error) {
+                console.error('Error updating availability:', error);
+            }
+        };
+
+        // Call the function to update availability
+        updateAvailability();
+    }, [isAvailable]); // Dependency array to track changes to isAvailable
 
     const [view, setView] = useState("Top");
 
@@ -29,6 +63,8 @@ function UserHome() {
         { id: 6, name: "Augustus Gloop", rank: 6, rating: 1000 },
         { id: 7, name: "Grace", rank: 7, rating: 950 },
         { id: 8, name: "Hank", rank: 8, rating: 900 },
+        { id: 9, name: "Ivy", rank: 9, rating: 850 },
+        { id: 10, name: "Jack", rank: 10, rating: 800 },
     ];
 
     const currentUser = { id: 7, name: "Augustus Gloop", rank: 6, rating: 1000 };
@@ -147,9 +183,11 @@ function UserHome() {
                 </div>
             </div>
 
-        {/* COLUMN CONTAINER: LEADERBOARD */}
-        <div className = "col-container gap-8">
-            <div className = "leaderboard container">
+        {/* COLUMN CONTAINER: LEADERBOARD, AVAILABILITY */}
+        <div className = "col-container gap-20 h-screen">
+
+            {/* LEADERBOARD */}
+            <div className = "leaderboard-container h-1/2 gap-8">
                 <h2 className = "text-xl font-semibold"> Tournament Leaderboard </h2>
                 <LeaderboardButtons
                     buttons = {["Top", "You"]}
@@ -158,7 +196,7 @@ function UserHome() {
                     activeButton = { activeButton }
                     setActiveButton = { setActiveButton }
                 />
-                <div className = "leaderboard-box bg-gray-100 border border-gray-300 text-sm w-full h-72 min-w-72 flex flex-col overflow-auto">
+                <div className = "leaderboard-box bg-gray-100 border border-gray-300 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto">
                     {view === "Top" ? (
                         players.map((player) => (
                             // TEMPLATE: PLAYER IN LEADERBOARD
@@ -166,8 +204,7 @@ function UserHome() {
                                 key = { player.id }
                                 className = {`p-2 ${player.id === currentUser.id ? "bg-yellow-200" : "" }`}
                             >
-                                <h3 className = "font-semibold"> {player.name} </h3>
-                                <p> Rank: {player.rank} </p>
+                                <h3 className = "font-semibold"> {player.rank} {player.name} </h3>
                                 <p> Rating: {player.rating} </p>
                             </div>
                         ))
@@ -178,6 +215,31 @@ function UserHome() {
                             <p> Ranking: {currentUser.rating} </p>
                         </div>
                     )}
+                </div>
+            </div>
+
+            {/* AVAILABILITY */}
+            <div className = "availability-container h-1/2 gap-8">
+                <h2 className = "text-xl font-semibold"> Availability </h2>
+                <div className = "availability-box bg-gray-100 border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
+                    <p> Are you available for tournaments? </p>
+                    <div className = "mt-2 flex items-center">
+                        <label className = "relative inline-flex items-center cursor-pointer">
+                            <input
+                            type = "checkbox"
+                            checked = { isAvailable }
+                            onChange = { handleToggle }
+                            className = "sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-secondary-color-light-gray rounded-full peer 
+                            peer-checked:bg-primary-color-green
+                            peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary-color-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all
+                            peer-checked:after:bg-primary-color-white"></div>
+                        </label>
+                        <span className="ml-3 text-sm text-gray-900">
+                            {isAvailable ? 'Yes, I am available' : 'No, I am not available'}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
