@@ -46,7 +46,7 @@ function UserProfile() {
     return (
         <>
         <div className = "profile-page flex flex-col w-3/4 p-9 gap-5 justify-center">
-            {activeSection === "profile" &&(
+            {activeSection === "profile" && (
                 <>
                     {/* USER'S PROFILE */}
                     <div className = "profile-information flex w-full m-10 justify-left items-center">
