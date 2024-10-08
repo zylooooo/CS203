@@ -48,7 +48,13 @@ public class UserService {
         });
     }
 
-    public User getUserByUsername(String username) {
+    /**
+     * Retrieves a user from the databsae based on the user name
+     * @param username the username of the user to be retrieved, must not be null or empty
+     * @return the user object associated with the specified username
+     * @throws UserNotFoundException if no user with the username is found in the database
+     */
+    public User getUserByUsername(String username) throws UserNotFoundException {
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
     }
@@ -120,7 +126,7 @@ public class UserService {
                     List<String> errorMessages = errors.getAllErrors().stream()
                             .map(error -> error.getDefaultMessage())
                             .collect(Collectors.toList());
-                    throw new IllegalArgumentException("Invalid user data: " + String.join(", ", errorMessages));
+                    throw new IllegalArgumentException(String.join(", ", errorMessages));
                 }
 
                 User createdUser = userRepository.save(user);
@@ -176,7 +182,7 @@ public class UserService {
                     List<String> errorMessages = errors.getAllErrors().stream()
                             .map(error -> error.getDefaultMessage())
                             .collect(Collectors.toList());
-                    throw new IllegalArgumentException("Invalid user data: " + String.join(", ", errorMessages));
+                    throw new IllegalArgumentException(String.join(", ", errorMessages));
                 }
 
                 // Update the user details
@@ -203,6 +209,30 @@ public class UserService {
                 throw new RuntimeException(e.getMessage(), e);
             }
         });
+    }
+
+    /**
+     * Updates the availability of a user based on the user name
+     * @param userName the username of the user to update, must not be null or empty
+     * @param available the new availability status of the user
+     * @return the updated user object
+     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws RuntimeException if there is an unexpected error during the update process
+     */
+    public User updateUserAvailability(String userName, boolean available) throws UserNotFoundException, RuntimeException {
+        try {
+            User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserNotFoundException(userName));
+            user.setAvailable(available);
+            logger.info("User availability updated successfully: {}", userName);
+            return userRepository.save(user);
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", userName);
+            throw new UserNotFoundException(userName);
+        } catch (Exception e) {
+            logger.error("Unexpected error during user update: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public void deleteUser(String id) {

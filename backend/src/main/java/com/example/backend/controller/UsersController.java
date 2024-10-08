@@ -35,7 +35,7 @@ public class UsersController {
             .exceptionally(e -> {
                 logger.error("Error getting all users", e);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("An unexpected error occurred while fetching users!");
+                        .body(Map.of("error", "An unexpected error occurred while fetching users!"));
             });
     }
 
@@ -146,16 +146,22 @@ public class UsersController {
                     Throwable cause = e.getCause();
                     if (cause instanceof IllegalArgumentException) {
                         logger.error("Validation errors during user creation: {}", cause.getMessage());
-                        return ResponseEntity.badRequest().body(cause.getMessage());
+                        return ResponseEntity.badRequest().body(Map.of("error", cause.getMessage()));
                     } else {
                         logger.error("Error creating user: {}", cause.getMessage(), cause);
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body("An unexpected error occurred while creating the user!");
+                                .body(Map.of("error", "An unexpected error occurred while creating the user!"));
                     }
                 });
     }
 
-    // Synchronous method to display the user profile
+    /**
+     * Retrieves the user profile based on the user name
+     * @param userName the username of the user to retrieve, must not be null or empty
+     * @return the user object associated with the specified username
+     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws RuntimeException if there is an unexpected error during the retrieval process
+     */
     @GetMapping("/{userName}")
     public ResponseEntity<?> getUserProfile(@PathVariable String userName) {
         try {
@@ -164,13 +170,21 @@ public class UsersController {
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", userName);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             logger.error("Error retrieving user profile: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred while retrieving the user profile!");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while retrieving the user profile!"));
         }
     }
 
+    /**
+     * Updates the user details based on the user name
+     * @param userName the username of the user to update, must not be null or empty
+     * @param newUserDetails the new details of the user to be updated
+     * @return the updated user object
+     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws RuntimeException if there is an unexpected error during the update process
+     */
     @PutMapping("/{userName}/update")
     public CompletableFuture<ResponseEntity<?>> updateUser(@PathVariable String userName, @RequestBody User newUserDetails) {
         return userService.updateUser(userName, newUserDetails)
@@ -182,14 +196,37 @@ public class UsersController {
                 Throwable cause = e.getCause();
                 if (cause instanceof IllegalArgumentException) {
                     logger.error("Validation errors during user update: {}", cause.getMessage());
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(cause.getMessage());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", cause.getMessage()));
                 } else if (cause instanceof UserNotFoundException) {
                     logger.error("User not found: {}", userName);
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(cause.getMessage());
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", cause.getMessage()));
                 } else {
                     logger.error("Unexpected error updating user: {}", cause.getMessage(), cause);
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(cause.getMessage());
                 }
             });
+    }
+
+    /**
+     * Updates the availability of a user based on the user name
+     * @param userName the username of the user to update, must not be null or empty
+     * @param availability the new availability status of the user
+     * @return the updated user object
+     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws RuntimeException if there is an unexpected error during the update process
+     */
+    @PutMapping("/{userName}/update-availability")
+    public ResponseEntity<?> updateUserAvailability(@PathVariable String userName, @RequestParam Boolean availability) {
+        try {
+            User user = userService.updateUserAvailability(userName, availability);
+            logger.info("User availability updated successfully: {}", userName);
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", userName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating user availability: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while updating the user availability!"));
+        }
     }
 }
