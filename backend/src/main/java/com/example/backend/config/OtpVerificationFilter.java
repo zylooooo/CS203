@@ -20,7 +20,9 @@ public class OtpVerificationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("OtpVerificationFilter: Processing request for " + path);
 
-        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/")) {
+        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/images/") || 
+            path.equals("/users/login") || path.equals("/admins/login") || 
+            path.equals("/otp/verify") || path.equals("/otp/send")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -32,11 +34,10 @@ public class OtpVerificationFilter extends OncePerRequestFilter {
             Boolean otpVerified = (Boolean) session.getAttribute("otpVerified");
             System.out.println("OtpVerificationFilter: OTP verified = " + otpVerified);
             if (otpVerified == null || !otpVerified) {
-                if (!path.equals("/otp/verify") && !path.equals("/otp/send") && !path.equals("/login")) {
-                    System.out.println("OtpVerificationFilter: Redirecting to OTP verification page");
-                    response.sendRedirect("/otp/verify");
-                    return;
-                }
+                System.out.println("OtpVerificationFilter: OTP not verified, sending 401 Unauthorized");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\": \"OTP verification required\", \"redirect\": \"/otp/verify\"}");
+                return;
             }
         }
 

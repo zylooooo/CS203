@@ -24,6 +24,6 @@ public class HomeController {
                 }
             }
         }
-        return "redirect:/login";
+        return "redirect:/users/login";
     }
 }

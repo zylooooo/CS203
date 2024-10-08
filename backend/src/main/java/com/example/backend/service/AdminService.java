@@ -3,8 +3,12 @@ package com.example.backend.service;
 import com.example.backend.model.Admin;
 import com.example.backend.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +17,7 @@ import java.util.Optional;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Admin> getAllAdmins() {
         return adminRepository.findAll();
@@ -56,5 +61,16 @@ public class AdminService {
 
     public void deleteAdmin(String id) {
         adminRepository.deleteById(id);
+    }
+
+    @Async("taskExecutor")
+    public CompletableFuture<Admin> authenticateAdmin(String username, String password) {
+        return CompletableFuture.supplyAsync(() -> {
+            Admin admin = adminRepository.findByUserName(username);
+            if (admin != null && passwordEncoder.matches(password, admin.getPassword())) {
+                return admin;
+            }
+            return null;
+        });
     }
 }
