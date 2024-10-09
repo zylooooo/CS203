@@ -19,20 +19,18 @@ function UserLogin() {
 
     const onSubmit = async (data) => {
         try {
-            // Implement your API call for user authentication
+            // Call the authenticateUser function
             const response = await authenticateUser(data.email, data.password);
             
-            if (response.success) {
-                // Assume response.user contains user data
+            if (response.message === "OTP sent successfully") {
                 loginUser(response.user); // Update AuthContext with user data
-                navigate("/home"); // Redirect to user home page
+                navigate("/home"); // Redirect to home page on successful login
             } else {
-                // Handle authentication failure
-                setLoginError(response.message || "Invalid credentials");
+                setLoginError(response.error || "Invalid credentials");
             }
         } catch (error) {
             console.error("Login error:", error);
-            setLoginError("An unexpected error occurred. Please try again.");
+            setLoginError(error.message || "An unexpected error occurred. Please try again.");
         }
     };
 
