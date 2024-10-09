@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
 
@@ -12,6 +13,7 @@ const upcomingTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "",
     },
     {
       name: "Tournament 4",
@@ -21,6 +23,7 @@ const upcomingTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "This is only for the LGBTQ community",
     },
   ];
 
@@ -34,6 +37,7 @@ const pastTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "",
     },
     {
       name: "Tournament 6",
@@ -43,6 +47,7 @@ const pastTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "",
     },
   ];
 
@@ -56,6 +61,7 @@ const pastTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "",
     },
     {
       name: "Tournament 2",
@@ -65,17 +71,25 @@ const pastTournaments = [
       endDate: "17/09/2024",
       eloRatingRange: "1200 - 1500",
       venue: "Choa Chu Kang Stadium, Singapore 689236",
+      remarks: "",
     },
   ];
 
 // Define the Tournaments component - format to display tournaments
 const Tournaments = ({ tournamentTest }) => {
+    const navigate = useNavigate();
+
+    const handleTournamentCardClick = (tournament) => {
+        navigate("/tournament-details", {state: tournament });  // redirect with tournament data
+    };
+
   return (
     <div className="tournaments-list flex flex-col space-y-8">
       {tournamentTest.map((tournament, index) => (
         <div
           key={index}
           className="tournament border rounded-lg p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition flex w-4/5"
+          onClick={() => handleTournamentCardClick(tournament)}
         >
           <div className="flex-1 pr-4">
             <h3 className="section-one text-xl font-bold mb-2">
