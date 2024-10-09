@@ -238,40 +238,14 @@ public class UsersController {
         }
     }
 
-    // @PostMapping("/login")
-    // public CompletableFuture<ResponseEntity<Map<String, String>>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
-    //     return userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword())
-    //         .thenCompose(user -> {
-    //             if (user != null) {
-    //                 return otpService.generateOTP(user.getUserName())
-    //                     .thenCompose(otp -> emailService.sendOtpEmail(user.getEmail(), otp))
-    //                     .thenApply(emailSent -> {
-    //                         if (emailSent) {
-    //                             session.setAttribute("USER_ID", user.getId());
-    //                             session.setAttribute("needOtpVerification", true);
-    //                             return ResponseEntity.ok(Map.of("message", "OTP sent successfully", "redirect", "/otp/verify"));
-    //                         } else {
-    //                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
-    //                         }
-    //                     });
-    //             } else {
-    //                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials")));
-    //             }
-    //         })
-    //         .exceptionally(e -> {
-    //             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred"));
-    //         });
-    // }
-
     // Commented out the code above to test without OTP generation and email sending
     @PostMapping("/login")
     public CompletableFuture<ResponseEntity<Map<String, String>>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         return userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword())
             .thenCompose(user -> {
                 if (user != null) {
-                    // Skip OTP generation and email sending
                     session.setAttribute("USER_ID", user.getId());
-                    session.setAttribute("authenticated", true); // Mark the user as authenticated in the session
+                    session.setAttribute("authenticated", true);
                     return CompletableFuture.completedFuture(
                         ResponseEntity.ok(Map.of("message", "Login successful", "user", user.getUserName()))
                     );
@@ -284,6 +258,6 @@ public class UsersController {
             .exceptionally(e -> {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred"));
             });
-}
+    }
 
 }

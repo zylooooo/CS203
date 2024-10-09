@@ -40,28 +40,54 @@ public class SecurityConfig {
      * Configures the security filter chain for HTTP requests.
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .addFilterAfter(new OtpVerificationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/otp/verify", "/otp/send", "/css/**", "/js/**", "/images/**", "/users/login", "/admins/login", "users/signup").permitAll()
-                .requestMatchers("/admins/**").hasRole("ADMIN")
-                .requestMatchers("/users/**").hasRole("USER")
-                .anyRequest().authenticated())
-            .formLogin(login -> login
-                .loginPage("/users/login")
-                .successHandler(customSuccessHandler())
-                .failureHandler((request, response, exception) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("{\"error\": \"Authentication failed\"}");
-                })
-                .permitAll())
-            .logout(logout -> logout
-                .permitAll())
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/users/login", "/otp/send", "/otp/verify", "/admins/login", "/users/signup"));
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors().and()
+        .addFilterAfter(new OtpVerificationFilter(), UsernamePasswordAuthenticationFilter.class)
+        
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(
+                "/otp/verify",
+                "/otp/send",
+                "/css/**",
+                "/js/**",
+                "/images/**",
+                "/users/login",
+                "/admins/login",
+                "/users/signup"
+            ).permitAll()
+            .requestMatchers("/admins/**").hasRole("ADMIN")
+            .requestMatchers("/users/**").hasRole("USER")
+            .anyRequest().authenticated()
+        )
+        
+        // .formLogin(form -> form
+        //     .loginPage("/users/login")
+        //     .successHandler(customSuccessHandler())
+        //     .failureHandler((request, response, exception) -> {
+        //         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        //         response.setContentType("application/json");
+        //         response.getWriter().write("{\"error\": \"Authentication failed\"}");
+        //     })
+        //     .permitAll()
+        // )
+        
+        .logout(logout -> logout
+            .permitAll()
+        )
+        
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers(
+                "/users/login",
+                "/otp/send",
+                "/otp/verify",
+                "/admins/login",
+                "/users/signup"
+            )
+        );
 
-        return http.build();
-    }
+    return http.build();
+}
 
     /**
      * Provides a custom authentication success handler.
