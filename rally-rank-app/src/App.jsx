@@ -23,6 +23,7 @@ import UserHome from "./user/UserHome";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
+import TournamentCardTemplate from "./user/TournamentCardTemplate"
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
