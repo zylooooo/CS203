@@ -21,7 +21,7 @@ const upcomingTournaments = [
       organizerName: "Justin Beiber",
       startDate: "03/09/2024",
       endDate: "17/09/2024",
-      eloRatingRange: "1200 - 1500",
+      eloRatingRange: "1200 - 1500",    // change to minElo maxElo
       venue: "Choa Chu Kang Stadium, Singapore 689236",
       remarks: "This is only for the LGBTQ community",
     },
