@@ -17,12 +17,30 @@ function UserLogin() {
     const navigate = useNavigate(); // For navigation after login
     const [loginError, setLoginError] = useState(""); // State for handling login errors
 
+    async function authenticateUser(username, password) {
+        const response = await fetch("http://localhost:8080/users/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }), // Send username instead of email
+            credentials: "include", // Include cookies for session management
+        });
+    
+        const data = await response.json();
+        if (!response.ok) { 
+            throw new Error(data.error || "Login failed");
+        }
+    
+        return data;
+    }
+
     const onSubmit = async (data) => {
         try {
-            // Call the authenticateUser function
-            const response = await authenticateUser(data.email, data.password);
+            // Call the authenticateUser function with username and password
+            const response = await authenticateUser(data.username, data.password);
             
-            if (response.message === "OTP sent successfully") {
+            if (response.message === "Login successful") {
                 loginUser(response.user); // Update AuthContext with user data
                 navigate("/home"); // Redirect to home page on successful login
             } else {
@@ -48,8 +66,8 @@ function UserLogin() {
         >
         Manual User Login
         </button>
-            <div className = "card rounded-none bg-primary-color-white border-none items-center m-8">
-                <h1 className=" font-bold text-2xl bg-special-blue">
+            <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
+                <h1 className="font-bold text-2xl bg-special-blue">
                     Player Login
                 </h1>
                 <form
@@ -59,25 +77,21 @@ function UserLogin() {
                 >
                     <div>
                         <label
-                            htmlFor="email"
+                            htmlFor="username"
                             className="block text-sm font-medium text-gray-700"
                         >
-                            Email
+                            Username
                         </label>
                         <input
                             className="input"
-                            type="email"
-                            id="email"
-                            placeholder="you@example.com"
-                            {...register("email", {
-                                pattern: {
-                                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                    message: "Invalid email format",
-                                },
-                                required: "Email is required",
+                            type="text"
+                            id="username"
+                            placeholder="Your username"
+                            {...register("username", {
+                                required: "Username is required",
                             })}
                         />
-                        <p className="error">{errors.email?.message}</p>
+                        <p className="error">{errors.username?.message}</p>
                     </div>
 
                     <div>
@@ -129,8 +143,8 @@ function UserLogin() {
                 </form>
                 <DevTool control={control} />
                 </div>
-                <div className = "card p-7 rounded-none bg-primary-color-white border-none items-center">
-                    <div className="text-blue-500 text-ms flex flex-row justify-center align-item">
+                <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+                    <div className="text-blue-500 text-ms flex flex-row justify-center align-items">
                         RallyRank Administrator?
                         <Link
                             to="/administrator-login"
