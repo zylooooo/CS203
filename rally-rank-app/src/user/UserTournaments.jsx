@@ -56,6 +56,7 @@ const pastTournaments = [
     },
 ];
 
+// API Calls - Mock tournament data (My)
 const myTournaments = [
     {
         name: "[Sample MyTournament] Wonder Games",
