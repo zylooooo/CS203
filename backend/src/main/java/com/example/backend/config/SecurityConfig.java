@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .permitAll())
             .logout(logout -> logout
                 .permitAll())
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/users/login", "/otp/send", "/otp/verify", "/admins/login"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/users/login", "/otp/send", "/otp/verify", "/admins/login", "/users/signup"));
 
         return http.build();
     }
