@@ -124,6 +124,17 @@ function App() {
                         }
                     />
 
+                    <Route
+                        path="/tournament-details"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <TournamentCardTemplate />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
                     {/* Protected Admin Routes */}
                     <Route
                         path="/administrator-tools"
