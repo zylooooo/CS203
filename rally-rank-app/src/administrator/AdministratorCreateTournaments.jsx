@@ -93,34 +93,30 @@ const AdminTournamentsForm = ({ register, errors }) => (
         <p className="error">{errors.gender?.message}</p>
       </div>
 
-      {/* Age Range */}
+      {/* Age Category */}
       <div className="flex flex-col gap-1">
         <label
-          htmlFor="minAge"
+          htmlFor="category"
           className="block text-sm font-medium text-gray-700"
         >
-          Age Range
+          Age Cateogry
         </label>
-        <div className="flex gap-2">
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="minAge"
-            placeholder="Min Age"
-            {...register("minAge", { required: "Minimum age is required" })}
-          />
-          <span>-</span>
-          <input
-            className="border p-2 w-full"
-            type="number"
-            id="maxAge"
-            placeholder="Max Age"
-            {...register("maxAge", { required: "Maximum age is required" })}
-          />
-        </div>
-        <p className="error">
-          {errors.minAge?.message || errors.maxAge?.message}
-        </p>
+        <select
+          className="border p-2"
+          id="category"
+          {...register("category", {
+            required: "Category is required",
+          })}
+        >
+          <option value="">Select Category</option>
+          <option value="U18">U18</option>
+          <option value="U16">U16</option>
+          <option value="U14">U14</option>
+          <option value="U12">U12</option>
+          <option value="Open">Open</option>
+        </select>
+
+        <p className="error">{errors.category?.message}</p>
       </div>
 
       {/* Elo Rating Range */}
@@ -205,7 +201,7 @@ const AdminTournamentsForm = ({ register, errors }) => (
           placeholder="Enter Remarks"
         />
       </div>
-      <div className="flex justify-evenly gap-5 pt-10">
+      <div className="flex justify-evenly gap-5 p-10">
         <button
           className="font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
           type="submit"
@@ -219,7 +215,7 @@ const AdminTournamentsForm = ({ register, errors }) => (
 
 function AdministratorCreateTournaments() {
   return (
-    <div className="tournaments-page flex w-full p-9 gap-2 justify-evenly">
+    <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
       <div className="row-container flex flex-col w-3/5 gap-8">
         {/* Form for admin to create a tournament */}
         <AdminTournamentsForm register={() => {}} errors={{}} />
