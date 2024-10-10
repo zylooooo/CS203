@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { Step1, Step2, Step3, Step4, Step5 } from "./sign-up-components/SignUpSteps";
-import signupPicture from "../assets/sign-up-picture.jpg";
+import { Step1, Step2, Step3, Step4, Step5 } from "./user-sign-up-components/SignUpSteps";
+import signupPicture from "../assets/user-sign-up-picture.jpg";
 
-function SignUp() {
+function UserSignUp() {
   const location = useLocation(); 
   const { email } = location.state || {}; 
   const { register, handleSubmit, watch, trigger, formState: { errors , isValid}} = useForm();
@@ -130,4 +130,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default UserSignUp;

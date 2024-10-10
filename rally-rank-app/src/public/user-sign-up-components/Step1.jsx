@@ -80,6 +80,7 @@ Step1.propTypes = {
     register: PropTypes.func.isRequired,
     errors: PropTypes.shape({
         email: PropTypes.object,
+        username: PropTypes.object,
     }).isRequired,
     email: PropTypes.func.isRequired,
 };
