@@ -14,14 +14,18 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 
+import jakarta.validation.constraints.*;
+
 @Service
 @RequiredArgsConstructor
+@Validated
 public class UserService {
 
     private final UserRepository userRepository;
@@ -114,35 +118,36 @@ public class UserService {
      *                                  creation for the controller to handle
      */
     @Async("taskExecutor")
-    public CompletableFuture<User> createUser(User user) throws IllegalArgumentException, RuntimeException {
+    public CompletableFuture<User> createUser(@NotNull User user) throws IllegalArgumentException, RuntimeException {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Errors errors = new BeanPropertyBindingResult(user, "user");
                 validator.validate(user, errors);
 
-                // Check for email and username uniqueness
-                if (userRepository.existsByEmail(user.getEmail())) {
+                if (user.getEmail() != null && userRepository.existsByEmail(user.getEmail())) {
                     errors.rejectValue("email", "duplicate.email", "Email already exists");
                 }
-                if (userRepository.existsByUserName(user.getUserName())) {
+                if (user.getUserName() != null && userRepository.existsByUserName(user.getUserName())) {
                     errors.rejectValue("userName", "duplicate.userName", "Username already exists");
                 }
 
-                // Add any errors into a list and throw as an exception
                 if (errors.hasErrors()) {
                     List<String> errorMessages = errors.getAllErrors().stream()
                             .map(error -> error.getDefaultMessage())
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                     throw new IllegalArgumentException(String.join(", ", errorMessages));
                 }
+
+                // Encode the password before saving the user
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
 
                 User createdUser = userRepository.save(user);
                 logger.info("User created successfully: {}", createdUser.getUserName());
                 return createdUser;
             } catch (IllegalArgumentException e) {
-                // Throw the exception with the original message to be handled by the controller
                 logger.error("Validation errors during user creation: {}", e.getMessage(), e);
-                throw new IllegalArgumentException(e.getMessage(), e);
+                throw e;
             } catch (Exception e) {
                 logger.error("Error creating user: " + e.getMessage(), e);
                 throw new RuntimeException(e.getMessage(), e);
@@ -165,52 +170,52 @@ public class UserService {
      * @throws RuntimeException
      */
     @Async("taskExecutor")
-    public CompletableFuture<User> updateUser(String userName, User newUserDetails)
+    public CompletableFuture<User> updateUser(@NotNull String userName, @NotNull User newUserDetails)
             throws UserNotFoundException, IllegalArgumentException, RuntimeException {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 User user = userRepository.findByUserName(userName)
                         .orElseThrow(() -> new UserNotFoundException(userName));
-
-                // Check if the newUserDetails has valid inputs
+    
                 Errors errors = new BeanPropertyBindingResult(newUserDetails, "user");
                 validator.validate(newUserDetails, errors);
-
-                if (!user.getEmail().equals(newUserDetails.getEmail())
+    
+                if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail())
                         && userRepository.existsByEmail(newUserDetails.getEmail())) {
                     errors.rejectValue("email", "duplicate.email", "Email already exists");
                 }
-                if (!user.getUserName().equals(newUserDetails.getUserName())
-                        && userRepository.existsByUserName(user.getUserName())) {
+                if (newUserDetails.getUserName() != null && !user.getUserName().equals(newUserDetails.getUserName())
+                        && userRepository.existsByUserName(newUserDetails.getUserName())) {
                     errors.rejectValue("userName", "duplicate.userName", "Username already exists");
                 }
-
+    
                 if (errors.hasErrors()) {
                     List<String> errorMessages = errors.getAllErrors().stream()
                             .map(error -> error.getDefaultMessage())
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
                     throw new IllegalArgumentException(String.join(", ", errorMessages));
                 }
-
-                // Update the user details
-                user.setEmail(newUserDetails.getEmail());
-                user.setPassword(newUserDetails.getPassword());
-                user.setPhoneNumber(newUserDetails.getPhoneNumber());
-                user.setElo(newUserDetails.getElo());
-                user.setGender(newUserDetails.getGender());
-                user.setDateOfBirth(newUserDetails.getDateOfBirth());
-                user.setMedicalInformation(newUserDetails.getMedicalInformation());
-                user.setProfilePic(newUserDetails.getProfilePic());
-                user.setUserName(newUserDetails.getUserName());
-                user.setFirstName(newUserDetails.getFirstName());
-                user.setLastName(newUserDetails.getLastName());
+    
+                // Update only non-null fields
+                Optional.ofNullable(newUserDetails.getEmail()).ifPresent(user::setEmail);
+                Optional.ofNullable(newUserDetails.getPassword()).ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
+                Optional.ofNullable(newUserDetails.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+                if (newUserDetails.getElo() != 0) user.setElo(newUserDetails.getElo());
+                Optional.ofNullable(newUserDetails.getGender()).ifPresent(user::setGender);
+                Optional.ofNullable(newUserDetails.getDateOfBirth()).ifPresent(user::setDateOfBirth);
+                Optional.ofNullable(newUserDetails.getMedicalInformation()).ifPresent(user::setMedicalInformation);
+                Optional.ofNullable(newUserDetails.getProfilePic()).ifPresent(user::setProfilePic);
+                Optional.ofNullable(newUserDetails.getUserName()).ifPresent(user::setUserName);
+                Optional.ofNullable(newUserDetails.getFirstName()).ifPresent(user::setFirstName);
+                Optional.ofNullable(newUserDetails.getLastName()).ifPresent(user::setLastName);
                 user.setAvailable(newUserDetails.isAvailable());
                 
                 logger.info("User updated successfully: {}", userName);
                 return userRepository.save(user);
-            } catch (IllegalArgumentException e) {
-                logger.error("Validation errors during user update: {}", e.getMessage(), e);
-                throw new IllegalArgumentException(e.getMessage(), e);
+            } catch (IllegalArgumentException | UserNotFoundException e) {
+                logger.error("Error during user update: {}", e.getMessage(), e);
+                throw e;
             } catch (Exception e) {
                 logger.error("Unexpected error during user update: {}", e.getMessage(), e);
                 throw new RuntimeException(e.getMessage(), e);
@@ -258,70 +263,65 @@ public class UserService {
      * @throws RuntimeException for any unexpected errors during the deletion process
      */
     @Async("taskExecutor")
-    public CompletableFuture<Void> deleteUser(String userName) throws UserNotFoundException, RuntimeException {
+    public CompletableFuture<Void> deleteUser(@NotNull String userName) throws UserNotFoundException, RuntimeException {
         return CompletableFuture.runAsync(() -> {
             try {
-                // Retrieve the user by username, throwing an exception if not found
                 User user = userRepository.findByUserName(userName)
                     .orElseThrow(() -> new UserNotFoundException(userName));
                     
-                // Fetch ongoing and future tournaments that the user is participating in
                 List<Tournament> ongoingAndFutureTournaments = tournamentService.getOngoingTournaments().get();
                 logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
-
-                // Iterate through each tournament to remove the user
+    
                 for (Tournament tournament : ongoingAndFutureTournaments) {
                     boolean tournamentModified = false;
-
-                    // Remove user from the players pool of the tournament
-                    if (tournament.getPlayersPool().remove(userName)) {
+    
+                    List<String> playersPool = tournament.getPlayersPool();
+                    if (playersPool != null && playersPool.remove(userName)) {
                         tournamentModified = true;
                         logger.info("Removed user {} from players pool of tournament {}", userName, tournament.getTournamentName());
                     }
-
-                    // Handle incomplete matches in the tournament
-                    for (Tournament.Match match : tournament.getMatches()) {
-                        // Check if the match is incomplete and contains the user
-                        if (!match.isCompleted() && match.getPlayers().contains(userName)) {
-                            match.getPlayers().remove(userName); // Remove the user from the match
-                            tournamentModified = true;
-                            logger.info("Removed user {} from incomplete match in tournament {}", userName, tournament.getTournamentName());
-
-                            // Determine the winner and mark the match as completed
-                            if (!match.getPlayers().isEmpty()) {
-                                String winner = match.getPlayers().get(0); // Set the first remaining player as the winner
-                                match.setMatchWinner(winner);
-                                match.setCompleted(true);
-                                match.setRounds(new ArrayList<>()); // Delete all rounds
-                                logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner, tournament.getTournamentName());
-                            } else {
-                                // If no players left, mark match as completed without a winner
-                                match.setCompleted(true);
-                                match.setRounds(new ArrayList<>()); // Delete all rounds
-                                logger.info("Marked match as completed without a winner and deleted all rounds in tournament {}", tournament.getTournamentName());
+    
+                    List<Tournament.Match> matches = tournament.getMatches();
+                    if (matches != null) {
+                        for (Tournament.Match match : matches) {
+                            List<String> players = match.getPlayers();
+                            if (!match.isCompleted() && players != null && players.contains(userName)) {
+                                players.remove(userName);
+                                tournamentModified = true;
+                                logger.info("Removed user {} from incomplete match in tournament {}", userName, tournament.getTournamentName());
+    
+                                if (!players.isEmpty()) {
+                                    String winner = players.get(0);
+                                    match.setMatchWinner(winner);
+                                    match.setCompleted(true);
+                                    match.setRounds(new ArrayList<>());
+                                    logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner, tournament.getTournamentName());
+                                } else {
+                                    match.setCompleted(true);
+                                    match.setRounds(new ArrayList<>());
+                                    logger.info("Marked match as completed without a winner and deleted all rounds in tournament {}", tournament.getTournamentName());
+                                }
                             }
                         }
                     }
-
-                    // Save the tournament only if modifications were made
+    
                     if (tournamentModified) {
                         Tournament updatedTournament = tournamentRepository.save(tournament);
                         logger.info("Updated tournament {}: players pool size = {}, matches size = {}", 
                                     updatedTournament.getTournamentName(), 
-                                    updatedTournament.getPlayersPool().size(),
-                                    updatedTournament.getMatches().size());
+                                    updatedTournament.getPlayersPool() != null ? updatedTournament.getPlayersPool().size() : 0,
+                                    updatedTournament.getMatches() != null ? updatedTournament.getMatches().size() : 0);
                     }
                 }
-
-                // Delete the user from the user database
+    
                 userRepository.delete(user);
                 logger.info("User deleted successfully: {}", userName);
             } catch (UserNotFoundException e) {
                 logger.error("User not found: {}", userName);
-                throw e; // Rethrow the exception for handling upstream
+                throw e;
             } catch (Exception e) {
                 logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
-                throw new RuntimeException("Error deleting user: " + e.getMessage(), e); // Wrap and throw a runtime exception
+                throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
             }
         });
     }
