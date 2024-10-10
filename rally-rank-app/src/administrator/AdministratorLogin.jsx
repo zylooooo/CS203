@@ -113,13 +113,12 @@ function AdministratorLogin() {
                         <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
                     </div>
                     <div className="text-xs text-blue-500 text-center p-2">
-                        Don't have a RallyRank account?
                         <Link
-                            to="/sign-up"
+                            to="/admin-sign-up"
                             className="hover:text-primary-color-green font-bold underline p-2 text-secondary-color-dark-green"
                         >
                             <br />
-                            Sign up as a new player
+                            Sign up as a new administrator!
                         </Link>
                     </div>
                 </form>

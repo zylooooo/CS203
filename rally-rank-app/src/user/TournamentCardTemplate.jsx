@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faA, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faA, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 

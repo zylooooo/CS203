@@ -8,7 +8,7 @@ import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments"; // Import the new component
+import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments"; 
 
 // Component imports
 import MainLayout from "./components/MainLayout"
@@ -16,7 +16,8 @@ import MainLayout from "./components/MainLayout"
 // Public imports
 import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
-import SignUp from "./public/SignUp"
+import UserSignUp from "./public/UserSignUp"
+import AdminSignUp from "./public/AdminSignUp"
 
 // User imports
 import UserHome from "./user/UserHome";
@@ -61,12 +62,22 @@ function App() {
                         }
                     />
 
-                    {/* SignUp */}
+                    {/* User SignUp */}
                     <Route 
                         path="/sign-up"
                         element={
                             <MainLayout>
-                                <SignUp />
+                                <UserSignUp />
+                            </MainLayout>
+                        }
+                    />
+
+                    {/* Admin SignUp */}
+                    <Route 
+                        path="/admin-sign-up"
+                        element={
+                            <MainLayout>
+                                <AdminSignUp />
                             </MainLayout>
                         }
                     />
