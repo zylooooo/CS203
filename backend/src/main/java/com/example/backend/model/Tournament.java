@@ -36,11 +36,11 @@ public class Tournament {
     @NotNull(message = "Location is required!")
     private String location;
 
-    @NotNull(message = "Minimum elo is required!")
-    private int minElo;
+    @Min(value = 0, message = "Minimum elo must be at least 0!")
+    private Integer minElo;
 
-    @NotNull(message = "Maximum elo is required!")
-    private int maxElo;
+    @Min(value = 0, message = "Maximum elo must be at least 0!")
+    private Integer maxElo;
 
     @NotNull(message = "Gender is required!")
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Invalid gender format!")
@@ -89,5 +89,21 @@ public class Tournament {
     @AssertTrue(message = "End date of the tournament must be after the start date!")
     private boolean isEndDateAfterStartDate() {
         return endDate.isAfter(startDate);
+    }
+
+    @AssertTrue(message = "Minimum elo must be less than maximum elo!")
+    private boolean isValidEloRange() {
+        if (minElo != null && maxElo != null) {
+            return minElo <= maxElo;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "Either minimum elo or maximum elo must be provided!")
+    private boolean isEloRangeProvided() {
+        if (minElo == null && maxElo == null) {
+            return false;
+        }
+        return true;
     }
 }

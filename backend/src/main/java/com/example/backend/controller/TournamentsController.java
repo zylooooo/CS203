@@ -2,8 +2,8 @@ package com.example.backend.controller;
 
 import com.example.backend.model.Tournament;
 import com.example.backend.service.TournamentService;
-
 import com.example.backend.exception.TournamentNotFoundException;
+import com.example.backend.exception.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +29,7 @@ public class TournamentsController {
      * Retrieves all tournaments from the database.
      * 
      * @return a ResponseEntity containing a list of all tournaments or an error message if an exception occurs.
+     * @throws RuntimeException if there's an error during the database operation.
      */
     @GetMapping
     public ResponseEntity<?> getAllTournaments() {
@@ -47,6 +48,8 @@ public class TournamentsController {
      * 
      * @param tournamentName the name of the tournament to retrieve.
      * @return a ResponseEntity containing the tournament object or an error message if the tournament is not found or an exception occurs.
+     * @throws TournamentNotFoundException if no tournament with the specified name is found.
+     * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
     @GetMapping("/{tournamentName}")
     public ResponseEntity<?> getTournamentByName(@PathVariable String tournamentName) {
@@ -68,6 +71,7 @@ public class TournamentsController {
      * 
      * @param tournament the tournament object to be created.
      * @return a CompletableFuture containing a ResponseEntity with the created tournament or error messages if validation fails.
+     * @throws RuntimeException if there's an unexpected error during the creation process.
      */
     @PostMapping("/create")
     public CompletableFuture<ResponseEntity<?>> createTournament(@RequestBody Tournament tournament) {
@@ -91,6 +95,8 @@ public class TournamentsController {
      * 
      * @param tournamentName the name of the tournament to check for availability.
      * @return a CompletableFuture containing a ResponseEntity with the availability status or error messages if validation fails.
+     * @throws IllegalArgumentException if the tournament name is null or empty.
+     * @throws RuntimeException for any unexpected errors during the availability check.
      */
     @GetMapping("/check-name-availability")
     public CompletableFuture<ResponseEntity<?>> checkTournamentNameAvailability(@RequestParam String tournamentName) {
@@ -113,17 +119,114 @@ public class TournamentsController {
             });
     }
 
-    // Async method to get ongoing tournaments
+    /**
+     * Retrieves ongoing tournaments from the database.
+     * 
+     * @return a CompletableFuture containing a ResponseEntity with the list of ongoing tournaments or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if no ongoing tournaments are found.
+     * @throws RuntimeException for any unexpected errors during the retrieval process.
+     */
     @GetMapping("/ongoing")
     public CompletableFuture<ResponseEntity<?>> getOngoingTournaments() {
         return tournamentService.getOngoingTournaments()
-        .<ResponseEntity<?>>thenApply(ongoingTournaments -> {
-            return ResponseEntity.ok(ongoingTournaments);
-        })
-        .exceptionally(e -> {
-            logger.error("Unexpected error getting ongoing tournaments!", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching ongoing tournaments"));
-        });
+            .<ResponseEntity<?>>thenApply(ongoingTournaments -> {
+                logger.info("Total ongoing tournaments: {}", ongoingTournaments.size());
+                return ResponseEntity.ok(ongoingTournaments);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof TournamentNotFoundException) {
+                    logger.error("No ongoing tournaments found!", e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error getting ongoing tournaments!", e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "An unexpected error occurred while fetching ongoing tournaments"));
+                }
+            });
     }
+
+    /**
+     * Asynchronously retrieves all tournaments history.
+     * 
+     * @return a CompletableFuture containing a ResponseEntity with the list of all tournaments history or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if no tournaments are found in history.
+     * @throws RuntimeException for any unexpected errors during the retrieval process.
+     */
+    @GetMapping("/history")
+    public CompletableFuture<ResponseEntity<?>> getAllTournamentsHistory() {
+        return tournamentService.getAllHistory()
+            .<ResponseEntity<?>>thenApply(allTournamentsHistory -> {
+                logger.info("Total tournaments history: {}", allTournamentsHistory.size());
+                return ResponseEntity.ok(allTournamentsHistory);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof TournamentNotFoundException) {
+                    logger.error("No tournaments found!", e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error getting all tournaments history!", e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "An unexpected error occurred while fetching all tournaments history"));
+                }
+            });
+    }
+
+    /**
+     * Asynchronously retrieves the tournaments history for a specific user.
+     * 
+     * @param userName the name of the user to retrieve the tournaments history for.
+     * @return a CompletableFuture containing a ResponseEntity with the list of tournaments history for the user or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if no tournaments are found for the specified user.
+     * @throws RuntimeException for any unexpected errors during the retrieval process.
+     */
+    @GetMapping("/{userName}/history")
+    public CompletableFuture<ResponseEntity<?>> getTournamentsHistoryByUserName(@PathVariable String userName) {
+        return tournamentService.getUserHistory(userName)
+            .<ResponseEntity<?>>thenApply(userTournamentHistory -> {
+                logger.info("Total tournaments history by user: {}", userTournamentHistory.size());
+                return ResponseEntity.ok(userTournamentHistory);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof TournamentNotFoundException) {
+                    logger.error("No tournaments found for user: {}", userName, e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error getting tournaments history by user: {}", userName, e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "An unexpected error occurred while fetching tournaments history by user"));
+                }
+            });
+    }
+
+    // Async router to get all of the tournaments that a user can participate in
+    @GetMapping("/{userName}/availableTournaments")
+    public CompletableFuture<ResponseEntity<?>> getUserAvailableTournaments(@PathVariable String userName) {
+        return tournamentService.getUserAvailableTournaments(userName)
+            .<ResponseEntity<?>>thenApply(userAvailableTournaments -> {
+                logger.info("Total available tournaments for user: {}", userName);
+                return ResponseEntity.ok(userAvailableTournaments);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof UserNotFoundException) {
+                    logger.error("User not found!", e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", cause.getMessage()));
+                } else if (cause instanceof TournamentNotFoundException) {
+                    logger.error("No tournaments found!", e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error getting user available tournaments!", e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "An unexpected error occurred while fetching user available tournaments"));
+                }
+            });
+    }
+
+
 }
