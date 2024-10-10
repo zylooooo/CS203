@@ -228,7 +228,7 @@ function AdministratorTournaments() {
         <Tournaments tournamentTest={tournamentTest} onEditClick={handleEditClick} isMyTournaments={isMyTournaments} />
 
         {/* BUTTONS AT THE BOTTOM */}
-        <div className="tournament-actions flex justify-end">
+        <div className="tournament-actions flex fixed right-12 bottom-8 justify-end ">
           <button
             onClick={handleCreateClick}
             className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 shadow-md transition duration-300 ease-in-out"
