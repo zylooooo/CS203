@@ -242,34 +242,86 @@ public class UserService {
         }
     }
 
-    // Async service to delete users from the user database as well as the upcoming tournaments that they are participating in
+    /**
+     * Asynchronously deletes a user from the user database and removes them from any ongoing or future tournaments they are participating in.
+     *
+     * This method performs the following actions:
+     * 1. Retrieves the user by their username.
+     * 2. Fetches all ongoing and future tournaments.
+     * 3. Removes the user from the players pool of each tournament.
+     * 4. Handles incomplete matches by removing the user and determining the winner.
+     * 5. Updates the tournament in the database if any modifications were made.
+     * 6. Deletes the user from the user database.
+     *
+     * @param userName the username of the user to be deleted
+     * @throws UserNotFoundException if the user does not exist
+     * @throws RuntimeException for any unexpected errors during the deletion process
+     */
     @Async("taskExecutor")
     public CompletableFuture<Void> deleteUser(String userName) throws UserNotFoundException, RuntimeException {
         return CompletableFuture.runAsync(() -> {
             try {
+                // Retrieve the user by username, throwing an exception if not found
                 User user = userRepository.findByUserName(userName)
                     .orElseThrow(() -> new UserNotFoundException(userName));
                     
-                List<Tournament> tournaments = tournamentService.getOngoingTournaments().get();
+                // Fetch ongoing and future tournaments that the user is participating in
+                List<Tournament> ongoingAndFutureTournaments = tournamentService.getOngoingTournaments().get();
+                logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
 
-                for (Tournament tournament : tournaments) {
-                    tournament.getPlayersPool().remove(userName);
+                // Iterate through each tournament to remove the user
+                for (Tournament tournament : ongoingAndFutureTournaments) {
+                    boolean tournamentModified = false;
 
-                    for (Tournament.Match match : tournament.getMatches()) {
-                        match.getPlayers().remove(userName);
+                    // Remove user from the players pool of the tournament
+                    if (tournament.getPlayersPool().remove(userName)) {
+                        tournamentModified = true;
+                        logger.info("Removed user {} from players pool of tournament {}", userName, tournament.getTournamentName());
                     }
 
-                    tournamentRepository.save(tournament);
+                    // Handle incomplete matches in the tournament
+                    for (Tournament.Match match : tournament.getMatches()) {
+                        // Check if the match is incomplete and contains the user
+                        if (!match.isCompleted() && match.getPlayers().contains(userName)) {
+                            match.getPlayers().remove(userName); // Remove the user from the match
+                            tournamentModified = true;
+                            logger.info("Removed user {} from incomplete match in tournament {}", userName, tournament.getTournamentName());
+
+                            // Determine the winner and mark the match as completed
+                            if (!match.getPlayers().isEmpty()) {
+                                String winner = match.getPlayers().get(0); // Set the first remaining player as the winner
+                                match.setMatchWinner(winner);
+                                match.setCompleted(true);
+                                match.setRounds(new ArrayList<>()); // Delete all rounds
+                                logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner, tournament.getTournamentName());
+                            } else {
+                                // If no players left, mark match as completed without a winner
+                                match.setCompleted(true);
+                                match.setRounds(new ArrayList<>()); // Delete all rounds
+                                logger.info("Marked match as completed without a winner and deleted all rounds in tournament {}", tournament.getTournamentName());
+                            }
+                        }
+                    }
+
+                    // Save the tournament only if modifications were made
+                    if (tournamentModified) {
+                        Tournament updatedTournament = tournamentRepository.save(tournament);
+                        logger.info("Updated tournament {}: players pool size = {}, matches size = {}", 
+                                    updatedTournament.getTournamentName(), 
+                                    updatedTournament.getPlayersPool().size(),
+                                    updatedTournament.getMatches().size());
+                    }
                 }
 
+                // Delete the user from the user database
                 userRepository.delete(user);
                 logger.info("User deleted successfully: {}", userName);
             } catch (UserNotFoundException e) {
-                logger.error("User not Found: {}", userName);
-                throw e;
+                logger.error("User not found: {}", userName);
+                throw e; // Rethrow the exception for handling upstream
             } catch (Exception e) {
                 logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
-                throw new RuntimeException(e.getMessage(), e);
+                throw new RuntimeException("Error deleting user: " + e.getMessage(), e); // Wrap and throw a runtime exception
             }
         });
     }

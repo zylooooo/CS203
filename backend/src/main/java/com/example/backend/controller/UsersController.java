@@ -78,8 +78,8 @@ public class UsersController {
      * @param email the email to check for availability (optional)
      * @return a CompletableFuture containing a response entity with the availability status and message.
      */
-    @GetMapping("/signup/check-availability")
-    public CompletableFuture<ResponseEntity<?>> checkAvailability(@RequestParam(required = false) String userName, @RequestParam(required = false) String email) {
+    @GetMapping("/signup/check-credentials-availability")
+    public CompletableFuture<ResponseEntity<?>> checkCredentialsAvailability(@RequestParam(required = false) String userName, @RequestParam(required = false) String email) {
         Map<String, Object> response = new HashMap<>();
 
         if (userName == null && email == null) {
