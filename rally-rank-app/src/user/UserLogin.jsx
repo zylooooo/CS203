@@ -118,7 +118,7 @@ function UserLogin() {
                         </span>
                         <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
                     </div>
-                    <div className="text-xs text-blue-500 text-center pt-2">
+                    <div className="text-xs text-center pt-2">
                         Don't have a RallyRank account?
                         <Link
                             to="/sign-up"
@@ -132,7 +132,7 @@ function UserLogin() {
                 <DevTool control={control} />
                 </div>
                 <div className = "card p-7 rounded-none bg-primary-color-white border-none items-center">
-                    <div className="text-blue-500 text-ms flex flex-row justify-center align-item">
+                    <div className="text-ms flex flex-row justify-center align-item">
                         RallyRank Administrator?
                         <Link
                             to="/administrator-login"

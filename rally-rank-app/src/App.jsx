@@ -74,7 +74,7 @@ function App() {
 
                     {/* Admin SignUp */}
                     <Route 
-                        path="/admin-sign-up"
+                        path="/administrator-sign-up"
                         element={
                             <MainLayout>
                                 <AdminSignUp />
