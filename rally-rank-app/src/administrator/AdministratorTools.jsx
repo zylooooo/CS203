@@ -116,19 +116,26 @@ const PlayersTable = ({ players, handleIncrement, handleDecrement }) => {
 function AdministratorTools() {
   const [players, setPlayers] = useState(allPlayers);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(null);
+  const [strikeReason, setStrikeReason] = useState("");
 
   const handleIncrement = (playerIndex) => {
+    setSelectedPlayerIndex(playerIndex); // Show textbox for reason
+  };
+
+  const handleSubmitStrikeReason = () => {
     setPlayers((prevPlayers) => {
       const updatedPlayers = [...prevPlayers];
-      // Increment strikes only if less than 3
-      if (updatedPlayers[playerIndex].strikes < 3) {
-        updatedPlayers[playerIndex] = {
-          ...updatedPlayers[playerIndex],
-          strikes: updatedPlayers[playerIndex].strikes + 1,
+      if (updatedPlayers[selectedPlayerIndex].strikes < 3) {
+        updatedPlayers[selectedPlayerIndex] = {
+          ...updatedPlayers[selectedPlayerIndex],
+          strikes: updatedPlayers[selectedPlayerIndex].strikes + 1,
         };
       }
       return updatedPlayers;
     });
+    setSelectedPlayerIndex(null); // Hide textbox after submitting
+    setStrikeReason(""); // Reset the reason field
   };
 
   const handleDecrement = (playerIndex) => {
@@ -166,11 +173,31 @@ function AdministratorTools() {
         handleIncrement={handleIncrement}
         handleDecrement={handleDecrement}
       />
+
+      {selectedPlayerIndex !== null && (
+        <div className="mt-5">
+          <h3>Enter reason for issuing strike to {players[selectedPlayerIndex].name}:</h3>
+          <input
+            type="text"
+            value={strikeReason}
+            onChange={(e) => setStrikeReason(e.target.value)}
+            placeholder="Reason for strike"
+            className="p-2 border border-gray-300 rounded w-full"
+          />
+          <button
+            onClick={handleSubmitStrikeReason}
+            className="mt-3 bg-blue-500 text-white p-2 rounded"
+          >
+            Submit Reason
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 export default AdministratorTools;
+
 
 
 
