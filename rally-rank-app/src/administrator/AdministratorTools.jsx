@@ -12,7 +12,14 @@ const allPlayers = [
     elo : 400,
     gender : "M",
     dateOfBirth : "2002-01-01",
-    participatedTournaments : Array(length),
+    participatedTournaments : [
+      {
+        tournamentName: "Spring Championship",
+      },
+      {
+        tournamentName: "Singapore Open",
+      },
+    ],
     medicalInformation : {
         emergencyContactName : "Clairo",
         emergencyContactNumber : "999",
@@ -24,7 +31,13 @@ const allPlayers = [
     firstName : "Michael",
     lastName : "Bublé",
     isAvailable : true,
-    strikeReport : Array(length)
+    strikeReport : [
+      {
+        reportedDetails : "angry",
+        dateCreated : "2024-09-29 13:30",
+        issuedBy : "adminName"
+      },
+    ],
   },
   {
     email : "user@gmail.com",
@@ -32,7 +45,14 @@ const allPlayers = [
     elo : 400,
     gender : "M",
     dateOfBirth : "2002-01-01",
-    participatedTournaments : Array(length),
+    participatedTournaments : [
+      {
+        tournamentName: "Spring Championship",
+      },
+      {
+        tournamentName: "Singapore Open",
+      },
+    ],
     medicalInformation : {
         emergencyContactName : "Clairo",
         emergencyContactNumber : "999",
@@ -44,7 +64,18 @@ const allPlayers = [
     firstName : "Michael",
     lastName : "Scott",
     isAvailable : true,
-    strikeReport : Array (1)
+    strikeReport : [
+      {
+        reportedDetails : "angry",
+        dateCreated : "2024-09-29 13:30",
+        issuedBy : "adminName"
+      },
+      {
+        reportedDetails : "reason for ban",
+        dateCreated : "2024-09-29 13:30",
+        issuedBy : "<reference to adminName>"
+      },
+    ],
   },
   {
     email : "user@gmail.com",
@@ -52,7 +83,14 @@ const allPlayers = [
     elo : 400,
     gender : "M",
     dateOfBirth : "2002-01-01",
-    participatedTournaments : Array(length),
+    participatedTournaments : [
+      {
+        tournamentName: "Spring Championship",
+      },
+      {
+        tournamentName: "Singapore Open",
+      },
+    ],
     medicalInformation : {
         emergencyContactName : "Clairo",
         emergencyContactNumber : "999",
@@ -64,7 +102,7 @@ const allPlayers = [
     firstName : "Michael",
     lastName : "Jordan",
     isAvailable : true,
-    strikeReport : Array (1)
+    strikeReport : [ ],
   },
   {
     email : "user@gmail.com",
@@ -72,7 +110,14 @@ const allPlayers = [
     elo : 400,
     gender : "M",
     dateOfBirth : "2002-01-01",
-    participatedTournaments : Array(length),
+    participatedTournaments : [
+      {
+        tournamentName: "Spring Championship",
+      },
+      {
+        tournamentName: "Singapore Open",
+      },
+    ],
     medicalInformation : {
         emergencyContactName : "Clairo",
         emergencyContactNumber : "999",
@@ -81,48 +126,22 @@ const allPlayers = [
     profilePic : profilePictureTest1,
     password : "userPW",
     userName : "UserName",
-    firstName : "Michael",
+    firstName : "Michael B.",
     lastName : "Jordan",
     isAvailable : true,
-    strikeReport : Array (1)
+    strikeReport : [
+      {
+        reportedDetails : "angry",
+        dateCreated : "2024-09-29 13:30",
+        issuedBy : "adminName"
+      },
+      {
+        reportedDetails : "threw racket at me",
+        dateCreated : "2024-09-29 13:30",
+        issuedBy : "<reference to adminName>"
+      },
+    ],
   },
-
-  // {
-  //   profilePicture: profilePictureTest1,
-  //   name: "John Doe",
-  //   username: "johnny123",
-  //   gender: "Male",
-  //   age: 25,
-  //   eloRating: 1350,
-  //   strikes: 0,
-  // },
-  // {
-  //   profilePicture: profilePictureTest2,
-  //   name: "Jane Smith",
-  //   username: "janesmith",
-  //   gender: "Female",
-  //   age: 27,
-  //   eloRating: 1400,
-  //   strikes: 1,
-  // },
-  // {
-  //   profilePicture: profilePictureTest1,
-  //   name: "Sam Wilson",
-  //   username: "samwilson",
-  //   gender: "Male",
-  //   age: 22,
-  //   eloRating: 1200,
-  //   strikes: 2,
-  // },
-  // {
-  //   profilePicture: profilePictureTest2, // Same profile picture as player 2
-  //   name: "Alice Brown",
-  //   username: "alicebrown",
-  //   gender: "Female",
-  //   age: 30,
-  //   eloRating: 1300,
-  //   strikes: 0,
-  // },
 ];
 
 // TABLE OF PLAYERS
@@ -224,14 +243,18 @@ const StrikeReport = ({ player, onClose, setPlayers }) => {
       const playerIndex = updatedPlayers.findIndex(
         (p) => p.username === player.username
       );
-      // Increment strikes only if less than 3
+
       // EDIT TO ADD STRIKE REPORT TO STRIKEREPORT ARRAY (POST)
+      // 1. reportedDetails = data.reason
+      // 2. dateCreated = new Date()
+      // 3. issuedBy = get adminName from session
       if (updatedPlayers[playerIndex].strikes < 3) {
         updatedPlayers[playerIndex] = {
           ...updatedPlayers[playerIndex],
           strike: updatedPlayers[playerIndex].strikes + 1,
         };
       }
+
       return updatedPlayers;
     });
   };
@@ -298,10 +321,13 @@ const ViewStrike = ({ player, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-primary-color-white bg-opacity-50">
       <div className="card p-6 rounded-lg w-1/3 bg-primary-color-white">
         <h2 className="text-xl font-bold mb-4">Strikes for {player.firstName} {player.lastName}</h2>
-        <div className="flex flex-col gap-2">
-          <span>Strikes: {player.strikeReport.length}</span>
-          <span>Username: {player.userName}</span>
-        </div>
+        {player.strikeReport.map((report, index) => (
+            <div key={index} className="border p-2 rounded">
+              <p><strong>Reason:</strong> {report.reportedDetails}</p>
+              <p><strong>Date Created:</strong> {report.dateCreated}</p>
+              <p><strong>Issued By:</strong> {report.issuedBy}</p>
+            </div>
+          ))}
         <div className="flex justify-end">
           <button
             onClick={onClose}
