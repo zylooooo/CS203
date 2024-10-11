@@ -188,6 +188,39 @@ public class TournamentService {
         }
     }
 
+    // Async method to get all current tournaments
+    @Async("taskExecutor")
+    public CompletableFuture<List<Tournament>> getCurrentTournaments() throws TournamentNotFoundException, RuntimeException {
+        try {
+            logger.info("Attempting to fetch all current tournaments!");
+
+            LocalDate currentDate = LocalDate.now();
+            List<Tournament> allTournaments = tournamentRepository.findAll();
+            if (allTournaments.isEmpty()) {
+                throw new TournamentNotFoundException();
+            }
+
+            List<Tournament> currentTournaments = allTournaments.stream()
+                .filter(t -> t.isOngoing() &&
+                            (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
+                            (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
+                .collect(Collectors.toList());
+            
+            if (currentTournaments.isEmpty()) {
+                throw new TournamentNotFoundException();
+            }
+
+            logger.info("Total current tournaments: {}", currentTournaments.size());
+            return CompletableFuture.completedFuture(currentTournaments);
+        } catch (TournamentNotFoundException e) {
+            logger.error("No tournaments found!", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error fetching all current tournaments", e);
+            throw new RuntimeException("Unexpected error occurred while fetching all current tournaments", e);
+        }
+    }
+
     /**
      * Asynchronously retrieves all tournaments history.
      * 

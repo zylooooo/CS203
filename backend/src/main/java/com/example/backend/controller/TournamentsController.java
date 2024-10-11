@@ -147,6 +147,28 @@ public class TournamentsController {
             });
     }
 
+    // Async method to get all current tournaments
+    @GetMapping("/current")
+    public CompletableFuture<ResponseEntity<?>> getCurrentTournaments() {
+        return tournamentService.getCurrentTournaments()
+            .<ResponseEntity<?>>thenApply(currentTournaments -> {
+                logger.info("Total current tournaments: {}", currentTournaments.size());
+                return ResponseEntity.ok(currentTournaments);
+            })
+            .exceptionally(e -> {
+                Throwable cause = e.getCause();
+                if (cause instanceof TournamentNotFoundException) {
+                    logger.error("No current tournaments found!", e);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", cause.getMessage()));
+                } else {
+                    logger.error("Unexpected error getting current tournaments!", e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "An unexpected error occurred while fetching current tournaments"));
+                }
+            });
+    }
+
     /**
      * Asynchronously retrieves all tournaments history.
      * 
