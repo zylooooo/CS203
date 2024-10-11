@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const AdminTournamentsEditForm = ({ register, errors, tournamentData }) => {
+const AdministratorEditTournaments = ({ register, errors, tournamentData }) => {
   const [isSignUp, setIsSignUp] = useState(false); // Default to false for "No"
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   
