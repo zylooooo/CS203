@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admins")
 public class AdminController {
 
     @GetMapping("/dashboard")
-    @PreAuthorize("hasRole('ADMIN')")
     public String adminDashboard() {
         return "Welcome to the Admin Dashboard!";
     }
