@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import java.util.concurrent.Executor;
 import java.lang.reflect.Method;
 
+// TODO To remove if not used
+
 @Configuration
 @EnableAsync    
 public class AsyncConfig implements AsyncConfigurer {

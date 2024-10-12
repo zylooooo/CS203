@@ -47,8 +47,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/users/**").hasRole("USER")
-                .requestMatchers("/admins/**").hasRole("ADMIN")
+                .requestMatchers("/users/**", "/usersTournaments/**").hasRole("USER")
+                .requestMatchers("/admins/**", "/adminsTournaments/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
