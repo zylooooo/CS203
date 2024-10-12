@@ -21,6 +21,8 @@ import jakarta.validation.constraints.*;
 @Document(collection = "user")
 public class User {
 
+    
+
     private boolean enabled;
 
     private String verificationCode;
@@ -105,4 +107,7 @@ public class User {
         @NotNull(message = "Admin Name is required!")
         private String issuedBy;
     }
+
+    // Default role is USER FOR JWT
+    private String role = "USER";
 }

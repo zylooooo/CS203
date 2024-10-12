@@ -1,11 +1,15 @@
 package com.example.backend.security;
 
 import com.example.backend.model.User;
+
+
+
 import com.example.backend.model.Admin;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collections;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,7 +37,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole())); // use singletonList to avoid duplicate entries
 
         return new UserPrincipal(
             user.getId(),
@@ -45,7 +49,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(Admin admin) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(admin.getRole())); // use singletonList to avoid duplicate entries
 
         return new UserPrincipal(
             admin.getId(),

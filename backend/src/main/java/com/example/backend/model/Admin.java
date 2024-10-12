@@ -40,4 +40,7 @@ public class Admin {
     @Indexed(unique = true)
     @NotNull(message = "Admin name is required!")
     private String adminName;
+
+    // Default role is ADMIN FOR JWT
+    private String role = "ADMIN";
 }

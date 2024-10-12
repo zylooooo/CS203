@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -39,10 +40,20 @@ public class JwtService {
     }
 
     public String generateToken(UserPrincipal userPrincipal) {
+
+        // Generate the role claim for the JWT token and add it to the claims map
+        // Add the role to the claims map to be used for authorization
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userPrincipal.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("User has no assigned role")));
+
         return generateToken(new HashMap<>(), userPrincipal);
     }
     
     public String generateToken(Map<String, Object> extraClaims, UserPrincipal userPrincipal) {
+
         return buildToken(extraClaims, userPrincipal, jwtExpiration);
     }
 
