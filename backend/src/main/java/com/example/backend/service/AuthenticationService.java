@@ -82,17 +82,6 @@ public class AuthenticationService {
     }
 
     public UserPrincipal authenticate(LoginUserDto loginUserDto) {
-        // User user = userRepository.findByUsername(loginUserDto.getUsername())
-        //             .orElseThrow(() -> new UserNotFoundException(loginUserDto.getUsername()));
-    
-        // if (!user.isEnabled()) {
-        //     throw new UserNotEnabledException("Account not verified. Please check your email to enable your account.");
-        // }
-    
-        // authenticationManager.authenticate(
-        //     new UsernamePasswordAuthenticationToken(loginUserDto.getUsername(), loginUserDto.getPassword()));
-    
-        // return UserPrincipal.create(user);
 
         Optional<User> userOptional = userRepository.findByUsername(loginUserDto.getUsername());
         Optional<Admin> adminOptional = adminRepository.findByAdminName(loginUserDto.getUsername());
@@ -118,10 +107,31 @@ public class AuthenticationService {
 
     public void verifyUser(VerifyUserDto verifyUserDto) {
 
-        User user = userRepository.findByUsername(verifyUserDto.getUsername())
-        .orElseThrow(() -> new UserNotFoundException("User not found with username: " + verifyUserDto.getUsername()));
+        // User user = userRepository.findByUsername(verifyUserDto.getUsername())
+        // .orElseThrow(() -> new UserNotFoundException("User not found with username: " + verifyUserDto.getUsername()));
 
-        if (user.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
+        // if (user.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
+        //     throw new VerificationCodeExpiredException("Verification code has expired");
+        // }
+
+        // if (!user.getVerificationCode().equals(verifyUserDto.getVerificationCode())) {
+        //     throw new InvalidVerificationCodeException("Invalid verification code");
+        // }
+
+        // user.setEnabled(true);
+        // user.setVerificationCode(null);
+        // user.setVerificationCodeExpiration(null);
+        // userRepository.save(user);
+
+        User user = userRepository.findByUsername(verifyUserDto.getUsername())
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.isEnabled()) {
+            throw new UserAlreadyVerifiedException("User is already verified");
+        }
+
+        if (user.getVerificationCodeExpiration() == null || 
+            user.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
             throw new VerificationCodeExpiredException("Verification code has expired");
         }
 
@@ -131,8 +141,8 @@ public class AuthenticationService {
 
         user.setEnabled(true);
         user.setVerificationCode(null);
-        user.setVerificationCodeExpiration(null);
-        userRepository.save(user);
+            user.setVerificationCodeExpiration(null);
+            userRepository.save(user);
 
     }
 
