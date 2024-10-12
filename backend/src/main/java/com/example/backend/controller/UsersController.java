@@ -36,7 +36,8 @@ public class UsersController {
             List<User> users = userService.getAllUsers();
             return ResponseEntity.ok(users);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while fetching all users!"));
+            logger.error("Unexpected error while fetching all users: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while fetching all users!"));
         }
     }
 
@@ -55,10 +56,12 @@ public class UsersController {
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
         } catch (Exception e) {
             logger.error("Error retrieving user profile: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while retrieving the user profile!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while retrieving the user profile!"));
         }
     }
 
@@ -67,8 +70,8 @@ public class UsersController {
         Map<String, Object> response = new HashMap<>();
 
         if (username == null && email == null) {
-            response.put("message", "Either username or email must be provided!");
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.badRequest()
+                .body(new ErrorResponse("INVALID_REQUEST", "Either username or email must be provided!"));
         }
 
         StringBuilder message = new StringBuilder();
@@ -106,37 +109,6 @@ public class UsersController {
         response.put("message", message.toString().trim());
 
         return ResponseEntity.ok(response);
-    }
-
-        /**
-     * Creates a new user and updates the user details in the database.
-     *
-     * This method handles the HTTP POST request to the "/signup" endpoint. 
-     * It validates the user data and checks for any existing users with the same email or username. 
-     * If validation fails, it returns a bad request response with the validation error messages. 
-     * If the user is created successfully, it returns a success response with the created user details.
-     *
-     * @param user the User object containing the details of the user to be created.
-     * @return a ResponseEntity. If the user is created successfully,
-     *         it returns a ResponseEntity with HTTP status 200 (OK) and the created user. 
-     *         If there are validation errors or other issues, it returns a ResponseEntity with
-     *         HTTP status 400 (Bad Request) or 500 (Internal Server Error)
-     *         and the corresponding error message.
-     */
-    @PostMapping("/signup")
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        try {
-            User createdUser = userService.createUser(user);
-            logger.info("User created successfully: {}", createdUser.getUsername());
-            return ResponseEntity.ok(createdUser);
-        } catch (IllegalArgumentException e) {
-            logger.error("Validation errors during user creation: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Error creating user: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "An unexpected error occurred while creating the user!"));
-        }
     }
 
        /**
@@ -187,15 +159,15 @@ public class UsersController {
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error updating user availability: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while updating the user availability!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while updating the user availability!"));
         }
     }
 
-
-    //TO CHANGE (ADD TOURNAMENTS)
     /**
      * Deletes a user based on the user name
      * @param username the username of the user to delete, must not be null or empty
@@ -211,10 +183,12 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of("message", "User deleted successfully!"));
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while deleting the user!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while deleting the user!"));
         }
     }
 
@@ -227,14 +201,16 @@ public class UsersController {
             return ResponseEntity.ok(userAvailableTournaments);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username, e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
         } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found for user: {}", username, e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            logger.info("No available tournaments found for user: {}", username);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("NO_AVAILABLE_TOURNAMENTS", "No tournaments are currently available for this user to join."));
         } catch (Exception e) {
             logger.error("Unexpected error getting available tournaments for user: {}", username, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching user available tournaments"));
+                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while fetching user available tournaments"));
         }
     }
     
