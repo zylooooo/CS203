@@ -8,7 +8,6 @@ import com.example.backend.repository.TournamentRepository;
 import jakarta.validation.constraints.NotNull;
 
 import com.example.backend.exception.EmailAlreadyExistsException;
-import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.UsernameAlreadyExistsException;
 
