@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
+import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.TournamentRepository;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -26,6 +28,10 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TournamentRepository tournamentRepository;
+    private final TournamentService tournamentService;
+
+
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
 
@@ -212,19 +218,71 @@ public class UserService {
         }
     }
 
-    // TO CHANGE (ADD TOURNAMENTS )
-
     /**
-     * Deletes a user from the database based on the username.
+     * Deletes a user from the user database and removes them from any ongoing or future tournaments they are participating in.
+     *
+     * This method performs the following actions:
+     * 1. Retrieves the user by their username.
+     * 2. Fetches all ongoing and future tournaments.
+     * 3. Removes the user from the players pool of each tournament.
+     * 4. Handles incomplete matches by removing the user and determining the winner.
+     * 5. Updates the tournament in the database if any modifications were made.
+     * 6. Deletes the user from the user database.
      *
      * @param username the username of the user to be deleted
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the deletion process
+     * @throws UserNotFoundException if the user does not exist
+     * @throws RuntimeException for any unexpected errors during the deletion process
      */
-    public void deleteUser(String username) throws UserNotFoundException, RuntimeException {
+    public void deleteUser(@NotNull String username) throws UserNotFoundException, RuntimeException {
         try {
             User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
+                
+            List<Tournament> ongoingAndFutureTournaments = tournamentService.getOngoingTournaments();
+            logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
+
+            for (Tournament tournament : ongoingAndFutureTournaments) {
+                boolean tournamentModified = false;
+
+                List<String> playersPool = tournament.getPlayersPool();
+                if (playersPool != null && playersPool.remove(username)) {
+                    tournamentModified = true;
+                    logger.info("Removed user {} from players pool of tournament {}", username, tournament.getTournamentName());
+                }
+
+                List<Tournament.Match> matches = tournament.getMatches();
+                if (matches != null) {
+                    for (Tournament.Match match : matches) {
+                        List<String> players = match.getPlayers();
+                        if (!match.isCompleted() && players != null && players.contains(username)) {
+                            players.remove(username);
+                            tournamentModified = true;
+                            logger.info("Removed user {} from incomplete match in tournament {}", username, tournament.getTournamentName());
+
+                            if (!players.isEmpty()) {
+                                String winner = players.get(0);
+                                match.setMatchWinner(winner);
+                                match.setCompleted(true);
+                                match.setRounds(new ArrayList<>());
+                                logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner, tournament.getTournamentName());
+                            } else {
+                                match.setCompleted(true);
+                                match.setRounds(new ArrayList<>());
+                                logger.info("Marked match as completed without a winner and deleted all rounds in tournament {}", tournament.getTournamentName());
+                            }
+                        }
+                    }
+                }
+
+                if (tournamentModified) {
+                    Tournament updatedTournament = tournamentRepository.save(tournament);
+                    logger.info("Updated tournament {}: players pool size = {}, matches size = {}", 
+                                updatedTournament.getTournamentName(), 
+                                updatedTournament.getPlayersPool() != null ? updatedTournament.getPlayersPool().size() : 0,
+                                updatedTournament.getMatches() != null ? updatedTournament.getMatches().size() : 0);
+                }
+            }
+
             userRepository.delete(user);
             logger.info("User deleted successfully: {}", username);
         } catch (UserNotFoundException e) {
@@ -232,28 +290,8 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
-            throw new RuntimeException("Error deleting user", e);
+            throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
         }
     }
 
-
-    // Used previously for OTP verification
-
-    //     /**
-    //  * Authenticates a user based on the provided username and password.
-    //  *
-    //  * @param username the username of the user to authenticate
-    //  * @param password the password to check against the stored password
-    //  * @return the authenticated User object if successful, null otherwise
-    //  */
-    // public User authenticateUser(String username, String password) {
-    //     Optional<User> userOptional = userRepository.findByUsername(username);
-    //     if (userOptional.isPresent()) {
-    //         User user = userOptional.get();
-    //         if (passwordEncoder.matches(password, user.getPassword())) {
-    //             return user;
-    //         }
-    //     }
-    //     return null;
-    // }
 }
