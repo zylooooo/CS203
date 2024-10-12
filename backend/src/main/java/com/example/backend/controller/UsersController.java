@@ -195,9 +195,9 @@ public class UsersController {
     }
 
 
-    
+    //TO CHANGE (ADD TOURNAMENTS)
     /**
-     * Deletes a user based on the user name, the tournaments that the user is participating in will be updated accordingly
+     * Deletes a user based on the user name
      * @param username the username of the user to delete, must not be null or empty
      * @return a ResponseEntity with a success message if the user is deleted successfully
      * @throws UserNotFoundException if no user with the username is found in the database
