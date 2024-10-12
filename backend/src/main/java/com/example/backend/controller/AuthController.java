@@ -115,6 +115,10 @@ public class AuthController {
             logger.error("Invalid verification code: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse("INVALID_CODE", "Invalid verification code"));
+        } catch (UserAlreadyVerifiedException e) {
+            logger.error("User already verified: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("USER_ALREADY_VERIFIED", "User is already verified"));
         } catch (Exception e) {
             logger.error("Unexpected error during user verification: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
