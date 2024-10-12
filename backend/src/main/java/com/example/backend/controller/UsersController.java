@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.service.UserService;
-import com.example.backend.dto.ErrorResponse;
+import com.example.backend.responses.ErrorResponse;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.UsernameAlreadyExistsException;

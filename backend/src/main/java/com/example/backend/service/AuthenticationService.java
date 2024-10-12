@@ -56,6 +56,10 @@ public class AuthenticationService {
         }
     
         User user = new User();
+
+        // Default role is USER FOR JWT
+        user.setRole("ROLE_USER");
+        
         user.setUsername(registerUserDto.getUsername());
         user.setEmail(registerUserDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
