@@ -1,10 +1,13 @@
 package com.example.backend.controller;
 
+import com.example.backend.service.TournamentService;
 import com.example.backend.service.UserService;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.exception.EmailAlreadyExistsException;
+import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.UsernameAlreadyExistsException;
+import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,7 @@ import java.util.*;
 public class UsersController {
 
     private final UserService userService;
-
+    private final TournamentService tournamentService;
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     // health check endpoint to get all the users
@@ -214,29 +217,25 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while deleting the user!"));
         }
     }
-    
-    // Used previously for OTP verification
 
-    // @PostMapping("/login")
-    // public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
-    //     try {
-    //         User user = userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
-    //         if (user != null) {
-    //             String otp = otpService.generateOTP(user.getUsername());
-    //             boolean emailSent = emailService.sendOtpEmail(user.getEmail(), otp);
-    //             if (emailSent) {
-    //                 session.setAttribute("USER_ID", user.getId());
-    //                 session.setAttribute("needOtpVerification", true);
-    //                 return ResponseEntity.ok(Map.of("message", "OTP sent successfully", "redirect", "/otp/verify"));
-    //             } else {
-    //                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Failed to send OTP"));
-    //             }
-    //         } else {
-    //             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-    //         }
-    //     } catch (Exception e) {
-    //         logger.error("Unexpected error during login: {}", e.getMessage(), e);
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred"));
-    //     }
-    // }
+    // Synchronous method to get all of the tournaments that a user can participate in
+    @GetMapping("/{username}/availableTournaments")
+    public ResponseEntity<?> getUserAvailableTournaments(@PathVariable String username) {
+        try {
+            List<Tournament> userAvailableTournaments = tournamentService.getUserAvailableTournaments(username);
+            logger.info("Total available tournaments for user {}: {}", username, userAvailableTournaments.size());
+            return ResponseEntity.ok(userAvailableTournaments);
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", username, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (TournamentNotFoundException e) {
+            logger.error("No tournaments found for user: {}", username, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error getting available tournaments for user: {}", username, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while fetching user available tournaments"));
+        }
+    }
+    
 }
