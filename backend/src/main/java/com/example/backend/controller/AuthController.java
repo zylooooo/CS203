@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,10 @@ public class AuthController {
 
         try {
             authenticationService.verifyUser(verifyUserDto);
-            return ResponseEntity.ok("User verified successfully");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User verified successfully");
+            response.put("redirectUrl", "/");
+            return ResponseEntity.ok(response);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
