@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
+async function resendCode(username) {}
+
 function UserVerify() {
     const form = useForm();
     const { register, control, handleSubmit, formState } = form;
@@ -35,6 +37,7 @@ function UserVerify() {
             // Return the VerifyResponse object containing JWT and other info
             return response.data;
         } catch (error) {
+            console.log(error.status);
             const status = error.status;
 
             if (status === 404) {
@@ -55,11 +58,9 @@ function UserVerify() {
         // Call the verifyUser function with username and otpCode
         const response = await verifyUser(formData.username, formData.otpCode);
 
-        if (response !== null) {
+        if (response !== undefined) {
             // Re-route to home after successful verification
             navigate("/auth/user-login");
-        } else {
-            setVerifyError("Server is not online!");
         }
     };
 
@@ -129,6 +130,13 @@ function UserVerify() {
                             className="button mt-6 font-bold hover:shadow-inner"
                         >
                             Verify
+                        </button>
+
+                        <button
+                            className="text-xs underline text-secondary-color-dark-green text-center pt-5 hover:text-primary-color-green"
+                            onClick={resendCode}
+                        >
+                            Resend verification code
                         </button>
                     </form>
                 </div>
