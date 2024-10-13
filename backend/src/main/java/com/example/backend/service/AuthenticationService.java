@@ -166,7 +166,7 @@ public class AuthenticationService {
                                 + "</div>"
                                 + "<p style=\"font-size: 16px; line-height: 1.5; margin-bottom: 25px;\">If you didn't request this verification, please ignore this email or contact our support team if you have any concerns.</p>"
                                 + "</div>"
-                          + "<div style=\"background-color: #f0f0f0; color: #888; text-align: center; padding: 20px; font-size: 14px;\">"
+                                + "<div style=\"background-color: #f0f0f0; color: #888; text-align: center; padding: 20px; font-size: 14px;\">"
                                 + "&copy; 2024 RallyRank. All rights reserved."
                                 + "</div>"
                                 + "</div>"
