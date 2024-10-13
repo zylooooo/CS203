@@ -92,7 +92,7 @@ function App() {
 
                     {/* Protected Player Routes */}
                     <Route
-                        path="/home"
+                        path="/users/home"
                         element={
                             <PrivateRoute>
                                 <MainLayout>
