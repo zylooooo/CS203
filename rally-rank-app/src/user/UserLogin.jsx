@@ -57,7 +57,7 @@ function UserLogin() {
             formData.password
         );
 
-        if (response !== null) {
+        if (response !== undefined) {
             // Store user in local database
             const userData = {
                 username: formData.username,
@@ -166,6 +166,14 @@ function UserLogin() {
                             >
                                 <br />
                                 Sign up as a new player
+                            </Link>
+                        </div>
+                        <div className="text-xs text-center pt-2">
+                            <Link
+                                to="/auth/user-verify"
+                                className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
+                            >
+                                Looking to verify? Click here
                             </Link>
                         </div>
                     </form>
