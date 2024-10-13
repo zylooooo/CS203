@@ -9,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class RegisterUserDto {
+public class UserRegisterDto {
 
     private String username;
     private String email;
