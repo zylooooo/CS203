@@ -6,11 +6,11 @@ function PublicNavBar() {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-        navigate('/user-login'); 
+        navigate('/auth/user-login'); 
     };
 
     const handleSignUpClick = () => {
-        navigate('/sign-up', { state: { email } }); 
+        navigate('/auth/sign-up', { state: { email } }); 
     };
     
     return (
