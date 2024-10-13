@@ -4,7 +4,6 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +37,6 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
     public AuthenticationService(UserRepository userRepository, AdminRepository adminRepository, PasswordEncoder passwordEncoder, EmailService emailService, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.adminRepository = adminRepository;
@@ -191,7 +189,6 @@ public class AuthenticationService {
     }
 
     public LoginResponse login(LoginUserDto loginUserDto) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'login'");
     }
 }

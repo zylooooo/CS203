@@ -20,9 +20,6 @@ import jakarta.validation.constraints.*;
 @AllArgsConstructor
 @Document(collection = "user")
 public class User {
-
-    
-
     private boolean enabled;
 
     private String verificationCode;

@@ -1,6 +1,5 @@
 package com.example.backend.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,7 +22,6 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
 
-    @Autowired
     public ApplicationConfig(UserRepository userRepository, AdminRepository adminRepository) {
         this.userRepository = userRepository;
         this.adminRepository = adminRepository;
