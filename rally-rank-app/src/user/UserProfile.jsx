@@ -93,7 +93,7 @@ function UserProfile() {
                             Edit Personal Information
                         </button>
 
-                        {/* EDIT PERSONAL INFORMATION */}
+                        {/* EDIT MEDICAL INFORMATION */}
                         <button
                             onClick = {handleMedicalInformationClick}
                             style = {{ backgroundColor: '#DDDDDD', color: '#676767', fontSize: '14px' }}
@@ -104,7 +104,7 @@ function UserProfile() {
                     </div>
 
                     {/* EDIT AVAILABILITY */}
-                    <div className = "mt-5">
+                    {/* <div className = "mt-5">
                         <h2 className = "text-lg font-bold mb-2"> Edit your availability </h2>
                         <div className = "profile-edit-availability w-full h-[300px] justify-center mt-6 border p-10">
                             <h2 
@@ -117,7 +117,7 @@ function UserProfile() {
                                 Calendar goes here.
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </>
             )}
 

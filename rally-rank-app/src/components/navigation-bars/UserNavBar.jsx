@@ -7,7 +7,7 @@ function UserNavBar() {
 
     const handleLogout = () => {
         logoutUser();
-        navigate("/user-login");
+        navigate("/auth/user-login");
     };
 
     return (

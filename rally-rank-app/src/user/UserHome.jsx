@@ -91,7 +91,7 @@ function UserHome() {
             <div className = "leaderboard-buttons flex gap-5 mb-4">
                 {buttons.map((buttonLabel, index) => (
                     <button
-                        key = {index}
+                        key = { index }
                         className = {`btn transition-colors duration-300 ${
                             activeButton === index
                             ? "active-button underline text-blue-600"   // active state
@@ -117,13 +117,13 @@ function UserHome() {
     };
 
     return (
-        <div className = {`home-container main-container transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100" }`}>
+        <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100" }`}>
 
             {/* ROW CONTAINER: JOIN TOURNAMENTS, SCHEDULED TOURNAMENTS, NOTIFICATIONS */}
-            <div className = "row-container flex flex-col w-3/5 gap-8">
+            <div className = "row-container flex flex-col w-3/5 gap-6">
                 
                 {/* JOIN TOURNAMENTS */}
-                <div className = "join-tournaments-container bg-white p-6 gap-2">
+                <div className = "join-tournaments-container bg-white p-6 gap-2 h-1/5">
                     <h2 className = "text-xl font-semibold mb-4"> Join a Tournament Today! </h2>
                     <button
                         className = "join-button bg-green-600 text-white font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full"
@@ -135,9 +135,9 @@ function UserHome() {
                 </div>
 
                 {/* NOTIFICATIONS */}
-                <div className = "notification-container">
+                <div className = "notification-container h-1/3">
                     <h2 className = "text-xl font-semibold mb-2"> Your Notifications </h2>
-                    <div className = "notification-box bg-gray-100 text-sm text-center w-full h-40 flex items-center justify-center rounded-[8px]" style = {{ backgroundColor: '#E0E0E0' }}>
+                    <div className = "notification-box bg-gray-100 text-sm text-center w-full flex items-center justify-center rounded-[8px] h-4/6 overflow-auto" style = {{ backgroundColor: '#E0E0E0' }}>
 
                         {/* NOTIFICATIONS HERE */}
                         <p className = "text-sm">
@@ -148,9 +148,9 @@ function UserHome() {
                 </div>
 
                 {/* SCHEDULED TOURNAMENTS */}
-                <div className = "scheduled-tournaments-container">
+                <div className = "scheduled-tournaments-container h-1/3">
                     <h2 className = "text-xl font-semibold mb-4">Your Scheduled Tournaments</h2>
-                    <div className = "p-6 bg-blue-500 text-white rounded shadow-lg">
+                    <div className = "p-6 bg-blue-500 text-white rounded shadow-lg h-5/6 overflow-auto">
 
                         {/* UPCOMING TOURNAMENTS LIST */}
                         <div className = "space-y-4" >
@@ -184,10 +184,10 @@ function UserHome() {
             </div>
 
         {/* COLUMN CONTAINER: LEADERBOARD, AVAILABILITY */}
-        <div className = "col-container gap-20 h-screen">
+        <div className = "col-container gap-20">
 
             {/* LEADERBOARD */}
-            <div className = "leaderboard-container h-1/2 gap-8">
+            <div className = "leaderboard-container h-1/2 gap-8 p-3">
                 <h2 className = "text-xl font-semibold"> Tournament Leaderboard </h2>
                 <LeaderboardButtons
                     buttons = {["Top", "You"]}
@@ -219,7 +219,7 @@ function UserHome() {
             </div>
 
             {/* AVAILABILITY */}
-            <div className = "availability-container h-1/2 gap-8">
+            <div className = "availability-container h-1/2 gap-8 p-3">
                 <h2 className = "text-xl font-semibold"> Availability </h2>
                 <div className = "availability-box bg-gray-100 border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
                     <p> Are you available for tournaments? </p>
