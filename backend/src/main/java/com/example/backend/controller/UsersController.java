@@ -1,13 +1,10 @@
 package com.example.backend.controller;
 
-import com.example.backend.service.TournamentService;
 import com.example.backend.service.UserService;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.exception.EmailAlreadyExistsException;
-import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.UsernameAlreadyExistsException;
-import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,6 @@ import java.util.*;
 public class UsersController {
 
     private final UserService userService;
-    private final TournamentService tournamentService;
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     // health check endpoint to get all the users
@@ -111,7 +107,7 @@ public class UsersController {
         return ResponseEntity.ok(response);
     }
 
-       /**
+    /**
      * Updates the user details based on the user name
      * @param username the username of the user to update, must not be null or empty
      * @param newUserDetails the new details of the user to be updated
@@ -192,26 +188,69 @@ public class UsersController {
         }
     }
 
-    // Synchronous method to get all of the tournaments that a user can participate in
-    @GetMapping("/{username}/availableTournaments")
-    public ResponseEntity<?> getUserAvailableTournaments(@PathVariable String username) {
+    // Synchronous method to get the default leaderboard for the user
+    @GetMapping("/{username}/leaderboard")
+    public ResponseEntity<?> getDefaultLeaderBoard(@PathVariable String username) {
         try {
-            List<Tournament> userAvailableTournaments = tournamentService.getUserAvailableTournaments(username);
-            logger.info("Total available tournaments for user {}: {}", username, userAvailableTournaments.size());
-            return ResponseEntity.ok(userAvailableTournaments);
+            List<User> leaderboard = userService.getDefaultLeaderboard(username);
+            logger.info("Default leaderboard retrieved successfully for user: {}", username);
+            return ResponseEntity.ok(leaderboard);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
         } catch (UserNotFoundException e) {
-            logger.error("User not found: {}", username, e);
+            logger.error("Unable to find user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
-        } catch (TournamentNotFoundException e) {
-            logger.info("No available tournaments found for user: {}", username);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("NO_AVAILABLE_TOURNAMENTS", "No tournaments are currently available for this user to join."));
-        } catch (Exception e) {
-            logger.error("Unexpected error getting available tournaments for user: {}", username, e);
+                .body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while fetching user available tournaments"));
+                .body(Map.of("error", "An unexpected error occurred while retrieving the default leaderboard!"));
+        }
+    }
+
+    // Synchronous method to get the opposite gender leaderboard for the user
+    @GetMapping("/{username}/opposite-gender-leaderboard")
+    public ResponseEntity<?> getOppositeGenderLeaderboard(@PathVariable String username) {
+        try {
+            List<User> oppositeGenderLeaderboard = userService.getOppositeGenderLeaderboard(username);
+            logger.info("Opposite gender leaderboard retrieved successfully for user: {}", username);
+            return ResponseEntity.ok(oppositeGenderLeaderboard);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (UserNotFoundException e) {
+            logger.error("Unable to find user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while retrieving the opposite gender leaderboard!"));
         }
     }
     
+    // Synchronous method to get the mixed gender leaderboard for the user
+    @GetMapping("/{username}/mixed-gender-leaderboard")
+    public ResponseEntity<?> getMixedGenderLeaderboard(@PathVariable String username) {
+        try {
+            List<User> mixedGenderLeaderboard = userService.getMixedGenderLeaderboard(username);
+            logger.info("Mixed gender leaderboard retrieved successfully for user: {}", username);
+            return ResponseEntity.ok(mixedGenderLeaderboard);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (UserNotFoundException e) {
+            logger.error("Unable to find user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while retrieving the mixed gender leaderboard!"));
+        }
+    }
 }
