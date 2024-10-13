@@ -23,13 +23,13 @@ function AdministratorNavBar() {
                     Tournaments
                 </NavLink>
 
-                {/* ADMINISTRATOR TOOLS */}
+                {/* VIEW PLAYERS */}
                 <NavLink
                     to="/administrator-tools"
                     activeClassName="active"
                     className="text-secondary-color-dark-green hover:text-primary-color-green"
                 >
-                    Administrator Tools
+                    Players
                 </NavLink>
 
                 {/* Manual Admin Logout */}
