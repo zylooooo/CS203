@@ -18,7 +18,7 @@ function UserLogin() {
     const [loginError, setLoginError] = useState(""); // State for handling login errors
 
     async function authenticateUser(username, password) {
-        const response = await fetch("http://localhost:8080/users/login", {
+        const response = await fetch("http://localhost:8080/auth/user-login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

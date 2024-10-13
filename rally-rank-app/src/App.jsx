@@ -62,7 +62,7 @@ function App() {
 
                     {/* SignUp */}
                     <Route 
-                        path="/sign-up"
+                        path="/auth/sign-up"
                         element={
                             <MainLayout>
                                 <SignUp />
