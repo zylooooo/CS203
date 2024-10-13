@@ -72,7 +72,7 @@ function App() {
 
                     {/* UserLogin */}
                     <Route 
-                        path="/user-login"
+                        path="/auth/user-login"
                         element={
                             <MainLayout>
                                 <UserLogin />
