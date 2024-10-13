@@ -312,7 +312,28 @@ public class TournamentService {
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
 
-    public List<Tournament> getUserHistory(String username) throws TournamentNotFoundException {
+    // public List<Tournament> getUserHistory(String username) throws TournamentNotFoundException {
+    //     try {
+    //         List<Tournament> allTournamentsHistory = getAllHistory();
+    //         List<Tournament> userTournamentsHistory = allTournamentsHistory.stream()
+    //             .filter(t -> t.getPlayersPool().contains(username))
+    //             .collect(Collectors.toList());
+    
+    //         if (userTournamentsHistory.isEmpty()) {
+    //             throw new TournamentNotFoundException();
+    //         }
+    
+    //         return userTournamentsHistory;
+    //     } catch (TournamentNotFoundException e) {
+    //         logger.error("No tournaments found!", e);
+    //         throw e;
+    //     } catch (Exception e) {
+    //         logger.error("Error fetching tournaments history by user name", e);
+    //         throw new RuntimeException("Unexpected error occurred while fetching tournaments history by user name", e);
+    //     }
+    // }
+
+    public List<Tournament> getUserHistory(String username) {
         try {
             List<Tournament> allTournamentsHistory = getAllHistory();
             List<Tournament> userTournamentsHistory = allTournamentsHistory.stream()
@@ -320,16 +341,15 @@ public class TournamentService {
                 .collect(Collectors.toList());
     
             if (userTournamentsHistory.isEmpty()) {
-                throw new TournamentNotFoundException();
+                logger.info("No tournament history found for user: {}", username);
+            } else {
+                logger.info("Found {} tournaments in history for user: {}", userTournamentsHistory.size(), username);
             }
     
             return userTournamentsHistory;
-        } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found!", e);
-            throw e;
         } catch (Exception e) {
-            logger.error("Error fetching tournaments history by user name", e);
-            throw new RuntimeException("Unexpected error occurred while fetching tournaments history by user name", e);
+            logger.error("Error fetching tournaments history for user: {}", username, e);
+            throw new RuntimeException("Unexpected error occurred while fetching tournaments history for user", e);
         }
     }
 
@@ -348,67 +368,58 @@ public class TournamentService {
                 .orElseThrow(() -> new UserNotFoundException(username));
             
             List<Tournament> allTournaments = getAllTournaments();
-            if (allTournaments.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
-            
-            List<Tournament> userAvailableTournaments = new ArrayList<>();
-            for (Tournament tournament : allTournaments) {
-                if (!tournament.getGender().equals(user.getGender())) {
-                    continue;
+            LocalDate currentDate = LocalDate.now();
+
+            List<Tournament> userAvailableTournaments = allTournaments.stream()
+            .filter(tournament -> {
+                // Check if the tournament has already started or ended
+                if (tournament.getStartDate().isBefore(currentDate) || tournament.getStartDate().isEqual(currentDate)) {
+                    return false; // Tournament has started or is starting today, so it's not available
                 }
-    
-                List<String> playersPool = tournament.getPlayersPool() != null ? tournament.getPlayersPool() : new ArrayList<>();
-                if (playersPool.contains(username)) {
-                    continue;
+
+                // Check if the tournament is not full
+                if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
+                    return false;
                 }
-    
-                boolean userInMatches = false;
-                List<Tournament.Match> matches = tournament.getMatches();
-                if (matches != null) {
-                    for (Tournament.Match match : matches) {
-                        List<String> players = match.getPlayers();
-                        if (players != null && players.contains(username)) {
-                            userInMatches = true;
-                            break;
-                        }
-                    }
+
+                // Check if the user is not already in the tournament
+                if (tournament.getPlayersPool().contains(username)) {
+                    return false;
                 }
-                if (userInMatches) {
-                    continue;
+
+                // Check if the user's ELO is within the tournament's range
+                if (user.getElo() < tournament.getMinElo() || user.getElo() > tournament.getMaxElo()) {
+                    return false;
                 }
-    
-                int playerElo = user.getElo();
-                Integer minElo = tournament.getMinElo();
-                Integer maxElo = tournament.getMaxElo();
-                if (minElo != null && maxElo != null) {
-                    if (playerElo >= minElo && playerElo <= maxElo) {
-                        userAvailableTournaments.add(tournament);
-                    }
-                } else if (minElo != null) {
-                    if (playerElo >= minElo) {
-                        userAvailableTournaments.add(tournament);
-                    }
-                } else if (maxElo != null) {
-                    if (playerElo <= maxElo) {
-                        userAvailableTournaments.add(tournament);
-                    }
+
+                // Check if the tournament's gender requirement matches the user's gender
+                if (!tournament.getGender().equalsIgnoreCase(user.getGender())) {
+                    return false;
                 }
-            }
-    
-            if (userAvailableTournaments.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
+
+                // Check if the user's age matches the tournament category
+                int userAge = user.getAge();
+                switch (tournament.getCategory()) {
+                    case "U16":
+                        return userAge <= 16;
+                    case "U21":
+                        return userAge <= 21;
+                    case "Open":
+                        return true;
+                    default:
+                        logger.warn("Unknown tournament category: {}", tournament.getCategory());
+                        return false;
+                }
+                })
+                .collect(Collectors.toList());
+
+            logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
             return userAvailableTournaments;
-        } catch (UserNotFoundException e) {
-            logger.error("User not found!", e);
-            throw e;
-        } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found!");
-            throw e;
+
         } catch (Exception e) {
             logger.error("Error fetching user available tournaments", e);
             throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
         }
     }
+
 }
