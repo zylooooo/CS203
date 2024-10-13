@@ -102,10 +102,7 @@ public class AuthController {
 
         try {
             authenticationService.verifyUser(verifyUserDto);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "User verified successfully");
-            response.put("redirectUrl", "/");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok("User verified successfully");
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
