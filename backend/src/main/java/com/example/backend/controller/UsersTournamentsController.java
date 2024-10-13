@@ -117,11 +117,11 @@ public class UsersTournamentsController {
         } catch (TournamentNotFoundException e) {
             logger.error("No tournaments found for user: {}", username, e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting tournaments history by user: {}", username, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching tournaments history by user"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching tournaments history by user"));
         }
     }
 
@@ -143,14 +143,14 @@ public class UsersTournamentsController {
             return ResponseEntity.ok(userAvailableTournaments);
         } catch (UserNotFoundException e) {
             logger.error("User not found!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
         } catch (TournamentNotFoundException e) {
             logger.error("No tournaments found!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting user available tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching user available tournaments"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching user available tournaments"));
         }
     }
 

@@ -63,6 +63,7 @@ public class Tournament {
     private String remarks;
 
     @NotNull(message = "Category is required!")
+    @Pattern(regexp = "^(U16|U21|Open)$", message = "Category must be U16, U21, or Open!")
     private String category;
 
     @NotNull(message = "Player capacity is required!")
