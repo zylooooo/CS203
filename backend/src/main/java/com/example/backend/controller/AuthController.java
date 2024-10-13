@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.responses.ErrorResponse;
-import com.example.backend.dto.LoginUserDto;
+import com.example.backend.dto.LoginDto;
 import com.example.backend.dto.RegisterUserDto;
-import com.example.backend.dto.VerifyUserDto;
+import com.example.backend.dto.VerificationDto;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.InvalidVerificationCodeException;
 import com.example.backend.exception.UserAlreadyVerifiedException;
@@ -45,9 +45,9 @@ public class AuthController {
     }
 
     @PostMapping("/user-signup")
-    public ResponseEntity<?> signup(@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<?> userSignup(@RequestBody RegisterUserDto registerUserDto) {
         try {
-            User registeredUser = authenticationService.signup(registerUserDto);
+            User registeredUser = authenticationService.userSignup(registerUserDto);
             return ResponseEntity.ok(registeredUser);
         } catch (UsernameAlreadyExistsException e) {
             logger.error("Signup error: {}", e.getMessage());
@@ -70,9 +70,9 @@ public class AuthController {
     }
 
     @PostMapping("/user-login")
-    public ResponseEntity<?> login(@RequestBody LoginUserDto loginUserDto) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         try {
-            UserPrincipal authenticatedUser = authenticationService.authenticate(loginUserDto);
+            UserPrincipal authenticatedUser = authenticationService.authenticate(loginDto);
             String jwtToken = jwtService.generateToken(authenticatedUser);
             LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getJwtExpiration());
             return ResponseEntity.ok(loginResponse);
@@ -96,10 +96,10 @@ public class AuthController {
     }
 
     @PostMapping("/user-verify")
-    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
+    public ResponseEntity<?> verifyUser(@RequestBody VerificationDto verificationDto) {
 
         try {
-            authenticationService.verifyUser(verifyUserDto);
+            authenticationService.verifyUser(verificationDto);
             Map<String, String> response = new HashMap<>();
             response.put("message", "User verified successfully");
             response.put("redirectUrl", "/");

@@ -9,9 +9,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.dto.LoginUserDto;
+import com.example.backend.dto.LoginDto;
+import com.example.backend.dto.RegisterAdminDto;
 import com.example.backend.dto.RegisterUserDto;
-import com.example.backend.dto.VerifyUserDto;
+import com.example.backend.dto.VerificationDto;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.InvalidVerificationCodeException;
 import com.example.backend.exception.UserAlreadyVerifiedException;
@@ -23,7 +24,6 @@ import com.example.backend.model.Admin;
 import com.example.backend.model.User;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.responses.LoginResponse;
 import com.example.backend.security.UserPrincipal;
 
 import jakarta.mail.MessagingException;
@@ -45,11 +45,11 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User signup(RegisterUserDto registerUserDto) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        if (userRepository.existsByUsername(registerUserDto.getUsername())) {
+    public User userSignup(RegisterUserDto registerUserDto) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        if (userRepository.existsByUsername(registerUserDto.getUsername()) || adminRepository.existsByAdminName(registerUserDto.getUsername())) {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
-        if (userRepository.existsByEmail(registerUserDto.getEmail())) {
+        if (userRepository.existsByEmail(registerUserDto.getEmail()) || adminRepository.existsByEmail(registerUserDto.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists");
         }
     
@@ -78,10 +78,39 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public UserPrincipal authenticate(LoginUserDto loginUserDto) {
+    public Admin adminSignup(RegisterAdminDto registerAdminDto) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        if (adminRepository.existsByAdminName(registerAdminDto.getAdminName()) || userRepository.existsByUsername(registerAdminDto.getAdminName())) {
+            throw new UsernameAlreadyExistsException("Admin name already exists");
+        }
+        if (adminRepository.existsByEmail(registerAdminDto.getEmail()) || userRepository.existsByEmail(registerAdminDto.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
 
-        Optional<User> userOptional = userRepository.findByUsername(loginUserDto.getUsername());
-        Optional<Admin> adminOptional = adminRepository.findByAdminName(loginUserDto.getUsername());
+        Admin admin = new Admin();
+    
+        // Default role is ADMIN FOR JWT
+        admin.setRole("ROLE_ADMIN");
+
+        admin.setEmail(registerAdminDto.getEmail());
+        admin.setFirstName(registerAdminDto.getFirstName());
+        admin.setLastName(registerAdminDto.getLastName());
+        admin.setPassword(passwordEncoder.encode(registerAdminDto.getPassword()));
+        admin.setAdminName(registerAdminDto.getAdminName());
+        admin.setVerificationCode(generateVerificationCode());
+        admin.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(15)); // 15 minutes
+        admin.setEnabled(false);
+        
+        sendVerificationEmail(admin);
+    
+        return adminRepository.save(admin);
+    }
+
+
+
+    public UserPrincipal authenticate(LoginDto loginDto) {
+
+        Optional<User> userOptional = userRepository.findByUsername(loginDto.getUsername());
+        Optional<Admin> adminOptional = adminRepository.findByAdminName(loginDto.getUsername());
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -89,22 +118,22 @@ public class AuthenticationService {
                 throw new UserNotEnabledException("Account not verified. Please check your email to enable your account.");
             }
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUserDto.getUsername(), loginUserDto.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
             return UserPrincipal.create(user);
             
         } else if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUserDto.getUsername(), loginUserDto.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
             return UserPrincipal.create(admin);
         } else {
-            throw new UserNotFoundException(loginUserDto.getUsername());
+            throw new UserNotFoundException(loginDto.getUsername());
         }
     }
 
-    public void verifyUser(VerifyUserDto verifyUserDto) {
+    public void verifyUser(VerificationDto verificationDto) {
 
-        User user = userRepository.findByUsername(verifyUserDto.getUsername())
+        User user = userRepository.findByUsername(verificationDto.getUsername())
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (user.isEnabled()) {
@@ -116,7 +145,7 @@ public class AuthenticationService {
             throw new VerificationCodeExpiredException("Verification code has expired");
         }
 
-        if (!user.getVerificationCode().equals(verifyUserDto.getVerificationCode())) {
+        if (!user.getVerificationCode().equals(verificationDto.getVerificationCode())) {
             throw new InvalidVerificationCodeException("Invalid verification code");
         }
 
@@ -143,9 +172,23 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
-    public void sendVerificationEmail(User user) {
+    public void sendVerificationEmail(Object o) {
+
+        String verificationCode = null;
+        String email = null;
+
+        if (o instanceof User) {
+            User user = (User) o;
+            verificationCode = user.getVerificationCode();
+            email = user.getEmail();
+        } else if (o instanceof Admin) {
+            Admin admin = (Admin) o;
+            verificationCode = admin.getVerificationCode();
+            email = admin.getEmail();
+        }
+
         String subject = "Account Verification";
-        String verificationCode = user.getVerificationCode();
+        
         String htmlMessage = "<!DOCTYPE html>"
                                 + "<html lang=\"en\">"
                                 + "<head>"
@@ -174,7 +217,7 @@ public class AuthenticationService {
                                 + "</html>";
 
         try {
-            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+            emailService.sendVerificationEmail(email, subject, htmlMessage);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
