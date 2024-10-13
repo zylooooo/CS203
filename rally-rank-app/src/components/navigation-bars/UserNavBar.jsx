@@ -7,7 +7,7 @@ function UserNavBar() {
 
     const handleLogout = () => {
         logoutUser();
-        navigate("/user-login");
+        navigate("/auth/user-login");
     };
 
     return (
@@ -45,10 +45,10 @@ function UserNavBar() {
                 </NavLink>
                 <button
                     type="button"
-                    className="button bg-red-color font-bold hover:shadow-inner"
+                    className="button"
                     onClick={handleLogout}
                 >
-                    Manual User Logout
+                    Logout
                 </button>
             </div>
         </nav>

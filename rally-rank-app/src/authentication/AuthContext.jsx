@@ -13,40 +13,40 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         // Check for stored user in localStorage
-        const storedUser = JSON.parse(localStorage.getItem('user'));
+        const storedUser = JSON.parse(localStorage.getItem('userData'));
         if (storedUser) {
             setUser(storedUser);
         }
 
         // Check for stored admin in localStorage
-        const storedAdmin = JSON.parse(localStorage.getItem('admin'));
+        const storedAdmin = JSON.parse(localStorage.getItem('adminData'));
         if (storedAdmin) {
             setAdmin(storedAdmin);
         }
     }, []);
 
     // Login as user
-    const loginUser = (userData, token) => {
+    const loginUser = (userData) => {
         setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('userData', JSON.stringify(userData));
     };
     
     // Login as admin
-    const loginAdmin = (adminData, token) => {
+    const loginAdmin = (adminData) => {
         setAdmin(adminData);
-        localStorage.setItem('admin', JSON.stringify(adminData));
+        localStorage.setItem('adminData', JSON.stringify(adminData));
     };
 
     // Logout user
     const logoutUser = () => {
         setUser(null);
-        localStorage.removeItem('user');
+        localStorage.removeItem('userData');
     };
 
     // Logout admin
     const logoutAdmin = () => {
         setAdmin(null);
-        localStorage.removeItem('admin');
+        localStorage.removeItem('adminData');
     };
 
     // TESTING CODE REMOVE LATER
