@@ -1,37 +1,31 @@
 package com.example.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.mail.MailException;
-import org.springframework.scheduling.annotation.Async;
 
-import java.util.concurrent.CompletableFuture;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
+    private final JavaMailSender mailSender;
 
     @Autowired
-    private JavaMailSender mailSender;
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    public void sendVerificationEmail(String to, String subject, String text) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage(); // used to create a new email message
+        MimeMessageHelper helper = new MimeMessageHelper(message, true); // true allows for attachments and html
 
-    @Async("otpExecutor")
-    public CompletableFuture<Boolean> sendOtpEmail(String to, String otp) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromEmail);
-        message.setTo(to);
-        message.setSubject("Your OTP for Login");
-        message.setText("Your OTP is: " + otp + ". This OTP will expire in 5 minutes.");
-        try {
-            mailSender.send(message);
-            return CompletableFuture.completedFuture(true);
-        } catch (MailException e) {
-            System.err.println("Failed to send email: " + e.getMessage());
-            return CompletableFuture.completedFuture(false);
-        }
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text, true);
+
+        mailSender.send(message);
+    
     }
 }

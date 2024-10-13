@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import java.util.concurrent.Executor;
 import java.lang.reflect.Method;
 
+// TODO To remove if not used
+
 @Configuration
 @EnableAsync    
 public class AsyncConfig implements AsyncConfigurer {
@@ -28,17 +30,6 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setQueueCapacity(500);
         executor.setKeepAliveSeconds(30);
         executor.setThreadNamePrefix("AsyncThread-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Bean(name = "otpExecutor")
-    public Executor otpExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("OtpAsyncThread-");
         executor.initialize();
         return executor;
     }

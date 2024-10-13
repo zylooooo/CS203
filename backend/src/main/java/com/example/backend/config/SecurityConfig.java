@@ -1,133 +1,95 @@
 package com.example.backend.config;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.backend.responses.ErrorResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    // Inject security credentials from environment variables or application properties
-    @Value("${SPRING_SECURITY_USER}")
-    private String user;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
 
-    @Value("${SPRING_SECURITY_USER_PASSWORD}")
-    private String userPassword;
-
-    @Value("${SPRING_SECURITY_ADMIN}")
-    private String admin;
-
-    @Value("${SPRING_SECURITY_ADMIN_PASSWORD}")
-    private String adminPassword;
+    @Autowired
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationProvider = authenticationProvider;
+        
+    }
 
     /**
      * Configures the security filter chain for HTTP requests.
      */
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors().and()
-        .addFilterAfter(new OtpVerificationFilter(), UsernamePasswordAuthenticationFilter.class)
-        
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(
-                "/otp/verify",
-                "/otp/send",
-                "/css/**",
-                "/js/**",
-                "/images/**",
-                "/users/login",
-                "/admins/login",
-                "/users/signup"
-            ).permitAll()
-            .requestMatchers("/admins/**").hasRole("ADMIN")
-            .requestMatchers("/users/**").hasRole("USER")
-            .anyRequest().authenticated()
-        )
-        
-        // .formLogin(form -> form
-        //     .loginPage("/users/login")
-        //     .successHandler(customSuccessHandler())
-        //     .failureHandler((request, response, exception) -> {
-        //         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        //         response.setContentType("application/json");
-        //         response.getWriter().write("{\"error\": \"Authentication failed\"}");
-        //     })
-        //     .permitAll()
-        // )
-        
-        .logout(logout -> logout
-            .permitAll()
-        )
-        
-        .csrf(csrf -> csrf
-            .ignoringRequestMatchers(
-                "/users/login",
-                "/otp/send",
-                "/otp/verify",
-                "/admins/login",
-                "/users/signup"
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/users/**", "/usersTournaments/**").hasRole("USER")
+                .requestMatchers("/admins/**", "/adminsTournaments/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
             )
-        );
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpStatus.FORBIDDEN.value());
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    
+                    ErrorResponse errorResponse = new ErrorResponse("ACCESS_DENIED", "You do not have permission to access this resource");
+                    
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonResponse = mapper.writeValueAsString(errorResponse);
+                    
+                    response.getWriter().write(jsonResponse);
+                })
+            );
 
-    return http.build();
-}
-
-    /**
-     * Provides a custom authentication success handler.
-     */
-    @Bean
-    public AuthenticationSuccessHandler customSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler();
+        return http.build();
     }
 
-    /**
-     * Configures the user details service with in-memory users.
-     */
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        if (user == null || userPassword == null || admin == null || adminPassword == null) {
-            throw new IllegalStateException("Security credentials are not properly configured. Please check your environment variables or application properties.");
-        }
-    
-        UserDetails userDetails = User.builder()
-            .username(user)
-            .password(passwordEncoder.encode(userPassword))
-            .roles("USER")
-            .build();
-    
-        UserDetails adminDetails = User.builder()
-            .username(admin)
-            .password(passwordEncoder.encode(adminPassword))
-            .roles("ADMIN", "USER")
-            .build();
-    
-        return new InMemoryUserDetailsManager(userDetails, adminDetails);
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Set the allowed origins, methods, and headers
+        configuration.setAllowedOrigins(List.of("https://backend.com" /* CAN CHANGE LATER */, "http://localhost:8080"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        // Create a new UrlBasedCorsConfigurationSource so that the CorsConfiguration can be used
+        // CorsConfigurationSource is an interface that provides the configuration for CORS (Cross-Origin Resource Sharing)
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
-    /**
-     * Provides a password encoder for secure password storage.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 }
 
 
