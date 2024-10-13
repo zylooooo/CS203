@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// CSS imports 
+// CSS imports
 import "./index.css";
 
 // Administrator imports
@@ -8,23 +8,24 @@ import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments"; 
+import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
 
 // Component imports
-import MainLayout from "./components/MainLayout"
+import MainLayout from "./components/MainLayout";
 
 // Public imports
 import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
-import UserSignUp from "./public/UserSignUp"
-import AdminSignUp from "./public/AdminSignUp"
+import UserSignUp from "./public/UserSignUp";
+import AdminSignUp from "./public/AdminSignUp";
 
 // User imports
 import UserHome from "./user/UserHome";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
-import TournamentCardTemplate from "./user/TournamentCardTemplate"
+import TournamentCardTemplate from "./user/TournamentCardTemplate";
+import UserVerify from "./user/UserVerify";
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
@@ -34,16 +35,14 @@ import AdminRoute from "./authentication/AdminRoute";
 // NotFound import
 import NotFound from "./NotFound";
 
-
 function App() {
     return (
-        <AuthProvider>       
+        <AuthProvider>
             <Router>
                 <Routes>
-
                     {/* Public Routes */}
                     {/* MainHomepage */}
-                    <Route 
+                    <Route
                         path="/"
                         element={
                             <MainLayout>
@@ -53,7 +52,7 @@ function App() {
                     />
 
                     {/* News */}
-                    <Route 
+                    <Route
                         path="/news"
                         element={
                             <MainLayout>
@@ -63,7 +62,7 @@ function App() {
                     />
 
                     {/* User SignUp */}
-                    <Route 
+                    <Route
                         path="/auth/sign-up"
                         element={
                             <MainLayout>
@@ -73,7 +72,7 @@ function App() {
                     />
 
                     {/* Admin SignUp */}
-                    <Route 
+                    <Route
                         path="/administrator-sign-up"
                         element={
                             <MainLayout>
@@ -83,7 +82,7 @@ function App() {
                     />
 
                     {/* UserLogin */}
-                    <Route 
+                    <Route
                         path="/auth/user-login"
                         element={
                             <MainLayout>
@@ -92,8 +91,18 @@ function App() {
                         }
                     />
 
+                    {/* UserVerify */}
+                    <Route
+                        path="/auth/user-verify"
+                        element={
+                            <MainLayout>
+                                <UserVerify />
+                            </MainLayout>
+                        }
+                    />
+
                     {/* AdministratorLogin */}
-                    <Route 
+                    <Route
                         path="/administrator-login"
                         element={
                             <MainLayout>
@@ -209,4 +218,3 @@ function App() {
 }
 
 export default App;
-
