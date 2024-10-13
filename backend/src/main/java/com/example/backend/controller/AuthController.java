@@ -5,7 +5,6 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,8 +38,7 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
-
-    @Autowired
+ 
     public AuthController(AuthenticationService authenticationService, JwtService jwtService) {
         this.authenticationService = authenticationService;
         this.jwtService = jwtService;
