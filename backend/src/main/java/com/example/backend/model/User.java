@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -18,6 +20,15 @@ import jakarta.validation.constraints.*;
 @AllArgsConstructor
 @Document(collection = "user")
 public class User {
+
+    
+
+    private boolean enabled;
+
+    private String verificationCode;
+
+    private LocalDateTime verificationCodeExpiration;
+
     @Id
     private String id;
 
@@ -59,7 +70,7 @@ public class User {
 
     @NotNull(message = "Username is required!")
     @Indexed(unique = true)
-    private String userName;
+    private String username;
 
     @NotNull(message = "First name is required!")   
     private String firstName;
@@ -96,4 +107,7 @@ public class User {
         @NotNull(message = "Admin Name is required!")
         private String issuedBy;
     }
+
+    // Default role is USER FOR JWT
+    private String role = "USER";
 }

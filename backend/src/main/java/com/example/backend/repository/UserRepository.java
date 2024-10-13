@@ -8,8 +8,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
-    Optional<User> findByUserName(String userName);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByVerificationCode(String verificationCode);
 
-    boolean existsByUserName(String userName);
+    boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 }
