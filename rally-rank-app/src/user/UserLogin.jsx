@@ -28,6 +28,10 @@ function UserLogin() {
                 { withCredentials: true } // Allow credentials (cookies) to be sent with the request
             );
 
+            if (response.status === 200) {
+                setLoginError("Successfully login!");
+            }
+
             // Return the LoginResponse object containing JWT and expiration time
             return response.data;
 
@@ -40,7 +44,7 @@ function UserLogin() {
             } else if (status === 403) {
                 setLoginError("Account is not verified!");
             } else if (status === 401) {
-                setLoginError("Wrong username / password!");
+                setLoginError("Wrong password!");
             } else if (status === 500) {
                 setLoginError("Internal server error. Contact rallyrank@gmail.com for help!");
             }
@@ -48,18 +52,22 @@ function UserLogin() {
             
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (formData) => {
         // Call the authenticateUser function with username and password
-        const response = await authenticateUser(data.username, data.password);
+        const response = await authenticateUser(formData.username, formData.password);
 
-        // console.log(response.data);
+        // Store user in local database
+        const userData = {
+            "username": formData.username,
+            "role": "USER",
+            "jwtToken": response.token,
+        }
         
-        // if (response.message === "Login successful") {
-        //     loginUser(response.user); // Update AuthContext with user data
-        //     navigate("/home"); // Redirect to home page on successful login
-        // } else {
-        //     setLoginError(response.error || "Invalid credentials");
-        // }
+        // Change state to user
+        loginUser(userData);
+
+        // Re-route to home
+        navigate("/users/home");
     };
 
     return (
@@ -96,7 +104,7 @@ function UserLogin() {
                             className="input"
                             type="text"
                             id="username"
-                            placeholder="Your username"
+                            placeholder="Username"
                             {...register("username", {
                                 required: "Username is required",
                             })}

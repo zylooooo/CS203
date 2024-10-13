@@ -29,14 +29,12 @@ export const AuthProvider = ({ children }) => {
     const loginUser = (userData, token) => {
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem("jwtToken", token);
     };
     
     // Login as admin
     const loginAdmin = (adminData, token) => {
         setAdmin(adminData);
         localStorage.setItem('admin', JSON.stringify(adminData));
-        localStorage.setItem("jwtToken", token);
     };
 
     // Logout user
