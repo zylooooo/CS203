@@ -72,7 +72,6 @@ public class AuthenticationService {
         user.setGender(registerUserDto.getGender());
         user.setDateOfBirth(registerUserDto.getDateOfBirth());
         user.setAge(registerUserDto.getAge());
-        user.setMedicalInformation(registerUserDto.getMedicalInformation());
 
         sendVerificationEmail(user);
     
