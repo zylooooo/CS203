@@ -2,12 +2,8 @@ package com.example.backend.dto;
 
 import lombok.Data;
 
-/**
- * DTO for verifying a user OR admin email address.
- */
-
 @Data
-public class VerificationDto {
+public class UserVerifyDto {
     private String username;
     private String verificationCode;
 }
