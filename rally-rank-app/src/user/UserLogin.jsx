@@ -79,7 +79,7 @@ function UserLogin() {
             className="button mt-6 font-bold hover:shadow-inner"
             onClick={() => {
                 loginUser({ name: "Test User", role: "user" });
-                navigate("/home");
+                navigate("/users/home");
             }}
         >
         Manual User Login

@@ -15,7 +15,7 @@ function UserNavBar() {
             <img src="src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
             <div className="flex items-center text-xl gap-5">
                 <NavLink
-                    to="/home"
+                    to="/users/home"
                     activeClassName="active"
                     className="text-secondary-color-dark-green hover:text-primary-color-green"
                     exact
