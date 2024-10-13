@@ -52,19 +52,19 @@ public class AuthController {
         } catch (UsernameAlreadyExistsException e) {
             logger.error("Signup error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("USERNAME_EXISTS", "The username is already taken."));
+                .body(new ErrorResponse("The username is already taken."));
         } catch (EmailAlreadyExistsException e) {
             logger.error("Signup error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("EMAIL_EXISTS", "The email address is already registered."));
+                .body(new ErrorResponse("The email address is already registered."));
         } catch (IllegalArgumentException e) {
             logger.error("Signup error: {}", e.getMessage());
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_INPUT", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error during signup", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred during signup."));
+                .body(new ErrorResponse("An unexpected error occurred during signup."));
         }
     
     }
@@ -79,19 +79,19 @@ public class AuthController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", "User not found"));
+                .body(new ErrorResponse("User not found"));
         } catch (UserNotEnabledException e) {
             logger.error("User not enabled: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse("USER_NOT_ENABLED", "Your account is not enabled. Please check your email to enable your account."));
+                .body(new ErrorResponse("Your account is not enabled. Please check your email to enable your account."));
         } catch (BadCredentialsException e) {
             logger.error("Bad credentials: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("INVALID_CREDENTIALS", "Invalid password"));
+                .body(new ErrorResponse("Invalid password"));
         } catch (Exception e) {
             logger.error("Error occurred during login", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred during login"));
+                .body(new ErrorResponse("An unexpected error occurred during login"));
         }
     }
 
@@ -107,23 +107,23 @@ public class AuthController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", "User not found"));
+                .body(new ErrorResponse("User not found"));
         } catch (VerificationCodeExpiredException e) {
             logger.error("Verification code expired: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("CODE_EXPIRED", "Verification code has expired"));
+                .body(new ErrorResponse("Verification code has expired"));
         } catch (InvalidVerificationCodeException e) {
             logger.error("Invalid verification code: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("INVALID_CODE", "Invalid verification code"));
+                .body(new ErrorResponse("Invalid verification code"));
         } catch (UserAlreadyVerifiedException e) {
             logger.error("User already verified: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("USER_ALREADY_VERIFIED", "User is already verified"));
+                .body(new ErrorResponse("User is already verified"));
         } catch (Exception e) {
             logger.error("Unexpected error during user verification: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred during user verification"));
+                .body(new ErrorResponse("An unexpected error occurred during user verification"));
         }
     }
 
@@ -132,7 +132,7 @@ public class AuthController {
         String email = payload.get("email");
         if (email == null || email.trim().isEmpty()) {
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_INPUT", "Email is required"));
+                .body(new ErrorResponse("Email is required"));
         }
         try {
             authenticationService.resendVerificationCode(email);
@@ -140,15 +140,15 @@ public class AuthController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", "User not found"));
+                .body(new ErrorResponse("User not found"));
         } catch (UserAlreadyVerifiedException e) {
             logger.error("User already verified: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("USER_ALREADY_VERIFIED", "User is already verified"));
+                .body(new ErrorResponse("User is already verified"));
         } catch (Exception e) {
             logger.error("Unexpected error during resend verification: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred during resend verification"));
+                .body(new ErrorResponse("An unexpected error occurred during resend verification"));
         }
     }
 }

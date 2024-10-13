@@ -33,7 +33,7 @@ public class UsersController {
             return ResponseEntity.ok(users);
         } catch (RuntimeException e) {
             logger.error("Unexpected error while fetching all users: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while fetching all users!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("An unexpected error occurred while fetching all users!"));
         }
     }
 
@@ -53,11 +53,11 @@ public class UsersController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error retrieving user profile: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while retrieving the user profile!"));
+                .body(new ErrorResponse("An unexpected error occurred while retrieving the user profile!"));
         }
     }
 
@@ -67,7 +67,7 @@ public class UsersController {
 
         if (username == null && email == null) {
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_REQUEST", "Either username or email must be provided!"));
+                .body(new ErrorResponse("Either username or email must be provided!"));
         }
 
         StringBuilder message = new StringBuilder();
@@ -123,19 +123,19 @@ public class UsersController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", "User not found"));
+                .body(new ErrorResponse("User not found"));
         } catch (EmailAlreadyExistsException e) {
             logger.error("Email already exists: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("EMAIL_EXISTS", "Email already exists"));
+                .body(new ErrorResponse("Email already exists"));
         } catch (UsernameAlreadyExistsException e) {
             logger.error("Username already exists: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("USERNAME_EXISTS", "Username already exists"));
+                .body(new ErrorResponse("Username already exists"));
         } catch (Exception e) {
             logger.error("Unexpected error during user update: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred during user update"));
+                .body(new ErrorResponse("An unexpected error occurred during user update"));
         }
     }
 
@@ -156,11 +156,11 @@ public class UsersController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error updating user availability: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while updating the user availability!"));
+                .body(new ErrorResponse("An unexpected error occurred while updating the user availability!"));
         }
     }
 
@@ -180,11 +180,11 @@ public class UsersController {
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("USER_NOT_FOUND", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("SERVER_ERROR", "An unexpected error occurred while deleting the user!"));
+                .body(new ErrorResponse("An unexpected error occurred while deleting the user!"));
         }
     }
 
