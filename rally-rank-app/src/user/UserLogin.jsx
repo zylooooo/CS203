@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginBackground from "../assets/login-picture.jpg";
 
+// Axios import
+import axios from "axios";
+
 // Form imports
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
 
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
@@ -18,38 +20,46 @@ function UserLogin() {
     const [loginError, setLoginError] = useState(""); // State for handling login errors
 
     async function authenticateUser(username, password) {
-        const response = await fetch("http://localhost:8080/auth/user-login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }), // Send username instead of email
-            credentials: "include", // Include cookies for session management
-        });
-    
-        const data = await response.json();
-        if (!response.ok) { 
-            throw new Error(data.error || "Login failed");
+        try {
+
+            const response = await axios.post(
+                "http://localhost:8080/auth/user-login", 
+                { username, password },
+                { withCredentials: true } // Allow credentials (cookies) to be sent with the request
+            );
+
+            // Return the LoginResponse object containing JWT and expiration time
+            return response.data;
+
+        } catch (error) {
+
+            const status = error.status;
+
+            if (status === 404) {
+                setLoginError("Username is not found!");
+            } else if (status === 403) {
+                setLoginError("Account is not verified!");
+            } else if (status === 401) {
+                setLoginError("Wrong username / password!");
+            } else if (status === 500) {
+                setLoginError("Internal server error. Contact rallyrank@gmail.com for help!");
+            }
         }
-    
-        return data;
+            
     }
 
     const onSubmit = async (data) => {
-        try {
-            // Call the authenticateUser function with username and password
-            const response = await authenticateUser(data.username, data.password);
-            
-            if (response.message === "Login successful") {
-                loginUser(response.user); // Update AuthContext with user data
-                navigate("/home"); // Redirect to home page on successful login
-            } else {
-                setLoginError(response.error || "Invalid credentials");
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            setLoginError(error.message || "An unexpected error occurred. Please try again.");
-        }
+        // Call the authenticateUser function with username and password
+        const response = await authenticateUser(data.username, data.password);
+
+        // console.log(response.data);
+        
+        // if (response.message === "Login successful") {
+        //     loginUser(response.user); // Update AuthContext with user data
+        //     navigate("/home"); // Redirect to home page on successful login
+        // } else {
+        //     setLoginError(response.error || "Invalid credentials");
+        // }
     };
 
     return (
@@ -141,7 +151,6 @@ function UserLogin() {
                         </Link>
                     </div>
                 </form>
-                <DevTool control={control} />
                 </div>
                 <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
                     <div className="text-blue-500 text-ms flex flex-row justify-center align-items">
