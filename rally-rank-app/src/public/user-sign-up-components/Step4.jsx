@@ -10,7 +10,7 @@ const Step4 = ({ register, errors, watch }) => {
     return (
         <div>
             <h2 className = "text-xl font-extrabold"> Account Setup </h2>
-            <p> Last stage of your account registration! Please enter a username and password </p>
+            <p> Last stage of your account registration! Please enter a username and password. </p>
             <div className = "flex flex-col gap-5 mt-8">
 
                 {/* PASSWORD */}
