@@ -134,54 +134,6 @@ public class TournamentService {
       * @throws RuntimeException if there's an error during the database operation or any unexpected errors during the process.
       */
 
-    // public List<Tournament> getOngoingTournaments() throws TournamentNotFoundException {
-    //     try {
-    //         logger.info("Attempting to fetch ongoing and future tournaments!");
-            
-    //         LocalDate currentDate = LocalDate.now();
-    //         logger.info("Current date: {}", currentDate);
-            
-    //         List<Tournament> allTournaments = tournamentRepository.findAll();
-    //         if (allTournaments.isEmpty()) {
-    //             throw new TournamentNotFoundException();
-    //         }
-    //         logger.info("Total tournaments in database: {}", allTournaments.size());
-            
-    //         // Filter tournaments to get ongoing and future ones
-    //         List<Tournament> ongoingAndFutureTournaments = allTournaments.stream()
-    //         .filter(t -> t.isOngoing() && // Tournament must be marked as ongoing
-    //                     (t.getStartDate().isAfter(currentDate) || // Start date is in the future
-    //                         t.getEndDate().isAfter(currentDate.minusDays(1)))) // End date is today or in the future
-    //         .collect(Collectors.toList());
-            
-    //         if (ongoingAndFutureTournaments.isEmpty()) { // Added to return error if there are no ongoing/ future tournaments
-    //             throw new TournamentNotFoundException();
-    //         }
-
-    //         // Log details of each ongoing and future tournament
-    //         for (Tournament t : ongoingAndFutureTournaments) {
-    //             logger.info("Tournament: {}, Start Date: {}, End Date: {}, Is Ongoing: {}", 
-    //                         t.getTournamentName(), t.getStartDate(), t.getEndDate(), t.isOngoing());
-                
-    //             // Determine if the tournament is future or ongoing based on its start date
-    //             if (t.getStartDate().isAfter(currentDate)) {
-    //                 logger.info("Tournament {} is a future tournament", t.getTournamentName());
-    //             } else {
-    //                 logger.info("Tournament {} is an ongoing tournament", t.getTournamentName());
-    //             }
-    //         }
-            
-    //         logger.info("Ongoing and future tournaments: {}", ongoingAndFutureTournaments.size());
-    //         return ongoingAndFutureTournaments;
-    //     } catch (TournamentNotFoundException e) {
-    //         logger.error("No tournaments found!", e);
-    //         throw e;
-    //     } catch (Exception e) {
-    //         logger.error("Error fetching all current tournaments", e);
-    //         throw new RuntimeException("Unexpected error occurred while fetching all current tournaments", e);
-    //     }
-    // }
-
     public List<Tournament> getOngoingTournaments() {
         LocalDate currentDate = LocalDate.now();
         List<Tournament> ongoingAndFutureTournaments = tournamentRepository.findAll().stream()
@@ -206,36 +158,6 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-    // public List<Tournament> getCurrentTournaments() throws TournamentNotFoundException, RuntimeException {
-    //     try {
-    //         logger.info("Attempting to fetch all current tournaments!");
-    
-    //         LocalDate currentDate = LocalDate.now();
-    //         List<Tournament> allTournaments = getAllTournaments();
-    //         // if (allTournaments.isEmpty()) {
-    //         //     throw new TournamentNotFoundException();
-    //         // }
-    
-    //         List<Tournament> currentTournaments = allTournaments.stream()
-    //             .filter(t -> t.isOngoing() &&
-    //                         (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
-    //                         (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
-    //             .collect(Collectors.toList());
-            
-    //         if (currentTournaments.isEmpty()) {
-    //             throw new TournamentNotFoundException();
-    //         }
-    
-    //         logger.info("Total current tournaments: {}", currentTournaments.size());
-    //         return currentTournaments;
-    //     } catch (TournamentNotFoundException e) {
-    //         logger.error("No tournaments found!", e);
-    //         throw e;
-    //     } catch (Exception e) {
-    //         logger.error("Error fetching all current tournaments", e);
-    //         throw new RuntimeException("Unexpected error occurred while fetching all current tournaments", e);
-    //     }
-    // }
 
     public List<Tournament> getCurrentTournaments() throws RuntimeException {
     try {
@@ -311,27 +233,6 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found for the specified user.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-
-    // public List<Tournament> getUserHistory(String username) throws TournamentNotFoundException {
-    //     try {
-    //         List<Tournament> allTournamentsHistory = getAllHistory();
-    //         List<Tournament> userTournamentsHistory = allTournamentsHistory.stream()
-    //             .filter(t -> t.getPlayersPool().contains(username))
-    //             .collect(Collectors.toList());
-    
-    //         if (userTournamentsHistory.isEmpty()) {
-    //             throw new TournamentNotFoundException();
-    //         }
-    
-    //         return userTournamentsHistory;
-    //     } catch (TournamentNotFoundException e) {
-    //         logger.error("No tournaments found!", e);
-    //         throw e;
-    //     } catch (Exception e) {
-    //         logger.error("Error fetching tournaments history by user name", e);
-    //         throw new RuntimeException("Unexpected error occurred while fetching tournaments history by user name", e);
-    //     }
-    // }
 
     public List<Tournament> getUserHistory(String username) {
         try {
