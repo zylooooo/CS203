@@ -104,22 +104,6 @@ public class AuthenticationService {
 
     public void verifyUser(VerifyUserDto verifyUserDto) {
 
-        // User user = userRepository.findByUsername(verifyUserDto.getUsername())
-        // .orElseThrow(() -> new UserNotFoundException("User not found with username: " + verifyUserDto.getUsername()));
-
-        // if (user.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
-        //     throw new VerificationCodeExpiredException("Verification code has expired");
-        // }
-
-        // if (!user.getVerificationCode().equals(verifyUserDto.getVerificationCode())) {
-        //     throw new InvalidVerificationCodeException("Invalid verification code");
-        // }
-
-        // user.setEnabled(true);
-        // user.setVerificationCode(null);
-        // user.setVerificationCodeExpiration(null);
-        // userRepository.save(user);
-
         User user = userRepository.findByUsername(verifyUserDto.getUsername())
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -138,8 +122,8 @@ public class AuthenticationService {
 
         user.setEnabled(true);
         user.setVerificationCode(null);
-            user.setVerificationCodeExpiration(null);
-            userRepository.save(user);
+        user.setVerificationCodeExpiration(null);
+        userRepository.save(user);
 
     }
 
@@ -162,18 +146,32 @@ public class AuthenticationService {
     public void sendVerificationEmail(User user) {
         String subject = "Account Verification";
         String verificationCode = user.getVerificationCode();
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to RallyRank!</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
+        String htmlMessage = "<!DOCTYPE html>"
+                                + "<html lang=\"en\">"
+                                + "<head>"
+                                + "<meta charset=\"UTF-8\">"
+                                + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                                + "<title>RallyRank Verification</title>"
+                                + "</head>"
+                                + "<body style=\"font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333;\">"
+                                + "<div style=\"max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1);\">"
+                                + "<div style=\"background-color: #556B2F; color: #ffffff; padding: 30px; text-align: center;\">"
+                                + "<h1 style=\"margin: 0; font-family: Georgia, 'Times New Roman', Times, serif; font-size: 36px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);\">RallyRank</h1>"
+                                + "</div>"
+                                + "<div style=\"padding: 40px; text-align: center;\">"
+                                + "<h2 style=\"color: #556B2F; font-size: 24px; margin-bottom: 20px;\">Verify Your Account</h2>"
+                                + "<p style=\"font-size: 16px; line-height: 1.5; margin-bottom: 25px;\">Thank you for joining RallyRank. To complete your registration, please use the verification code below. This code will expire in 15 minutes.</p>"
+                                + "<div style=\"background-color: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 4px; padding: 20px; margin-bottom: 30px;\">"
+                                + "<div style=\"font-size: 32px; font-weight: bold; color: #556B2F; letter-spacing: 5px;\">" + verificationCode + "</div>"
+                                + "</div>"
+                                + "<p style=\"font-size: 16px; line-height: 1.5; margin-bottom: 25px;\">If you didn't request this verification, please ignore this email or contact our support team if you have any concerns.</p>"
+                                + "</div>"
+                          + "<div style=\"background-color: #f0f0f0; color: #888; text-align: center; padding: 20px; font-size: 14px;\">"
+                                + "&copy; 2024 RallyRank. All rights reserved."
+                                + "</div>"
+                                + "</div>"
+                                + "</body>"
+                                + "</html>";
 
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
@@ -187,7 +185,4 @@ public class AuthenticationService {
         return String.format("%06d", random.nextInt(1000000));
     }
 
-    public LoginResponse login(LoginUserDto loginUserDto) {
-        throw new UnsupportedOperationException("Unimplemented method 'login'");
-    }
 }
