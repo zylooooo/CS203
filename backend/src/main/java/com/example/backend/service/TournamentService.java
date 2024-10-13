@@ -206,34 +206,59 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-    public List<Tournament> getCurrentTournaments() throws TournamentNotFoundException, RuntimeException {
-        try {
-            logger.info("Attempting to fetch all current tournaments!");
+    // public List<Tournament> getCurrentTournaments() throws TournamentNotFoundException, RuntimeException {
+    //     try {
+    //         logger.info("Attempting to fetch all current tournaments!");
     
-            LocalDate currentDate = LocalDate.now();
-            List<Tournament> allTournaments = getAllTournaments();
-            if (allTournaments.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
+    //         LocalDate currentDate = LocalDate.now();
+    //         List<Tournament> allTournaments = getAllTournaments();
+    //         // if (allTournaments.isEmpty()) {
+    //         //     throw new TournamentNotFoundException();
+    //         // }
     
-            List<Tournament> currentTournaments = allTournaments.stream()
-                .filter(t -> t.isOngoing() &&
-                            (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
-                            (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
-                .collect(Collectors.toList());
+    //         List<Tournament> currentTournaments = allTournaments.stream()
+    //             .filter(t -> t.isOngoing() &&
+    //                         (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
+    //                         (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
+    //             .collect(Collectors.toList());
             
-            if (currentTournaments.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
+    //         if (currentTournaments.isEmpty()) {
+    //             throw new TournamentNotFoundException();
+    //         }
     
-            logger.info("Total current tournaments: {}", currentTournaments.size());
-            return currentTournaments;
-        } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found!", e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error fetching all current tournaments", e);
-            throw new RuntimeException("Unexpected error occurred while fetching all current tournaments", e);
+    //         logger.info("Total current tournaments: {}", currentTournaments.size());
+    //         return currentTournaments;
+    //     } catch (TournamentNotFoundException e) {
+    //         logger.error("No tournaments found!", e);
+    //         throw e;
+    //     } catch (Exception e) {
+    //         logger.error("Error fetching all current tournaments", e);
+    //         throw new RuntimeException("Unexpected error occurred while fetching all current tournaments", e);
+    //     }
+    // }
+
+    public List<Tournament> getCurrentTournaments() throws RuntimeException {
+    try {
+        logger.info("Attempting to fetch all current tournaments!");
+        LocalDate currentDate = LocalDate.now();
+        List<Tournament> allTournaments = getAllTournaments();
+        
+        List<Tournament> currentTournaments = allTournaments.stream()
+            .filter(t -> t.isOngoing() &&
+                        (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
+                        (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
+            .collect(Collectors.toList());
+        
+        if (currentTournaments.isEmpty()) {
+            logger.info("No current tournaments found");
+        } else {
+            logger.info("Found {} current tournaments", currentTournaments.size());
+        }
+        
+        return currentTournaments;
+    } catch (RuntimeException e) {
+        logger.error("Unexpected error occurred while fetching current tournaments", e);
+        throw new RuntimeException("Unexpected error occurred while fetching current tournaments", e);
         }
     }
 
