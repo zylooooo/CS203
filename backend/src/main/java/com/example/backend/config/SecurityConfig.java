@@ -59,7 +59,7 @@ public class SecurityConfig {
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     
-                    ErrorResponse errorResponse = new ErrorResponse("ACCESS_DENIED", "You do not have permission to access this resource");
+                    ErrorResponse errorResponse = new ErrorResponse("You do not have permission to access this resource");
                     
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonResponse = mapper.writeValueAsString(errorResponse);
