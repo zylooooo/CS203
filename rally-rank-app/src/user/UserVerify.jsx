@@ -20,11 +20,11 @@ function UserVerify() {
     const [verifyError, setVerifyError] = useState(""); // State for handling verification errors
 
     // Function to verify user with username and OTP code
-    async function verifyUser(username, otpcode) {
+    async function verifyUser(username, verificationCode) {
         try {
             const response = await axios.post(
                 "http://localhost:8080/auth/user-verify",
-                { username, otpcode },
+                { username, verificationCode },
                 { withCredentials: true } // Allow credentials (cookies) to be sent with the request
             );
 
@@ -35,41 +35,29 @@ function UserVerify() {
             // Return the VerifyResponse object containing JWT and other info
             return response.data;
         } catch (error) {
-            const status = error.response?.status;
+            const status = error.status;
 
             if (status === 404) {
                 setVerifyError("Username is not found!");
-            } else if (status === 403) {
-                setVerifyError("Invalid OTP code!");
+            } else if (status === 400) {
+                setVerifyError(
+                    "Verification code is expired, invalid, or user is already verified!"
+                );
             } else if (status === 500) {
                 setVerifyError(
                     "Internal server error. Contact rallyrank@gmail.com for help!"
-                );
-            } else {
-                setVerifyError(
-                    "An unexpected error occurred. Please try again."
                 );
             }
         }
     }
 
     const onSubmit = async (formData) => {
-        // Call the verifyUser function with username and otpcode
-        const response = await verifyUser(formData.username, formData.otpcode);
+        // Call the verifyUser function with username and otpCode
+        const response = await verifyUser(formData.username, formData.otpCode);
 
-        if (response && response.token) {
-            // Store user in local database after verification
-            const userData = {
-                username: formData.username,
-                role: "USER", // Assuming the user is a regular user after verification
-                jwtToken: response.token,
-            };
-
-            // Change state to user
-            loginUser(userData);
-
+        if (response !== null) {
             // Re-route to home after successful verification
-            navigate("/users/home");
+            navigate("/auth/user-login");
         } else {
             setVerifyError("Server is not online!");
         }
@@ -111,21 +99,23 @@ function UserVerify() {
 
                         <div>
                             <label
-                                htmlFor="otpcode"
+                                htmlFor="verificationCode"
                                 className="block text-sm font-medium text-gray-700"
                             >
                                 OTP Code
                             </label>
                             <input
                                 type="text"
-                                id="otpcode"
+                                id="verificationCode"
                                 className="input"
                                 placeholder="Enter OTP Code"
-                                {...register("otpcode", {
-                                    required: "OTP code is required",
+                                {...register("verificationCode", {
+                                    required: "Verification code is required",
                                 })}
                             />
-                            <p className="error">{errors.otpcode?.message}</p>
+                            <p className="error">
+                                {errors.verificationCode?.message}
+                            </p>
                         </div>
 
                         {verifyError && (
@@ -146,7 +136,7 @@ function UserVerify() {
                     <div className="text-ms flex flex-row justify-center align-item">
                         Already verified?
                         <Link
-                            to="/login"
+                            to="/auth/user-login"
                             className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                         >
                             Log in here!

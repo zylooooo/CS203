@@ -29,10 +29,10 @@ function UserLogin() {
 
             if (response.status === 200) {
                 setLoginError("Successfully login!");
-            }
 
-            // Return the LoginResponse object containing JWT and expiration time
-            return response.data;
+                // Return the LoginResponse object containing JWT and expiration time
+                return response.data;
+            }
         } catch (error) {
             const status = error.status;
 
@@ -57,7 +57,7 @@ function UserLogin() {
             formData.password
         );
 
-        if (response && response.token) {
+        if (response !== null) {
             // Store user in local database
             const userData = {
                 username: formData.username,
