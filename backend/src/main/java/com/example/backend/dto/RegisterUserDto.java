@@ -22,6 +22,5 @@ public class RegisterUserDto {
     private int elo = 400;
     private String gender;
     private LocalDate dateOfBirth;
-    private MedicalInformation medicalInformation;
     private int age;
 }
