@@ -55,7 +55,7 @@ public class UserPrincipal implements UserDetails {
             admin.getId(),
             admin.getAdminName(),
             admin.getPassword(),
-            true,
+            admin.isEnabled(),
             authorities
         );
     }

@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
 import java.lang.reflect.Method;
 
 @Configuration
-@EnableAsync    
+@EnableAsync   
 public class AsyncConfig implements AsyncConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(AsyncConfig.class);
