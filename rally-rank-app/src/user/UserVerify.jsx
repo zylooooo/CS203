@@ -62,12 +62,12 @@ function UserVerify() {
 
             if (response.status === 200) {
                 setVerifyError("Successfully verified!");
+                alert("Successfully verified!");
             }
 
             // Return the VerifyResponse object containing JWT and other info
             return response.data;
         } catch (error) {
-            console.log(error.status);
             const status = error.status;
 
             if (status === 404) {
@@ -100,7 +100,7 @@ function UserVerify() {
     // Handle modal form submit to resend code
     const handleResendSubmit = async (event) => {
         event.preventDefault();
-        await resendCode(resendEmail, setResendError); // Pass setResendError to update error state
+        await resendCode(resendEmail, setResendError);
     };
 
     return (
@@ -145,13 +145,13 @@ function UserVerify() {
                                     htmlFor="verificationCode"
                                     className="block text-sm font-medium text-gray-700"
                                 >
-                                    OTP Code
+                                    Verification Code
                                 </label>
                                 <input
                                     type="text"
                                     id="verificationCode"
                                     className="input"
-                                    placeholder="Enter OTP Code"
+                                    placeholder="Enter verification code"
                                     {...register("verificationCode", {
                                         required:
                                             "Verification code is required",
@@ -177,7 +177,7 @@ function UserVerify() {
                         </form>
                         <button
                             className="text-xs underline text-secondary-color-dark-green text-center pt-5 hover:text-primary-color-green"
-                            onClick={() => setModalOpen(true)} // Open modal on click
+                            onClick={() => setModalOpen(true)}
                         >
                             Resend verification code
                         </button>
