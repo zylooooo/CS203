@@ -26,14 +26,13 @@ const fetchNews = async () => {
 const NewsCards = ({ newsContent }) => {
   return ( 
     <div className = "card p-10 max-w-1/4">
-                <h5 className = "card-title text-xl font-bold mb-2">{newsContent.title}</h5>
-                <p className = "card-text">
-                    {newsContent.content}
-                </p>
-                <button className = "btn btn-primary">Read More</button>
-                </div>
+      <h5 className = "card-title text-xl font-bold mb-2">{newsContent.title}</h5>
+      <p className = "card-text">
+          {newsContent.content}
+      </p>
+      <button className = "btn btn-primary">Read More</button>
+    </div>
   )
-                
 };
 
 function News() {
