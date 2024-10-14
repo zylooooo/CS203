@@ -11,35 +11,11 @@ import { useForm } from "react-hook-form";
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
-async function resendCode(username, setResendError) {
-    try {
-        const response = await axios.post(
-            "http://localhost:8080/auth/user-resend",
-            { username },
-            { withCredentials: true }
-        );
-        if (response.status === 200) {
-            setResendError("Verification code resent successfully!");
-        }
-    } catch (error) {
-        const status = error.status;
-
-        if (status === 400) {
-            setResendError("User is already verified!");
-        } else if (status === 404) {
-            setResendError("User is not found!");
-        } else if (status === 500) {
-            setResendError(
-                "Internal server error. Please try again or contact support."
-            );
-        } else {
-            setResendError("Failed to resend code. Please try again.");
-        }
-    }
-}
 
 function UserVerify() {
     const form = useForm();
+    const modalForm = useForm();
+
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
     const { loginUser } = useAuth(); // Destructure loginUser from AuthContext
@@ -84,7 +60,7 @@ function UserVerify() {
         }
     }
 
-    const onSubmit = async (formData) => {
+    const onVerifyUserSubmit = async (formData) => {
         // Call the verifyUser function with username and otpCode
         const response = await verifyUser(
             formData.username,
@@ -97,10 +73,40 @@ function UserVerify() {
         }
     };
 
+    async function resendVerificationCode(email) {
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/auth/resend-verification",
+                { email }
+            );
+            if (response.status === 200) {
+                setResendError("Verification code resent successfully!");
+                alert("Verification code resent successfully!")
+
+                return response;
+            }
+        } catch (error) {
+            const status = error.status;
+    
+            if (status === 400) {
+                setResendError("User is already verified!");
+            } else if (status === 404) {
+                setResendError("User is not found!");
+            } else if (status === 500) {
+                setResendError(
+                    "Internal server error. Please try again or contact support."
+                );
+            }
+        }
+    }
+
     // Handle modal form submit to resend code
-    const handleResendSubmit = async (event) => {
-        event.preventDefault();
-        await resendCode(resendEmail, setResendError);
+    const onResendVerificationCodeSubmit = async (formData) => {
+        const response = await resendVerificationCode(formData.email);
+
+        if (response) {
+            setModalOpen(false);
+        }
     };
 
     return (
@@ -116,7 +122,7 @@ function UserVerify() {
                         </h1>
                         <form
                             className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
-                            onSubmit={handleSubmit(onSubmit)}
+                            onSubmit={handleSubmit(onVerifyUserSubmit)}
                             noValidate
                         >
                             <div>
@@ -200,19 +206,19 @@ function UserVerify() {
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
                     <div className="bg-white p-6 rounded-md shadow-lg">
-                        <div className="flex justify-between mb-4">
+                        <div className="flex justify-between gap-2 items-center">
                             <h2 className="text-xl font-bold">
                                 Resend Verification Code
                             </h2>
                             <button
                                 type="button"
-                                className="border p-1"
-                                onClick={() => setModalOpen(false)} // Close modal on cancel
+                                className="flex items-center justify-center border w-5 h-5 p-1 text-center rounded-none"
+                                onClick={() => setModalOpen(false)}
                             >
                                 X
                             </button>
                         </div>
-                        <form onSubmit={handleResendSubmit}>
+                        <form onSubmit={modalForm.handleSubmit(onResendVerificationCodeSubmit)} className="flex flex-col ">
                             <div>
                                 <label
                                     htmlFor="resendEmail"
@@ -221,16 +227,19 @@ function UserVerify() {
                                     Enter your email to resend the code
                                 </label>
                                 <input
-                                    type="text"
+                                    type="email"
                                     id="resendEmail"
                                     className="input"
-                                    placeholder="Your email"
-                                    value={resendEmail}
-                                    onChange={(e) =>
-                                        setResendEmail(e.target.value)
-                                    } // Update email state
-                                    required
+                                    placeholder="helloworld@gmail.com"
+                                    {...modalForm.register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                            message: "Invalid email format",
+                                        },
+                                    })}
                                 />
+                                <p className = "error">{errors.email?.message}</p>
 
                                 {resendError && (
                                     <p className="error text-red-500 mt-2">
@@ -240,7 +249,7 @@ function UserVerify() {
                             </div>
                             <button
                                 type="submit"
-                                className="button mt-4 font-bold hover:shadow-inner"
+                                className="button mt-4 font-bold hover:shadow-inner mt-10"
                             >
                                 Resend Code
                             </button>
