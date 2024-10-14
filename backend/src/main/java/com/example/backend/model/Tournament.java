@@ -71,7 +71,7 @@ public class Tournament {
 
     @NotNull(message = "Player capacity is required!")
     @Min(value = 2, message = "Player capacity must be at least 2!")
-    private int playerCapacity;
+    private Integer playerCapacity;
 
     private boolean isOngoing = true;
 
@@ -96,9 +96,9 @@ public class Tournament {
         }
     }
 
-    @AssertTrue(message = "End date of the tournament must be after the start date!")
-    private boolean isEndDateAfterStartDate() {
-        return endDate.isAfter(startDate);
+    @AssertTrue(message = "End date must be after start date")
+    private boolean isValidDateRange() {
+        return endDate != null && startDate != null && endDate.isAfter(startDate);
     }
 
     @AssertTrue(message = "Minimum elo must be less than maximum elo!")
