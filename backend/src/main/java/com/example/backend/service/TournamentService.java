@@ -184,6 +184,26 @@ public class TournamentService {
         }
     }
 
+    // Function to get the user's upcoming tournaments
+    public List<Tournament> getUserUpcomingTournaments(String username) throws RuntimeException {
+        try {
+            List<Tournament> ongoingTournaments = this.getOngoingTournaments();
+            List<Tournament> userUpcomingTournaments = ongoingTournaments.stream()
+                .filter(tournament -> tournament.getPlayersPool().contains(username))
+                .collect(Collectors.toList());
+
+            if (userUpcomingTournaments.isEmpty()) {
+                logger.info("No upcoming tournaments found for user: {}", username);
+            } else {
+                logger.info("Found {} upcoming tournaments for user: {}", userUpcomingTournaments.size(), username);
+            }
+
+            return userUpcomingTournaments;
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error occurred while fetching user upcoming tournaments", e);
+        }
+    }
+
     /**
      * Retrieves all tournaments history.
      * 

@@ -8,6 +8,6 @@ public class TournamentNotFoundException extends RuntimeException {
 
     // Exception for when no tournaments are found (repository is empty)
     public TournamentNotFoundException() {
-        super("No tournaments found!");
+        super("No tournaments found in the repository!");
     }
 }
