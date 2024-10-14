@@ -16,7 +16,7 @@ import MainLayout from "./components/MainLayout";
 // Public imports
 import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
-import UserSignUp from "./public/UserSignUp";
+import UserSignUp from "./user/UserSignUp";
 import AdminSignUp from "./public/AdminSignUp";
 
 // User imports

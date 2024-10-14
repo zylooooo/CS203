@@ -17,7 +17,7 @@ const Step1 = ({ register, errors, email }) => (
                 </label>
                 <div className = "flex "> 
                     <input
-                        className = "border rounded-r-none p-2 w-4/5"
+                        className = "border p-2"
                         id = "email"
                         placeholder = "helloworld@gmail.com"
                         defaultValue = { email } 
@@ -29,12 +29,6 @@ const Step1 = ({ register, errors, email }) => (
                             },
                         })}
                     ></input>
-                    <button 
-                        className = "border rounded-l-none bg-blue-500 text-white px-4 py-2 w-1/5"
-                        // VERIFY EMAIL WITH OTP
-                    > 
-                        Verify
-                    </button>
                 </div>
 
                 <p className = "error">{errors.email?.message}</p>
