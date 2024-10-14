@@ -31,17 +31,17 @@ public class UserService {
     private final TournamentRepository tournamentRepository;
     private final TournamentService tournamentService;
 
-
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-     /**
+    /**
      * Fetch all the users from the database.
      *
      * @return a list of Users. The list will be empty if no users are found.
-     * @throws RuntimeException if there is an error fetching users from the database.
+     * @throws RuntimeException if there is an error fetching users from the
+     *                          database.
      */
     public List<User> getAllUsers() throws RuntimeException {
         try {
@@ -56,16 +56,19 @@ public class UserService {
 
     /**
      * Retrieves a user from the databsae based on the user name
-     * @param username the username of the user to be retrieved, must not be null or empty
+     * 
+     * @param username the username of the user to be retrieved, must not be null or
+     *                 empty
      * @return the user object associated with the specified username
-     * @throws UserNotFoundException if no user with the username is found in the database
+     * @throws UserNotFoundException if no user with the username is found in the
+     *                               database
      */
     public User getUserByUsername(String username) throws UserNotFoundException {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
     }
 
-        /**
+    /**
      * Checks if the provided username exists in the database.
      *
      * @param username the username to check
@@ -78,8 +81,8 @@ public class UserService {
         }
         return userRepository.existsByUsername(username);
     }
-    
-        /**
+
+    /**
      * Checks if the provided email exists in the database.
      *
      * @param email the email to check
@@ -93,7 +96,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-        /**
+    /**
      * Create a new user in the database.
      * This method performs validation on the user data and checks for the
      * uniqueness of the email and username.
@@ -102,7 +105,8 @@ public class UserService {
      * @return the newly created User.
      * @throws IllegalArgumentException if the user data is invalid or if the email
      *                                  or username already exists
-     * @throws RuntimeException if there is an unexpected error during user creation
+     * @throws RuntimeException         if there is an unexpected error during user
+     *                                  creation
      */
     public User createUser(@NotNull User user) throws IllegalArgumentException, RuntimeException {
         try {
@@ -139,11 +143,13 @@ public class UserService {
         }
     }
 
-        /**
+    /**
      * Updates a user's details based on the provided user name
      * 
-     * This method retrieves the user, validates the new details, and updates the user's information.
-     * The strikeReport and participatedTournaments field are intentionally left out because the users should not be able to update that.
+     * This method retrieves the user, validates the new details, and updates the
+     * user's information.
+     * The strikeReport and participatedTournaments field are intentionally left out
+     * because the users should not be able to update that.
      * It returns an updated User Object.
      * 
      * @param username
@@ -157,7 +163,7 @@ public class UserService {
             throws UserNotFoundException, IllegalArgumentException, RuntimeException {
 
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
+                .orElseThrow(() -> new UserNotFoundException(username));
         try {
 
             if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail())
@@ -171,9 +177,11 @@ public class UserService {
 
             // Update only non-null fields
             Optional.ofNullable(newUserDetails.getEmail()).ifPresent(user::setEmail);
-            Optional.ofNullable(newUserDetails.getPassword()).ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
+            Optional.ofNullable(newUserDetails.getPassword())
+                    .ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
             Optional.ofNullable(newUserDetails.getPhoneNumber()).ifPresent(user::setPhoneNumber);
-            if (newUserDetails.getElo() != 0) user.setElo(newUserDetails.getElo());
+            if (newUserDetails.getElo() != 0)
+                user.setElo(newUserDetails.getElo());
             Optional.ofNullable(newUserDetails.getGender()).ifPresent(user::setGender);
             Optional.ofNullable(newUserDetails.getDateOfBirth()).ifPresent(user::setDateOfBirth);
             Optional.ofNullable(newUserDetails.getMedicalInformation()).ifPresent(user::setMedicalInformation);
@@ -182,7 +190,7 @@ public class UserService {
             Optional.ofNullable(newUserDetails.getFirstName()).ifPresent(user::setFirstName);
             Optional.ofNullable(newUserDetails.getLastName()).ifPresent(user::setLastName);
             user.setAvailable(newUserDetails.isAvailable());
-            
+
             logger.info("User updated successfully: {}", username);
             return userRepository.save(user);
         } catch (EmailAlreadyExistsException | UsernameAlreadyExistsException e) {
@@ -196,16 +204,21 @@ public class UserService {
 
     /**
      * Updates the availability of a user based on the user name
-     * @param username the username of the user to update, must not be null or empty
+     * 
+     * @param username  the username of the user to update, must not be null or
+     *                  empty
      * @param available the new availability status of the user
      * @return the updated user object
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the update process
+     * @throws UserNotFoundException if no user with the username is found in the
+     *                               database
+     * @throws RuntimeException      if there is an unexpected error during the
+     *                               update process
      */
-    public User updateUserAvailability(String username, boolean available) throws UserNotFoundException, RuntimeException {
+    public User updateUserAvailability(String username, boolean available)
+            throws UserNotFoundException, RuntimeException {
         try {
             User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+                    .orElseThrow(() -> new UserNotFoundException(username));
             user.setAvailable(available);
             logger.info("User availability updated successfully: {}", username);
             return userRepository.save(user);
@@ -219,78 +232,237 @@ public class UserService {
     }
 
     /**
-     * Deletes a user from the user database and removes them from any ongoing or future tournaments they are participating in.
+     * Deletes a user from the user database and removes them from any ongoing or
+     * future tournaments they are participating in.
      *
      * This method performs the following actions:
      * 1. Retrieves the user by their username.
      * 2. Fetches all ongoing and future tournaments.
      * 3. Removes the user from the players pool of each tournament.
-     * 4. Handles incomplete matches by removing the user and determining the winner.
+     * 4. Handles incomplete matches by removing the user and determining the
+     * winner.
      * 5. Updates the tournament in the database if any modifications were made.
      * 6. Deletes the user from the user database.
      *
      * @param username the username of the user to be deleted
      * @throws UserNotFoundException if the user does not exist
-     * @throws RuntimeException for any unexpected errors during the deletion process
+     * @throws RuntimeException      for any unexpected errors during the deletion
+     *                               process
      */
     public void deleteUser(@NotNull String username) throws UserNotFoundException, RuntimeException {
         try {
+            // Retrieve the user by username, throwing an exception if not found
             User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-                
+                    .orElseThrow(() -> new UserNotFoundException(username));
+
+            // Fetch ongoing and future tournaments the user is part of
             List<Tournament> ongoingAndFutureTournaments = tournamentService.getOngoingTournaments();
             logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
 
-            for (Tournament tournament : ongoingAndFutureTournaments) {
-                boolean tournamentModified = false;
-
-                List<String> playersPool = tournament.getPlayersPool();
-                if (playersPool != null && playersPool.remove(username)) {
-                    tournamentModified = true;
-                    logger.info("Removed user {} from players pool of tournament {}", username, tournament.getTournamentName());
-                }
-
-                List<Tournament.Match> matches = tournament.getMatches();
-                if (matches != null) {
-                    for (Tournament.Match match : matches) {
-                        List<String> players = match.getPlayers();
-                        if (!match.isCompleted() && players != null && players.contains(username)) {
-                            players.remove(username);
-                            tournamentModified = true;
-                            logger.info("Removed user {} from incomplete match in tournament {}", username, tournament.getTournamentName());
-
-                            if (!players.isEmpty()) {
-                                String winner = players.get(0);
-                                match.setMatchWinner(winner);
-                                match.setCompleted(true);
-                                match.setRounds(new ArrayList<>());
-                                logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner, tournament.getTournamentName());
-                            } else {
-                                match.setCompleted(true);
-                                match.setRounds(new ArrayList<>());
-                                logger.info("Marked match as completed without a winner and deleted all rounds in tournament {}", tournament.getTournamentName());
-                            }
-                        }
-                    }
-                }
-
-                if (tournamentModified) {
-                    Tournament updatedTournament = tournamentRepository.save(tournament);
-                    logger.info("Updated tournament {}: players pool size = {}, matches size = {}", 
-                                updatedTournament.getTournamentName(), 
-                                updatedTournament.getPlayersPool() != null ? updatedTournament.getPlayersPool().size() : 0,
-                                updatedTournament.getMatches() != null ? updatedTournament.getMatches().size() : 0);
-                }
+            // If there are tournaments, update them to remove the user
+            if (!ongoingAndFutureTournaments.isEmpty()) {
+                updateTournaments(ongoingAndFutureTournaments, username);
+            } else {
+                logger.info("No ongoing tournaments found. Proceeding with user deletion.");
             }
 
+            // Delete the user from the user repository
             userRepository.delete(user);
             logger.info("User deleted successfully: {}", username);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
+            throw e; // Rethrow the exception for handling upstream
+        } catch (Exception e) {
+            logger.error("Unexpected error during user deletion: {}", e.getMessage());
+            throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Updates the tournaments by removing the specified user from the players pool
+     * and handling any incomplete matches they are part of.
+     *
+     * This method checks each tournament for the specified user and performs the
+     * following actions:
+     * 1. Removes the user from the players pool if they are present.
+     * 2. For each match in the tournament, if the match is incomplete and the user
+     *    is a participant, removes the user and determines the match winner if
+     *    applicable.
+     * 3. Saves any modified tournaments back to the database.
+     *
+     * @param tournaments the list of tournaments to update
+     * @param username    the username of the user to be removed from the tournaments
+     */
+    private void updateTournaments(List<Tournament> tournaments, String username) {
+        for (Tournament tournament : tournaments) {
+            boolean tournamentModified = false; // Flag to track if the tournament was modified
+
+            // Remove the user from the players pool if present
+            List<String> playersPool = tournament.getPlayersPool();
+            if (playersPool != null && playersPool.remove(username)) {
+                tournamentModified = true; // Mark tournament as modified
+                logger.info("Removed user {} from players pool of tournament {}", username,
+                        tournament.getTournamentName());
+            }
+
+            // Check each match in the tournament for the user
+            List<Tournament.Match> matches = tournament.getMatches();
+            if (matches != null) {
+                for (Tournament.Match match : matches) {
+                    List<String> players = match.getPlayers();
+                    // If the match is incomplete and the user is a participant
+                    if (!match.isCompleted() && players != null && players.contains(username)) {
+                        players.remove(username); // Remove the user from the match
+                        tournamentModified = true; // Mark tournament as modified
+                        logger.info("Removed user {} from incomplete match in tournament {}", username,
+                                tournament.getTournamentName());
+
+                        // Determine the match winner if there are remaining players
+                        if (!players.isEmpty()) {
+                            String winner = players.get(0);
+                            match.setMatchWinner(winner);
+                            match.setCompleted(true);
+                            match.setRounds(new ArrayList<>());
+                            logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner,
+                                    tournament.getTournamentName());
+                        } else {
+                            // If no players are left, mark the match as completed without a winner
+                            match.setCompleted(true);
+                            match.setRounds(new ArrayList<>());
+                            logger.info(
+                                    "Marked match as completed without a winner and deleted all rounds in tournament {}",
+                                    tournament.getTournamentName());
+                        }
+                    }
+                }
+            }
+
+            // If the tournament was modified, save the changes
+            if (tournamentModified) {
+                Tournament updatedTournament = tournamentRepository.save(tournament);
+                logger.info("Updated tournament {}: players pool size = {}, matches size = {}",
+                        updatedTournament.getTournamentName(),
+                        updatedTournament.getPlayersPool() != null ? updatedTournament.getPlayersPool().size() : 0,
+                        updatedTournament.getMatches() != null ? updatedTournament.getMatches().size() : 0);
+            }
+        }
+    }
+
+    // Function to show top 10 players in the database based on their elo rating and the gender of the user
+    public List<User> getDefaultLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
+        try {
+            if (username == null || username.isEmpty()) {
+                throw new IllegalArgumentException("Username must be provided!");
+            }
+    
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+    
+            List<User> allUsers = userRepository.findAll();
+            if (allUsers.isEmpty()) {
+                throw new UserNotFoundException();
+            }
+    
+            List<User> leaderboard = allUsers.stream()
+                .sorted(Comparator.comparingInt(User::getElo).reversed())
+                .filter(u -> u.getGender().equals(user.getGender()))
+                .limit(10)
+                .collect(Collectors.toList());
+
+            // Add the user to the leaderboard and check if he is in the top 10, if he is add else remove him from the leaderboard
+            if (!leaderboard.contains(user)) {
+                leaderboard.add(user);
+                leaderboard.sort(Comparator.comparingInt(User::getElo).reversed());
+                if (leaderboard.size() > 10) {
+                    leaderboard = leaderboard.subList(0, 10);
+                }
+            }
+            
+            return leaderboard;
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            throw e;
+        } catch (UserNotFoundException e) {
+            logger.error("Unable to find user: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            logger.error("Unexpected error during user deletion: {}", e.getMessage(), e);
-            throw new RuntimeException("Error deleting user: " + e.getMessage(), e);
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    // Function to show top 10 players in the databse based on their elo rating and the opposite gender of the user
+    public List<User> getOppositeGenderLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
+        try {
+            if (username == null || username.isEmpty()) {
+                throw new IllegalArgumentException("Username must be provided!");
+            }
+
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+            List<User> allUsers = userRepository.findAll();
+            if (allUsers.isEmpty()) {
+                throw new UserNotFoundException();
+            }
+
+            List<User> oppositeGenderLeaderboard = allUsers.stream()
+                .sorted(Comparator.comparingInt(User::getElo).reversed())
+                .filter(u -> !u.getGender().equals(user.getGender()))
+                .limit(10)
+                .collect(Collectors.toList());
+            
+            return oppositeGenderLeaderboard;
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            throw e;
+        } catch (UserNotFoundException e) {
+            logger.error("Unable to find user: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    // Method to show top 10 players in the database based on their elo rating regardless of gender
+    public List<User> getMixedGenderLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
+        try {
+            if (username == null || username.isEmpty()) {
+                throw new IllegalArgumentException("Username must be provided!");
+            }
+
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+            
+            List<User> allUsers = userRepository.findAll();
+            if (allUsers.isEmpty()) {
+                throw new UserNotFoundException();
+            }
+
+            List<User> mixedGenderLeaderboard = allUsers.stream()
+                .sorted(Comparator.comparingInt(User::getElo).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+            
+            if (!mixedGenderLeaderboard.contains(user)) {
+                mixedGenderLeaderboard.add(user);
+                mixedGenderLeaderboard.sort(Comparator.comparingInt(User::getElo).reversed());
+                if (mixedGenderLeaderboard.size() > 10) {
+                    mixedGenderLeaderboard = mixedGenderLeaderboard.subList(0, 10);
+                }
+            }
+
+            return mixedGenderLeaderboard;
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid username: {}", e.getMessage());
+            throw e;
+        } catch (UserNotFoundException e) {
+            logger.error("Unable to find user: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 

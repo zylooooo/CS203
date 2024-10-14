@@ -21,14 +21,6 @@ import jakarta.validation.constraints.*;
 @Document(collection = "user")
 public class User {
 
-    
-
-    private boolean enabled;
-
-    private String verificationCode;
-
-    private LocalDateTime verificationCodeExpiration;
-
     @Id
     private String id;
 
@@ -39,7 +31,7 @@ public class User {
     private String email;
 
     @NotNull(message = "Password is required!")
-    @Size(min = 8, message = "Password must be at least 8 characters long!")
+    @Size(min = 8, message = "Password must be at least 8 characters long!") 
     private String password;
 
     @NotNull(message = "Phone number is required!")
@@ -110,4 +102,13 @@ public class User {
 
     // Default role is USER FOR JWT
     private String role = "USER";
+
+    // Enabled is used for email verification
+    private boolean enabled;
+
+    // Verification code is used for email verification
+    private String verificationCode;
+
+    // Time when the verification code expires
+    private LocalDateTime verificationCodeExpiration;
 }
