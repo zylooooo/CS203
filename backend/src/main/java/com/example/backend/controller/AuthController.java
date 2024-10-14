@@ -20,25 +20,17 @@ import com.example.backend.dto.AdminVerifyDto;
 import com.example.backend.dto.UserRegisterDto;
 import com.example.backend.dto.UserVerifyDto;
 import com.example.backend.dto.UserLoginDto;
-import com.example.backend.exception.AccountNotFoundException;
-import com.example.backend.exception.AdminAlreadyVerifiedException;
-import com.example.backend.exception.AdminNotFoundException;
-import com.example.backend.exception.EmailAlreadyExistsException;
-import com.example.backend.exception.InvalidVerificationCodeException;
-import com.example.backend.exception.UserAlreadyVerifiedException;
-import com.example.backend.exception.UserNotEnabledException;
-import com.example.backend.exception.UserNotFoundException;
-import com.example.backend.exception.UsernameAlreadyExistsException;
-import com.example.backend.exception.VerificationCodeExpiredException;
-import com.example.backend.model.Admin;
-import com.example.backend.model.User;
+import com.example.backend.exception.*;
 import com.example.backend.responses.LoginResponse;
 import com.example.backend.security.UserPrincipal;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.JwtService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
     // for debugging
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -46,57 +38,36 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
  
-    public AuthController(AuthenticationService authenticationService, JwtService jwtService) {
-        this.authenticationService = authenticationService;
-        this.jwtService = jwtService;
-    }
-
     @PostMapping("/user-signup")
     public ResponseEntity<?> userSignup(@RequestBody UserRegisterDto userRegisterDto) {
         try {
-            User registeredUser = authenticationService.userSignup(userRegisterDto);
-            return ResponseEntity.ok(registeredUser);
-        } catch (UsernameAlreadyExistsException e) {
-            logger.error("Signup error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("The account name is already taken."));
-        } catch (EmailAlreadyExistsException e) {
-            logger.error("Signup error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("The email address is already registered."));
-        } catch (IllegalArgumentException e) {
-            logger.error("Signup error: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                .body(new ErrorResponse(e.getMessage()));
+            Map<String, Object> result = authenticationService.userSignup(userRegisterDto);
+            
+            if (result.containsKey("errors")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.get("errors"));
+            } else {
+                return ResponseEntity.ok(result.get("user"));
+            }
         } catch (Exception e) {
             logger.error("Unexpected error during signup", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An unexpected error occurred during signup."));
+                .body(Map.of("error", "An unexpected error occurred during signup."));
         }
-    
     }
 
     @PostMapping("/admin-signup")
     public ResponseEntity<?> adminSignup(@RequestBody AdminRegisterDto adminRegisterDto) {
         try {
-            Admin registeredAdmin = authenticationService.adminSignup(adminRegisterDto);
-            return ResponseEntity.ok(registeredAdmin);
-        } catch (UsernameAlreadyExistsException e) {
-            logger.error("Admin signup error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("The account name is already taken."));
-        } catch (EmailAlreadyExistsException e) {
-            logger.error("Admin signup error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("The email address is already registered."));
-        } catch (IllegalArgumentException e) {
-            logger.error("Admin signup error: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                .body(new ErrorResponse(e.getMessage()));
+            Map<String, Object> result = authenticationService.adminSignup(adminRegisterDto);
+            if (result.containsKey("errors")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.get("errors"));
+            } else {
+                return ResponseEntity.ok(result.get("admin"));
+            }
         } catch (Exception e) {
             logger.error("Unexpected error during admin signup", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An unexpected error occurred during admin signup."));
+                .body(Map.of("error", "An unexpected error occurred during admin signup."));
         }
     }
 

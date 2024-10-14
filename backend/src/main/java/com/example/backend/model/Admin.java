@@ -21,18 +21,18 @@ public class Admin {
     private String id;
 
     @Indexed(unique = true)
-    @NotNull(message = "Email is required!")
+    @NotBlank(message = "Email is required!")
     @Email(message = "Invalid email format!")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Invalid email!")
     private String email;
 
-    @NotNull(message = "First name is required!")
+    @NotBlank(message = "First name is required!")
     private String firstName;
 
-    @NotNull(message = "Last name is required!")
+    @NotBlank(message = "Last name is required!")
     private String lastName;
 
-    @NotNull(message = "Password is required!")
+    @NotBlank(message = "Password is required!")
     @Size(min = 8, message = "Password must be at least 8 characters long!") 
     private String password;
 
@@ -41,7 +41,7 @@ public class Admin {
     private String profilePic;
 
     @Indexed(unique = true)
-    @NotNull(message = "Admin name is required!")
+    @NotBlank(message = "Admin name is required!")
     private String adminName;
 
     // Default role is ADMIN FOR JWT

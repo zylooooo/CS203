@@ -24,17 +24,17 @@ public class User {
     @Id
     private String id;
 
-    @NotNull(message = "Email is required!")
+    @NotBlank(message = "Email is required!")
     @Email(message = "Invalid email")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Invalid email!")
     @Indexed(unique = true)
     private String email;
 
-    @NotNull(message = "Password is required!")
+    @NotBlank(message = "Password is required!")
     @Size(min = 8, message = "Password must be at least 8 characters long!") 
     private String password;
 
-    @NotNull(message = "Phone number is required!")
+    @NotBlank(message = "Phone number is required!")
     // Test if the phone number is a valid Singapore number
     @Pattern(regexp = "^(?:6\\d{7}|[89]\\d{7}|1800\\d{7}|1900\\d{7})$", message = "Invalid phone number!") 
     private String phoneNumber;
@@ -42,7 +42,8 @@ public class User {
     // Default elo is 400
     private int elo = 400;
 
-    @NotNull(message = "Gender is required!")
+    @NotBlank(message = "Gender is required!")
+    @Pattern(regexp = "^(M|F|Male|Female)$", message = "Gender must be either 'M', 'F', 'Male', or 'Female'.")
     private String gender;
 
     @NotNull(message = "Date of birth is required!")
@@ -60,14 +61,14 @@ public class User {
 
     private String profilePic;
 
-    @NotNull(message = "Username is required!")
+    @NotBlank(message = "Username is required!")
     @Indexed(unique = true)
     private String username;
 
-    @NotNull(message = "First name is required!")   
+    @NotBlank(message = "First name is required!")   
     private String firstName;
 
-    @NotNull(message = "Last name is required!")    
+    @NotBlank(message = "Last name is required!")    
     private String lastName;
 
     private boolean isAvailable;

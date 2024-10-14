@@ -7,9 +7,7 @@ import com.example.backend.repository.TournamentRepository;
 
 import jakarta.validation.constraints.NotNull;
 
-import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.UserNotFoundException;
-import com.example.backend.exception.UsernameAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -159,20 +157,34 @@ public class UserService {
      * @throws IllegalArgumentException
      * @throws RuntimeException
      */
-    public User updateUser(@NotNull String username, @NotNull User newUserDetails)
+    public Map<String, Object> updateUser(@NotNull String username, @NotNull User newUserDetails)
             throws UserNotFoundException, IllegalArgumentException, RuntimeException {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
         try {
+            Errors validationErrors = new BeanPropertyBindingResult(newUserDetails, "user");
+            validator.validate(newUserDetails, validationErrors);
 
-            if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail())
-                    && userRepository.existsByEmail(newUserDetails.getEmail())) {
-                throw new EmailAlreadyExistsException("Email already exists");
+            if (validationErrors.hasErrors()) {
+                validationErrors.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+                );
             }
-            if (newUserDetails.getUsername() != null && !user.getUsername().equals(newUserDetails.getUsername())
-                    && userRepository.existsByUsername(newUserDetails.getUsername())) {
-                throw new UsernameAlreadyExistsException("Username already exists");
+
+            if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail()) && userRepository.existsByEmail(newUserDetails.getEmail())) {
+                errors.put("email", "Email already exists!");
+            }
+
+            if (newUserDetails.getUsername() != null && !user.getUsername().equals(newUserDetails.getUsername()) && userRepository.existsByUsername(newUserDetails.getUsername())) {
+                errors.put("username", "Username already exists!");
+            }
+
+            if (!errors.isEmpty()) {
+                response.put("errors", errors);
+                return response;
             }
 
             // Update only non-null fields
@@ -191,15 +203,13 @@ public class UserService {
             Optional.ofNullable(newUserDetails.getLastName()).ifPresent(user::setLastName);
             user.setAvailable(newUserDetails.isAvailable());
 
-            logger.info("User updated successfully: {}", username);
-            return userRepository.save(user);
-        } catch (EmailAlreadyExistsException | UsernameAlreadyExistsException e) {
-            logger.error("Error during user update: {}", e.getMessage());
-            throw e;
+            response.put("user", userRepository.save(user));
         } catch (Exception e) {
-            logger.error("Unexpected error during user update: {}", e.getMessage(), e);
-            throw new RuntimeException("An unexpected error occurred during user update", e);
+            response.put("error", "An unexpected error occurred during user update");
+            throw e;
         }
+
+        return response;
     }
 
     /**

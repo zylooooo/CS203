@@ -2,7 +2,7 @@ package com.example.backend.service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,13 +20,14 @@ import com.example.backend.exception.AccountNotFoundException;
 import com.example.backend.exception.AdminAlreadyVerifiedException;
 import com.example.backend.exception.AdminNotEnabledException;
 import com.example.backend.exception.AdminNotFoundException;
-import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.InvalidVerificationCodeException;
 import com.example.backend.exception.UserAlreadyVerifiedException;
 import com.example.backend.exception.UserNotEnabledException;
 import com.example.backend.exception.UserNotFoundException;
-import com.example.backend.exception.UsernameAlreadyExistsException;
 import com.example.backend.exception.VerificationCodeExpiredException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.example.backend.model.Admin;
 import com.example.backend.model.User;
@@ -37,8 +38,10 @@ import com.example.backend.repository.UserRepository;
 import com.example.backend.security.UserPrincipal;
 
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final AdminRepository adminRepository;
@@ -46,75 +49,116 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
+    private final LocalValidatorFactoryBean validator;
 
-    public AuthenticationService(UserRepository userRepository, AdminRepository adminRepository, PasswordEncoder passwordEncoder, EmailService emailService, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-        this.authenticationManager = authenticationManager;
+    public Map<String, Object> userSignup(UserRegisterDto userRegisterDto) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        try {
+            // Validate the userRegisterDto
+            Errors validationErrors = new BeanPropertyBindingResult(userRegisterDto, "userRegisterDto");
+            validator.validate(userRegisterDto, validationErrors);
+
+            if (validationErrors.hasErrors()) {
+                validationErrors.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+                );
+            }
+
+            // Check if username already exists
+            if (userRepository.existsByUsername(userRegisterDto.getUsername()) || adminRepository.existsByAdminName(userRegisterDto.getUsername())) {
+                errors.put("username", "Account name already exists");
+            }
+
+            // Check if email already exists
+            if (userRepository.existsByEmail(userRegisterDto.getEmail()) || adminRepository.existsByEmail(userRegisterDto.getEmail())) {
+                errors.put("email", "Email already exists");
+            }
+
+            if (!errors.isEmpty()) {
+                response.put("errors", errors);
+                return response;
+            }
+
+            User user = new User();
+            user.setRole("ROLE_USER");
+            user.setUsername(userRegisterDto.getUsername());
+            user.setEmail(userRegisterDto.getEmail());
+            user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword())); 
+            user.setVerificationCode(generateVerificationCode());
+            user.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(15));
+            user.setEnabled(false);
+            user.setFirstName(userRegisterDto.getFirstName());
+            user.setLastName(userRegisterDto.getLastName());
+            user.setPhoneNumber(userRegisterDto.getPhoneNumber());
+            user.setElo(userRegisterDto.getElo());
+            user.setGender(userRegisterDto.getGender());
+            user.setDateOfBirth(userRegisterDto.getDateOfBirth());
+            user.setAge(userRegisterDto.getAge());
+
+            sendVerificationEmail(user);
+
+            User savedUser = userRepository.save(user);
+            response.put("user", savedUser);
+        } catch (Exception e) {
+            errors.put("error", "An unexpected error occurred. Please try again.");
+            response.put("errors", errors);
+            throw e;
+        }
+
+        return response;
     }
 
-    public User userSignup(UserRegisterDto userRegisterDto) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        if (userRepository.existsByUsername(userRegisterDto.getUsername()) || adminRepository.existsByAdminName(userRegisterDto.getUsername())) {
-            throw new UsernameAlreadyExistsException("Account name already exists");
+    public Map<String, Object> adminSignup(AdminRegisterDto adminRegisterDto) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        try {
+            Errors validationErrors = new BeanPropertyBindingResult(adminRegisterDto, "adminRegisterDto");
+            validator.validate(adminRegisterDto, validationErrors);
+
+            if (validationErrors.hasErrors()) {
+                validationErrors.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+                );
+            }
+
+            if (adminRepository.existsByAdminName(adminRegisterDto.getAdminName()) || userRepository.existsByUsername(adminRegisterDto.getAdminName())) {
+                errors.put("username", "Account name already exists");
+            }
+            if (adminRepository.existsByEmail(adminRegisterDto.getEmail()) || userRepository.existsByEmail(adminRegisterDto.getEmail())) {
+                errors.put("email", "Email already exists");
+            }
+
+            if (!errors.isEmpty()) {
+                response.put("errors", errors);
+                return response;
+            }
+
+            Admin admin = new Admin();
+            admin.setRole("ROLE_ADMIN");
+            admin.setEmail(adminRegisterDto.getEmail());
+            admin.setFirstName(adminRegisterDto.getFirstName());
+            admin.setLastName(adminRegisterDto.getLastName());
+            admin.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
+            admin.setAdminName(adminRegisterDto.getAdminName());
+            admin.setVerificationCode(generateVerificationCode());
+            admin.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(15)); // 15 minutes
+            admin.setEnabled(false);
+            
+            sendVerificationEmail(admin);
+
+            Admin savedAdmin = adminRepository.save(admin);
+            response.put("admin", savedAdmin);
+        } catch (Exception e) {
+            errors.put("error", "An unexpected error occurred. Please try again.");
+            response.put("errors", errors);
+            throw e;
         }
-        if (userRepository.existsByEmail(userRegisterDto.getEmail()) || adminRepository.existsByEmail(userRegisterDto.getEmail())) {
-            throw new EmailAlreadyExistsException("Email already exists");
-        }
-    
-        User user = new User();
-
-        // Default role is USER FOR JWT
-        user.setRole("ROLE_USER");
-        
-        user.setUsername(userRegisterDto.getUsername());
-        user.setEmail(userRegisterDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
-        user.setVerificationCode(generateVerificationCode());
-        user.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(15)); // 15 minutes
-        user.setEnabled(false);
-
-        user.setFirstName(userRegisterDto.getFirstName());
-        user.setLastName(userRegisterDto.getLastName());
-        user.setPhoneNumber(userRegisterDto.getPhoneNumber());
-        user.setElo(userRegisterDto.getElo());
-        user.setGender(userRegisterDto.getGender());
-        user.setDateOfBirth(userRegisterDto.getDateOfBirth());
-        user.setAge(userRegisterDto.getAge());
-
-        sendVerificationEmail(user);
-    
-        return userRepository.save(user);
+        return response;
     }
-
-    public Admin adminSignup(AdminRegisterDto adminRegisterDto) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
-        if (adminRepository.existsByAdminName(adminRegisterDto.getAdminName()) || userRepository.existsByUsername(adminRegisterDto.getAdminName())) {
-            throw new UsernameAlreadyExistsException("Account name already exists");
-        }
-        if (adminRepository.existsByEmail(adminRegisterDto.getEmail()) || userRepository.existsByEmail(adminRegisterDto.getEmail())) {
-            throw new EmailAlreadyExistsException("Email already exists");
-        }
-
-        Admin admin = new Admin();
     
-        // Default role is ADMIN FOR JWT
-        admin.setRole("ROLE_ADMIN");
-
-        admin.setEmail(adminRegisterDto.getEmail());
-        admin.setFirstName(adminRegisterDto.getFirstName());
-        admin.setLastName(adminRegisterDto.getLastName());
-        admin.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
-        admin.setAdminName(adminRegisterDto.getAdminName());
-        admin.setVerificationCode(generateVerificationCode());
-        admin.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(15)); // 15 minutes
-        admin.setEnabled(false);
-        
-        sendVerificationEmail(admin);
-    
-        return adminRepository.save(admin);
-    }
-
     public UserPrincipal userAuthenticate(UserLoginDto loginDto) {
         User user = userRepository.findByUsername(loginDto.getUsername())
             .orElseThrow(() -> new UserNotFoundException("User not found with username: " + loginDto.getUsername()));

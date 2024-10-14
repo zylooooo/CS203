@@ -22,7 +22,7 @@ public class Tournament {
     @Id
     private String id;
 
-    @NotNull(message = "Tournament name is required!")
+    @NotBlank(message = "Tournament name is required!")
     @Indexed(unique = true)
     private String tournamentName;
 
@@ -32,7 +32,7 @@ public class Tournament {
     @PastOrPresent(message = "Tournament must be updated in the past or the present!")
     private LocalDateTime updatedAt;
 
-    @NotNull(message = "Admin who created the tournament is required!")
+    @NotBlank(message = "Admin who created the tournament is required!")
     private String createdBy;
 
     @NotNull(message = "Start date is required!")
@@ -42,7 +42,7 @@ public class Tournament {
     @NotNull(message = "End date is required!")
     private LocalDate endDate;
     
-    @NotNull(message = "Location is required!")
+    @NotBlank(message = "Location is required!")
     private String location;
 
     @NotNull(message = "Minimum elo is required!")
@@ -53,7 +53,7 @@ public class Tournament {
     @Min(value = 0, message = "Maximum elo must be at least 0!")
     private Integer maxElo;
 
-    @NotNull(message = "Gender is required!")
+    @NotBlank(message = "Gender is required!")
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Invalid gender format!")
     private String gender;
 
@@ -64,7 +64,7 @@ public class Tournament {
 
     private String remarks;
 
-    @NotNull(message = "Category is required!")
+    @NotBlank(message = "Category is required!")
     @Pattern(regexp = "^(U16|U21|Open)$", message = "Category must be U16, U21, or Open!")
     private String category;
 
