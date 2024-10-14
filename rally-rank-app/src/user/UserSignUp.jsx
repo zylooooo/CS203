@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { Step1, Step2, Step3, Step4, Step5 } from "./user-sign-up-components/SignUpSteps";
+import { Step1, Step2, Step3 } from "./user-sign-up-components/SignUpSteps";
 import signupPicture from "../assets/user-sign-up-picture.jpg";
+
+// Axios import
+import axios from "axios";
 
 function UserSignUp() {
   const location = useLocation(); 
@@ -67,7 +70,7 @@ function UserSignUp() {
     const isStepValid = await trigger(fieldsToValidate);
   
     if (isStepValid) {
-      if (step < 4) {
+      if (step < 3) {
         setCompletedSteps([...completedSteps, step]);
         setClickableSteps([...clickableSteps, step]);
         setStep(step + 1);
@@ -141,7 +144,6 @@ function UserSignUp() {
               <div className = "flex justify-evenly gap-5 pt-10">
                 <button
                   type = "submit"
-                  // className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
                   className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
                 >
                   {step === 3 ? "Submit" : "Continue"}
