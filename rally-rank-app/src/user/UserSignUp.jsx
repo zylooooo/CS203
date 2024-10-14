@@ -4,11 +4,14 @@ import { useLocation } from "react-router-dom";
 import { Step1, Step2, Step3 } from "./user-sign-up-components/SignUpSteps";
 import signupPicture from "../assets/user-sign-up-picture.jpg";
 
+import { Link, useNavigate } from "react-router-dom";
+
 // Axios import
 import axios from "axios";
 
 function UserSignUp() {
   const location = useLocation(); 
+  const navigate = useNavigate();
   const { email } = location.state || {}; 
   const { register, handleSubmit, watch, trigger, formState: { errors , isValid}} = useForm();
 
@@ -80,8 +83,8 @@ function UserSignUp() {
         const response = await createUser(formData);
 
         if (response !== undefined) {
-          console.log(response)
-          console.log("ok signedup")
+          alert("Successfully registered! Please move on to verification!");
+          navigate("/auth/user-verify");
         }
       }
     } 
