@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
@@ -97,8 +99,12 @@ public class UsersTournamentsController {
     }
 
     // Router to get the user's scheduled tournaments
-    @GetMapping("/{username}/scheduled")
-    public ResponseEntity<?> getUserUpcomingTournaments(@PathVariable String username) {
+    @GetMapping("/scheduled")
+    public ResponseEntity<?> getUserUpcomingTournaments() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
         try {
             List<Tournament> userScheduledTournaments = tournamentService.getUserUpcomingTournaments(username);
             return ResponseEntity.ok(userScheduledTournaments);
