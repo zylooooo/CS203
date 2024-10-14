@@ -40,10 +40,11 @@ public class UserRegisterDto {
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Gender must be either 'M', 'F', 'Male', or 'Female'.")
     private String gender;
 
-    @NotBlank(message = "Date of birth is required!")
+    @NotNull(message = "Date of birth is required!")
     @Past(message = "Date of birth must be in the past!")
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "Age is required!")
+    @NotNull(message = "Age is required!")
+    @Min(value = 0, message = "Age must be greater than 0!")
     private int age;
 }

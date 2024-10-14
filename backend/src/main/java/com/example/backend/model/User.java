@@ -79,14 +79,14 @@ public class User {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MedicalInformation {
-        @NotNull(message = "Emergency contact number is required!")
+        @NotBlank(message = "Emergency contact number is required!")
         @Pattern(regexp = "^(?:6\\d{7}|[89]\\d{7}|1800\\d{7}|1900\\d{7})$", message = "Invalid phone number!") 
         private String emergencyContactNumber;
 
-        @NotNull(message = "Emergency contact name is required!")
+        @NotBlank(message = "Emergency contact name is required!")
         private String emergencyContactName;
 
-        @NotNull(message = "Relationship is required!")
+        @NotBlank(message = "Relationship is required!")
         private String relationship;
     }
 
@@ -94,10 +94,10 @@ public class User {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class StrikeReport {
-        @NotNull(message = "Report details is required!")
+        @NotBlank(message = "Report details is required!")
         private String reportDetails;
         private String dateCreated;
-        @NotNull(message = "Admin Name is required!")
+        @NotBlank(message = "Admin Name is required!")
         private String issuedBy;
     }
 
