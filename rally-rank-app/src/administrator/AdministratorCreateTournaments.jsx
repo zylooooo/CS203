@@ -4,12 +4,27 @@ const AdminTournamentsForm = ({ register, errors }) => {
   const [isSignUpBasis, setIsSignUpBasis] = useState(true); // State to manage sign-up basis
   const [selectedPlayers, setSelectedPlayers] = useState([]); // State to manage selected players
 
+  // const playerOptions = [
+  //   { value: "John Doe", label: "John Doe (Male, Age: 20, Elo: 1500)" },
+  //   { value: "Jane Smith", label: "Jane Smith (Female, Age: 18, Elo: 1600)" },
+  //   { value: "Emily Jones", label: "Emily Jones (Female, Age: 19, Elo: 1400)" },
+  //   { value: "Mark Brown", label: "Mark Brown (Male, Age: 17, Elo: 1550)" },
+  //   { value: "Chris Green", label: "Chris Green (Male, Age: 21, Elo: 1600)" },
+  // ];
+
   const playerOptions = [
-    { value: "John Doe", label: "John Doe (Male, Age: 20, Elo: 1500)" },
-    { value: "Jane Smith", label: "Jane Smith (Female, Age: 18, Elo: 1600)" },
-    { value: "Emily Jones", label: "Emily Jones (Female, Age: 19, Elo: 1400)" },
-    { value: "Mark Brown", label: "Mark Brown (Male, Age: 17, Elo: 1550)" },
-    { value: "Chris Green", label: "Chris Green (Male, Age: 21, Elo: 1600)" },
+    {
+      name: "Faheem", 
+      age: "32"
+    }, 
+    {
+      name: "Ashley",
+      age: "55"
+    },
+    {
+      name: "Tori",
+      age: "7"
+    },
   ];
 
   const handleAddPlayer = (event) => {
@@ -254,11 +269,12 @@ const AdminTournamentsForm = ({ register, errors }) => {
               onChange={handleAddPlayer}
             >
               <option value="">Select Player</option>
-              {playerOptions.map((player) => (
-                <option key={player.value} value={player.value}>
-                  {player.label}
-                </option>
-              ))}
+              {playerOptions.map((player, index) => (
+        <option key={index} value={player.name}>
+          {player.name} (Age: {player.age})
+        </option>
+      ))}
+              
             </select>
 
             {/* List of Added Players */}

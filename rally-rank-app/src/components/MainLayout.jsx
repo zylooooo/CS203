@@ -26,7 +26,3 @@ const { isLoggedIn, isAdminLoggedIn } = useAuth();
 }
 
 export default MainLayout;
-
-// -1 : PUBLIC -> Any person who goes to the website, but have yet to be logged in
-//  0 : PLAYER -> Any person who has a verified account, and has logged into RallyRank
-//  1 : ADMIN  -> Administrators of RallyRank
