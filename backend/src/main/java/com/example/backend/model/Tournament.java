@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
@@ -57,10 +58,10 @@ public class Tournament {
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Invalid gender format!")
     private String gender;
 
-    private List<String> playersPool;
+    private List<String> playersPool = new ArrayList<>();
 
     @Valid
-    private List<Match> matches;
+    private List<Match> matches = new ArrayList<>();
 
     private String remarks;
 
