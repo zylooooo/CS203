@@ -156,7 +156,7 @@ public class AuthController {
     public ResponseEntity<?> userVerify(@RequestBody UserVerifyDto verifyDto) {
 
         try {
-            authenticationService.verifyUser(verifyUserDto);
+            authenticationService.verifyUser(verifyDto);
             return ResponseEntity.ok("User verified successfully");
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage());
