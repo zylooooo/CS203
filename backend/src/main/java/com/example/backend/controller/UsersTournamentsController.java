@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Tournament;
+import com.example.backend.responses.ErrorResponse;
 import com.example.backend.service.TournamentService;
 import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
@@ -33,6 +34,7 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournament with the specified name is found.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
+
     @GetMapping("/{tournamentName}")
     public ResponseEntity<?> getTournamentByName(@PathVariable String tournamentName) {
         try {
@@ -40,11 +42,13 @@ public class UsersTournamentsController {
             Tournament tournament = tournamentService.getTournamentByName(tournamentName);
             return ResponseEntity.ok(tournament);
         } catch (TournamentNotFoundException e) {
-            logger.error("Tournament not found with name: {}", tournamentName, e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            logger.info("Tournament not found with name: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("Tournament not found with name: " + tournamentName));
         } catch (Exception e) {
-            logger.error("Error getting tournament by name: {}", tournamentName, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while fetching the tournament"));
+            logger.error("Unexpected error getting tournament by name: {}", tournamentName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred while fetching the tournament"));
         }
     }
 
@@ -62,13 +66,13 @@ public class UsersTournamentsController {
             logger.info("Total ongoing tournaments: {}", ongoingTournaments.size());
             return ResponseEntity.ok(ongoingTournaments);
         } catch (TournamentNotFoundException e) {
-            logger.error("No ongoing tournaments found!", e);
+            logger.error("No ongoing tournaments found!");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting ongoing tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching ongoing tournaments"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching ongoing tournaments"));
         }
     }
 
@@ -86,13 +90,13 @@ public class UsersTournamentsController {
             logger.info("Total current tournaments: {}", currentTournaments.size());
             return ResponseEntity.ok(currentTournaments);
         } catch (TournamentNotFoundException e) {
-            logger.error("No current tournaments found!", e);
+            logger.error("No current tournaments found!");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting current tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching current tournaments"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching current tournaments"));
         }
     }
 
@@ -113,11 +117,11 @@ public class UsersTournamentsController {
         } catch (TournamentNotFoundException e) {
             logger.error("No tournaments found for user: {}", username, e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting tournaments history by user: {}", username, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching tournaments history by user"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching tournaments history by user"));
         }
     }
 
@@ -139,14 +143,14 @@ public class UsersTournamentsController {
             return ResponseEntity.ok(userAvailableTournaments);
         } catch (UserNotFoundException e) {
             logger.error("User not found!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
         } catch (TournamentNotFoundException e) {
             logger.error("No tournaments found!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting user available tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while fetching user available tournaments"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching user available tournaments"));
         }
     }
 

@@ -2,7 +2,6 @@ package com.example.backend.config;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
-    @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, AuthenticationProvider authenticationProvider) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationProvider = authenticationProvider;
@@ -49,7 +47,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/users/**", "/usersTournaments/**").hasRole("USER")
+                .requestMatchers("/users","/users/**", "/usersTournaments/**").hasRole("USER")
                 .requestMatchers("/admins/**", "/adminsTournaments/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow all OPTIONS requests (for CORS preflight)
                 .anyRequest().authenticated()
@@ -64,7 +62,7 @@ public class SecurityConfig {
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     
-                    ErrorResponse errorResponse = new ErrorResponse("ACCESS_DENIED", "You do not have permission to access this resource");
+                    ErrorResponse errorResponse = new ErrorResponse("You do not have permission to access this resource");
                     
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonResponse = mapper.writeValueAsString(errorResponse);

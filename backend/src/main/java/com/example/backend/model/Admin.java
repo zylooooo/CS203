@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,7 @@ public class Admin {
     @Indexed(unique = true)
     @NotNull(message = "Email is required!")
     @Email(message = "Invalid email format!")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "Invalid email!")
     private String email;
 
     @NotNull(message = "First name is required!")
@@ -31,6 +33,7 @@ public class Admin {
     private String lastName;
 
     @NotNull(message = "Password is required!")
+    @Size(min = 8, message = "Password must be at least 8 characters long!") 
     private String password;
 
     private List<String> createdTournaments;
@@ -43,4 +46,13 @@ public class Admin {
 
     // Default role is ADMIN FOR JWT
     private String role = "ADMIN";
+
+    // Enabled is used for email verification
+    private boolean enabled;
+
+    // Verification code is used for email verification
+    private String verificationCode;
+
+    // Time when the verification code expires
+    private LocalDateTime verificationCodeExpiration;
 }
