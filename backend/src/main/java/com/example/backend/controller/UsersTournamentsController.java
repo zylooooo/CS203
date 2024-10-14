@@ -65,10 +65,6 @@ public class UsersTournamentsController {
             List<Tournament> ongoingTournaments = tournamentService.getOngoingTournaments();
             logger.info("Total ongoing tournaments: {}", ongoingTournaments.size());
             return ResponseEntity.ok(ongoingTournaments);
-        } catch (TournamentNotFoundException e) {
-            logger.error("No ongoing tournaments found!");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting ongoing tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -97,6 +93,18 @@ public class UsersTournamentsController {
             logger.error("Unexpected error getting current tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred while fetching current tournaments"));
+        }
+    }
+
+    // Router to get the user's scheduled tournaments
+    @GetMapping("/{username}/scheduled")
+    public ResponseEntity<?> getUserUpcomingTournaments(@PathVariable String username) {
+        try {
+            List<Tournament> userScheduledTournaments = tournamentService.getUserUpcomingTournaments(username);
+            return ResponseEntity.ok(userScheduledTournaments);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", e.getMessage()));
         }
     }
 
