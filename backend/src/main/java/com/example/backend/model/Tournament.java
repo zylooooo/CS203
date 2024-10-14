@@ -45,9 +45,11 @@ public class Tournament {
     @NotNull(message = "Location is required!")
     private String location;
 
+    @NotNull(message = "Minimum elo is required!")
     @Min(value = 0, message = "Minimum elo must be at least 0!")
     private Integer minElo;
 
+    @NotNull(message = "Maximum elo is required!")
     @Min(value = 0, message = "Maximum elo must be at least 0!")
     private Integer maxElo;
 
