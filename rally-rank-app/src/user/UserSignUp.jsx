@@ -13,6 +13,8 @@ function UserSignUp() {
   const [clickableSteps, setClickableSteps] = useState([]); // clickable steps, including current step
   const [completedSteps, setCompletedSteps] = useState([]); // completed steps, displayed as green
 
+  const [signupError, setSignupError] = useState("");
+
   const stepFields = {
     1: ["email", "username"],
     2: ["firstName", "lastName", "gender", "dob", "phone"],
@@ -20,7 +22,46 @@ function UserSignUp() {
     4: ["password", "confirmPassword"],
   };
 
-  const onSubmit = async (data) => {
+  async function createUser(formData) {
+    try {
+        const response = await axios.post(
+            "http://localhost:8080/auth/user-signup",
+            { 
+              "username" : formData.username,
+              "email": formData.email,
+              "password": formData.password,
+              "firstName": formData.firstName,
+              "lastName": formData.lastName,
+              "phoneNumber": formData.phone,
+              "gender": formData.gender,
+              "dateOfBirth": formData.dateOfBirth,
+              "age": 33,
+            },
+            { withCredentials: true } // Allow credentials (cookies) to be sent with the request
+        );
+
+        if (response.status === 200) {
+          setSignupError("Successfully registered! Please move on to verification!");
+
+            // Return the LoginResponse object containing JWT and expiration time
+            return response.data;
+        }
+    } catch (error) {
+        const status = error.status;
+
+        if (status === 409) {
+          setSignupError("Username / email already exists!");
+        } else if (status === 400) {
+          setSignupError("Input is invalid!");
+        } else if (status === 500) {
+          setSignupError(
+                "Internal server error. Contact rallyrank@gmail.com for help!"
+            );
+        }
+    }
+}
+
+  const onSubmit = async (formData) => {
 
     const fieldsToValidate = stepFields[step];
     const isStepValid = await trigger(fieldsToValidate);
@@ -31,19 +72,16 @@ function UserSignUp() {
         setClickableSteps([...clickableSteps, step]);
         setStep(step + 1);
       } else {
-        // Replace with POST request to backend
-        console.log(data);
+
+        // Create account logic there
+        const response = await createUser(formData);
+
+        if (response !== undefined) {
+          console.log(response)
+          console.log("ok signedup")
+        }
       }
     } 
-
-    // if (step < 4) {
-    //   setCompletedSteps([...completedSteps, step]);
-    //   setClickableSteps([...clickableSteps, step]);
-    //   setStep(step + 1);
-    // } else {
-    //   // Replace with POST request to backend
-    //   console.log(data);
-    // }
   };
 
   const handleStepClick = async (stepNumber) => {
@@ -54,16 +92,10 @@ function UserSignUp() {
     if (isStepValid && clickableSteps.includes(stepNumber)) {
       setClickableSteps([...clickableSteps, step]);
       setStep(stepNumber);
-    }
-
-    // if (clickableSteps.includes(stepNumber)) {
-    //   setClickableSteps([...clickableSteps, step]);
-    //   setStep(stepNumber);
-    // }
-    
+    }    
   };
 
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2, 3];
 
   return (
     <>
@@ -99,28 +131,20 @@ function UserSignUp() {
             <form onSubmit={handleSubmit(onSubmit)}>
               {step === 1 && <Step1 register = {register} errors = {errors} email = {email} />}
               {step === 2 && <Step2 register = {register} errors = {errors} />}
-              {step === 3 && <Step3 register = {register} errors = {errors} />}
-              {step === 4 && <Step4 register = {register} errors = {errors} watch = {watch} />}
+              {step === 3 && <Step3 register = {register} errors = {errors} watch = {watch} />}
 
+              {signupError && (
+                <p className="error text-red-500 mt-10">
+                  {signupError}
+                </p>
+              )}
               <div className = "flex justify-evenly gap-5 pt-10">
-              
-              {/* REPLACE PREVIOUS/NEXT BUTTON WITH CHEVRONS NEXT TO THE NUMBERS (?) -- IMPORT HEROICONS */}
-
-                {/* <button
-                  type = "button"
-                  // className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 shadow-md transition duration-300 ease-in-out"
-                  className = "font-bold border px-14 py-2 bg-secondary-color-light-gray text-primary-color-white hover:bg-primary-color-green hover:cursor-pointer"
-                  onClick = {() => setStep(step - 1)}
-                  disabled = {step === 1}
-                >
-                  Previous
-                </button> */}
                 <button
                   type = "submit"
                   // className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
                   className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
                 >
-                  {step === 4 ? "Submit" : "Continue"}
+                  {step === 3 ? "Submit" : "Continue"}
                 </button>
               </div>
             </form>
