@@ -2,9 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.service.UserService;
 import com.example.backend.responses.ErrorResponse;
-import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.UserNotFoundException;
-import com.example.backend.exception.UsernameAlreadyExistsException;
 import com.example.backend.model.User;
 
 import lombok.RequiredArgsConstructor;
@@ -118,24 +116,17 @@ public class UsersController {
     @PutMapping("/{username}/update")
     public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User newUserDetails) {
         try {
-            User updatedUser = userService.updateUser(username, newUserDetails);
-            return ResponseEntity.ok(updatedUser);
-        } catch (UserNotFoundException e) {
-            logger.error("User not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("User not found"));
-        } catch (EmailAlreadyExistsException e) {
-            logger.error("Email already exists: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("Email already exists"));
-        } catch (UsernameAlreadyExistsException e) {
-            logger.error("Username already exists: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("Username already exists"));
+            Map<String, Object> response = userService.updateUser(username, newUserDetails);
+
+            if (response.containsKey("errors")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response.get("errors"));
+            }
+
+            return ResponseEntity.ok(response.get("user"));
         } catch (Exception e) {
             logger.error("Unexpected error during user update: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An unexpected error occurred during user update"));
+                .body(Map.of("error", "An unexpected error occurred during user update!"));
         }
     }
 
