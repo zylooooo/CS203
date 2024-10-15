@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.backend.responses.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpMethod; 
 
 
 @Configuration
@@ -41,12 +42,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Updated CORS configuration
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/users","/users/**", "/usersTournaments/**").hasRole("USER")
                 .requestMatchers("/admins/**", "/adminsTournaments/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow all OPTIONS requests (for CORS preflight)
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -67,18 +70,29 @@ public class SecurityConfig {
                     response.getWriter().write(jsonResponse);
                 })
             );
-
+    
         return http.build();
     }
+    
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Set the allowed origins, methods, and headers
-        configuration.setAllowedOrigins(List.of("https://backend.com" /* CAN CHANGE LATER */, "http://localhost:8080"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedOrigins(List.of("https://backend.com", "http://localhost:8080", "http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        // Allow credentials (if needed)
+        configuration.setAllowCredentials(true);
+    
+        // Expose headers (if needed)
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        
+        // Set max age for preflight requests
+        configuration.setMaxAge(3600L);
+    
 
         // Create a new UrlBasedCorsConfigurationSource so that the CorsConfiguration can be used
         // CorsConfigurationSource is an interface that provides the configuration for CORS (Cross-Origin Resource Sharing)
