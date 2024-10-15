@@ -310,7 +310,7 @@ function AdministratorCreateTournaments() {
   async function createTournament(data) {
     try {
         const response = await axios.post(
-            "http://localhost:8080/admins/create",
+            "http://localhost:8080/admins/tournaments/create",
             { 
               "tournamentName" : data.tournamentName,
               "createdBy": data.email,
