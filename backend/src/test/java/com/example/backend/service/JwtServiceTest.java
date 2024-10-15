@@ -181,6 +181,7 @@ class JwtServiceTest {
         String token = jwtService.generateToken(userPrincipal);
 
         // Act
+        @SuppressWarnings("null")
         boolean isExpired = ReflectionTestUtils.invokeMethod(jwtService, "isTokenExpired", token);
 
         // Assert
