@@ -1,6 +1,12 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.AdminRegisterDto;
 import com.example.backend.dto.UserRegisterDto;
+import com.example.backend.dto.UserVerifyDto;
+import com.example.backend.exception.InvalidVerificationCodeException;
+import com.example.backend.exception.UserAlreadyVerifiedException;
+import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.exception.VerificationCodeExpiredException;
 import com.example.backend.model.User;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.UserRepository;
@@ -18,9 +24,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.List;
+import java.time.*;
+import java.util.*;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +51,19 @@ class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
 
     private UserRegisterDto validUserDto;
+
+    /*
+     * Unit test for the userSignup method in the AuthenticationService class.
+     * This test checks the following scenarios:
+     * 1. Successful user signup
+     * 2. Validation errors
+     * 3. Username already exists
+     * 4. Email already exists
+     * 5. Unexpected exception
+     * 6. Username exists in Admin repository
+     * 7. Email exists in Admin repository
+     */
+
 
     @BeforeEach
     void setUp() {
@@ -262,6 +281,132 @@ class AuthenticationServiceTest {
         verify(userRepository, never()).save(any(User.class));
         verify(emailService, never()).sendVerificationEmail(anyString(), anyString(), anyString());
     }
+
+    @Test
+    void verifyUser_Success() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("testuser");
+        verifyDto.setVerificationCode("123456");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEnabled(false);
+        user.setVerificationCode("123456");
+        user.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act
+        authenticationService.verifyUser(verifyDto);
+
+        // Assert
+        assertTrue(user.isEnabled());
+        assertNull(user.getVerificationCode());
+        assertNull(user.getVerificationCodeExpiration());
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void verifyUser_UserNotFound() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("nonexistentuser");
+        verifyDto.setVerificationCode("123456");
+
+        when(userRepository.findByUsername("nonexistentuser")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> authenticationService.verifyUser(verifyDto));
+        verify(userRepository).findByUsername("nonexistentuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void verifyUser_AlreadyVerified() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("testuser");
+        verifyDto.setVerificationCode("123456");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEnabled(true);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(UserAlreadyVerifiedException.class, () -> authenticationService.verifyUser(verifyDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void verifyUser_ExpiredCode() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("testuser");
+        verifyDto.setVerificationCode("123456");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEnabled(false);
+        user.setVerificationCode("123456");
+        user.setVerificationCodeExpiration(LocalDateTime.now().minusMinutes(1));
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(VerificationCodeExpiredException.class, () -> authenticationService.verifyUser(verifyDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void verifyUser_InvalidCode() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("testuser");
+        verifyDto.setVerificationCode("123456");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEnabled(false);
+        user.setVerificationCode("654321");
+        user.setVerificationCodeExpiration(LocalDateTime.now().plusMinutes(5));
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(InvalidVerificationCodeException.class, () -> authenticationService.verifyUser(verifyDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void verifyUser_NullExpirationCode() {
+        // Arrange
+        UserVerifyDto verifyDto = new UserVerifyDto();
+        verifyDto.setUsername("testuser");
+        verifyDto.setVerificationCode("123456");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setEnabled(false);
+        user.setVerificationCode("123456");
+        user.setVerificationCodeExpiration(null);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(VerificationCodeExpiredException.class, () -> authenticationService.verifyUser(verifyDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(userRepository, never()).save(any(User.class));
+    }
+    
+    
+    
 
 
 }
