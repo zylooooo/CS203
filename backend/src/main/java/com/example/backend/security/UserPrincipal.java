@@ -10,7 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,9 +25,9 @@ public class UserPrincipal implements UserDetails {
     private String username;
     private String password;
     private boolean enabled;
-    private Collection<? extends GrantedAuthority> authorities;
+    private List<GrantedAuthority> authorities;
 
-    public UserPrincipal(String id, String username, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String id, String username, String password, boolean enabled, List<GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -61,7 +60,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public List<GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
