@@ -21,6 +21,7 @@
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/AdminNotEnabledException.java
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/AdminNotFoundException.java
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/EmailAlreadyExistsException.java
+/Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/EmailSendingException.java
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/InvalidVerificationCodeException.java
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/TournamentNotFoundException.java
 /Users/joshua/VSCode/CS203/backend/src/main/java/com/example/backend/exception/UserAlreadyVerifiedException.java

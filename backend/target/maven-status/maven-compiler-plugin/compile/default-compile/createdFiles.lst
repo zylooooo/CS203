@@ -11,6 +11,7 @@ com/example/backend/RallyRankApplication.class
 com/example/backend/exception/AdminNotFoundException.class
 com/example/backend/exception/AdminAlreadyVerifiedException.class
 com/example/backend/model/User.class
+com/example/backend/exception/EmailSendingException.class
 com/example/backend/exception/EmailAlreadyExistsException.class
 com/example/backend/exception/InvalidVerificationCodeException.class
 com/example/backend/config/MongoConfig$LocalDateTimeToStringConverter.class
