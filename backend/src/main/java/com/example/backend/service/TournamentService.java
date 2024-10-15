@@ -137,7 +137,9 @@ public class TournamentService {
     public List<Tournament> getOngoingTournaments() {
         LocalDate currentDate = LocalDate.now();
         List<Tournament> ongoingAndFutureTournaments = tournamentRepository.findAll().stream()
-            .filter(t -> t.isOngoing() && t.getEndDate().isAfter(currentDate))
+            .filter(t -> t.isOngoing() || 
+                         (t.getStartDate().isBefore(currentDate) && t.getEndDate().isAfter(currentDate)) ||
+                         (t.getStartDate().isAfter(currentDate) && t.getEndDate().isAfter(currentDate)))
             .collect(Collectors.toList());
         
         logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
@@ -286,7 +288,7 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found in the database.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-    public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException, RuntimeException {
+    public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException {
         try {
             User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -340,6 +342,12 @@ public class TournamentService {
             logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
             return userAvailableTournaments;
 
+        } catch (UserNotFoundException e) {
+            logger.error("User not found: {}", username);
+            throw e;
+        } catch (TournamentNotFoundException e) {
+            logger.error("No tournaments found");
+            throw e;
         } catch (Exception e) {
             logger.error("Error fetching user available tournaments", e);
             throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
