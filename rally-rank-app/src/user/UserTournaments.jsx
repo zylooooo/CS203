@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
+import axios from "axios";
 
 // ------------------------------------- API CALLS - MOCK PLAYER DATA ------------------------------------------------
 // API Calls - Mock tournament data (Upcoming)
