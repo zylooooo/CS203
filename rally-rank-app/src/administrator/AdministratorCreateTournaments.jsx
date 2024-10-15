@@ -1,30 +1,15 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import axios from "axios";
 
-const AdminTournamentsForm = ({ register, errors }) => {
+const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
   const [isSignUpBasis, setIsSignUpBasis] = useState(true); // State to manage sign-up basis
   const [selectedPlayers, setSelectedPlayers] = useState([]); // State to manage selected players
 
-  // const playerOptions = [
-  //   { value: "John Doe", label: "John Doe (Male, Age: 20, Elo: 1500)" },
-  //   { value: "Jane Smith", label: "Jane Smith (Female, Age: 18, Elo: 1600)" },
-  //   { value: "Emily Jones", label: "Emily Jones (Female, Age: 19, Elo: 1400)" },
-  //   { value: "Mark Brown", label: "Mark Brown (Male, Age: 17, Elo: 1550)" },
-  //   { value: "Chris Green", label: "Chris Green (Male, Age: 21, Elo: 1600)" },
-  // ];
-
   const playerOptions = [
-    {
-      name: "Faheem", 
-      age: "32"
-    }, 
-    {
-      name: "Ashley",
-      age: "55"
-    },
-    {
-      name: "Tori",
-      age: "7"
-    },
+    { name: "Faheem", age: "32" },
+    { name: "Ashley", age: "55" },
+    { name: "Tori", age: "7" },
   ];
 
   const handleAddPlayer = (event) => {
@@ -39,16 +24,48 @@ const AdminTournamentsForm = ({ register, errors }) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
   };
 
+  async function createTournament(data) {
+    try {
+        const response = await axios.post(
+            "http://localhost:8080/admins/create",
+            { 
+              "tournamentName" : data.tournamentName,
+              "createdBy": formData.email,
+              "startDate": data.startDate,
+              "endDate": data.endDate,
+              "location": data.venue,
+              "minElo": data.minElo,
+              "maxElo": data.maxElo,
+              "gender": data.gender,
+              "category": data.category,
+              "playerCapacity": data.maxPlayers,
+            },
+            { withCredentials: true } 
+        );
+
+        if (response.status === 201) {
+          setSignupError("Successfully created!");
+          console.log("good");
+
+            return response.data;
+        }
+    } catch (error) {
+        const status = error.status;
+
+        if (status != 201) {
+          setSignupError("Error");
+        } 
+        console.log("bad");
+    }
+}
+
   return (
-    <div>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-xl font-extrabold">Create Tournament</h2>
       <div className="flex flex-col gap-5 mt-8">
         {/* Tournament Name */}
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="tournamentName"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="tournamentName" className="block text-sm font-medium text-gray-700">
             Tournament Name
           </label>
           <input
@@ -65,10 +82,7 @@ const AdminTournamentsForm = ({ register, errors }) => {
 
         {/* Date Range */}
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="startDate"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
             Date Range
           </label>
           <div className="flex gap-2">
@@ -88,17 +102,12 @@ const AdminTournamentsForm = ({ register, errors }) => {
               {...register("endDate", { required: "End date is required" })}
             />
           </div>
-          <p className="error">
-            {errors.startDate?.message || errors.endDate?.message}
-          </p>
+          <p className="error">{errors.startDate?.message || errors.endDate?.message}</p>
         </div>
 
         {/* Venue */}
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="venue"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
             Venue
           </label>
           <input
@@ -113,18 +122,13 @@ const AdminTournamentsForm = ({ register, errors }) => {
 
         {/* Gender */}
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="gender"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
             Gender Specification
           </label>
           <select
             className="border p-2 w-full"
             id="gender"
-            {...register("gender", {
-              required: "Gender specification is required",
-            })}
+            {...register("gender", { required: "Gender specification is required" })}
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -134,8 +138,8 @@ const AdminTournamentsForm = ({ register, errors }) => {
           <p className="error">{errors.gender?.message}</p>
         </div>
 
-        {/* Age Category */}
-        <div className="flex flex-col gap-1">
+                {/* Age Category */}
+                <div className="flex flex-col gap-1">
           <label
             htmlFor="category"
             className="block text-sm font-medium text-gray-700"
@@ -150,10 +154,8 @@ const AdminTournamentsForm = ({ register, errors }) => {
             })}
           >
             <option value="">Select Category</option>
-            <option value="U18">U18</option>
             <option value="U16">U16</option>
-            <option value="U14">U14</option>
-            <option value="U12">U12</option>
+            <option value="U21">U21</option>
             <option value="Open">Open</option>
           </select>
 
@@ -230,10 +232,7 @@ const AdminTournamentsForm = ({ register, errors }) => {
 
         {/* Sign-up Basis */}
         <div className="flex flex-col gap-1">
-          <label
-            htmlFor="signUpBasis"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="signUpBasis" className="block text-sm font-medium text-gray-700">
             Is this tournament on a sign-up basis?
           </label>
           <select
@@ -254,8 +253,8 @@ const AdminTournamentsForm = ({ register, errors }) => {
           <p className="error">{errors.signUpBasis?.message}</p>
         </div>
 
-        {/* Player Selection (if not sign-up basis) */}
-        {!isSignUpBasis && (
+                {/* Player Selection (if not sign-up basis) */}
+                {!isSignUpBasis && (
           <div className="flex flex-col gap-1">
             <label
               htmlFor="playerSelection"
@@ -313,6 +312,7 @@ const AdminTournamentsForm = ({ register, errors }) => {
           />
         </div>
 
+        {/* Submit Button */}
         <div className="flex justify-evenly gap-5 p-10">
           <button
             className="font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
@@ -322,20 +322,40 @@ const AdminTournamentsForm = ({ register, errors }) => {
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
 function AdministratorCreateTournaments() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async(data) => {
+    // Handle successful form submission, e.g., call an API or update state
+    console.log("Form submitted:", data);
+    const response = await createTournament(data);
+    if (response !== undefined) {
+      alert("Successfully created!");
+    }
+  };
+
   return (
     <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
       <div className="row-container flex flex-col w-3/5 gap-8">
         {/* Form for admin to create a tournament */}
-        <AdminTournamentsForm register={() => {}} errors={{}} />
+        <AdminTournamentsForm
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          onSubmit={onSubmit}
+        />
       </div>
     </div>
   );
-};
+}
 
 export default AdministratorCreateTournaments;
 

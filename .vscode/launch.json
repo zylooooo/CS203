@@ -2,10 +2,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Spring Boot-TestingApplication<backend>",
+            "name": "Spring Boot-RallyRankApplication<backend>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.backend.TestingApplication",
+            "mainClass": "com.example.backend.RallyRankApplication",
             "projectName": "backend",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
