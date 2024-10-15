@@ -24,37 +24,6 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
   };
 
-  async function createTournament(data) {
-    try {
-        const response = await axios.post(
-            "http://localhost:8080/admins/create",
-            { 
-              "tournamentName" : data.tournamentName,
-              "createdBy": data.email,
-              "startDate": data.startDate,
-              "endDate": data.endDate,
-              "location": data.venue,
-              "minElo": data.minElo,
-              "maxElo": data.maxElo,
-              "gender": data.gender,
-              "category": data.category,
-              "playerCapacity": data.maxPlayers,
-            },
-            { withCredentials: true } 
-        );
-
-        if (response.status === 201) {
-          console.log("good");
-
-          return response.data;
-        }
-    } catch (error) {
-      console.log(error.response.data.error);
-
-      console.log("bad");
-    }
-}
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-xl font-extrabold">Create Tournament</h2>
@@ -337,6 +306,37 @@ function AdministratorCreateTournaments() {
       alert("Successfully created!");
     }
   };
+
+  async function createTournament(data) {
+    try {
+        const response = await axios.post(
+            "http://localhost:8080/admins/create",
+            { 
+              "tournamentName" : data.tournamentName,
+              "createdBy": data.email,
+              "startDate": data.startDate,
+              "endDate": data.endDate,
+              "location": data.venue,
+              "minElo": data.minElo,
+              "maxElo": data.maxElo,
+              "gender": data.gender,
+              "category": data.category,
+              "playerCapacity": data.maxPlayers,
+            },
+            { withCredentials: true } 
+        );
+
+        if (response.status === 201) {
+          console.log("good");
+
+          return response.data;
+        }
+    } catch (error) {
+      console.log(error.response.data.error);
+
+      console.log("bad");
+    }
+}
 
   return (
     <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
