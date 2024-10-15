@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function UserHome() {
     const navigate = useNavigate();
@@ -13,24 +14,18 @@ function UserHome() {
     };
 
     useEffect(() => {
-        // Function to call the backend
+        // Function to call the backend to update availability
         const updateAvailability = async () => {
             try {
-                console.log('Availability updated:'); 
-                // const response = await fetch('/api/update-availability', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({ isAvailable }),
-                // });
+                console.log('Availability updated:', isAvailable); 
+                // Uncomment and adjust the API endpoint as needed
+                /*
+                const response = await axios.post('/api/update-availability', {
+                    isAvailable: isAvailable,
+                });
 
-                // if (!response.ok) {
-                //     throw new Error('Network response was not ok');
-                // }
-
-                // const data = await response.json();
-                // console.log('Availability updated:', data);
+                console.log('Availability updated:', response.data);
+                */
             } catch (error) {
                 console.error('Error updating availability:', error);
             }
@@ -52,29 +47,90 @@ function UserHome() {
         }, 300);
     }
 
-    // ------------------------------------- API CALLS - MOCK PLAYER DATA ------------------------------------------------
-    // API calls - Mock player data
-    const players = [
-        { id: 1, name: "Alice", rank: 1, rating: 1500 },
-        { id: 2, name: "Bob", rank: 2, rating: 1400 },
-        { id: 3, name: "Charlie", rank: 3, rating: 1300 },
-        { id: 4, name: "David", rank: 4, rating: 1200 },
-        { id: 5, name: "Eve", rank: 5, rating: 1100 },
-        { id: 6, name: "Augustus Gloop", rank: 6, rating: 1000 },
-        { id: 7, name: "Grace", rank: 7, rating: 950 },
-        { id: 8, name: "Hank", rank: 8, rating: 900 },
-        { id: 9, name: "Ivy", rank: 9, rating: 850 },
-        { id: 10, name: "Jack", rank: 10, rating: 800 },
-    ];
+    // ------------------------------------- API CALLS - FETCH LEADERBOARD DATA -------------------------------------
+    const [players, setPlayers] = useState([]);     // stores the fetched players
+    // const [loading, setLoading] = useState(true);    // loading state
 
-    const currentUser = { id: 7, name: "Augustus Gloop", rank: 6, rating: 1000 };
+    // Function to fetch the leaderboard data
+    // async function getDefaultLeaderBoard() {
+    //     try {
+    //         const response = await axios.get("http://localhost:8080/users/leaderboard");
+    //         const allUsers = response.data;
 
+    //         // Sort the users by eloRating in descending order
+    //         const sortedAllUsers = allUsers.sort((a, b) => b.eloRating - a.eloRating);
+
+    //         // Map the sorted users to include rank and necessary details
+    //         const rankedUsers = sortedAllUsers.map((user, index) => ({
+    //             rank: index + 1,
+    //             name: `${user.firstName} ${user.lastName}`,
+    //             username: user.username,
+    //             eloRating: user.eloRating
+    //         }));
+
+    //         return rankedUsers;
+    //     } catch(error) {
+    //         console.error("Error fetching players: ", error);
+    //         throw error;
+    //     }
+    // }
+
+    // useEffect() function is for fetching the leaderboard
+    // useEffect(() => {
+    //     const fetchLeaderboard = async () => {
+    //         try {
+    //             setLoading(true);
+    //             const fetchedPlayers = await getDefaultLeaderBoard();
+    //             setPlayers(fetchedPlayers);
+    //             setLoading(false);
+    //         } catch(error) {
+    //             setError("Failed to load leaderboard. Try reloading the page.");
+    //             setLoading(false);
+    //         }
+    //     };
+    //     fetchLeaderboard();
+    // }, []);
+
+    async function getDefaultLeaderBoard() {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.get(
+                "http://localhost:8080/users/leaderboard",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    }
+                }
+            );
+            
+            console.log(response.data);
+            setPlayers(response.data);
+            
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+        }
+    }
+
+    useEffect(() => {
+        getDefaultLeaderBoard();
+    }, []);
+
+
+    // Mock Data for Scheduled Tournaments (if API not available)
     const tournaments = [
         { id: 1, name: "Tournament 1", date: "2024-10-12", time: "10:00 AM" },
         { id: 2, name: "Tournament 2", date: "2024-10-18", time: "2:00 PM" },
         { id: 3, name: "Tournament 3", date: "2024-10-22", time: "1:00 PM" },
     ];
-    // -------------------------------------------------------------------------------------------------------------------
+
+    // Mock Current User (replace with actual user data as needed)
+    // const currentUser = { id: 7, name: "Augustus Gloop", rank: 6, eloRating: 1000, username: "augustusg" };
 
     // Define LeaderboardButtons component
     const LeaderboardButtons = ({ buttons, onTopClick, onYouClick, activeButton, setActiveButton }) => {
@@ -95,7 +151,7 @@ function UserHome() {
                         className = {`btn transition-colors duration-300 ${
                             activeButton === index
                             ? "active-button underline text-blue-600"   // active state
-                            : "text-gray-700 hover: text-blue-500"      // inactive state
+                            : "text-gray-700 hover:text-blue-500"        // inactive state
                         }`}
                         onClick = {() => handleButtonClick(index)}
                     >
@@ -197,24 +253,33 @@ function UserHome() {
                     setActiveButton = { setActiveButton }
                 />
                 <div className = "leaderboard-box bg-gray-100 border border-gray-300 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto">
-                    {view === "Top" ? (
-                        players.map((player) => (
-                            // TEMPLATE: PLAYER IN LEADERBOARD
-                            <div
-                                key = { player.id }
-                                className = {`p-2 ${player.id === currentUser.id ? "bg-yellow-200" : "" }`}
-                            >
-                                <h3 className = "font-semibold"> {player.rank} {player.name} </h3>
-                                <p> Rating: {player.rating} </p>
-                            </div>
-                        ))
+                    {loading ? (
+                        <p className = "p-2"> Loading leaderboard... </p>
+                    ) : view === "Top" ? (
+                        players.length > 0 ? (
+                            players.map((player) => (
+                                // TEMPLATE: PLAYER IN LEADERBOARD
+                                <div
+                                    key = { player.username }
+                                    className = {`p-2 ${player.username === player.username ? "bg-yellow-200" : "" }`}
+                                >
+                                    <h3 className = "font-semibold"> {player.rank}. {player.name} </h3>
+                                    <p> Elo Rating: {player.eloRating} </p>
+                                    <p> Username: {player.username} </p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className = "p-2"> No players available. </p>
+                        )
                     ) : (
-                        <div className = "p-2 bg-ywllow-200">
-                            <h3 className = "font-semibold"> {currentUser.name} </h3>
-                            <p> Rank: {currentUser.rank} </p>
-                            <p> Ranking: {currentUser.rating} </p>
+                        <div className = "p-2 bg-yellow-200">
+                            <h3 className = "font-semibold"> {player.name} </h3>
+                            <p> Rank: {player.rank} </p>
+                            <p> Elo Rating: {player.eloRating} </p>
+                            <p> Username: {player.username} </p>
                         </div>
                     )}
+
                 </div>
             </div>
 
@@ -231,12 +296,9 @@ function UserHome() {
                             onChange = { handleToggle }
                             className = "sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-secondary-color-light-gray rounded-full peer 
-                            peer-checked:bg-primary-color-green
-                            peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary-color-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all
-                            peer-checked:after:bg-primary-color-white"></div>
+                            <div className = "w-11 h-6 bg-secondary-color-light-gray rounded-full peer peer-checked:bg-primary-color-green peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary-color-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:bg-primary-color-white"></div>
                         </label>
-                        <span className="ml-3 text-sm text-gray-900">
+                        <span className = "ml-3 text-sm text-gray-900">
                             {isAvailable ? 'Yes, I am available' : 'No, I am not available'}
                         </span>
                     </div>
