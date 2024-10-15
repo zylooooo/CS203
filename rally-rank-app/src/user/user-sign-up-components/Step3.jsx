@@ -32,12 +32,12 @@ const Step4 = ({ register, errors, watch }) => {
                                 value: 8,
                                 message: "Password must be at least 8 characters long.",
                             },
-                            validate: {
-                                alphanumeric: value => /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
-                                uppercase: value => /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
-                                lowercase: value => /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
-                                symbol: value => /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
-                            },
+                            // validate: {
+                            //     alphanumeric: value => /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                            //     uppercase: value => /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                            //     lowercase: value => /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                            //     symbol: value => /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                            // },
                         })}
                     />
                     <p className = "error"> {errors.password?.message} </p>

@@ -28,6 +28,20 @@ function UserSignUp() {
     4: ["password", "confirmPassword"],
   };
 
+  function calculateAge(dob) {
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+  
+    // If the current month is before the birth month, or if it's the same month but the current day is before the birth day, subtract 1 from age
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+  
+    return age;
+  }
+
   async function createUser(formData) {
     try {
         const response = await axios.post(
@@ -40,11 +54,13 @@ function UserSignUp() {
               "lastName": formData.lastName,
               "phoneNumber": formData.phone,
               "gender": formData.gender,
-              "dateOfBirth": formData.dateOfBirth,
-              "age": 33,
+              "dateOfBirth": formData.dob,
+              "age": calculateAge(formData.dob),
             },
             { withCredentials: true } // Allow credentials (cookies) to be sent with the request
         );
+
+        
 
         if (response.status === 200) {
           setSignupError("Successfully registered! Please move on to verification!");
@@ -54,6 +70,8 @@ function UserSignUp() {
         }
     } catch (error) {
         const status = error.status;
+
+        console.log(error)
 
         if (status === 409) {
           setSignupError("Username / email already exists!");
