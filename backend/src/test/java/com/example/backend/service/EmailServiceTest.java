@@ -13,6 +13,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.InternetAddress;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest {
@@ -51,5 +52,20 @@ class EmailServiceTest {
         
         verify(mailSender, times(1)).createMimeMessage();
         verify(mailSender, times(1)).send(any(MimeMessage.class));
+    }
+
+    @Test
+    void sendVerificationEmail_InvalidEmail_ThrowsException() {
+        // Arrange
+        String invalidEmail = "invalid.email";
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+            emailService.sendVerificationEmail(invalidEmail, SUBJECT, TEXT));
+        assertEquals("Invalid email address", exception.getMessage());
+
+        // Verify that no email was sent
+        verify(mailSender, never()).createMimeMessage();
+        verify(mailSender, never()).send(any(MimeMessage.class));
     }
 }
