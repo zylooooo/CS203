@@ -16,15 +16,8 @@ import com.example.backend.dto.UserRegisterDto;
 import com.example.backend.dto.UserVerifyDto;
 import com.example.backend.dto.UserLoginDto;
 
-import com.example.backend.exception.AccountNotFoundException;
-import com.example.backend.exception.AdminAlreadyVerifiedException;
-import com.example.backend.exception.AdminNotEnabledException;
-import com.example.backend.exception.AdminNotFoundException;
-import com.example.backend.exception.InvalidVerificationCodeException;
-import com.example.backend.exception.UserAlreadyVerifiedException;
-import com.example.backend.exception.UserNotEnabledException;
-import com.example.backend.exception.UserNotFoundException;
-import com.example.backend.exception.VerificationCodeExpiredException;
+import com.example.backend.exception.*;
+
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -125,7 +118,7 @@ public class AuthenticationService {
             }
 
             if (adminRepository.existsByAdminName(adminRegisterDto.getAdminName()) || userRepository.existsByUsername(adminRegisterDto.getAdminName())) {
-                errors.put("username", "Account name already exists");
+                errors.put("adminName", "Account name already exists");
             }
             if (adminRepository.existsByEmail(adminRegisterDto.getEmail()) || userRepository.existsByEmail(adminRegisterDto.getEmail())) {
                 errors.put("email", "Email already exists");
@@ -174,7 +167,7 @@ public class AuthenticationService {
 
     public UserPrincipal adminAuthenticate(AdminLoginDto loginDto) {
         Admin admin = adminRepository.findByAdminName(loginDto.getAdminName())
-            .orElseThrow(() -> new UserNotFoundException("Admin not found with admin name: " + loginDto.getAdminName()));
+            .orElseThrow(() -> new AdminNotFoundException("Admin not found with admin name: " + loginDto.getAdminName()));
     
         if (!admin.isEnabled()) {
             throw new AdminNotEnabledException("Admin account not verified. Please check your email to enable your account.");
@@ -235,7 +228,7 @@ public class AuthenticationService {
     }
 
 
-    public void resendVerificationCode(String email) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException, AccountNotFoundException {
+    public void resendVerificationCode(String email) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException, AccountNotFoundException, EmailSendingException {
         Optional<User> userOptional = userRepository.findByEmail(email);
         Optional<Admin> adminOptional = adminRepository.findByEmail(email);
     
@@ -261,7 +254,7 @@ public class AuthenticationService {
         }
     }
 
-    private void handleResendVerification(Object account) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException {
+    void handleResendVerification(Object account) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException {
         if (account instanceof User) {
             User user = (User) account;
             if (user.isEnabled()) {
@@ -330,7 +323,7 @@ public class AuthenticationService {
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new EmailSendingException("Failed to send verification email", e);
         }
     }
 
