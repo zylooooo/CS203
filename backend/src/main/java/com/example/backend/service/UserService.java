@@ -41,7 +41,7 @@ public class UserService {
      * @throws RuntimeException if there is an error fetching users from the
      *                          database.
      */
-    public List<User> getAllUsers() throws RuntimeException {
+    public List<User> getAllUsers() {
         try {
             List<User> users = userRepository.findAll();
             logger.info("Retrieved {} users", users.size());
@@ -364,30 +364,21 @@ public class UserService {
             if (username == null || username.isEmpty()) {
                 throw new IllegalArgumentException("Username must be provided!");
             }
-    
+
             User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
-    
+
             List<User> allUsers = userRepository.findAll();
             if (allUsers.isEmpty()) {
-                throw new UserNotFoundException();
+                throw new UserNotFoundException("No users found in the database");
             }
-    
+
             List<User> leaderboard = allUsers.stream()
-                .sorted(Comparator.comparingInt(User::getElo).reversed())
                 .filter(u -> u.getGender().equals(user.getGender()))
+                .sorted(Comparator.comparingInt(User::getElo).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
 
-            // Add the user to the leaderboard and check if he is in the top 10, if he is add else remove him from the leaderboard
-            if (!leaderboard.contains(user)) {
-                leaderboard.add(user);
-                leaderboard.sort(Comparator.comparingInt(User::getElo).reversed());
-                if (leaderboard.size() > 10) {
-                    leaderboard = leaderboard.subList(0, 10);
-                }
-            }
-            
             return leaderboard;
         } catch (IllegalArgumentException e) {
             logger.error("Invalid username: {}", e.getMessage());
@@ -413,12 +404,12 @@ public class UserService {
 
             List<User> allUsers = userRepository.findAll();
             if (allUsers.isEmpty()) {
-                throw new UserNotFoundException();
+                throw new UserNotFoundException("No users found in the database");
             }
 
             List<User> oppositeGenderLeaderboard = allUsers.stream()
-                .sorted(Comparator.comparingInt(User::getElo).reversed())
                 .filter(u -> !u.getGender().equals(user.getGender()))
+                .sorted(Comparator.comparingInt(User::getElo).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
             
