@@ -70,9 +70,7 @@ function UserLogin() {
 
             // Re-route to home
             navigate("/users/home");
-        } else {
-            setLoginError("Server is not online!");
-        }
+        } 
     };
 
     return (
