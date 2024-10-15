@@ -30,7 +30,7 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
             "http://localhost:8080/admins/create",
             { 
               "tournamentName" : data.tournamentName,
-              "createdBy": formData.email,
+              "createdBy": data.email,
               "startDate": data.startDate,
               "endDate": data.endDate,
               "location": data.venue,
@@ -44,18 +44,14 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
         );
 
         if (response.status === 201) {
-          setSignupError("Successfully created!");
           console.log("good");
 
-            return response.data;
+          return response.data;
         }
     } catch (error) {
-        const status = error.status;
+      console.log(error.response.data.error);
 
-        if (status != 201) {
-          setSignupError("Error");
-        } 
-        console.log("bad");
+      console.log("bad");
     }
 }
 
