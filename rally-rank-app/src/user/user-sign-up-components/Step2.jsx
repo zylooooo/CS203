@@ -96,12 +96,8 @@ const Step2 = ({ register, errors }) => (
           placeholder="Phone Number"
           {...register("phone", {
             required: "Phone number is required",
-            min: {
-              value: 0,
-              message: "Please enter a valid phone number",
-            },
             pattern: {
-              value: /^[0-9]*$/,
+              value: /^(?:6\d{7}|[89]\d{7}|1800\d{7}|1900\d{7})$/,
               message: "Please enter a valid phone number",
             }
           })}
