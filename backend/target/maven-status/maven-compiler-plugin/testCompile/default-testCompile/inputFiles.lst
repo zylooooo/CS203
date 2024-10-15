@@ -1,1 +1,4 @@
-/Users/tori/Documents/CS203/backend/src/test/java/com/example/backend/RallyRankApplicationTests.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/RallyRankApplicationTests.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/EmailServiceTest.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/JwtServiceTest.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/UserServiceTest.java
