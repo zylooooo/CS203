@@ -7,7 +7,7 @@ const Step1 = ({ register, errors, email }) => (
         <div className="flex flex-col gap-5 mt-8">
 
             {/* EMAIL INPUT */}
-            <div className = "flex flex-col gap-1 w-full">
+            <div className = "flex flex-col gap-2">
 
                 <label
                     htmlFor = "email"
@@ -15,21 +15,19 @@ const Step1 = ({ register, errors, email }) => (
                 >
                     Email Address
                 </label>
-                <div className = "flex "> 
-                    <input
-                        className = "border p-2"
-                        id = "email"
-                        placeholder = "helloworld@gmail.com"
-                        defaultValue = { email } 
-                        {...register("email", {
-                            required: "Email is required",
-                            pattern: {
-                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                                message: "Invalid email format",
-                            },
-                        })}
-                    ></input>
-                </div>
+                <input
+                    className = "border p-2"
+                    id = "email"
+                    placeholder = "helloworld@gmail.com"
+                    defaultValue = { email } 
+                    {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                            message: "Invalid email format",
+                        },
+                    })}
+                />
 
                 <p className = "error">{errors.email?.message}</p>
                 
