@@ -1,1 +1,5 @@
+com\example\backend\service\EmailServiceTest.class
 com\example\backend\RallyRankApplicationTests.class
+com\example\backend\service\UserServiceTest.class
+com\example\backend\service\TournamentServiceTest.class
+com\example\backend\service\JwtServiceTest.class
