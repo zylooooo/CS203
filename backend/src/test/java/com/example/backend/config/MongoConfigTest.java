@@ -1,8 +1,6 @@
 package com.example.backend.config;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,13 +10,6 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MongoConfigTest {
-
-    private MongoConfig mongoConfig;
-
-    @BeforeEach
-    void setUp() {
-        mongoConfig = new MongoConfig();
-    }
 
     @Test
     void localDateToDateConverter_ShouldConvertCorrectly() {
