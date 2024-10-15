@@ -49,7 +49,7 @@ function UserHome() {
 
     // ------------------------------------- API CALLS - FETCH LEADERBOARD DATA -------------------------------------
     const [players, setPlayers] = useState([]);     // stores the fetched players
-    // const [loading, setLoading] = useState(true);    // loading state
+    // const [loading, setLoading] = useState(false);    // loading state
 
     // Function to fetch the leaderboard data
     // async function getDefaultLeaderBoard() {
@@ -109,7 +109,7 @@ function UserHome() {
                 }
             );
             
-            console.log(response.data);
+            console.log("data received:" + response.data);
             setPlayers(response.data);
             
         } catch (error) {
@@ -253,9 +253,7 @@ function UserHome() {
                     setActiveButton = { setActiveButton }
                 />
                 <div className = "leaderboard-box bg-gray-100 border border-gray-300 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto">
-                    {loading ? (
-                        <p className = "p-2"> Loading leaderboard... </p>
-                    ) : view === "Top" ? (
+                    {view === "Top" ? (
                         players.length > 0 ? (
                             players.map((player) => (
                                 // TEMPLATE: PLAYER IN LEADERBOARD
