@@ -44,6 +44,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final LocalValidatorFactoryBean validator;
 
+    /**
+     * Handles user signup by validating the input data and saving the user to the database.
+     *
+     * @param userRegisterDto the data transfer object containing user registration information.
+     * @return a map containing the user object or any validation errors.
+     */
     public Map<String, Object> userSignup(UserRegisterDto userRegisterDto) {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
@@ -103,6 +109,12 @@ public class AuthenticationService {
         return response;
     }
 
+    /**
+     * Handles admin signup by validating the input data and saving the admin to the database.
+     *
+     * @param adminRegisterDto the data transfer object containing admin registration information.
+     * @return a map containing the admin object or any validation errors.
+     */
     public Map<String, Object> adminSignup(AdminRegisterDto adminRegisterDto) {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
@@ -151,7 +163,15 @@ public class AuthenticationService {
         }
         return response;
     }
-    
+
+    /**
+     * Authenticates a user based on the provided login credentials.
+     *
+     * @param loginDto the data transfer object containing user login information.
+     * @return a UserPrincipal object representing the authenticated user.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws UserNotEnabledException if the user account is not verified.
+     */
     public UserPrincipal userAuthenticate(UserLoginDto loginDto) {
         User user = userRepository.findByUsername(loginDto.getUsername())
             .orElseThrow(() -> new UserNotFoundException("User not found with username: " + loginDto.getUsername()));
@@ -165,6 +185,14 @@ public class AuthenticationService {
         return UserPrincipal.create(user);
     }   
 
+    /**
+     * Authenticates an admin based on the provided login credentials.
+     *
+     * @param loginDto the data transfer object containing admin login information.
+     * @return a UserPrincipal object representing the authenticated admin.
+     * @throws AdminNotFoundException if the admin is not found.
+     * @throws AdminNotEnabledException if the admin account is not verified.
+     */
     public UserPrincipal adminAuthenticate(AdminLoginDto loginDto) {
         Admin admin = adminRepository.findByAdminName(loginDto.getAdminName())
             .orElseThrow(() -> new AdminNotFoundException("Admin not found with admin name: " + loginDto.getAdminName()));
@@ -178,9 +206,16 @@ public class AuthenticationService {
         return UserPrincipal.create(admin);
     }
 
-
+    /**
+     * Verifies a user's account using the provided verification data.
+     *
+     * @param verifyDto the data transfer object containing user verification information.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws UserAlreadyVerifiedException if the user is already verified.
+     * @throws VerificationCodeExpiredException if the verification code has expired.
+     * @throws InvalidVerificationCodeException if the verification code is invalid.
+     */
     public void verifyUser(UserVerifyDto verifyDto) {
-
         User user = userRepository.findByUsername(verifyDto.getUsername())
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -201,25 +236,33 @@ public class AuthenticationService {
         user.setVerificationCode(null);
         user.setVerificationCodeExpiration(null);
         userRepository.save(user);
-
     }
 
+    /**
+     * Verifies an admin's account using the provided verification data.
+     *
+     * @param verifyDto the data transfer object containing admin verification information.
+     * @throws AdminNotFoundException if the admin is not found.
+     * @throws AdminAlreadyVerifiedException if the admin is already verified.
+     * @throws VerificationCodeExpiredException if the verification code has expired.
+     * @throws InvalidVerificationCodeException if the verification code is invalid.
+     */
     public void verifyAdmin(AdminVerifyDto verifyDto) {
-    Admin admin = adminRepository.findByAdminName(verifyDto.getAdminName())
-        .orElseThrow(() -> new AdminNotFoundException("Admin not found"));
+        Admin admin = adminRepository.findByAdminName(verifyDto.getAdminName())
+            .orElseThrow(() -> new AdminNotFoundException("Admin not found"));
 
-    if (admin.isEnabled()) {
-        throw new AdminAlreadyVerifiedException("Admin is already verified");
-    }
+        if (admin.isEnabled()) {
+            throw new AdminAlreadyVerifiedException("Admin is already verified");
+        }
 
-    if (admin.getVerificationCodeExpiration() == null || 
-        admin.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
-        throw new VerificationCodeExpiredException("Verification code has expired");
-    }
+        if (admin.getVerificationCodeExpiration() == null || 
+            admin.getVerificationCodeExpiration().isBefore(LocalDateTime.now())) {
+            throw new VerificationCodeExpiredException("Verification code has expired");
+        }
 
-    if (!admin.getVerificationCode().equals(verifyDto.getVerificationCode())) {
-        throw new InvalidVerificationCodeException("Invalid verification code");
-    }
+        if (!admin.getVerificationCode().equals(verifyDto.getVerificationCode())) {
+            throw new InvalidVerificationCodeException("Invalid verification code");
+        }
 
         admin.setEnabled(true);
         admin.setVerificationCode(null);
@@ -227,7 +270,15 @@ public class AuthenticationService {
         adminRepository.save(admin);
     }
 
-
+    /**
+     * Resends the verification code to the user or admin associated with the provided email.
+     *
+     * @param email the email address of the user or admin.
+     * @throws UserAlreadyVerifiedException if the user is already verified.
+     * @throws AdminAlreadyVerifiedException if the admin is already verified.
+     * @throws AccountNotFoundException if no account is found with the provided email.
+     * @throws EmailSendingException if there is an error sending the email.
+     */
     public void resendVerificationCode(String email) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException, AccountNotFoundException, EmailSendingException {
         Optional<User> userOptional = userRepository.findByEmail(email);
         Optional<Admin> adminOptional = adminRepository.findByEmail(email);
@@ -254,6 +305,13 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * Handles the process of resending the verification code to the specified account.
+     *
+     * @param account the account (User or Admin) to resend the verification code to.
+     * @throws UserAlreadyVerifiedException if the user account is already verified.
+     * @throws AdminAlreadyVerifiedException if the admin account is already verified.
+     */
     void handleResendVerification(Object account) throws UserAlreadyVerifiedException, AdminAlreadyVerifiedException {
         if (account instanceof User) {
             User user = (User) account;
@@ -276,8 +334,13 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * Sends a verification email to the specified account (User or Admin).
+     *
+     * @param o the account object (User or Admin) to send the verification email to.
+     * @throws EmailSendingException if there is an error sending the email.
+     */
     public void sendVerificationEmail(Object o) {
-
         String verificationCode = null;
         String email = null;
 
@@ -327,9 +390,13 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * Generates a random verification code.
+     *
+     * @return a string representing the generated verification code.
+     */
     private String generateVerificationCode() { 
         SecureRandom random = new SecureRandom();
-        return String.format("%06d", random.nextInt(1000000));
+        return String.format("%06d", random.nextInt(1000000)); // Generate a 6-digit verification code
     }
-
 }
