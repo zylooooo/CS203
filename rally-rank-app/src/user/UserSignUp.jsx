@@ -69,19 +69,7 @@ function UserSignUp() {
             return response.data;
         }
     } catch (error) {
-        const status = error.status;
-
-        console.log(error)
-
-        if (status === 409) {
-          setSignupError("Username / email already exists!");
-        } else if (status === 400) {
-          setSignupError("Input is invalid!");
-        } else if (status === 500) {
-          setSignupError(
-                "Internal server error. Contact rallyrank@gmail.com for help!"
-            );
-        }
+      setSignupError(error.response.data.error);
     }
 }
 

@@ -34,19 +34,7 @@ function UserLogin() {
                 return response.data;
             }
         } catch (error) {
-            const status = error.status;
-
-            if (status === 404) {
-                setLoginError("Username is not found!");
-            } else if (status === 403) {
-                setLoginError("Account is not verified!");
-            } else if (status === 401) {
-                setLoginError("Wrong password!");
-            } else if (status === 500) {
-                setLoginError(
-                    "Internal server error. Contact rallyrank@gmail.com for help!"
-                );
-            }
+            setLoginError(error.response.data.error)
         }
     }
 
