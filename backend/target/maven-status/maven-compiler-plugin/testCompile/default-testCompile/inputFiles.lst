@@ -1,4 +1,7 @@
 /Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/RallyRankApplicationTests.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/config/ApplicationConfigTest.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/config/JwtAuthenticationFilterTest.java
+/Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/config/MongoConfigTest.java
 /Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/AuthenticationServiceTest.java
 /Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/EmailServiceTest.java
 /Users/joshua/VSCode/CS203/backend/src/test/java/com/example/backend/service/JwtServiceTest.java

@@ -31,42 +31,42 @@ public class MongoConfig {
         return new MongoCustomConversions(converters);
     }
 
-    private static class LocalDateToDateConverter implements Converter<LocalDate, Date> {
+    static class LocalDateToDateConverter implements Converter<LocalDate, Date> {
         @Override
         public Date convert(@NonNull LocalDate source) {
             return Date.from(source.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
     }
 
-    private static class DateToLocalDateConverter implements Converter<Date, LocalDate> {
+    static class DateToLocalDateConverter implements Converter<Date, LocalDate> {
         @Override
         public LocalDate convert(@NonNull Date source) {
             return source.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
     }
 
-    private static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+    static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
         @Override
         public LocalDateTime convert(@NonNull String source) {
             return LocalDateTime.parse(source, DATE_TIME_FORMATTER);
         }
     }
 
-    private static class LocalDateTimeToStringConverter implements Converter<LocalDateTime, String> {
+    static class LocalDateTimeToStringConverter implements Converter<LocalDateTime, String> {
         @Override
         public String convert(@NonNull LocalDateTime source) {
             return source.format(DATE_TIME_FORMATTER);
         }
     }
 
-    private static class LocalDateToStringConverter implements Converter<LocalDate, String> {
+    static class LocalDateToStringConverter implements Converter<LocalDate, String> {
         @Override
         public String convert(@NonNull LocalDate source) {
             return source.format(DateTimeFormatter.ISO_LOCAL_DATE);
         }
     }
 
-    private static class StringToLocalDateConverter implements Converter<String, LocalDate> {
+    static class StringToLocalDateConverter implements Converter<String, LocalDate> {
         @Override
         public LocalDate convert(@NonNull String source) {
             return LocalDate.parse(source, DateTimeFormatter.ISO_LOCAL_DATE);
