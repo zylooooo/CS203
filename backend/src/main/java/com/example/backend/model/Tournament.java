@@ -96,21 +96,18 @@ public class Tournament {
         }
     }
 
-    @AssertTrue(message = "End date must be after start date")
-    private boolean isValidDateRange() {
+    @AssertTrue(message = "End date must be after start date") boolean isValidDateRange() {
         return endDate != null && startDate != null && endDate.isAfter(startDate);
     }
 
-    @AssertTrue(message = "Minimum elo must be less than maximum elo!")
-    private boolean isValidEloRange() {
+    @AssertTrue(message = "Minimum elo must be less than maximum elo!") boolean isValidEloRange() {
         if (minElo != null && maxElo != null) {
             return minElo <= maxElo;
         }
         return true;
     }
 
-    @AssertTrue(message = "Either minimum elo or maximum elo must be provided!")
-    private boolean isEloRangeProvided() {
+    @AssertTrue(message = "Either minimum elo or maximum elo must be provided!") boolean isEloRangeProvided() {
         if (minElo == null && maxElo == null) {
             return false;
         }

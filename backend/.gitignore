@@ -36,3 +36,4 @@ build/
 
 .class
 .env
+.target/maven-status/
