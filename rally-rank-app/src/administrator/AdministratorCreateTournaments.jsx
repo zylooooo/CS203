@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import axios from "axios";
 
 const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
   const [isSignUpBasis, setIsSignUpBasis] = useState(true); // State to manage sign-up basis
@@ -22,6 +23,41 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
   const handleRemovePlayer = (player) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
   };
+
+  async function createTournament(data) {
+    try {
+        const response = await axios.post(
+            "http://localhost:8080/admins/create",
+            { 
+              "tournamentName" : data.tournamentName,
+              "createdBy": formData.email,
+              "startDate": data.startDate,
+              "endDate": data.endDate,
+              "location": data.venue,
+              "minElo": data.minElo,
+              "maxElo": data.maxElo,
+              "gender": data.gender,
+              "category": data.category,
+              "playerCapacity": data.maxPlayers,
+            },
+            { withCredentials: true } 
+        );
+
+        if (response.status === 201) {
+          setSignupError("Successfully created!");
+          console.log("good");
+
+            return response.data;
+        }
+    } catch (error) {
+        const status = error.status;
+
+        if (status != 201) {
+          setSignupError("Error");
+        } 
+        console.log("bad");
+    }
+}
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -297,9 +333,13 @@ function AdministratorCreateTournaments() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     // Handle successful form submission, e.g., call an API or update state
     console.log("Form submitted:", data);
+    const response = await createTournament(data);
+    if (response !== undefined) {
+      alert("Successfully created!");
+    }
   };
 
   return (
