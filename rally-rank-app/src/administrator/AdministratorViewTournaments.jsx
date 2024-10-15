@@ -198,7 +198,7 @@ function AdministratorTournaments() {
 
   const handleEditClick = (tournamentName) => {
     // Navigate to the edit page with the tournament name or id as a parameter
-    navigate(`/administrator-edit-tournaments/${tournamentName}`);
+    navigate(`/administrator-edit-tournaments`);
   };
 
   return (
