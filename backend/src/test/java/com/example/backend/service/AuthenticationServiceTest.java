@@ -1,15 +1,18 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.AdminRegisterDto;
+import com.example.backend.dto.UserLoginDto;
 import com.example.backend.dto.UserRegisterDto;
 import com.example.backend.dto.UserVerifyDto;
 import com.example.backend.exception.InvalidVerificationCodeException;
 import com.example.backend.exception.UserAlreadyVerifiedException;
+import com.example.backend.exception.UserNotEnabledException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.VerificationCodeExpiredException;
 import com.example.backend.model.User;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.security.UserPrincipal;
 
 import jakarta.mail.MessagingException;
 
@@ -19,6 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -46,6 +52,8 @@ class AuthenticationServiceTest {
     private EmailService emailService;
     @Mock
     private LocalValidatorFactoryBean validator;
+    @Mock
+    private AuthenticationManager authenticationManager;
 
     @InjectMocks
     private AuthenticationService authenticationService;
@@ -404,6 +412,161 @@ class AuthenticationServiceTest {
         verify(userRepository).findByUsername("testuser");
         verify(userRepository, never()).save(any(User.class));
     }
+
+    /*
+     * Unit test for userAuthenticate method in the AuthenticationService class.
+     * 
+     * 1. Successful authentication
+     * 2. User not found
+     * 3. Incorrect password
+     * 4. User not verified
+     * 5. Unexpected exception
+     */
+
+     @Test
+    void userAuthenticate_Success() {
+        // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password123");
+
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPassword");
+        user.setEnabled(true);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(null);
+
+        // Act
+        UserPrincipal result = authenticationService.userAuthenticate(loginDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+        verify(userRepository).findByUsername("testuser");
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void userAuthenticate_WithValidCredentials_ShouldReturnUserPrincipal() {
+       // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password123");
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPassword");
+        user.setEnabled(true);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(null);
+
+        // Act
+        UserPrincipal result = authenticationService.userAuthenticate(loginDto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+        verify(userRepository).findByUsername("testuser");
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void userAuthenticate_WithNonexistentUser_ShouldThrowUserNotFoundException() {
+        // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("nonexistentuser");
+        loginDto.setPassword("password123");
+        when(userRepository.findByUsername("nonexistentuser")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> authenticationService.userAuthenticate(loginDto));
+        verify(userRepository).findByUsername("nonexistentuser");
+        verify(authenticationManager, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void userAuthenticate_WithDisabledUser_ShouldThrowUserNotEnabledException() {
+        // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password123");
+        
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPassword");
+        user.setEnabled(false);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(UserNotEnabledException.class, () -> authenticationService.userAuthenticate(loginDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(authenticationManager, never()).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void userAuthenticate_WithInvalidCredentials_ShouldThrowBadCredentialsException() {
+        // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("wrongpassword");
+        
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPassword");
+        user.setEnabled(true);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .thenThrow(new BadCredentialsException("Invalid username or password"));
+
+        // Act & Assert
+        assertThrows(BadCredentialsException.class, () -> authenticationService.userAuthenticate(loginDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    @Test
+    void userAuthenticate_WithUnexpectedException_ShouldPropagateException() {
+        // Arrange
+        UserLoginDto loginDto = new UserLoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password123");
+        
+        User user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPassword");
+        user.setEnabled(true);
+
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> authenticationService.userAuthenticate(loginDto));
+        verify(userRepository).findByUsername("testuser");
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    }
+
+    /*
+     * Unit test for the adminSignup method in the AuthenticationService class.
+     * This test checks the following scenarios:
+     * 1. Successful admin signup
+     * 2. Validation errors
+     * 3. Admin name already exists
+     * 4. Email already exists
+     * 5. Unexpected exception
+     */
+
+
+
+
+
+    
+
+
     
     
     
