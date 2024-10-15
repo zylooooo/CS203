@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import profilePictureTest1 from "../assets/profile-picture-one.jpg";
 import profilePictureTest2 from "../assets/profile-picture-two.jpg";
@@ -152,7 +152,12 @@ const TournamentCard = ({ tournamentType }) => {
 };
 
 function UserTournaments() {
-    const [tournamentType, setTournamentType] = useState(upcomingTournaments)   // Consistent with Line 87
+    const [tournamentType, setTournamentType] = useState(upcomingTournaments);
+    const [scheduledTournaments, setScheduledTournaments] = useState([]);
+
+    useEffect(() => {
+        getUsersTournamentScheduled();
+    }, []);
 
     const handleUpcomingTournamentsClick = () => {
         setTournamentType(upcomingTournaments);
@@ -166,39 +171,65 @@ function UserTournaments() {
         setTournamentType(myTournaments);
     };
 
+    async function getUsersTournamentScheduled() {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.get(
+                "http://localhost:8080/auth/usersTournaments/scheduled",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    }
+                }
+            );
+            
+            console.log(response.data);
+            setScheduledTournaments(response.data);
+        } catch (error) {
+            console.error('Error fetching scheduled tournaments:', error);
+        }
+    }
+
     return (
-        <>
-            <div className = "user-tournaments-page main-container">
-                <div className = "row-container flex flex-col w-3/5 gap-8">
+        <div className="user-tournaments-page main-container">
+            <div className="row-container flex flex-col w-3/5 gap-8">
+                <TournamentButtons
+                    buttons={["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]}
+                    onUpcomingTournamentsClick={handleUpcomingTournamentsClick}
+                    onPastTournamentsClick={handlePastTournamentsClick}
+                    onMyTournamentsClick={handleMyTournamentsClick}
+                />
 
-                    {/* TOURNAMENT BUTTONS: UPCOMING, PAST, MY */}
-                    <TournamentButtons
-                        buttons = {["Upcoming Tournaments", "Past Tournaments", "My Tournaments"]}
-                        onUpcomingTournamentsClick = {handleUpcomingTournamentsClick}
-                        onPastTournamentsClick = {handlePastTournamentsClick}
-                        onMyTournamentsClick = {handleMyTournamentsClick}
+                <div className="tournament-search-bar flex gap-3">
+                    <input
+                        className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="text"
+                        placeholder="Search for tournaments..."
                     />
-
-                    {/* SEARCH BAR */}
-                    <div className = "tournament-search-bar flex gap-3">
-                        <input
-                            className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            type = "text"
-                            placeholder = "Search for tournaments..."
-                        />
-                        <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-                            Search
-                        </button>
-                    </div>
-
-                    {/* LIST OF TOURNAMENT CARDS */}
-                    <TournamentCard tournamentType = {tournamentType} />
+                    <button className="border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+                        Search
+                    </button>
                 </div>
 
-                <div className = "col-container"> Ongoing Tournaments </div>
+                <TournamentCard tournamentType={tournamentType} />
             </div>
-        </>
+
+            <div className="col-container">
+                <h2>Scheduled Tournaments</h2>
+                {scheduledTournaments.length > 0 ? (
+                    <TournamentCard tournamentType={scheduledTournaments} />
+                ) : (
+                    <p>No scheduled tournaments found.</p>
+                )}
+            </div>
+        </div>
     );
-};
+}
 
 export default UserTournaments;

@@ -125,7 +125,7 @@ function App() {
                     />
 
                     <Route
-                        path="/user-tournaments"
+                        path="/usersTournaments/scheduled"
                         element={
                             <PrivateRoute>
                                 <MainLayout>
