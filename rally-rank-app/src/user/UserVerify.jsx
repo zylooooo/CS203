@@ -44,21 +44,7 @@ function UserVerify() {
             // Return the VerifyResponse object containing JWT and other info
             return response.data;
         } catch (error) {
-
-            console.log(error.response)
             setVerifyError(error.response.data.error)
-
-            // if (status === 404) {
-            //     setVerifyError("Username is not found!");
-            // } else if (status === 400) {
-            //     setVerifyError(
-            //         "Verification code is expired, invalid, or user is already verified!"
-            //     );
-            // } else if (status === 500) {
-            //     setVerifyError(
-            //         "Internal server error. Contact rallyrank@gmail.com for help!"
-            //     );
-            // }
         }
     }
 
