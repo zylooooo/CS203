@@ -2,73 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// API Calls - Mock tournament data (Past)
-const pastTournaments = [
-    {
-        tournamentName: "[Sample PastTournament] Rookie Rumble",
-        createdBy: "Puff Daddy",
-        startDate: "2024-04-03",
-        endDate: "2024-04-17",
-        minElo: 400,
-        maxElo: 500,
-        location: "SMU Tennis Court, Singapore 938923",
-        remarks: "",
-        category: "Beginner",
-        gender: "Mixed",
-        playerCapacity: 16,
-        playersPool: ["player1", "player2", "player3"],
-        ongoing: false
-    },
-    {
-        tournamentName: "[Sample PastTournament] Taqwa",
-        createdBy: "Justin Bieber",
-        startDate: "2024-02-07",
-        endDate: "2024-02-21",
-        minElo: 1000,
-        maxElo: 1500,
-        location: "Choa Chu Kang Stadium, Singapore 238232",
-        remarks: "",
-        category: "Intermediate",
-        gender: "Male",
-        playerCapacity: 32,
-        playersPool: ["player4", "player5", "player6", "player7"],
-        ongoing: false
-    },
-];
-
-// API Calls - Mock tournament data (My)
-const myTournaments = [
-    {
-        tournamentName: "[Sample MyTournament] Wonder Games",
-        createdBy: "Puff Daddy",
-        startDate: "2024-04-03",
-        endDate: "2024-04-17",
-        minElo: 400,
-        maxElo: 500,
-        location: "SMU Tennis Court, Singapore 938923",
-        remarks: "",
-        category: "Open",
-        gender: "Mixed",
-        playerCapacity: 64,
-        playersPool: ["currentUser", "player8", "player9"],
-        ongoing: true
-    },
-    {
-        tournamentName: "[Sample MyTournament] Orion Star",
-        createdBy: "Justin Bieber",
-        startDate: "2024-05-07",
-        endDate: "2024-05-21",
-        minElo: 1000,
-        maxElo: 1500,
-        location: "Choa Chu Kang Stadium, Singapore 238232",
-        remarks: "",
-        category: "Advanced",
-        gender: "Female",
-        playerCapacity: 16,
-        playersPool: ["currentUser", "player10", "player11", "player12"],
-        ongoing: true
-    },
-];
 
 // Define the TournamentButtons component
 const TournamentButtons = ({ buttons, onScheduledTournamentsClick, onPastTournamentsClick, onMyTournamentsClick}) => {
@@ -108,14 +41,14 @@ const TournamentCard = ({ tournamentType }) => {
     };
 
     return (
-        <div className="tournaments-cards-list flex flex-col space-y-8">
+        <div className="flex flex-col gap-5 w-full">
             {tournamentType.map((tournament, index) => (
                 <div
                     key={index}
-                    className="tournament-card border rounded-lg p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition flex w-4/5"
+                    className="flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick={() => handleTournamentCardClick(tournament)}
                 >
-                    <div className="card-section-one flex-1 pr-4">
+                    <div className="flex-1 pr-4">
                         <h3 className="text-xl font-bold mb-2">{tournament.tournamentName}</h3>
                         <div className="flex items-center mb-2">
                             <p>Organiser: {tournament.createdBy}</p>
@@ -145,27 +78,29 @@ const TournamentCard = ({ tournamentType }) => {
 };
 
 function UserTournaments() {
-    const [tournamentType, setTournamentType] = useState([]);
+    const [displayTournamentType, setdisplayTournamentType] = useState([]);
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
+    const [pastTournaments, setPastTournaments] = useState([]);
+    const [myTournaments, setMyTournaments] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getUsersTournamentScheduled();
+        getScheduledTournaments();
     }, []);
 
     const handleScheduledTournamentsClick = () => {
-        setTournamentType(scheduledTournaments);
+        getScheduledTournaments();
     };
-
+    
     const handlePastTournamentsClick = () => {
-        setTournamentType(pastTournaments);
+        getPastTournaments();
     };
-
+    
     const handleMyTournamentsClick = () => {
-        setTournamentType(myTournaments);
+        getMyTournaments();
     };
 
-    async function getUsersTournamentScheduled() {
+    async function getScheduledTournaments() {
         setLoading(true);
         try {
             const userData = JSON.parse(localStorage.getItem('userData'));
@@ -184,20 +119,84 @@ function UserTournaments() {
                 }
             );
             
-            console.log(response.data);
             setScheduledTournaments(response.data);
-            setTournamentType(response.data); // Set the initial view to scheduled tournaments
+
+            // Set the initial view to scheduled tournaments
+            setdisplayTournamentType(response.data); 
         } catch (error) {
             console.error('Error fetching scheduled tournaments:', error);
-            setScheduledTournaments([]); // Set to empty array if API call fails
+
+            // Set to empty array if API call fails
+            setScheduledTournaments([]); 
+            setdisplayTournamentType([]); 
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    async function getPastTournaments() {
+        setLoading(true);
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.get(
+                "http://localhost:8080/users/tournaments/history",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    }
+                }
+            );
+            
+            setPastTournaments(response.data);
+            setdisplayTournamentType(response.data);  // Add this line
+        } catch (error) {
+            console.error('Error fetching past tournaments:', error);
+            setPastTournaments([]);
+            setdisplayTournamentType([]);  // Add this line
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function getMyTournaments() {
+        setLoading(true);
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.get(
+                "http://localhost:8080/users/tournaments/available-tournaments",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    }
+                }
+            );
+            
+            setMyTournaments(response.data);
+            setdisplayTournamentType(response.data);  // Add this line
+        } catch (error) {
+            console.error('Error fetching my tournaments:', error);
+            setMyTournaments([]);  // Change this line
+            setdisplayTournamentType([]);  // Add this line
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <div className="user-tournaments-page main-container">
-            <div className="row-container flex flex-col w-3/5 gap-8">
+        <div className="flex flex-col items-center justify-center w-4/5">
+            <div className="flex flex-col w-4/5 gap-8">
                 <TournamentButtons
                     buttons={["Scheduled Tournaments", "Past Tournaments", "My Tournaments"]}
                     onScheduledTournamentsClick={handleScheduledTournamentsClick}
@@ -205,9 +204,9 @@ function UserTournaments() {
                     onMyTournamentsClick={handleMyTournamentsClick}
                 />
 
-                <div className="tournament-search-bar flex gap-3">
+                <div className="flex gap-3">
                     <input
-                        className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type="text"
                         placeholder="Search for tournaments..."
                     />
@@ -218,8 +217,8 @@ function UserTournaments() {
 
                 {loading ? (
                     <p>Loading tournaments...</p>
-                ) : tournamentType.length > 0 ? (
-                    <TournamentCard tournamentType={tournamentType} />
+                ) : displayTournamentType.length > 0 ? (
+                    <TournamentCard tournamentType={displayTournamentType} />
                 ) : (
                     <p>No tournaments found.</p>
                 )}
