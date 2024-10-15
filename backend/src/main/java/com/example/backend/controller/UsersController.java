@@ -8,6 +8,8 @@ import com.example.backend.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import org.slf4j.Logger;
@@ -42,8 +44,11 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database
      * @throws RuntimeException if there is an unexpected error during the retrieval process
      */
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getUserProfile(@PathVariable String username) {
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        
         try {
             User user = userService.getUserByUsername(username);
             logger.info("User profile retrieved successfully: {}", username);
@@ -113,8 +118,10 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database
      * @throws RuntimeException if there is an unexpected error during the update process
      */
-    @PutMapping("/{username}/update")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody User newUserDetails) {
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody User newUserDetails) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             Map<String, Object> response = userService.updateUser(username, newUserDetails);
 
@@ -138,8 +145,10 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database
      * @throws RuntimeException if there is an unexpected error during the update process
      */
-    @PutMapping("/{username}/update-availability")
-    public ResponseEntity<?> updateUserAvailability(@PathVariable String username, @RequestParam Boolean availability) {
+    @PutMapping("/update-availability")
+    public ResponseEntity<?> updateUserAvailability(@RequestParam Boolean availability) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             User user = userService.updateUserAvailability(username, availability);
             logger.info("User availability updated successfully: {}", username);
@@ -162,8 +171,10 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database
      * @throws RuntimeException if there is an unexpected error during the deletion process
      */
-    @DeleteMapping("/{username}/delete")
-    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             userService.deleteUser(username);
             logger.info("User deleted successfully: {}", username);
@@ -180,8 +191,10 @@ public class UsersController {
     }
 
     // Synchronous method to get the default leaderboard for the user
-    @GetMapping("/{username}/leaderboard")
-    public ResponseEntity<?> getDefaultLeaderBoard(@PathVariable String username) {
+    @GetMapping("/leaderboard")
+    public ResponseEntity<?> getDefaultLeaderBoard() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             List<User> leaderboard = userService.getDefaultLeaderboard(username);
             logger.info("Default leaderboard retrieved successfully for user: {}", username);
@@ -202,8 +215,10 @@ public class UsersController {
     }
 
     // Synchronous method to get the opposite gender leaderboard for the user
-    @GetMapping("/{username}/opposite-gender-leaderboard")
-    public ResponseEntity<?> getOppositeGenderLeaderboard(@PathVariable String username) {
+    @GetMapping("/leaderboard/opposite-gender")
+    public ResponseEntity<?> getOppositeGenderLeaderboard() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             List<User> oppositeGenderLeaderboard = userService.getOppositeGenderLeaderboard(username);
             logger.info("Opposite gender leaderboard retrieved successfully for user: {}", username);
@@ -224,8 +239,10 @@ public class UsersController {
     }
     
     // Synchronous method to get the mixed gender leaderboard for the user
-    @GetMapping("/{username}/mixed-gender-leaderboard")
-    public ResponseEntity<?> getMixedGenderLeaderboard(@PathVariable String username) {
+    @GetMapping("/leaderboard/mixed-gender")
+    public ResponseEntity<?> getMixedGenderLeaderboard() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             List<User> mixedGenderLeaderboard = userService.getMixedGenderLeaderboard(username);
             logger.info("Mixed gender leaderboard retrieved successfully for user: {}", username);
