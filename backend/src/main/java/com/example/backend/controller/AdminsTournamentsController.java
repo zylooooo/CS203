@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.util.Pair;
 
@@ -17,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 @RestController
-@RequestMapping("/adminsTournaments")
+@RequestMapping("/admins/tournaments")
 @RequiredArgsConstructor
 public class AdminsTournamentsController {
 
@@ -73,8 +75,10 @@ public class AdminsTournamentsController {
      * @return a ResponseEntity with the created tournament or error messages if validation fails.
      * @throws RuntimeException if there's an unexpected error during the creation process.
      */
-    @PostMapping("/{adminName}/create")
-    public ResponseEntity<?> createTournament(@RequestBody Tournament tournament, @PathVariable String adminName) {
+    @PostMapping("/create")
+    public ResponseEntity<?> createTournament(@RequestBody Tournament tournament) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
         try {
             logger.info("Received request to create tournament: {} by admin: {}", tournament.getTournamentName(), adminName);
             Pair<Optional<Tournament>, Map<String, String>> result = tournamentService.createTournament(tournament, adminName);

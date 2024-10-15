@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 @RestController
-@RequestMapping("/usersTournaments")
+@RequestMapping("/users/tournaments")
 @RequiredArgsConstructor
 public class UsersTournamentsController {
 
@@ -122,8 +122,11 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournaments are found for the specified user.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-    @GetMapping("/{username}/history")
-    public ResponseEntity<?> getTournamentsHistoryByUsername(@PathVariable String username) {
+    @GetMapping("/history")
+    public ResponseEntity<?> getTournamentsHistoryByUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
         try {
             List<Tournament> userTournamentHistory = tournamentService.getUserHistory(username);
             logger.info("Total tournaments history by user: {}", userTournamentHistory.size());
@@ -149,8 +152,10 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournaments are found for the specified user.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-    @GetMapping("/{username}/availableTournaments")
-    public ResponseEntity<?> getUserAvailableTournaments(@PathVariable String username) {
+    @GetMapping("/available-tournaments")
+    public ResponseEntity<?> getUserAvailableTournaments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
             List<Tournament> userAvailableTournaments = tournamentService.getUserAvailableTournaments(username);
             logger.info("Total available tournaments for user: {}", username);
