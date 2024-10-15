@@ -1,1 +1,4 @@
 com/example/backend/RallyRankApplicationTests.class
+com/example/backend/service/JwtServiceTest.class
+com/example/backend/service/EmailServiceTest.class
+com/example/backend/service/UserServiceTest.class
