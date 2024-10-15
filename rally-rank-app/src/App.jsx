@@ -205,7 +205,7 @@ function App() {
 
                     {/* New Route for Editing Tournaments */}
                     <Route
-                        path="/administrator-edit-tournaments/:tournamentName" // Updated to include a parameter
+                        path="/administrator-edit-tournaments" // Updated to include a parameter
                         element={
                             <AdminRoute>
                                 <MainLayout>
