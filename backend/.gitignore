@@ -2,6 +2,7 @@ HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
+
 !**/src/test/**/target/
 
 node_modules
@@ -34,6 +35,15 @@ build/
 ### VS Code ###
 .vscode/
 
-.class
+*.class
 .env
-.target/maven-status/
+
+# Explicitly ignore maven-status directory
+**/maven-status/
+**/maven-archiver/
+**/generated-sources/
+
+# Ignore all files in target directory except specific ones
+target/*
+!target/*.jar
+!target/*.war

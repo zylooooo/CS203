@@ -1,6 +1,8 @@
 C:\CS203\CS203\backend\src\test\java\com\example\backend\config\ApplicationConfigTest.java
 C:\CS203\CS203\backend\src\test\java\com\example\backend\config\JwtAuthenticationFilterTest.java
 C:\CS203\CS203\backend\src\test\java\com\example\backend\config\MongoConfigTest.java
+C:\CS203\CS203\backend\src\test\java\com\example\backend\integration\TestConfig.java
+C:\CS203\CS203\backend\src\test\java\com\example\backend\integration\UsersControllerIntegrationTest.java
 C:\CS203\CS203\backend\src\test\java\com\example\backend\model\TournamentTest.java
 C:\CS203\CS203\backend\src\test\java\com\example\backend\RallyRankApplicationTests.java
 C:\CS203\CS203\backend\src\test\java\com\example\backend\service\AuthenticationServiceTest.java
