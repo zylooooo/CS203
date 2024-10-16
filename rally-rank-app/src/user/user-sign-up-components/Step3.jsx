@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const Step4 = ({ register, errors, watch }) => {
+const Step3 = ({ register, errors, watch }) => {
 
     const password = watch("password");
     const [showPassword, setShowPassword] = useState(false);
@@ -82,7 +82,7 @@ const Step4 = ({ register, errors, watch }) => {
                         onChange = {() => setConfirmShowPassword(!showConfirmPassword)}
                         />
                         <label 
-                            htmlFor = "showPassword"> Show Password 
+                            htmlFor = "showConfirmPassword"> Show Password 
                         </label>
                     </div>
                 </div>
@@ -91,7 +91,7 @@ const Step4 = ({ register, errors, watch }) => {
     );
 };
 
-Step4.propTypes = {
+Step3.propTypes = {
     register: PropTypes.func.isRequired,
     errors: PropTypes.shape({
         username: PropTypes.object,
@@ -101,4 +101,4 @@ Step4.propTypes = {
     watch: PropTypes.func.isRequired,
 };
 
-export default Step4;
+export default Step3;
