@@ -95,7 +95,11 @@ function UserProfile() {
 
                     <p className = "mt-1 text-lg font-medium"> Email Address: {userPersonalInformation.email} </p>
 
-                    <p className = "mt-1 text-lg font-medium"> Tournaments Played: {userPersonalInformation.participatedTournaments} </p>
+                    <p className = "mt-1 text-lg font-medium">
+                        Tournaments Played: {userPersonalInformation.participatedTournaments?.length > 0 
+                        ? userPersonalInformation.participatedTournaments.length 
+                        : "0"}
+                    </p>
 
                     <p className = "mt-1 text-lg font-medium"> Elo Rating: {userPersonalInformation.elo} </p>
                 </div>
