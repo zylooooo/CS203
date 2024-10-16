@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+// Navigation
+import { useNavigate, NavLink } from 'react-router-dom';
 
 function PublicNavBar() {
-    const [email, setEmail] = useState('');
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
@@ -10,27 +9,30 @@ function PublicNavBar() {
     };
 
     const handleSignUpClick = () => {
-        navigate('/auth/sign-up', { state: { email } }); 
+        navigate('/auth/user-signup'); 
     };
-    
+ 
     return (
-        <nav className="flex items-center py-10 pl-10 gap-5">
-            <Link to="/">
-                <img src="src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo"/>
-            </Link>
-            <div className="section-one absolute top-7 right-0 m-5 space-x-5">
-                <button
-                    onClick={handleLoginClick} 
-                    className="login-button bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 shadow-md transition duration-300 ease-in-out"
-                >
-                    Login
-                </button>
-                <button 
-                    onClick={handleSignUpClick}
-                    className="sign-up-button bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 shadow-md transition duration-300 ease-in-out"
-                >
-                    Sign Up
-                </button>
+        <nav className="bg-white shadow-md">
+            {/* 
+                max-w-7xl is the max width of the container
+                lg:px-8 is the padding for large screens
+                sm:px-6 is the padding for medium screens
+                px-4 is the padding for small screens
+            */}
+            <div className="mx-auto max-w-7xl lg:px-8 sm:px-6 px-4"> 
+                <div className="flex justify-between h-20">
+                    
+                    <div className="flex-shrink-0 flex items-center">
+                        <NavLink to="/">
+                        <img className="h-10 w-auto" src="/src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
+                        </NavLink>
+                    </div>
+                    <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                        <button onClick={handleLoginClick} className="ml-4 px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary-color-green hover:bg-secondary-color-dark-green transition-colors duration-200">Login</button>
+                        <button onClick={handleSignUpClick} className="ml-4 px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary-color-green hover:bg-secondary-color-dark-green transition-colors duration-200">Sign Up</button>
+                    </div>
+                </div>
             </div>
         </nav>
     );

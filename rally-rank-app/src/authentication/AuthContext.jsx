@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
                 loginAdmin,
                 logoutUser,
                 logoutAdmin,
-                isLoggedIn: !!user,
+                isUserLoggedIn: !!user,
                 isAdminLoggedIn: !!admin,
 
                 manualLoginUser, // TESTING CODE REMOVE LATER

@@ -56,7 +56,7 @@ function UserHome() {
                         Authorization: `Bearer ${userData.jwtToken}`
                     },
                     data: {
-                        "isAvailable": isAvailable
+                        "available": isAvailable
                     }
                 }
             );
@@ -124,7 +124,8 @@ function UserHome() {
             );
             
             console.log("data received:" + response.data);
-            setPlayers(response.data);
+            setPlayers(response.data[0]);
+            console.log(players);
             
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
