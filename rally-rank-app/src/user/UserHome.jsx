@@ -103,7 +103,9 @@ function UserHome() {
     const [players, setPlayers] = useState([]);
     const [view, setView] = useState("Top");
     const [activeButton, setActiveButton] = useState(0);
-    const handleTopClick = () => { setView("Top"); };
+    const handleTopClick = () => { 
+        // setView("Top"); 
+    };
     const handleYouClick = () => { setView("You"); };
     async function getDefaultLeaderBoard() {
         try {
@@ -124,7 +126,7 @@ function UserHome() {
             );
             
             console.log("data received:" + response.data);
-            setPlayers(response.data[0]);
+            setPlayers(response.data);
             console.log(players);
             
         } catch (error) {
@@ -226,22 +228,18 @@ function UserHome() {
                 <LeaderboardButtons
                     buttons = {["Top", "You"]}
                     onTopClick = { handleTopClick }
-                    onYouClick = { handleYouClick }
+                    // onYouClick = { handleYouClick }
                     activeButton = { activeButton }
                     setActiveButton = { setActiveButton }
                 />
-                <div className = "leaderboard-box bg-gray-100 border border-gray-300 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto">
+                <div className = "leaderboard-box p-5 gap-3 bg-gray-100 border border-gray-300 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto">
                     {view === "Top" ? (
                         players.length > 0 ? (
                             players.map((player) => (
                                 // TEMPLATE: PLAYER IN LEADERBOARD
-                                <div
-                                    key = { player.username }
-                                    className = {`p-2 ${player.username === player.username ? "bg-yellow-200" : "" }`}
-                                >
-                                    <h3 className = "font-semibold"> {player.rank}. {player.name} </h3>
-                                    <p> Elo Rating: {player.eloRating} </p>
+                                <div className = "flex justify-between gap-2">
                                     <p> Username: {player.username} </p>
+                                    <p> Elo Rating: {player.elo} </p>
                                 </div>
                             ))
                         ) : (
@@ -249,10 +247,9 @@ function UserHome() {
                         )
                     ) : (
                         <div className = "p-2 bg-yellow-200">
-                            <h3 className = "font-semibold"> {player.name} </h3>
-                            <p> Rank: {player.rank} </p>
-                            <p> Elo Rating: {player.eloRating} </p>
+                            {/* <h3 className = "font-semibold"> {player.name} </h3> */}
                             <p> Username: {player.username} </p>
+                            <p> Elo Rating: {player.eloRating} </p>
                         </div>
                     )}
 
