@@ -56,7 +56,7 @@ function UserHome() {
                         Authorization: `Bearer ${userData.jwtToken}`
                     },
                     data: {
-                        "isAvailable": isAvailable
+                        "available": isAvailable
                     }
                 }
             );
