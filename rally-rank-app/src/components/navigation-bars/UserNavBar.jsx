@@ -1,6 +1,3 @@
-// React
-import { useState } from "react";
-
 // Authentication
 import { useAuth } from "../../authentication/AuthContext";
 
