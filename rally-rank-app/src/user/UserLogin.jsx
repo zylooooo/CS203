@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+// React imports
+import { useState } from "react";
+
+// Navigation imports
 import { Link, useNavigate } from "react-router-dom";
-import loginBackground from "../assets/login-picture.jpg";
 
 // Axios import
 import axios from "axios";
@@ -11,13 +13,15 @@ import { useForm } from "react-hook-form";
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
+import loginBackground from "../assets/login-picture.jpg";
+
 function UserLogin() {
     const form = useForm();
-    const { register, control, handleSubmit, formState } = form;
+    const { register, handleSubmit, formState } = form;
     const { errors } = formState;
-    const { loginUser } = useAuth(); // Destructure loginUser from AuthContext
-    const navigate = useNavigate(); // For navigation after login
-    const [loginError, setLoginError] = useState(""); // State for handling login errors
+    const { loginUser } = useAuth();
+    const navigate = useNavigate();
+    const [loginError, setLoginError] = useState(""); 
 
     async function authenticateUser(username, password) {
         try {
