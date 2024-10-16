@@ -12,7 +12,7 @@ function UserNavBar() {
 
     return (
         <nav className="flex justify-around py-10 pl-10 gap-5">
-            <img src="src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
+            <img src="/src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
             <div className="flex items-center text-xl gap-5">
                 <NavLink
                     to="/users/home"
