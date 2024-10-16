@@ -1,28 +1,41 @@
+// React
+import React from "react";
+
+// Prop Types
+import PropTypes from "prop-types";
+
+// Authentication
+import { useAuth } from "../authentication/AuthContext";
+
+// Navigation Bars
 import UserNavBar from "./navigation-bars/UserNavBar";
 import PublicNavBar from "./navigation-bars/PublicNavBar";
 import AdministratorNavBar from "./navigation-bars/AdministratorNavBar";
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../authentication/AuthContext";
 
 function MainLayout({ children }) { 
-const { isLoggedIn, isAdminLoggedIn } = useAuth();
 
-  return (
-    <>
-        <div className = "flex flex-col min-h-screen">
-                {isAdminLoggedIn ? (
-                    <AdministratorNavBar />
-                ) : isLoggedIn ? (
-                    <UserNavBar />
-                ) : (
-                    <PublicNavBar />
-                )}
-            <div className = "flex-grow flex flex-col justify-start items-center">
-                {children}
+    const { isUserLoggedIn, isAdminLoggedIn } = useAuth();
+
+    return (
+        <>
+            <div className = "flex flex-col min-h-screen bg-gray-50">
+                    {isAdminLoggedIn ? (
+                        <AdministratorNavBar />
+                    ) : isUserLoggedIn ? (
+                        <UserNavBar />
+                    ) : (
+                        <PublicNavBar />
+                    )}
+                <div className = "flex-grow flex flex-col justify-start items-center">
+                    {children}
+                </div>
             </div>
-        </div>
-    </>
-  );
+        </>
+    );
 }
+
+MainLayout.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 export default MainLayout;
