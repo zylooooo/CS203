@@ -14,8 +14,8 @@ function UserProfile() {
             gender: "M",
             dateOfBirth: "1996-02-29",
             participatedTournaments: [
-                "CurryMuncher Tourney",
-                "LGBTQ Competition",
+                "Pro tennis pro max competition",
+                "SMU Tennis expertz Competition",
             ],
             profilePic: userProfilePicture,
             password: "UserPassword",
