@@ -1,10 +1,12 @@
 package com.example.backend.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.exception.AdminNotFoundException;
 import com.example.backend.model.Admin;
 import com.example.backend.service.AdminService;
 
@@ -16,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.*;
 
@@ -50,6 +53,25 @@ public class AdminsController {
             logger.error("Unexpected error during admin update: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "An unexpected error occurred during admin update!"));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        try {
+            adminService.deleteAdmin(adminName);
+            return ResponseEntity.ok(Map.of("message", "Admin account deleted successfully"));
+        } catch (AdminNotFoundException e) {
+            logger.error("Admin not found during deletion: {}", adminName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Admin account not found"));
+        } catch (Exception e) {
+            logger.error("Unexpected error during admin deletion: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred during admin deletion"));
         }
     }
 }
