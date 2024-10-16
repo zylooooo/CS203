@@ -49,7 +49,7 @@ function UserHome() {
             }
 
             const response = await axios.put(
-                "http://localhost:8080/auth/users/update-availability",
+                "http://localhost:8080/users/update-availability",
                 {
                     withCredentials: true,
                     headers: {
@@ -81,7 +81,7 @@ function UserHome() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/auth/users/tournaments/scheduled",
+                "http://localhost:8080/users/tournaments/scheduled",
                 {
                     withCredentials: true,
                     headers: {
@@ -144,7 +144,7 @@ function UserHome() {
     const handleJoinTournament = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/user-tournaments");
+            navigate("/users/tournaments");
         }, 300);
     }
 
