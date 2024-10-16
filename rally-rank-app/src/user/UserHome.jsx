@@ -2,95 +2,109 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+ // Define LeaderboardButtons component ("Top" and "You")
+ const LeaderboardButtons = ({ buttons, onTopClick, onYouClick, activeButton, setActiveButton }) => {
+    const handleButtonClick = (index) => {
+        setActiveButton(index);
+        if (index === 0) {
+            onTopClick();
+        } else {
+            onYouClick();
+        }
+    };
+
+    return (
+        <div className = "leaderboard-buttons flex gap-5 mb-4">
+            {buttons.map((buttonLabel, index) => (
+                <button
+                    key = { index }
+                    className = {`btn transition-colors duration-300 ${
+                        activeButton === index
+                        ? "active-button underline text-blue-600"   // active state
+                        : "text-gray-700 hover:text-blue-500"        // inactive state
+                    }`}
+                    onClick = {() => handleButtonClick(index)}
+                >
+                    { buttonLabel }
+                </button>
+            ))}
+        </div>
+    );
+};
+
+
+
 function UserHome() {
     const navigate = useNavigate();
 
-    const [isTransitioning, setIsTransitioning] = useState(false);
-
+    // AVAILABILITY FUNCTIONS
     const [isAvailable, setIsAvailable] = useState(false);
-
-    const handleToggle = () => {
-        setIsAvailable(!isAvailable);
-    };
-
-    useEffect(() => {
-        // Function to call the backend to update availability
-        const updateAvailability = async () => {
-            try {
-                console.log('Availability updated:', isAvailable); 
-                // Uncomment and adjust the API endpoint as needed
-                /*
-                const response = await axios.post('/api/update-availability', {
-                    isAvailable: isAvailable,
-                });
-
-                console.log('Availability updated:', response.data);
-                */
-            } catch (error) {
-                console.error('Error updating availability:', error);
+    const handleAvailabilityToggle = () => { setIsAvailable(!isAvailable); };
+    async function updateAvailability() {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
             }
-        };
 
-        // Call the function to update availability
-        updateAvailability();
-    }, [isAvailable]); // Dependency array to track changes to isAvailable
+            const response = await axios.put(
+                "http://localhost:8080/auth/users/update-availability",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    },
+                    data: {
+                        "isAvailable": isAvailable
+                    }
+                }
+            );
 
-    const [view, setView] = useState("Top");
-
-    const [activeButton, setActiveButton] = useState(0);
-
-    // Define navigation for users to the tournaments page when they click on the 'Join Tournament' button
-    const handleJoinTournament = () => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            navigate("/user-tournaments");
-        }, 300);
+            console.log("availability updated (?) :" + response.data);
+            handleAvailabilityToggle();
+            
+        } catch (error) {
+            console.error('Error updating availability:', error);
+        }
     }
 
-    // ------------------------------------- API CALLS - FETCH LEADERBOARD DATA -------------------------------------
-    const [players, setPlayers] = useState([]);     // stores the fetched players
-    // const [loading, setLoading] = useState(false);    // loading state
 
-    // Function to fetch the leaderboard data
-    // async function getDefaultLeaderBoard() {
-    //     try {
-    //         const response = await axios.get("http://localhost:8080/users/leaderboard");
-    //         const allUsers = response.data;
+    // TOURNAMENT FUNCTIONS
+    const [tournaments, setTournaments] = useState(false);
+    async function getScheduledTournaments() {
+        try {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
 
-    //         // Sort the users by eloRating in descending order
-    //         const sortedAllUsers = allUsers.sort((a, b) => b.eloRating - a.eloRating);
+            const response = await axios.get(
+                "http://localhost:8080/auth/users/tournaments/scheduled",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`
+                    }
+                }
+            );
 
-    //         // Map the sorted users to include rank and necessary details
-    //         const rankedUsers = sortedAllUsers.map((user, index) => ({
-    //             rank: index + 1,
-    //             name: `${user.firstName} ${user.lastName}`,
-    //             username: user.username,
-    //             eloRating: user.eloRating
-    //         }));
+            console.log("scheduled tournaments data received:" + response.data);
+            setTournaments(response.data);
+            
+        } catch (error) {
+            console.error('Error fetching scheduled tournaments:', error);
+        }
+    }
 
-    //         return rankedUsers;
-    //     } catch(error) {
-    //         console.error("Error fetching players: ", error);
-    //         throw error;
-    //     }
-    // }
 
-    // useEffect() function is for fetching the leaderboard
-    // useEffect(() => {
-    //     const fetchLeaderboard = async () => {
-    //         try {
-    //             setLoading(true);
-    //             const fetchedPlayers = await getDefaultLeaderBoard();
-    //             setPlayers(fetchedPlayers);
-    //             setLoading(false);
-    //         } catch(error) {
-    //             setError("Failed to load leaderboard. Try reloading the page.");
-    //             setLoading(false);
-    //         }
-    //     };
-    //     fetchLeaderboard();
-    // }, []);
-
+    // LEADERBOARD FUNCTIONS
+    const [players, setPlayers] = useState([]);
+    const [view, setView] = useState("Top");
+    const [activeButton, setActiveButton] = useState(0);
+    const handleTopClick = () => { setView("Top"); };
+    const handleYouClick = () => { setView("You"); };
     async function getDefaultLeaderBoard() {
         try {
             const userData = JSON.parse(localStorage.getItem('userData'));
@@ -118,59 +132,22 @@ function UserHome() {
     }
 
     useEffect(() => {
+        // updateAvailability();
         getDefaultLeaderBoard();
+        getScheduledTournaments();
+
     }, []);
 
 
-    // Mock Data for Scheduled Tournaments (if API not available)
-    const tournaments = [
-        { id: 1, name: "Tournament 1", date: "2024-10-12", time: "10:00 AM" },
-        { id: 2, name: "Tournament 2", date: "2024-10-18", time: "2:00 PM" },
-        { id: 3, name: "Tournament 3", date: "2024-10-22", time: "1:00 PM" },
-    ];
+    // JOIN TOURNAMENT FUNCTIONS
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const handleJoinTournament = () => {
+        setIsTransitioning(true);
+        setTimeout(() => {
+            navigate("/user-tournaments");
+        }, 300);
+    }
 
-    // Mock Current User (replace with actual user data as needed)
-    // const currentUser = { id: 7, name: "Augustus Gloop", rank: 6, eloRating: 1000, username: "augustusg" };
-
-    // Define LeaderboardButtons component
-    const LeaderboardButtons = ({ buttons, onTopClick, onYouClick, activeButton, setActiveButton }) => {
-        const handleButtonClick = (index) => {
-            setActiveButton(index);
-            if (index === 0) {
-                onTopClick();
-            } else {
-                onYouClick();
-            }
-        };
-
-        return (
-            <div className = "leaderboard-buttons flex gap-5 mb-4">
-                {buttons.map((buttonLabel, index) => (
-                    <button
-                        key = { index }
-                        className = {`btn transition-colors duration-300 ${
-                            activeButton === index
-                            ? "active-button underline text-blue-600"   // active state
-                            : "text-gray-700 hover:text-blue-500"        // inactive state
-                        }`}
-                        onClick = {() => handleButtonClick(index)}
-                    >
-                        { buttonLabel }
-                    </button>
-                ))}
-            </div>
-        );
-    };
-
-    // Handle button click -> "Top" button
-    const handleTopClick = () => {
-        setView("Top");
-    };
-
-    // Handle button click -> "You" button
-    const handleYouClick = () => {
-        setView("You");
-    };
 
     return (
         <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100" }`}>
@@ -291,7 +268,7 @@ function UserHome() {
                             <input
                             type = "checkbox"
                             checked = { isAvailable }
-                            onChange = { handleToggle }
+                            onChange = { updateAvailability }
                             className = "sr-only peer"
                             />
                             <div className = "w-11 h-6 bg-secondary-color-light-gray rounded-full peer peer-checked:bg-primary-color-green peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary-color-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:bg-primary-color-white"></div>
