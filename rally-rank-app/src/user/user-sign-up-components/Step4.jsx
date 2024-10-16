@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-const Step5 = ({ register, errors }) => (
+const Step4 = ({ register, errors }) => (
   <div className="flex flex-col justify-center items-center">
     <h2 className="text-xl font-extrabold">Account Created!</h2>
     <p>
@@ -11,12 +11,12 @@ const Step5 = ({ register, errors }) => (
 );
 
 // is this supposed to be here?
-Step5.propTypes = {
-  register: PropTypes.func.isRequired,
-  errors: PropTypes.shape({
-    password: PropTypes.object,
-    confirmPassword: PropTypes.object,
-  }).isRequired,
-};
+// Step4.propTypes = {
+//   register: PropTypes.func.isRequired,
+//   errors: PropTypes.shape({
+//     password: PropTypes.object,
+//     confirmPassword: PropTypes.object,
+//   }).isRequired,
+// };
 
-export default Step5;
+export default Step4;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { Step1, Step2, Step3 } from "./user-sign-up-components/SignUpSteps";
+import { Step1, Step2, Step3, Step4 } from "./user-sign-up-components/SignUpSteps";
 import signupPicture from "../assets/user-sign-up-picture.jpg";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -63,6 +63,7 @@ function UserSignUp() {
         
 
         if (response.status === 200) {
+          // setStep(4);
           setSignupError("Successfully registered! Please move on to verification!");
 
             // Return the LoginResponse object containing JWT and expiration time
@@ -79,6 +80,9 @@ function UserSignUp() {
     const isStepValid = await trigger(fieldsToValidate);
   
     if (isStepValid) {
+      if (step === 1) {
+        // Check if the email & username are already in use
+      }
       if (step < 3) {
         setCompletedSteps([...completedSteps, step]);
         setClickableSteps([...clickableSteps, step]);
@@ -136,14 +140,13 @@ function UserSignUp() {
           ))}
         </div>
 
-          {/* improve user experience: CHECK THAT ALL INPUTS ARE VALID/NOT NULL BEFORE SUBMITTING POST REQ */}
-
           {/* FORM CONTAINER */}
           <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
             <form onSubmit={handleSubmit(onSubmit)}>
               {step === 1 && <Step1 register = {register} errors = {errors} email = {email} />}
               {step === 2 && <Step2 register = {register} errors = {errors} />}
               {step === 3 && <Step3 register = {register} errors = {errors} watch = {watch} />}
+              {/* {step === 4 && <Step4 register = {register} errors = {errors} />} */}
 
               {signupError && (
                 <p className="error text-red-500 mt-10">
