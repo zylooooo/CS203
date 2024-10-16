@@ -1,6 +1,5 @@
 /Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/RallyRankApplication.java
 /Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/config/ApplicationConfig.java
-/Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/config/AsyncConfig.java
 /Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/config/EmailConfig.java
 /Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/config/JwtAuthenticationFilter.java
 /Users/tori/Documents/CS203/backend/src/main/java/com/example/backend/config/MongoConfig.java
