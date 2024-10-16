@@ -49,47 +49,6 @@ function UserHome() {
 
     // ------------------------------------- API CALLS - FETCH LEADERBOARD DATA -------------------------------------
     const [players, setPlayers] = useState([]);     // stores the fetched players
-    // const [loading, setLoading] = useState(false);    // loading state
-
-    // Function to fetch the leaderboard data
-    // async function getDefaultLeaderBoard() {
-    //     try {
-    //         const response = await axios.get("http://localhost:8080/users/leaderboard");
-    //         const allUsers = response.data;
-
-    //         // Sort the users by eloRating in descending order
-    //         const sortedAllUsers = allUsers.sort((a, b) => b.eloRating - a.eloRating);
-
-    //         // Map the sorted users to include rank and necessary details
-    //         const rankedUsers = sortedAllUsers.map((user, index) => ({
-    //             rank: index + 1,
-    //             name: `${user.firstName} ${user.lastName}`,
-    //             username: user.username,
-    //             eloRating: user.eloRating
-    //         }));
-
-    //         return rankedUsers;
-    //     } catch(error) {
-    //         console.error("Error fetching players: ", error);
-    //         throw error;
-    //     }
-    // }
-
-    // useEffect() function is for fetching the leaderboard
-    // useEffect(() => {
-    //     const fetchLeaderboard = async () => {
-    //         try {
-    //             setLoading(true);
-    //             const fetchedPlayers = await getDefaultLeaderBoard();
-    //             setPlayers(fetchedPlayers);
-    //             setLoading(false);
-    //         } catch(error) {
-    //             setError("Failed to load leaderboard. Try reloading the page.");
-    //             setLoading(false);
-    //         }
-    //     };
-    //     fetchLeaderboard();
-    // }, []);
 
     async function getDefaultLeaderBoard() {
         try {
@@ -110,7 +69,8 @@ function UserHome() {
             );
             
             console.log("data received:" + response.data);
-            setPlayers(response.data);
+            setPlayers(response.data[0]);
+            console.log(players);
             
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
