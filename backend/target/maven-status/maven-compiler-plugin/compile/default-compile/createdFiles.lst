@@ -4,7 +4,6 @@ com/example/backend/exception/AccountNotFoundException.class
 com/example/backend/dto/UserLoginDto.class
 com/example/backend/exception/UsernameAlreadyExistsException.class
 com/example/backend/repository/AdminRepository.class
-com/example/backend/config/AsyncConfig.class
 com/example/backend/exception/UserNotEnabledException.class
 com/example/backend/config/SecurityConfig.class
 com/example/backend/RallyRankApplication.class
@@ -34,7 +33,6 @@ com/example/backend/repository/UserRepository.class
 com/example/backend/model/Tournament$Match$Round.class
 com/example/backend/config/MongoConfig.class
 com/example/backend/config/MongoConfig$StringToLocalDateConverter.class
-com/example/backend/config/AsyncConfig$1.class
 com/example/backend/responses/LoginResponse.class
 com/example/backend/config/JwtAuthenticationFilter.class
 com/example/backend/model/User$MedicalInformation.class
