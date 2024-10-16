@@ -46,19 +46,32 @@ function UserSignUp() {
   }
 
   // Function to check if the email & username are already in use
-  // currently throwing 401 error
   async function checkCredentialsAvailablity(formData) {
     try {
       const response = await axios.get(
         "http://localhost:8080/users/signup/check-credentials-availability",
         {
-          email: formData.email,
-          username: formData.username,
-        },
-        { withCredentials: true } // Allow credentials (cookies) to be sent with the request
-      );
+          params: {
+            username: formData.username,
+            email: formData.email,
+          },
+         withCredentials: true  // Allow credentials (cookies) to be sent with the request
+    });
   
-      return response.data;
+       // // handle case where email & username are available/not available
+       if (response.emailAvailable && response.usernameAvailable) {
+          setCompletedSteps([...completedSteps, step]);
+          setClickableSteps([...clickableSteps, step]);
+          setStep(step + 1);
+        } else {
+          if (!response.usernameAvailable) {
+            alert("Username is already taken.");
+          }
+          if (!response.emailAvailable) {
+            alert("Email is already in use.");
+          }
+        }
+
     } catch (error) {
       console.error("Error checking credentials:", error);
       if (error.response) {
@@ -107,21 +120,7 @@ function UserSignUp() {
       if (step === 1) {
         // Check if the email & username are already in use
         console.log("form data:", formData.email, formData.username);
-        checkCredentialsAvailablity(formData)
-
-        // // handle case where email & username are available/not available
-        // if (response.emailAvailable && response.usernameAvailable) {
-        //   setCompletedSteps([...completedSteps, step]);
-        //   setClickableSteps([...clickableSteps, step]);
-        //   setStep(step + 1);
-        // } else {
-        //   if (!response.usernameAvailable) {
-        //     alert("Username is already taken.");
-        //   }
-        //   if (!response.emailAvailable) {
-        //     alert("Email is already in use.");
-        //   }
-        // }
+        checkCredentialsAvailablity(formData);
 
       } else if (step < 3) {
         setCompletedSteps([...completedSteps, step]);
