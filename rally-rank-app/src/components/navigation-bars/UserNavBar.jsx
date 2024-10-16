@@ -23,7 +23,7 @@ function UserNavBar() {
                     Home
                 </NavLink>
                 <NavLink
-                    to="/users/Tournaments"
+                    to="/users/tournaments"
                     activeClassName="active"
                     className="text-secondary-color-dark-green hover:text-primary-color-green"
                 >
