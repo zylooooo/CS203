@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.TournamentRepository;
 
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
     private final TournamentRepository tournamentRepository;
     private final TournamentService tournamentService;
 
@@ -164,11 +167,11 @@ public class UserService {
                 );
             }
 
-            if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail()) && userRepository.existsByEmail(newUserDetails.getEmail())) {
+            if (newUserDetails.getEmail() != null && !user.getEmail().equals(newUserDetails.getEmail()) && (userRepository.existsByEmail(newUserDetails.getEmail()) || adminRepository.existsByEmail(newUserDetails.getEmail()))) {
                 errors.put("email", "Email already exists!");
             }
 
-            if (newUserDetails.getUsername() != null && !user.getUsername().equals(newUserDetails.getUsername()) && userRepository.existsByUsername(newUserDetails.getUsername())) {
+            if (newUserDetails.getUsername() != null && !user.getUsername().equals(newUserDetails.getUsername()) && (userRepository.existsByUsername(newUserDetails.getUsername()) || adminRepository.existsByAdminName(newUserDetails.getUsername()))) {
                 errors.put("username", "Username already exists!");
             }
 
