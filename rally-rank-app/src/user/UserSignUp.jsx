@@ -59,15 +59,15 @@ function UserSignUp() {
     });
   
        // // handle case where email & username are available/not available
-       if (response.emailAvailable && response.usernameAvailable) {
+       if (response.data.emailAvailable && response.data.usernameAvailable) {
           setCompletedSteps([...completedSteps, step]);
           setClickableSteps([...clickableSteps, step]);
           setStep(step + 1);
         } else {
-          if (!response.usernameAvailable) {
+          if (!response.data.usernameAvailable) {
             alert("Username is already taken.");
           }
-          if (!response.emailAvailable) {
+          if (!response.data.emailAvailable) {
             alert("Email is already in use.");
           }
         }
