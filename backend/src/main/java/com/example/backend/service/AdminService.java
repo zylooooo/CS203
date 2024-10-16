@@ -15,6 +15,9 @@ import com.example.backend.repository.UserRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 @Service
@@ -27,6 +30,7 @@ public class AdminService {
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
 
+    private final Logger logger = LoggerFactory.getLogger(AdminService.class);
 
     /**
      * Updates an admin's details based on the provided username.
@@ -87,6 +91,41 @@ public class AdminService {
 
         return response;
     }
+
+    /**
+     * Deletes an admin by their username.
+     * 
+     * @param adminName the username of the admin to be deleted.
+     * @throws AdminNotFoundException if the admin does not exist.
+     * @throws RuntimeException for any unexpected errors during the deletion process.
+     */
+    public void deleteAdmin(@NotNull String adminName) throws AdminNotFoundException, RuntimeException {
+        // try {
+        //     Admin admin = adminRepository.findByAdminName(adminName)
+        //             .orElseThrow(() -> new AdminNotFoundException(adminName));
+    
+        //     adminRepository.delete(admin);
+        //     logger.info("Admin deleted successfully: {}", adminName);
+        // } catch (AdminNotFoundException e) {
+        //     logger.error("Admin not found: {}", adminName);
+        //     throw e;
+        // } catch (Exception e) {
+        //     logger.error("Unexpected error during admin deletion: {}", e.getMessage());
+        //     throw new RuntimeException("Error deleting admin: " + e.getMessage(), e);
+        // }
+
+        try {
+            Admin admin = adminRepository.findByAdminName(adminName)
+                    .orElseThrow(() -> new AdminNotFoundException(adminName));
+
+            adminRepository.delete(admin);
+            logger.info("Admin deleted successfully: {}", adminName);
+        } catch (AdminNotFoundException e) {
+            logger.warn("Attempt to delete non-existent admin: {}", adminName);
+            throw e;
+        }
+    }
+
 
     
 }
