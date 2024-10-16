@@ -97,7 +97,7 @@ function UserProfile() {
 
                     <p className = "mt-1 text-lg font-medium"> Tournaments Played: {userPersonalInformation.participatedTournaments} </p>
 
-                    <p className = "mt-1 text-lg font-medium"> Elo Rating: {userPersonalInformation.eloRating} </p>
+                    <p className = "mt-1 text-lg font-medium"> Elo Rating: {userPersonalInformation.elo} </p>
                 </div>
             </div>
 
