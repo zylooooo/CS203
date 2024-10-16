@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,35 @@ public class AdminsController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminsController.class);
     private final AdminService adminService;  
+
+
+    /**
+     * Retrieves the admin profile based on the admin name
+     * @return the admin object associated with the authenticated admin
+     */
+    @GetMapping("/profile")
+    public ResponseEntity<?> getAdminProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+        
+        try {
+            Admin admin = adminService.getAdminByAdminName(adminName);
+            logger.info("Admin profile retrieved successfully: {}", adminName);
+            return ResponseEntity.ok(admin);
+        } catch (AdminNotFoundException e) {
+            logger.warn("Admin not found: {}", adminName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Admin account not found"));
+        } catch (UsernameNotFoundException e) {
+            logger.warn("Admin not authenticated: {}", adminName);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Admin not authenticated"));
+        } catch (Exception e) {
+            logger.error("Error retrieving admin profile: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while retrieving the admin profile"));
+        }
+    }
 
     /**
      * Updates an admin's details.
