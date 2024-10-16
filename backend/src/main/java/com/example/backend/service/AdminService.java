@@ -100,19 +100,6 @@ public class AdminService {
      * @throws RuntimeException for any unexpected errors during the deletion process.
      */
     public void deleteAdmin(@NotNull String adminName) throws AdminNotFoundException, RuntimeException {
-        // try {
-        //     Admin admin = adminRepository.findByAdminName(adminName)
-        //             .orElseThrow(() -> new AdminNotFoundException(adminName));
-    
-        //     adminRepository.delete(admin);
-        //     logger.info("Admin deleted successfully: {}", adminName);
-        // } catch (AdminNotFoundException e) {
-        //     logger.error("Admin not found: {}", adminName);
-        //     throw e;
-        // } catch (Exception e) {
-        //     logger.error("Unexpected error during admin deletion: {}", e.getMessage());
-        //     throw new RuntimeException("Error deleting admin: " + e.getMessage(), e);
-        // }
 
         try {
             Admin admin = adminRepository.findByAdminName(adminName)
@@ -125,6 +112,20 @@ public class AdminService {
             throw e;
         }
     }
+
+    /**
+     * Retrieves an admin by their admin name.
+     * 
+     * @param adminName the admin name of the admin to retrieve
+     * @return the Admin object associated with the specified admin name
+     * @throws AdminNotFoundException if no admin with the admin name is found
+     */
+    public Admin getAdminByAdminName(String adminName) throws AdminNotFoundException {
+        return adminRepository.findByAdminName(adminName)
+                .orElseThrow(() -> new AdminNotFoundException(adminName));
+    }
+
+
 
 
     
