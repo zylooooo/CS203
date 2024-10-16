@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.TournamentRepository;
 import com.example.backend.model.Tournament;
 import org.mockito.ArgumentCaptor;
@@ -46,6 +47,9 @@ class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Mock
+    private AdminRepository adminRepository;
 
     @BeforeEach
     void setUp() {
