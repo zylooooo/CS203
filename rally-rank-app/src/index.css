@@ -39,7 +39,7 @@
 
     .h-screen-minus-navbar {
         @apply h-screen;
-        height: calc(100vh - 115px); /* 115px is the height of the navbar */
+        height: calc(100vh - 80px); /* 115px is the height of the navbar */
     }
 
     .main-container {
