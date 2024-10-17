@@ -125,6 +125,34 @@ public class AdminService {
                 .orElseThrow(() -> new AdminNotFoundException(adminName));
     }
 
+    /**
+     * Checks if the provided admin name exists in the database.
+     *
+     * @param adminName the admin name to check.
+     * @return true if the admin name exists, false otherwise.
+     * @throws IllegalArgumentException if the admin name is null or empty.
+     */
+    public boolean checkIfAdminNameExists(String adminName) {
+        if (adminName == null || adminName.isEmpty()) {
+            throw new IllegalArgumentException("Admin name must be provided!");
+        }
+        return adminRepository.existsByAdminName(adminName);
+    }
+
+    /**
+     * Checks if the provided email exists in the database.
+     *
+     * @param email the email to check.
+     * @return true if the email exists, false otherwise.
+     * @throws IllegalArgumentException if the email is null or empty.
+     */
+    public boolean checkIfEmailExists(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email must be provided!");
+        }
+        return adminRepository.existsByEmail(email);
+    }
+
 
 
 

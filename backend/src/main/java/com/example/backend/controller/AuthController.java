@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.responses.ErrorResponse;
@@ -23,8 +25,10 @@ import com.example.backend.dto.UserLoginDto;
 import com.example.backend.exception.*;
 import com.example.backend.responses.LoginResponse;
 import com.example.backend.security.UserPrincipal;
+import com.example.backend.service.AdminService;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.JwtService;
+import com.example.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +41,8 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
+    private final AdminService adminService;
+    private final UserService userService;
  
     @PostMapping("/user-signup")
     public ResponseEntity<?> userSignup(@RequestBody UserRegisterDto userRegisterDto) {
@@ -210,6 +216,53 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred during resend verification"));
         }
+    }
+
+
+    @GetMapping("/check-credentials-availability")
+    public ResponseEntity<?> checkCredentialsAvailability(@RequestParam(required = false) String accountName, @RequestParam(required = false) String email) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (accountName == null && email == null) {
+            return ResponseEntity.badRequest()
+                .body(new ErrorResponse("Either account name or email must be provided!"));
+        }
+
+        StringBuilder message = new StringBuilder();
+        boolean hasError = false;
+
+        // Check if username is provided and if it exists
+        if (accountName != null) {
+            boolean accountNameExists = (adminService.checkIfAdminNameExists(accountName) || userService.checkIfUsernameExists(accountName));
+            response.put("accountNameAvailable", !accountNameExists);
+            if (accountNameExists) {
+                message.append("Account name is already taken.");
+            }
+        }
+
+        // Check if email is provided and if it exists
+        if (email != null) {
+            boolean emailExists = (userService.checkIfEmailExists(email) || adminService.checkIfEmailExists(email));
+            response.put("emailAvailable", !emailExists);
+            if (emailExists) {
+                message.append("Email is already in use.");
+            }
+        }
+
+        // If no errors and both username and email are provided, set both as available
+        if (!hasError && message.length() == 0) {
+            if (accountName != null && email != null) {
+                message.append("Account name and email are available.");
+            } else if (accountName != null) {
+                message.append("Account name is available.");
+            } else {
+                message.append("Email is available.");
+            }
+        }
+
+        response.put("message", message.toString().trim());
+
+        return ResponseEntity.ok(response);
     }
 
 
