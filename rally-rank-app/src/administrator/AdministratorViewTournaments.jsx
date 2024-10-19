@@ -206,7 +206,7 @@ function AdministratorTournaments() {
       <div className="row-container flex flex-col w-full p-14 gap-8">
         {/* LABELS */}
         <TournamentsButtons
-          buttons={["All Tournaments", "My Tournaments", "Tournament Drafts"]}
+          buttons={["All Tournaments", "My Tournaments"]}
           onAllClick={handleAllClick}
           onMyClick={handleMyClick}
           onDraftsClick={handleDraftsClick}
