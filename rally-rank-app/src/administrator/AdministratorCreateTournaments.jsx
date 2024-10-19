@@ -3,27 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from "axios";
 
 const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
-  const [isSignUpBasis, setIsSignUpBasis] = useState(true); // State to manage sign-up basis
-  const [selectedPlayers, setSelectedPlayers] = useState([]); // State to manage selected players
-
-  const playerOptions = [
-    { name: "Faheem", age: "32" },
-    { name: "Ashley", age: "55" },
-    { name: "Tori", age: "7" },
-  ];
-
-  const handleAddPlayer = (event) => {
-    const selectedOption = event.target.value;
-    if (selectedOption && !selectedPlayers.includes(selectedOption)) {
-      setSelectedPlayers([...selectedPlayers, selectedOption]);
-    }
-    event.target.value = ""; // Reset the select input
-  };
-
-  const handleRemovePlayer = (player) => {
-    setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
-  };
-
+ 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-xl font-extrabold">Create Tournament</h2>
@@ -175,73 +155,6 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
             {errors.maxPlayers?.message}
           </p>
         </div>
-
-        {/* Sign-up Basis */}
-        <div className="flex flex-col gap-1">
-          <label htmlFor="signUpBasis" className="block text-sm font-medium text-gray-700">
-            Is this tournament on a sign-up basis?
-          </label>
-          <select
-            className="border p-2"
-            id="signUpBasis"
-            {...register("signUpBasis", {
-              required: "Sign-up basis specification is required",
-            })}
-            onChange={(e) => {
-              setIsSignUpBasis(e.target.value === "Yes");
-              setSelectedPlayers([]); // Reset selected players when sign-up basis changes
-            }}
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-          <p className="error">{errors.signUpBasis?.message}</p>
-        </div>
-
-                {/* Player Selection (if not sign-up basis) */}
-                {!isSignUpBasis && (
-          <div className="flex flex-col gap-1">
-            <label
-              htmlFor="playerSelection"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Select Players
-            </label>
-            <select
-              className="border p-2"
-              id="playerSelection"
-              onChange={handleAddPlayer}
-            >
-              <option value="">Select Player</option>
-              {playerOptions.map((player, index) => (
-        <option key={index} value={player.name}>
-          {player.name} (Age: {player.age})
-        </option>
-      ))}
-              
-            </select>
-
-            {/* List of Added Players */}
-            <div className="mt-4">
-              <h3 className="font-bold">Added Players:</h3>
-              <ul>
-                {selectedPlayers.map((player, index) => (
-                  <li key={index} className="flex justify-between">
-                    <span>{player}</span>
-                    <button
-                      className="text-red-500 ml-2"
-                      onClick={() => handleRemovePlayer(player)}
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
         {/* Remarks */}
         <div className="flex flex-col gap-1">
           <label
