@@ -57,7 +57,7 @@ function AdminVerify() {
 
         if (response !== undefined) {
             // Re-route to home after successful verification
-            navigate("/auth/admin-login");
+            navigate("/auth/administrator-login");
         }
     };
 
@@ -180,7 +180,7 @@ function AdminVerify() {
                         <div className="text-ms flex flex-row justify-center align-item">
                             Already verified?
                             <Link
-                                to="/auth/admin-login"
+                                to="/auth/administrator-login"
                                 className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                             >
                                 Log in here!
