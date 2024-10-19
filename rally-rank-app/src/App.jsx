@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 // Administrator imports
-import AdminVerify from "./public/AdminVerify";
+import AdminSignUp from "./administrator/AdminSignUp";
+import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
@@ -17,11 +18,10 @@ import MainLayout from "./components/MainLayout";
 // Public imports
 import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
-import UserSignUp from "./user/UserSignUp";
-import AdminSignUp from "./public/AdminSignUp";
 
 // User imports
 import UserHome from "./user/UserHome";
+import UserSignUp from "./user/UserSignUp";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
