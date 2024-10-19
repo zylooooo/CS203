@@ -26,10 +26,10 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
           <p className="error">{errors.tournamentName?.message}</p>
         </div>
 
-        {/* Date Range */}
+        {/* Start Date */}
         <div className="flex flex-col gap-1">
           <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
-            Date Range
+            Start Date
           </label>
           <div className="flex gap-2">
             <input
@@ -39,16 +39,8 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               defaultValue="2024-01-01" // Random default value
               {...register("startDate", { required: "Start date is required" })}
             />
-            <span>-</span>
-            <input
-              className="border p-2 w-full"
-              type="date"
-              id="endDate"
-              defaultValue="2024-01-10" // Random default value
-              {...register("endDate", { required: "End date is required" })}
-            />
           </div>
-          <p className="error">{errors.startDate?.message || errors.endDate?.message}</p>
+          <p className="error">{errors.startDate?.message}</p>
         </div>
 
         {/* Venue */}
@@ -75,13 +67,12 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
           <select
             className="border p-2 w-full"
             id="gender"
-            defaultValue="Both" // Random default value
+            defaultValue="Male" // Random default value
             {...register("gender", { required: "Gender specification is required" })}
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Both">Both</option>
           </select>
           <p className="error">{errors.gender?.message}</p>
         </div>
@@ -140,21 +131,10 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
 
         {/* Number of Players */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="minPlayers" className="block text-sm font-medium text-gray-700">
-            Number of Players
+          <label htmlFor="maxPlayers" className="block text-sm font-medium text-gray-700">
+            Max Players
           </label>
           <div className="flex gap-2">
-            <input
-              className="border p-2 w-full"
-              type="number"
-              id="minPlayers"
-              placeholder="Min Players"
-              defaultValue="4" // Random default value
-              {...register("minPlayers", {
-                required: "Minimum number of players is required",
-              })}
-            />
-            <span>-</span>
             <input
               className="border p-2 w-full"
               type="number"
@@ -166,28 +146,23 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               })}
             />
           </div>
-          <p className="error">{errors.minPlayers?.message || errors.maxPlayers?.message}</p>
+          <p className="error">{errors.maxPlayers?.message}</p>
         </div>
-
-        {/* Sign-up Basis */}
-        <div className="flex flex-col gap-1">
-          <label htmlFor="signUpBasis" className="block text-sm font-medium text-gray-700">
-            Is this tournament on a sign-up basis?
-          </label>
-          <select
-            className="border p-2"
-            id="signUpBasis"
-            defaultValue="No" // Default value set to No
-            {...register("signUpBasis", {
-              required: "Sign-up basis specification is required",
-            })}
-            onChange={(e) => setIsSignUpBasis(e.target.value === "Yes")}
+        {/* Remarks */}
+                <div className="flex flex-col gap-1">
+          <label
+            htmlFor="remarks"
+            className="block text-sm font-medium text-gray-700"
           >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-          <p className="error">{errors.signUpBasis?.message}</p>
+            Remarks
+          </label>
+          <input
+            className="border p-2 w-full"
+            type="text"
+            id="remarks"
+            placeholder="Enter Remarks"
+            defaultValue="hi" // Random default value
+          />
         </div>
 
         {/* Submit Button */}
