@@ -1,95 +1,103 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 
-const Step2 = ({ register, errors }) => (
-  <div className="flex flex-col justify-center">
-    <h2 className="text-xl font-extrabold">Personal Information</h2>
-    <p>We love to know more about you!</p>
-    <div className="flex flex-col gap-5 mt-8 justify-center">
+const Step2 = ({ register, errors, watch }) => {
 
-      {/* ADMINNAME INPUT */}
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="adminName"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Admin Username
-        </label>
-        <input
-          className="border p-2"
-          type="text"
-          id="adminName"
-          placeholder="Enter your RallyRank Admin username"
-          {...register("adminName", {
-            required: "An Admin username is required.",
-            minLength: {
-              value: 5,
-              message: "Admin Username must be at least 5 characters long",
-            },
-            maxLength: {
-              value: 20,
-              message: "Admin Username cannot exceed 20 characters.",
-            },
-            pattern: {
-              value: /^[a-zA-Z0-9_]*$/,
-              message:
-                "Admin Username can only contain letters, numbers and underscores.",
-            },
-          })}
-        />
-        <p className="error"> {errors.adminName?.message} </p>
-      </div>
+    const password = watch("password");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setConfirmShowPassword] = useState(false);
 
-      {/* FIRST NAME & LAST NAME INPUT */}
-      <div className="flex gap-5 justify-center">
-        <div className="flex flex-col gap-1 w-1/2">
-          <label
-            htmlFor="firstName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            First Name
-          </label>
-          <input
-            className="border p-2"
-            type="text"
-            id="firstName"
-            placeholder="First Name"
-            {...register("firstName", {
-              required: "First name is required",
-            })}
-          />
-          <p className="error">{errors.firstName?.message}</p>
+    return (
+        <div>
+            <h2 className = "text-xl font-extrabold"> Admin Account Setup </h2>
+            <p> Last stage of your admin account registration! Please enter a password. </p>
+            <div className = "flex flex-col gap-5 mt-8">
+
+                {/* PASSWORD */}
+                <div className = "flex flex-col gap-2">
+                    <label
+                        htmlFor = "password"
+                        className = "block text-sm font-medium text-gray-700"
+                    >
+                        Password
+                    </label>
+                    <input
+                        className = "border p-2"
+                        type = {showPassword ? "text" : "password"}
+                        id = "password"
+                        placeholder = "Enter your password"
+                        {...register("password", {
+                            required: "A password is required.",
+                            minLength: {
+                                value: 8,
+                                message: "Password must be at least 8 characters long.",
+                            },
+                            validate: {
+                                alphanumeric: value => /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                                uppercase: value => /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                                lowercase: value => /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                                symbol: value => /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                            },
+                        })}
+                    />
+                    <p className = "error"> {errors.password?.message} </p>
+                    <div className = "block text-sm font-normal text-gray-700 pl-3">
+                        <input
+                        type = "checkbox"
+                        id = "showPassword"
+                        checked = {showPassword}
+                        onChange = {() => setShowPassword(!showPassword)}
+                        />
+                        <label 
+                            htmlFor = "showPassword"> Show Password 
+                        </label>
+                    </div>
+                </div>
+
+                {/* CONFIRM PASSWORD */}
+                <div className = "flex flex-col gap-2">
+                    <label
+                        htmlFor = "confirmPassword"
+                        className = "block text-sm font-medium text-gray-700"
+                    >
+                        Confirm Password
+                    </label>
+                    <input
+                        className = "border p-2"
+                        type = {showConfirmPassword ? "text" : "password"}
+                        id = "confirmPassword"
+                        placeholder = "Re-enter your password"
+                        {...register("confirmPassword", {
+                            required: "Confirm password is required",
+                            validate: (value) =>
+                                value === password || "Passwords do not match!",
+                        })}
+                    />
+                    <p className = "error"> {errors.confirmPassword?.message} </p>
+                <div className = "block text-sm font-normal text-gray-700 pl-3">
+                        <input
+                        type = "checkbox"
+                        id = "showConfirmPassword"
+                        checked = {showConfirmPassword}
+                        onChange = {() => setConfirmShowPassword(!showConfirmPassword)}
+                        />
+                        <label 
+                            htmlFor = "showConfirmPassword"> Show Password 
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div className="flex flex-col gap-1 w-1/2">
-          <label
-            htmlFor="lastName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Last Name
-          </label>
-          <input
-            className="border p-2"
-            type="text"
-            id="lastName"
-            placeholder="Last Name"
-            {...register("lastName", {
-              required: "Last name is required",
-            })}
-          />
-          <p className="error">{errors.lastName?.message}</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-);
+    );
+};
 
 Step2.propTypes = {
-  register: PropTypes.func.isRequired,
-  errors: PropTypes.shape({
-    adminName: PropTypes.object,
-    firstName: PropTypes.object,
-    lastName: PropTypes.object,
-  }).isRequired,
+    register: PropTypes.func.isRequired,
+    errors: PropTypes.shape({
+        password: PropTypes.object,
+        confirmPassword: PropTypes.object,
+    }).isRequired,
+    watch: PropTypes.func.isRequired,
 };
 
 export default Step2;

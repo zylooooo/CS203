@@ -245,7 +245,7 @@ public class AuthController {
             boolean emailExists = (userService.checkIfEmailExists(email) || adminService.checkIfEmailExists(email));
             response.put("emailAvailable", !emailExists);
             if (emailExists) {
-                message.append("Email is already in use.");
+                message.append(" Email is already in use.");
             }
         }
 
