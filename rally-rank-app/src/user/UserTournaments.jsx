@@ -121,10 +121,10 @@ function UserTournaments() {
             
             setScheduledTournaments(response.data);
 
-            // Set the initial view to scheduled tournaments
+            // Set the initial view to available tournaments
             setdisplayTournamentType(response.data); 
         } catch (error) {
-            console.error('Error fetching scheduled tournaments:', error);
+            console.error('Error fetching available tournaments:', error);
 
             // Set to empty array if API call fails
             setScheduledTournaments([]); 
@@ -198,7 +198,7 @@ function UserTournaments() {
         <div className="flex flex-col p-10 items-center justify-center w-4/5">
             <div className="flex flex-col w-4/5 gap-8">
                 <TournamentButtons
-                    buttons={["Scheduled Tournaments", "Past Tournaments", "My Tournaments"]}
+                    buttons={["Available Tournaments", "My Tournaments"]}
                     onScheduledTournamentsClick={handleScheduledTournamentsClick}
                     onPastTournamentsClick={handlePastTournamentsClick}
                     onMyTournamentsClick={handleMyTournamentsClick}
