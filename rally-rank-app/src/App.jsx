@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 // Administrator imports
+import AdminVerify from "./public/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
@@ -111,6 +112,17 @@ function App() {
                             </MainLayout>
                         }
                     />
+
+                    {/* AdminVerify */}
+                    <Route
+                        path="/auth/admin-verify"
+                        element={
+                            <MainLayout>
+                                <AdminVerify />
+                            </MainLayout>
+                        }
+                    />
+
 
                     {/* Protected Player Routes */}
                     <Route
