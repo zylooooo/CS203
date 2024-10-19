@@ -242,7 +242,7 @@ function UserHome() {
                 </div>
                 {/* AVAILABILITY */}
                 <div className = "availability-container h-1/2 gap-8 p-3">
-                    <h2 className = "text-xl font-semibold"> Availbility </h2>
+                    <h2 className = "text-xl font-semibold"> Availability </h2>
                     <div className = "availability-box bg-gray-100 border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
                         <p> Are you available for tournaments? </p>
                         <div className = "mt-2 flex items-center">
