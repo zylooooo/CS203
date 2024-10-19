@@ -137,7 +137,7 @@ const Tournaments = ({ tournamentTest, onEditClick, isMyTournaments }) => {
 };
 
 // Define the TournamentsButtons component
-const TournamentsButtons = ({ buttons, onAllClick, onMyClick, onDraftsClick }) => {
+const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
   const [activeButton, setActiveButton] = useState(0); // "Upcoming Button" will be the first active button
 
   const handleButtonClick = (index) => {
@@ -146,9 +146,7 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick, onDraftsClick }) =
       onAllClick();
     } else if (index === 1) {
       onMyClick();
-    } else {
-      onDraftsClick();
-    }
+    } 
   };
 
   return (
@@ -185,11 +183,6 @@ function AdministratorTournaments() {
     setIsMyTournaments(true); // Set to true for My Tournaments
   };
 
-  const handleDraftsClick = () => {
-    setTournamentTest(draftTournaments);
-    setIsMyTournaments(false); // Set to false for Drafts
-  };
-
   const navigate = useNavigate();
 
   const handleCreateClick = () => {
@@ -209,7 +202,7 @@ function AdministratorTournaments() {
           buttons={["All Tournaments", "My Tournaments"]}
           onAllClick={handleAllClick}
           onMyClick={handleMyClick}
-          onDraftsClick={handleDraftsClick}
+
         />
 
         {/* SEARCH BAR */}
