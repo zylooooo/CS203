@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import loginBackground from "../assets/login-picture.jpg";
+import background from "../assets/admin-sign-up-picture.jpg";
 
 // Axios import
 import axios from "axios";
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
 
-function UserVerify() {
+function AdminVerify() {
     const form = useForm();
     const modalForm = useForm();
 
@@ -28,11 +28,11 @@ function UserVerify() {
     const [resendError, setResendError] = useState(""); // State for handling resend errors
 
     // Function to verify user with username and OTP code
-    async function verifyUser(username, verificationCode) {
+    async function verifyAdmin(adminName, verificationCode) {
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/user-verify",
-                { username, verificationCode },
+                "http://localhost:8080/auth/admin-verify",
+                { adminName, verificationCode },
                 { withCredentials: true } // Allow credentials (cookies) to be sent with the request
             );
 
@@ -48,16 +48,16 @@ function UserVerify() {
         }
     }
 
-    const onVerifyUserSubmit = async (formData) => {
+    const onVerifyAdminSubmit = async (formData) => {
         // Call the verifyUser function with username and otpCode
-        const response = await verifyUser(
-            formData.username,
+        const response = await verifyAdmin(
+            formData.adminName,
             formData.verificationCode
         );
 
         if (response !== undefined) {
             // Re-route to home after successful verification
-            navigate("/auth/user-login");
+            navigate("/auth/admin-login");
         }
     };
 
@@ -77,9 +77,9 @@ function UserVerify() {
             const status = error.status;
     
             if (status === 400) {
-                setResendError("User is already verified!");
+                setResendError("Admin is already verified!");
             } else if (status === 404) {
-                setResendError("User is not found!");
+                setResendError("Admin is not found!");
             } else if (status === 500) {
                 setResendError(
                     "Internal server error. Please try again or contact support."
@@ -102,35 +102,35 @@ function UserVerify() {
             {!isModalOpen && (
                 <div
                     className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
-                    style={{ backgroundImage: `url(${loginBackground})` }}
+                    style={{ backgroundImage: `url(${background})` }}
                 >
                     <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
                         <h1 className="font-bold text-2xl bg-special-blue">
-                            User Verification
+                            Admin Verification
                         </h1>
                         <form
                             className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
-                            onSubmit={handleSubmit(onVerifyUserSubmit)}
+                            onSubmit={handleSubmit(onVerifyAdminSubmit)}
                             noValidate
                         >
                             <div>
                                 <label
-                                    htmlFor="username"
+                                    htmlFor="adminName"
                                     className="block text-sm font-medium text-gray-700"
                                 >
-                                    Username
+                                    Admin Username
                                 </label>
                                 <input
                                     className="input"
                                     type="text"
-                                    id="username"
-                                    placeholder="Username"
-                                    {...register("username", {
-                                        required: "Username is required",
+                                    id="adminName"
+                                    placeholder="Admin Username"
+                                    {...register("adminName", {
+                                        required: "Admin Username is required",
                                     })}
                                 />
                                 <p className="error">
-                                    {errors.username?.message}
+                                    {errors.adminName?.message}
                                 </p>
                             </div>
 
@@ -180,7 +180,7 @@ function UserVerify() {
                         <div className="text-ms flex flex-row justify-center align-item">
                             Already verified?
                             <Link
-                                to="/auth/user-login"
+                                to="/auth/admin-login"
                                 className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
                             >
                                 Log in here!
@@ -249,4 +249,4 @@ function UserVerify() {
     );
 }
 
-export default UserVerify;
+export default AdminVerify;

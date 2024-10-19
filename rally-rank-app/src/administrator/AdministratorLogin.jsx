@@ -121,6 +121,14 @@ function AdministratorLogin() {
                   Sign up as a new administrator!
                 </Link>
               </div>
+              <div className="text-xs text-center">
+                  <Link
+                      to="/auth/admin-verify"
+                      className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
+                  >
+                      Looking to verify? Click here
+                  </Link>
+              </div>
             </form>
           </div>
 
