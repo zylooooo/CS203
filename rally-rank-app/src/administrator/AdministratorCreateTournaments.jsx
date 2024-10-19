@@ -45,10 +45,10 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
           <p className="error">{errors.tournamentName?.message}</p>
         </div>
 
-        {/* Date Range */}
+        {/* Start Date */}
         <div className="flex flex-col gap-1">
           <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
-            Date Range
+            Start Date
           </label>
           <div className="flex gap-2">
             <input
@@ -58,16 +58,8 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
               placeholder="Start Date"
               {...register("startDate", { required: "Start date is required" })}
             />
-            <span>-</span>
-            <input
-              className="border p-2 w-full"
-              type="date"
-              id="endDate"
-              placeholder="End Date"
-              {...register("endDate", { required: "End date is required" })}
-            />
           </div>
-          <p className="error">{errors.startDate?.message || errors.endDate?.message}</p>
+          <p className="error">{errors.startDate?.message}</p>
         </div>
 
         {/* Venue */}
@@ -98,7 +90,6 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Both">Both</option>
           </select>
           <p className="error">{errors.gender?.message}</p>
         </div>
@@ -164,22 +155,12 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
         {/* Number of Players */}
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="minPlayers"
+            htmlFor="maxPlayers"
             className="block text-sm font-medium text-gray-700"
           >
-            Number of Players
+            Max Players
           </label>
           <div className="flex gap-2">
-            <input
-              className="border p-2 w-full"
-              type="number"
-              id="minPlayers"
-              placeholder="Min Players"
-              {...register("minPlayers", {
-                required: "Minimum number of players is required",
-              })}
-            />
-            <span>-</span>
             <input
               className="border p-2 w-full"
               type="number"
@@ -191,7 +172,7 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
             />
           </div>
           <p className="error">
-            {errors.minPlayers?.message || errors.maxPlayers?.message}
+            {errors.maxPlayers?.message}
           </p>
         </div>
 
