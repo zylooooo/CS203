@@ -149,6 +149,9 @@ public class AdminsTournamentsController {
         }
     }
 
+    // Get tournament history by adminName
+
 
     
 }
+
