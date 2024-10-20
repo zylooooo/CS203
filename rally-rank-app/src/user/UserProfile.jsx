@@ -10,31 +10,7 @@ function UserProfile() {
         navigate("/user-profile/edit", {state : {userPersonalInformation} });
     };
 
-    const [userPersonalInformation, setUserPersonalInformation] = useState({
-        email: "",
-        password: "",
-        phoneNumber: "",
-        elo: 0,
-        gender: "",
-        dateOfBirth: "",
-        age: 0,
-        participatedTournaments: [
-            // not working yet
-        ],
-        profilePic: "",
-        medicalInformation: {
-            emergencyContactNumber: "",
-            emergencyContactName: "",
-            relationship: ""
-        },
-        username: "",
-        firstName: "",
-        lastName: "",
-        isAvailable: false,
-        role: "",
-        enabled: false,
-        _class: "",
-    });
+    const [userPersonalInformation, setUserPersonalInformation] = useState({});
 
     // const [userPersonalInformation, setUserPersonalInformation] = useState();
     async function getUserProfile() {

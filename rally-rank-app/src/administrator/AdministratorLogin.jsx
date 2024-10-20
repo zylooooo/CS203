@@ -17,24 +17,89 @@ function AdministratorLogin() {
   const navigate = useNavigate(); // For navigation after login
   const [loginError, setLoginError] = useState(""); // State for handling login errors
 
-  const onSubmit = async (data) => {
-    try {
-      // Implement your API call for admin authentication
-      const response = await authenticateAdmin(data.username, data.password);
+  // const onSubmit = async (data) => {
+  //   try {
+  //     // Implement your API call for admin authentication
+  //     const response = await authenticateAdmin(data.username, data.password);
 
-      if (response.success) {
-        // Assume response.admin contains admin data
-        loginAdmin(response.admin); // Update AuthContext with admin data
-        navigate("/administrator-tournaments"); // Redirect to admin tournaments page
-      } else {
-        // Handle authentication failure
-        setLoginError(response.message || "Invalid credentials");
+  //     if (response.success) {
+  //       // Assume response.admin contains admin data
+  //       loginAdmin(response.admin); // Update AuthContext with admin data
+  //       navigate("/administrator-tournaments"); // Redirect to admin tournaments page
+  //     } else {
+  //       // Handle authentication failure
+  //       setLoginError(response.message || "Invalid credentials");
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     setLoginError("An unexpected error occurred. Please try again.");
+  //   }
+  // };
+
+  async function authenticateUser(username, password) {
+      try {
+          const response = await axios.post(
+              "http://localhost:8080/auth/admin-login",
+              { username, password },
+              { withCredentials: true } // Allow credentials (cookies) to be sent with the request
+          );
+
+          if (response.status === 200) {
+              setLoginError("Successfully login!");
+
+              // Return the LoginResponse object containing JWT and expiration time
+              return response.data;
+          }
+      } catch (error) {
+          setLoginError(error.response.data.error)
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("An unexpected error occurred. Please try again.");
-    }
-  };
+  }
+
+  async function retrieveUserData(jwtToken) {
+      try {
+          const response = await axios.get(
+              "http://localhost:8080/admins/profile",
+              {
+                  withCredentials: true,
+                  headers: {
+                      Authorization: `Bearer ${jwtToken}`
+                  }
+              }
+          );
+          console.log("User data received: ", response.data);
+          return response.data;
+      }catch (error) {
+          console.error("Error fetching user data: ", error);
+          return null;
+      }
+  }
+
+
+  const onSubmit = async (formData) => {
+    // Call the authenticateUser function with username and password
+    
+    const response = await authenticateUser(
+        formData.username,
+        formData.password
+    );
+
+    const userDataResponse = await retrieveUserData(response.token);
+
+    if (response !== undefined) {
+        // Store user in local database
+        const userData = {
+            adminName: formData.username,
+            role: "ADMIN",
+            jwtToken: response.token,
+        };
+    
+        // Change state to user
+        loginUser(userData);
+
+        // Re-route to home
+        navigate("/administrator-tournaments");
+    } 
+};
 
   return (
     <>
