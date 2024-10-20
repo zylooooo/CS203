@@ -56,9 +56,6 @@ public class User {
 
     private List<String> participatedTournaments;
 
-    @Valid
-    private MedicalInformation medicalInformation;
-
     private String profilePic;
 
     @NotBlank(message = "Username is required!")
@@ -73,22 +70,8 @@ public class User {
 
     private boolean isAvailable;
     
-    private List<StrikeReport> strikeReport;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MedicalInformation {
-        @NotBlank(message = "Emergency contact number is required!")
-        @Pattern(regexp = "^(?:6\\d{7}|[89]\\d{7}|1800\\d{7}|1900\\d{7})$", message = "Invalid phone number!") 
-        private String emergencyContactNumber;
-
-        @NotBlank(message = "Emergency contact name is required!")
-        private String emergencyContactName;
-
-        @NotBlank(message = "Relationship is required!")
-        private String relationship;
-    }
+    @Valid
+    private List<StrikeReport> strikeReports;
 
     @Data
     @NoArgsConstructor
@@ -96,7 +79,10 @@ public class User {
     public static class StrikeReport {
         @NotBlank(message = "Report details is required!")
         private String reportDetails;
-        private String dateCreated;
+
+        @NotNull(message = "Date created is required!")
+        private LocalDateTime dateCreated;
+
         @NotBlank(message = "Admin Name is required!")
         private String issuedBy;
     }

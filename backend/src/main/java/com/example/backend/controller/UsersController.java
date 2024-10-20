@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.service.AdminService;
 import com.example.backend.service.UserService;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.exception.UserNotFoundException;
@@ -24,7 +23,6 @@ import java.util.*;
 public class UsersController {
 
     private final UserService userService;
-    private final AdminService adminService;
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     // health check endpoint to get all the users

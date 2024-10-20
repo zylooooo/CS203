@@ -110,12 +110,12 @@ public class AuthController {
             String jwtToken = jwtService.generateToken(authenticatedUser);
             LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getJwtExpiration());
             return ResponseEntity.ok(loginResponse);
-        } catch (UserNotFoundException e) {
-            logger.error("User not found: {}", e.getMessage());
+        } catch (AdminNotFoundException e) {
+            logger.error("Admin not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("User not found"));
-        } catch (UserNotEnabledException e) {
-            logger.error("User not enabled: {}", e.getMessage());
+                .body(new ErrorResponse("Admin not found"));
+        } catch (AdminNotEnabledException e) {
+            logger.error("Admin not enabled: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse("Your account is not enabled. Please check your email to enable your account."));
         } catch (BadCredentialsException e) {
