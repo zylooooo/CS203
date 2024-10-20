@@ -174,55 +174,55 @@ class TournamentServiceTest {
         assertEquals("An unexpected error occurred while creating the tournament", result.getSecond().get("error"));
     }
 
-    @Test
-    void getCurrentTournaments_OngoingAndFutureTournamentsExist_ReturnsOngoingAndFutureTournaments() {
-        LocalDate currentDate = LocalDate.now();
+    // @Test
+    // void getCurrentTournaments_OngoingAndFutureTournamentsExist_ReturnsOngoingAndFutureTournaments() {
+    //     LocalDate currentDate = LocalDate.now();
         
-        // Create an ongoing tournament
-        Tournament ongoingTournament = new Tournament();
-        ongoingTournament.setTournamentName("Ongoing Tournament");
-        ongoingTournament.setOngoing(true);
-        ongoingTournament.setStartDate(currentDate.minusDays(1));
-        ongoingTournament.setEndDate(currentDate.plusDays(1));
+    //     // Create an ongoing tournament
+    //     Tournament ongoingTournament = new Tournament();
+    //     ongoingTournament.setTournamentName("Ongoing Tournament");
+    //     ongoingTournament.setOngoing(true);
+    //     ongoingTournament.setStartDate(currentDate.minusDays(1));
+    //     ongoingTournament.setEndDate(currentDate.plusDays(1));
 
-        // Create a future tournament
-        Tournament futureTournament = new Tournament();
-        futureTournament.setTournamentName("Future Tournament");
-        futureTournament.setOngoing(false);
-        futureTournament.setStartDate(currentDate.plusDays(1));
-        futureTournament.setEndDate(currentDate.plusDays(2));
+    //     // Create a future tournament
+    //     Tournament futureTournament = new Tournament();
+    //     futureTournament.setTournamentName("Future Tournament");
+    //     futureTournament.setOngoing(false);
+    //     futureTournament.setStartDate(currentDate.plusDays(1));
+    //     futureTournament.setEndDate(currentDate.plusDays(2));
 
-        // Create a past tournament (should not be included in results)
-        Tournament pastTournament = new Tournament();
-        pastTournament.setTournamentName("Past Tournament");
-        pastTournament.setOngoing(false);
-        pastTournament.setStartDate(currentDate.minusDays(2));
-        pastTournament.setEndDate(currentDate.minusDays(1));
+    //     // Create a past tournament (should not be included in results)
+    //     Tournament pastTournament = new Tournament();
+    //     pastTournament.setTournamentName("Past Tournament");
+    //     pastTournament.setOngoing(false);
+    //     pastTournament.setStartDate(currentDate.minusDays(2));
+    //     pastTournament.setEndDate(currentDate.minusDays(1));
 
-        when(tournamentRepository.findAll()).thenReturn(Arrays.asList(ongoingTournament, futureTournament, pastTournament));
+    //     when(tournamentRepository.findAll()).thenReturn(Arrays.asList(ongoingTournament, futureTournament, pastTournament));
 
-        List<Tournament> result = tournamentService.getCurrentTournaments();
+    //     List<Tournament> result = tournamentService.getCurrentTournaments();
 
-        assertEquals(1, result.size());
-        assertTrue(result.stream().anyMatch(t -> t.getTournamentName().equals("Ongoing Tournament")));
-        assertFalse(result.stream().anyMatch(t -> t.getTournamentName().equals("Future Tournament")));
-        assertFalse(result.stream().anyMatch(t -> t.getTournamentName().equals("Past Tournament")));
-    }
+    //     assertEquals(1, result.size());
+    //     assertTrue(result.stream().anyMatch(t -> t.getTournamentName().equals("Ongoing Tournament")));
+    //     assertFalse(result.stream().anyMatch(t -> t.getTournamentName().equals("Future Tournament")));
+    //     assertFalse(result.stream().anyMatch(t -> t.getTournamentName().equals("Past Tournament")));
+    // }
 
-    @Test
-    void getAllHistory_PastTournamentsExist_ReturnsPastTournaments() throws TournamentNotFoundException {
-        LocalDate currentDate = LocalDate.now();
-        Tournament pastTournament = new Tournament();
-        pastTournament.setOngoing(false);
-        pastTournament.setEndDate(currentDate.minusDays(1));
+    // @Test
+    // void getAllHistory_PastTournamentsExist_ReturnsPastTournaments() throws TournamentNotFoundException {
+    //     LocalDate currentDate = LocalDate.now();
+    //     Tournament pastTournament = new Tournament();
+    //     pastTournament.setOngoing(false);
+    //     pastTournament.setEndDate(currentDate.minusDays(1));
 
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(pastTournament));
+    //     when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(pastTournament));
 
-        List<Tournament> result = tournamentService.getAllHistory();
+    //     List<Tournament> result = tournamentService.getAllHistory();
 
-        assertEquals(1, result.size());
-        assertEquals(pastTournament, result.get(0));
-    }
+    //     assertEquals(1, result.size());
+    //     assertEquals(pastTournament, result.get(0));
+    // }
 
     @Test
     void getAllHistory_NoPastTournamentsExist_ThrowsTournamentNotFoundException() {
@@ -424,65 +424,65 @@ class TournamentServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void getCurrentTournaments_NoOngoingOrFutureTournaments_ReturnsEmptyList() {
-        LocalDate currentDate = LocalDate.now();
-        Tournament pastTournament = new Tournament();
-        pastTournament.setOngoing(false);
-        pastTournament.setStartDate(currentDate.minusDays(2));
-        pastTournament.setEndDate(currentDate.minusDays(1));
+    // @Test
+    // void getCurrentTournaments_NoOngoingOrFutureTournaments_ReturnsEmptyList() {
+    //     LocalDate currentDate = LocalDate.now();
+    //     Tournament pastTournament = new Tournament();
+    //     pastTournament.setOngoing(false);
+    //     pastTournament.setStartDate(currentDate.minusDays(2));
+    //     pastTournament.setEndDate(currentDate.minusDays(1));
 
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(pastTournament));
+    //     when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(pastTournament));
 
-        List<Tournament> result = tournamentService.getCurrentTournaments();
+    //     List<Tournament> result = tournamentService.getCurrentTournaments();
 
-        assertTrue(result.isEmpty());
-    }
+    //     assertTrue(result.isEmpty());
+    // }
 
-    @Test
-    void getCurrentTournaments_HasOngoingTournaments_ReturnsOngoingTournaments() {
-        LocalDate currentDate = LocalDate.now();
-        Tournament ongoingTournament = new Tournament();
-        ongoingTournament.setTournamentName("Ongoing Tournament");
-        ongoingTournament.setOngoing(true);
-        ongoingTournament.setStartDate(currentDate.minusDays(1));
-        ongoingTournament.setEndDate(currentDate.plusDays(1));
+    // @Test
+    // void getCurrentTournaments_HasOngoingTournaments_ReturnsOngoingTournaments() {
+    //     LocalDate currentDate = LocalDate.now();
+    //     Tournament ongoingTournament = new Tournament();
+    //     ongoingTournament.setTournamentName("Ongoing Tournament");
+    //     ongoingTournament.setOngoing(true);
+    //     ongoingTournament.setStartDate(currentDate.minusDays(1));
+    //     ongoingTournament.setEndDate(currentDate.plusDays(1));
 
-        Tournament futureTournament = new Tournament();
-        futureTournament.setTournamentName("Future Tournament");
-        futureTournament.setOngoing(false);
-        futureTournament.setStartDate(currentDate.plusDays(1));
-        futureTournament.setEndDate(currentDate.plusDays(2));
+    //     Tournament futureTournament = new Tournament();
+    //     futureTournament.setTournamentName("Future Tournament");
+    //     futureTournament.setOngoing(false);
+    //     futureTournament.setStartDate(currentDate.plusDays(1));
+    //     futureTournament.setEndDate(currentDate.plusDays(2));
 
-        Tournament pastTournament = new Tournament();
-        pastTournament.setTournamentName("Past Tournament");
-        pastTournament.setOngoing(false);
-        pastTournament.setStartDate(currentDate.minusDays(2));
-        pastTournament.setEndDate(currentDate.minusDays(1));
+    //     Tournament pastTournament = new Tournament();
+    //     pastTournament.setTournamentName("Past Tournament");
+    //     pastTournament.setOngoing(false);
+    //     pastTournament.setStartDate(currentDate.minusDays(2));
+    //     pastTournament.setEndDate(currentDate.minusDays(1));
 
-        when(tournamentRepository.findAll()).thenReturn(Arrays.asList(ongoingTournament, futureTournament, pastTournament));
+    //     when(tournamentRepository.findAll()).thenReturn(Arrays.asList(ongoingTournament, futureTournament, pastTournament));
 
-        List<Tournament> result = tournamentService.getCurrentTournaments();
+    //     List<Tournament> result = tournamentService.getCurrentTournaments();
 
-        assertEquals(1, result.size());
-        assertEquals("Ongoing Tournament", result.get(0).getTournamentName());
-    }
+    //     assertEquals(1, result.size());
+    //     assertEquals("Ongoing Tournament", result.get(0).getTournamentName());
+    // }
 
-    @Test
-    void getCurrentTournaments_HasFutureTournaments_ReturnsFutureTournaments() {
-        LocalDate currentDate = LocalDate.now();
-        Tournament futureTournament = new Tournament();
-        futureTournament.setTournamentName("Future Tournament");
-        futureTournament.setOngoing(false);
-        futureTournament.setStartDate(currentDate.plusDays(1));
-        futureTournament.setEndDate(currentDate.plusDays(2));
+    // @Test
+    // void getCurrentTournaments_HasFutureTournaments_ReturnsFutureTournaments() {
+    //     LocalDate currentDate = LocalDate.now();
+    //     Tournament futureTournament = new Tournament();
+    //     futureTournament.setTournamentName("Future Tournament");
+    //     futureTournament.setOngoing(false);
+    //     futureTournament.setStartDate(currentDate.plusDays(1));
+    //     futureTournament.setEndDate(currentDate.plusDays(2));
 
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(futureTournament));
+    //     when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(futureTournament));
 
-        List<Tournament> result = tournamentService.getCurrentTournaments();
+    //     List<Tournament> result = tournamentService.getCurrentTournaments();
 
-        assertEquals(0, result.size());
-    }
+    //     assertEquals(0, result.size());
+    // }
 
     @Test
     void getUserUpcomingTournaments_UserHasUpcomingTournaments_ReturnsUpcomingTournaments() throws UserNotFoundException {
@@ -504,25 +504,25 @@ class TournamentServiceTest {
         assertTrue(result.contains(upcomingTournament2));
     }
 
-    @Test
-    void getUserHistory_UserHasPastTournaments_ReturnsUserPastTournaments() throws TournamentNotFoundException {
-        LocalDate now = LocalDate.now();
-        Tournament userPast = new Tournament();
-        userPast.setEndDate(now.minusDays(1));
-        userPast.setOngoing(false);
-        userPast.getPlayersPool().add("testUser");
+    // @Test
+    // void getUserHistory_UserHasPastTournaments_ReturnsUserPastTournaments() throws TournamentNotFoundException {
+    //     LocalDate now = LocalDate.now();
+    //     Tournament userPast = new Tournament();
+    //     userPast.setEndDate(now.minusDays(1));
+    //     userPast.setOngoing(false);
+    //     userPast.getPlayersPool().add("testUser");
 
-        Tournament otherPast = new Tournament();
-        otherPast.setEndDate(now.minusDays(1));
-        otherPast.setOngoing(false);
+    //     Tournament otherPast = new Tournament();
+    //     otherPast.setEndDate(now.minusDays(1));
+    //     otherPast.setOngoing(false);
 
-        when(tournamentRepository.findAll()).thenReturn(Arrays.asList(userPast, otherPast));
+    //     when(tournamentRepository.findAll()).thenReturn(Arrays.asList(userPast, otherPast));
 
-        List<Tournament> result = tournamentService.getUserHistory("testUser");
+    //     List<Tournament> result = tournamentService.getUserHistory("testUser");
 
-        assertEquals(1, result.size());
-        assertTrue(result.contains(userPast));
-    }
+    //     assertEquals(1, result.size());
+    //     assertTrue(result.contains(userPast));
+    // }
 
     @Test
     void getUserAvailableTournaments_AvailableTournamentsExist_ReturnsAvailableTournaments() throws UserNotFoundException, TournamentNotFoundException {

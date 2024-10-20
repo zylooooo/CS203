@@ -11,7 +11,6 @@ import com.example.backend.exception.AdminNotFoundException;
 import com.example.backend.model.Admin;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.UserRepository;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
@@ -152,6 +151,49 @@ public class AdminService {
         }
         return adminRepository.existsByEmail(email);
     }
+
+    // /**
+    //  * Issues a strike to a user.
+    //  *
+    //  * @param adminName The name of the admin issuing the strike.
+    //  * @param username The username of the user being struck.
+    //  * @param tournamentId The ID of the tournament related to this strike.
+    //  * @param reportDetails The details of the strike report.
+    //  * @throws AdminNotFoundException if the admin is not found.
+    //  * @throws UserNotFoundException if the user is not found.
+    //  * @throws UnauthorizedStrikeException if the admin is not authorized to strike this user.
+    //  * @throws StrikeTimeExceededException if the strike is issued more than a week after the tournament end date.
+    //  */
+    // public void strikeUser(String adminName, String username, String tournamentName, String reportDetails) 
+    //         throws AdminNotFoundException, UserNotFoundException, UnauthorizedStrikeException, StrikeTimeExceededException {
+        
+    //     // Get the admin
+    //     Admin admin = getAdminByAdminName(adminName);
+
+
+    //     User user = userRepository.findByUsername(username)
+    //             .orElseThrow(() -> new UserNotFoundException(username));
+
+        
+    //     // Get the tournament 
+    //     Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+    //             .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        
+        
+    //     // Check whether the tournaments players pool contains the username    
+    //     if (!tournament.getPlayersPool().contains(username)) {
+    //         throw new UnauthorizedStrikeException("You can only strike players who participated in your past tournaments.");
+    //     }
+
+       
+    //     // Check if the strike is being issued within a week of the tournament end date
+        
+
+    //     userRepository.save(user);
+    // }
+
+
 
 
 
