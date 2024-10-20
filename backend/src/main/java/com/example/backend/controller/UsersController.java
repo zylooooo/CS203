@@ -66,52 +66,6 @@ public class UsersController {
         }
     }
 
-    @GetMapping("/signup/check-credentials-availability")
-    public ResponseEntity<?> checkCredentialsAvailability(@RequestParam(required = false) String username, @RequestParam(required = false) String email) {
-        Map<String, Object> response = new HashMap<>();
-
-        if (username == null && email == null) {
-            return ResponseEntity.badRequest()
-                .body(new ErrorResponse("Either username or email must be provided!"));
-        }
-
-        StringBuilder message = new StringBuilder();
-        boolean hasError = false;
-
-        // Check if username is provided and if it exists
-        if (username != null) {
-            boolean usernameExists = (userService.checkIfUsernameExists(username) || adminService.checkIfAdminNameExists(username));
-            response.put("usernameAvailable", !usernameExists);
-            if (usernameExists) {
-                message.append("Username is already taken.");
-            }
-        }
-
-        // Check if email is provided and if it exists
-        if (email != null) {
-            boolean emailExists = (userService.checkIfEmailExists(email) || adminService.checkIfEmailExists(email));
-            response.put("emailAvailable", !emailExists);
-            if (emailExists) {
-                message.append("Email is already in use.");
-            }
-        }
-
-        // If no errors and both username and email are provided, set both as available
-        if (!hasError && message.length() == 0) {
-            if (username != null && email != null) {
-                message.append("Username and email are available.");
-            } else if (username != null) {
-                message.append("Username is available.");
-            } else {
-                message.append("Email is available.");
-            }
-        }
-
-        response.put("message", message.toString().trim());
-
-        return ResponseEntity.ok(response);
-    }
-
     /**
      * Updates the user details based on the user name
      * @param username the username of the user to update, must not be null or empty
