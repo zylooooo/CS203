@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, act } from "react";
 import { FaCrown, FaMedal } from "react-icons/fa";
 
-// Component: Leaderboard Buttons ("Top")
+// Component: Leaderboard Buttons - "Top", "Other Gender Leaderboard", "Mixed Leaderboard"
 const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGenderClick, activeButton, setActiveButton }) => {        // Need to add "Mixed Gender, Other Gender buttons"
     const handleButtonClick = (index) => {
         setActiveButton(index);
@@ -68,7 +68,7 @@ const ScheduledTournamentCard = ({ scheduledTournaments }) => {
     const navigate = useNavigate();
 
     const handleScheduledTournamentCardClick = (scheduledTournament) => {
-        navigate("/tournament-details", {state: scheduledTournament});
+        navigate("/tournament-details", { state: { ...scheduledTournament, from: window.location.pathname } });
     }
 
     const formatDate = (dateString) => {
