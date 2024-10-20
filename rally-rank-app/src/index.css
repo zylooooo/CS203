@@ -36,6 +36,10 @@
         border-radius: 1rem;
     }
 
+    .leaderboard-box {
+        border-radius: 5px;
+    }
+
 
     .h-screen-minus-navbar {
         @apply h-screen;

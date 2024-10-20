@@ -42,6 +42,24 @@ function UserLogin() {
         }
     }
 
+    async function retrieveUserData(jwtToken) {
+        try {
+            const response = await axios.get(
+                "http://localhost:8080/users/profile",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${jwtToken}`
+                    }
+                }
+            );
+            return response.data;
+        }catch (error) {
+            console.error("Error fetching user data: ", error);
+            return null;
+        }
+    }
+
     const onSubmit = async (formData) => {
         // Call the authenticateUser function with username and password
         const response = await authenticateUser(
@@ -49,14 +67,17 @@ function UserLogin() {
             formData.password
         );
 
+        const userDataResponse = await retrieveUserData(response.token);
+
         if (response !== undefined) {
             // Store user in local database
             const userData = {
                 username: formData.username,
                 role: "USER",
                 jwtToken: response.token,
+                gender: userDataResponse.gender,
             };
-
+        
             // Change state to user
             loginUser(userData);
 
@@ -64,7 +85,7 @@ function UserLogin() {
             navigate("/users/home");
         } 
     };
-
+    
     return (
         <>
             <div
