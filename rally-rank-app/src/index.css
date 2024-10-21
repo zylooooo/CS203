@@ -94,4 +94,12 @@
     body {
         background-color: #fffcf2;
     }
+
+    .bg-custom-green {
+        background-color: #80B577;
+    }
+    
+    .bg-custom-green-hover:hover {
+        background-color: #267355;
+    }
 }
