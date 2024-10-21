@@ -12,7 +12,7 @@ function MainHomePage() {
     }
 
     const handleSignUpClick = () => {
-        navigate('/sign-up', { state: { email } }); 
+        navigate('/auth/user-signup', { state: { email } }); 
     };
 
     const handleKeyDown = (e) => {

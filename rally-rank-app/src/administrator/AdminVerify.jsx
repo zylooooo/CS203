@@ -57,7 +57,7 @@ function AdminVerify() {
 
         if (response !== undefined) {
             // Re-route to home after successful verification
-            navigate("/auth/administrator-login");
+            navigate("/administrator-login");
         }
     };
 
