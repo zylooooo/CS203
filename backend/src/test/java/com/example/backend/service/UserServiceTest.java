@@ -6,7 +6,6 @@ import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.TournamentRepository;
 import com.example.backend.model.Tournament;
-import org.mockito.ArgumentCaptor;
 import org.springframework.validation.Errors;
 
 import static org.junit.jupiter.api.Assertions.*;
