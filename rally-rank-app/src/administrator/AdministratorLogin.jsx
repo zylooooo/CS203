@@ -10,6 +10,8 @@ import { DevTool } from "@hookform/devtools";
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
+import rallyRankLogo from "../assets/Rally-Rank-Logo.svg"; // Import the RallyRank logo
+
 function AdministratorLogin() {
   const form = useForm();
   const { register, control, handleSubmit, formState } = form;
@@ -66,7 +68,7 @@ function AdministratorLogin() {
         className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
         style={{ backgroundImage: `url(${loginBackground})` }}
       >
-        {/* TESTING CODE REMOVE LATER */}
+        {/* TESTING CODE REMOVE LATER
         <button
           type="button"
           className="button mt-6 font-bold hover:shadow-inner"
@@ -76,9 +78,9 @@ function AdministratorLogin() {
           }}
         >
           Manual Admin Login
-        </button>
-        <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
-          <h1 className=" font-bold text-2xl">Administrator Login</h1>
+        </button> */}
+        <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
+          <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
             <form
               className="card px-2 py-4 border-none shadow-none bg-primary-color-white"
               onSubmit={handleSubmit(onSubmit)}
@@ -89,13 +91,17 @@ function AdministratorLogin() {
                   htmlFor="adminName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Username
+               
                 </label>
                 <input
-                  className="input"
+                  className="w-full border-0 border-b border-gray-300  focus:outline-none p-2"
+                  style={{
+                      borderBottomColor: "#555555",
+                      borderBottomWidth: "1.5px",
+                  }}
                   type="text"
                   id="adminName"
-                  placeholder="admin"
+                  placeholder="Administrator Username"
                   {...register("adminName", {
                     required: "Admin Username is required",
                   })}
@@ -108,13 +114,17 @@ function AdministratorLogin() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+              
                 </label>
                 <input
                   type="password"
                   id="password"
-                  className="input"
-                  placeholder="••••••••"
+                  className="w-full border-0 border-b border-gray-300  focus:outline-none p-2"
+                                style={{
+                                    borderBottomColor: "#555555",
+                                    borderBottomWidth: "1.5px",
+                                }}
+                  placeholder="Password"
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -129,6 +139,7 @@ function AdministratorLogin() {
               <button
                 type="submit"
                 className="button mt-6 font-bold hover:shadow-inner"
+                style = {{ backgroundColor: "#80b577" }}
               >
                 Log In
               </button>
@@ -157,7 +168,7 @@ function AdministratorLogin() {
           </div>
 
           <DevTool control={control} />
-        <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+        <div className="card p-7 rounded-[8px] bg-primary-color-white border-none items-center">
           <div className="text-ms flex flex-row justify-center align-item">
             RallyRank Player?
             <Link
