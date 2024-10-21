@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 // Component: Tournament Card (for AdministratorTournaments)
-const Tournaments = ({ tournaments, onEditClick, isMyTournaments}) => {
+const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
 
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
@@ -19,7 +18,17 @@ const Tournaments = ({ tournaments, onEditClick, isMyTournaments}) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournamentName) => {
-        navigate("/administrator-tournament-details", {state: tournamentName});
+        setIsTransitioning(true);
+        setTimeout(() => {
+            navigate("/administrator-tournament-details", { state: tournamentName });
+        }, 200);
+    }
+
+    const handleEditClick = (tournamentName) => {
+        setIsTransitioning(true);
+        setTimeout(() => {
+            navigate("/administrator-edit-tournaments", { state: tournamentName });
+        }, 200);
     }
 
     return (
@@ -31,19 +40,21 @@ const Tournaments = ({ tournaments, onEditClick, isMyTournaments}) => {
 
                     <div className = "flex-1 pr-4">
                         <h3 className = "text-xl font-bold mb-2"> {tournament.tournamentName} </h3>
-                        <div className = "flex items-center mb-2">
+                        <div className = "flex items-center mb-2 justify-between">
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
                         <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
-                        <p> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
-                        <p> Game: {tournament.category} </p>
-                        <p> Gender: {tournament.gender} </p>
-                        <p> Player Capacity: {tournament.playerCapacity} </p>
-                        <p>
-                            {tournament.playerCapacity - tournament.playersPool.length > 0
-                            ? `${tournament.playerCapacity - tournament.playersPool.length} slots left!`
-                            : "Slots are full!"}
-                        </p>
+                        <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
+                        <p className = "mb-2"> Game: {tournament.category} </p>
+                        <p className = "mb-2"> Gender: {tournament.gender} </p>
+                        <p className = "mb-2"> Player Capacity: {tournament.playerCapacity} </p>
+                        <p><strong>
+                            ( {tournament.playerCapacity - tournament.playersPool.length > 0
+                            ? tournament.playerCapacity - tournament.playersPool.length === 1
+                                ? "1 slot left"
+                                :`${tournament.playerCapacity - tournament.playersPool.length} slots left`
+                            : "Full"} )
+                        </strong></p>
                     </div>
 
                     <div className = "card-section-two border-l pl-4 flex-none w-1/3 flex flex-col">
@@ -60,11 +71,11 @@ const Tournaments = ({ tournaments, onEditClick, isMyTournaments}) => {
 
                         {/* EDIT TOURNAMENT BUTTON */}
                         <div className = "edit-tournament-button mt-auto ml-auto">
-                        {isMyTournaments && onEditClick && (
+                        {isMyTournaments && (
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onEditClick(tournament.tournamentName);
+                                handleEditClick(tournament.tournamentName);
                             }}
                             className="font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
                         >
@@ -117,6 +128,8 @@ function AdministratorTournaments() {
 
     const navigate = useNavigate();
 
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
     const [tournaments, setTournaments] = useState([]);
 
     const [allTournaments, setAllTournaments] = useState([]);
@@ -126,21 +139,25 @@ function AdministratorTournaments() {
     const [isMyTournaments, setIsMyTournaments] = useState(false);
 
     const handleAllClick = () => {
-        setTournaments(allTournaments);
-        setIsMyTournaments(false);
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setTournaments(allTournaments);
+            setIsMyTournaments(false);
+        }, 300);
+        setIsTransitioning(false);
     }
 
     const handleMyClick = () => {
-        setTournaments(myTournaments);
-        setIsMyTournaments(true);
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setTournaments(myTournaments);
+            setIsMyTournaments(true);
+        }, 300);
+        setIsTransitioning(false);
     }
 
     const handleCreateClick = () => {
         navigate("/administrator-create-tournaments");
-    }
-
-    const handleEditClick = (tournamentName) => {
-        navigate("/administrator-edit-tournaments", { state: { tournamentName: tournamentName } }); // Replace with tournamentName
     }
 
     // API Call: Retrieve all ongoing and future tournaments
@@ -211,7 +228,7 @@ function AdministratorTournaments() {
 
 
     return (
-        <div className = "tournaments-page flex w-full p-9 gap-2 justify-evenly">
+        <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <div className = "row-container flex flex-col w-full p-14 gap-8">
 
                 {/* LABELS */}
@@ -230,7 +247,7 @@ function AdministratorTournaments() {
                 </div>
 
                 {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } onEditClick = { handleEditClick } isMyTournaments = { isMyTournaments } />
+                <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
 
                  {/* CREATE TOURNAMENT BUTTON */}
                 <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end ">
