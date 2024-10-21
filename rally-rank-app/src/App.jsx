@@ -8,9 +8,10 @@ import AdminSignUp from "./administrator/AdminSignUp";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
-import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
+import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
+import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 
 // Component imports
 import MainLayout from "./components/MainLayout";
@@ -222,7 +223,7 @@ function App() {
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorViewTournaments />
+                                    <AdministratorTournaments />
                                 </MainLayout>
                             </AdminRoute>
                         }
@@ -234,6 +235,17 @@ function App() {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorCreateTournaments />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/administrator-tournament-details"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorTournamentDetails />
                                 </MainLayout>
                             </AdminRoute>
                         }
