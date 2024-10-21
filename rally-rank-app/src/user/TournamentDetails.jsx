@@ -41,7 +41,7 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-3/5 gap-4 border p-8">
+            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
                         <FontAwesomeIcon
@@ -53,14 +53,24 @@ const TournamentDetails = () => {
                     </div>
                     <button
                         onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinClick}
-                        className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600"
+                        className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                        style= {{
+                            backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
+                            border: "none",
+                            color: "white",
+                            padding: "8px 16px",
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s ease"
+                        }}
                     >
-                        {hasJoined ? "Leave Tournament?" : "Join Tournament!"}
+                        {hasJoined ? "Leave Tournament" : "Join Tournament"}
                     </button>
                 </div>
                 <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} </p>
                 <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
-                <p className = "mb-2 text-lg"> <strong>Elo Rating Criteria </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
+                <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
                 <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
                 <p className = "mb-2 text-lg"> <strong> Gender: </strong> {tournamentDetails.gender} </p>
                 <p className = "mb-2 text-lg"> <strong> Player Capacity: </strong> {tournamentDetails.playerCapacity} </p>
