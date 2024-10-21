@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginBackground from "../assets/login-picture.jpg";
+import axios from "axios";
 
 // Form imports
 import { useForm } from "react-hook-form";
@@ -17,23 +18,46 @@ function AdministratorLogin() {
   const navigate = useNavigate(); // For navigation after login
   const [loginError, setLoginError] = useState(""); // State for handling login errors
 
-  const onSubmit = async (data) => {
-    try {
-      // Implement your API call for admin authentication
-      const response = await authenticateAdmin(data.username, data.password);
+  async function authenticateAdmin(adminName, password) {
+      try {
+          const response = await axios.post(
+              "http://localhost:8080/auth/admin-login",
+              { adminName, password },
+              { withCredentials: true } // Allow credentials (cookies) to be sent with the request
+          );
+          
+          if (response.status === 200) {
+              setLoginError("Successfully login!");
 
-      if (response.success) {
-        // Assume response.admin contains admin data
-        loginAdmin(response.admin); // Update AuthContext with admin data
-        navigate("/administrator-tournaments"); // Redirect to admin tournaments page
-      } else {
-        // Handle authentication failure
-        setLoginError(response.message || "Invalid credentials");
+              // Return the LoginResponse object containing JWT and expiration time
+              return response.data;
+          }
+      } catch (error) {
+          setLoginError(error.response.data.error)
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("An unexpected error occurred. Please try again.");
-    }
+  }
+
+  const onSubmit = async (formData) => {
+      // Call the authenticateUser function with username and password
+      const response = await authenticateAdmin(
+          formData.adminName,
+          formData.password
+      );
+
+      if (response !== undefined) {
+          // Store user in local database
+          const adminData = {
+              adminName: formData.adminName,
+              role: "admin",
+              jwtToken: response.token,
+          };
+      
+          // Change state to user
+          loginAdmin(adminData);
+
+          // Re-route to home
+          navigate("/administrator-tournaments");
+      } 
   };
 
   return (
@@ -62,7 +86,7 @@ function AdministratorLogin() {
             >
               <div>
                 <label
-                  htmlFor="username"
+                  htmlFor="adminName"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Username
@@ -70,13 +94,13 @@ function AdministratorLogin() {
                 <input
                   className="input"
                   type="text"
-                  id="username"
+                  id="adminName"
                   placeholder="admin"
-                  {...register("username", {
-                    required: "Username is required",
+                  {...register("adminName", {
+                    required: "Admin Username is required",
                   })}
                 />
-                <p className="error">{errors.username?.message}</p>
+                <p className="error">{errors.adminName?.message}</p>
               </div>
 
               <div>
