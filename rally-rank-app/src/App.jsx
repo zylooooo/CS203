@@ -28,6 +28,7 @@ import UserTournaments from "./user/UserTournaments";
 import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
 import EditProfileForm from "./user/EditProfileForm";
+import OtherUserProfile from "./user/OtherUserProfile";
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
@@ -175,6 +176,17 @@ function App() {
                             <PrivateRoute>
                                 <MainLayout>
                                     <EditProfileForm />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/other-user-profile"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <OtherUserProfile />
                                 </MainLayout>
                             </PrivateRoute>
                         }
