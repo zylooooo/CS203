@@ -1,8 +1,44 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useLocation } from 'react-router-dom';
 
 const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
-  const [isSignUpBasis, setIsSignUpBasis] = useState(false); // Default value set to No
+  const location = useLocation();
+  const {tournamentName} = location.state || {};
+  const [tournament, setTournament] = useState({});
+
+  async function getTournamentByName(tournamentName) {
+    try {
+      const adminData = JSON.parse(localStorage.getItem('adminData'));
+      if (!adminData || !adminData.jwtToken) {
+        console.error('No JWT token found');
+        return;
+      }
+
+      const response = await axios.get(
+        "http://localhost:8080/admins/tournaments",  
+        {
+          params: {
+            tournamentName: tournamentName
+          },
+          withCredentials: true,
+          headers: {
+              Authorization: `Bearer ${adminData.jwtToken}`
+          },
+        }
+      );
+      console.log("Tournament data received:" + response.data);
+      setTournament(response.data);
+    } catch (error) {
+      console.error('Error fetching available tournaments:', error);
+      setTournament({}); 
+    } 
+  }
+
+  useEffect(() => { 
+    getTournamentByName(tournamentName);
+  },[]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -18,7 +54,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
             type="text"
             id="tournamentName"
             placeholder="Enter Tournament Name"
-            defaultValue="Example Tournament" // Random default value
+            defaultValue={tournament.tournamentName} // Random default value
             {...register("tournamentName", {
               required: "Tournament name is required",
             })}
@@ -36,7 +72,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               className="border p-2 w-full"
               type="date"
               id="startDate"
-              defaultValue="2024-01-01" // Random default value
+              defaultValue={tournament.startDate} // Random default value
               {...register("startDate", { required: "Start date is required" })}
             />
           </div>
@@ -53,7 +89,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
             type="text"
             id="venue"
             placeholder="Enter Venue"
-            defaultValue="Downtown Arena" // Random default value
+            defaultValue={tournament.location} // Random default value
             {...register("venue", { required: "Venue is required" })}
           />
           <p className="error">{errors.venue?.message}</p>
@@ -67,7 +103,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
           <select
             className="border p-2 w-full"
             id="gender"
-            defaultValue="Male" // Random default value
+            defaultValue={tournament.gender} // Random default value
             {...register("gender", { required: "Gender specification is required" })}
           >
             <option value="">Select Gender</option>
@@ -85,7 +121,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
           <select
             className="border p-2"
             id="category"
-            defaultValue="U21" // Random default value
+            defaultValue={tournament.category} // Random default value
             {...register("category", {
               required: "Category is required",
             })}
@@ -109,7 +145,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               type="number"
               id="minElo"
               placeholder="Min Elo"
-              defaultValue="1200" // Random default value
+              defaultValue={tournament.minElo} // Random default value
               {...register("minElo", {
                 required: "Minimum Elo rating is required",
               })}
@@ -120,7 +156,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               type="number"
               id="maxElo"
               placeholder="Max Elo"
-              defaultValue="2000" // Random default value
+              defaultValue={tournament.maxElo}// Random default value
               {...register("maxElo", {
                 required: "Maximum Elo rating is required",
               })}
@@ -140,7 +176,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
               type="number"
               id="maxPlayers"
               placeholder="Max Players"
-              defaultValue="16" // Random default value
+              defaultValue={tournament.playerCapacity} // Random default value
               {...register("maxPlayers", {
                 required: "Maximum number of players is required",
               })}
@@ -161,7 +197,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
             type="text"
             id="remarks"
             placeholder="Enter Remarks"
-            defaultValue="hi" // Random default value
+            defaultValue={tournament.remarks} // Random default value
           />
         </div>
 
@@ -180,11 +216,7 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
 };
 
 function AdministratorEditTournaments() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors }} = useForm();
 
   const onSubmit = (data) => {
     // Handle successful form submission, e.g., call an API or update state
