@@ -10,9 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Arrays;
 
 @Configuration
 public class MongoConfig {
@@ -45,12 +47,35 @@ public class MongoConfig {
         }
     }
 
-    static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+    // static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+    //     @Override
+    //     public LocalDateTime convert(@NonNull String source) {
+    //         return LocalDateTime.parse(source, DATE_TIME_FORMATTER);
+    //     }
+    // }
+
+    public class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+    private static final List<DateTimeFormatter> formatters = Arrays.asList(
+        DateTimeFormatter.ofPattern("yyyy-M-d HH:mm"),
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
+        DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    );
+
         @Override
         public LocalDateTime convert(@NonNull String source) {
-            return LocalDateTime.parse(source, DATE_TIME_FORMATTER);
+            if (source == null || source.isEmpty()) {
+                return null;
         }
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDateTime.parse(source, formatter);
+            } catch (DateTimeParseException e) {
+                // Try next formatter
+            }
+        }
+        throw new IllegalArgumentException("Unable to parse datetime: " + source);
     }
+}
 
     static class LocalDateTimeToStringConverter implements Converter<LocalDateTime, String> {
         @Override
