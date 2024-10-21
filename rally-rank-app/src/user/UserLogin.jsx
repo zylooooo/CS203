@@ -92,7 +92,7 @@ function UserLogin() {
                 className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
                 style={{ backgroundImage: `url(${loginBackground})` }}
             >
-                {/* TESTING CODE REMOVE LATER */}
+                {/* TESTING CODE REMOVE LATER
                 <button
                     type="button"
                     className="button mt-6 font-bold hover:shadow-inner"
@@ -102,8 +102,8 @@ function UserLogin() {
                     }}
                 >
                     Manual User Login
-                </button>
-                <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
+                </button> */}
+                <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
                     <h1 className="font-bold text-2xl bg-special-blue">
                         Player Login
                     </h1>
@@ -189,7 +189,7 @@ function UserLogin() {
                         </div>
                     </form>
                 </div>
-                <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+                <div className="card p-7 rounded-[8px] bg-primary-color-white border-none items-center">
                     <div className="text-ms flex flex-row justify-center align-item">
                         RallyRank Administrator?
                         <Link
