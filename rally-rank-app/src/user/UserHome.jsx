@@ -2,6 +2,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, act } from "react";
 import { FaCrown, FaMedal } from "react-icons/fa";
+import { set } from "react-hook-form";
 
 // Component: Leaderboard Buttons - "Top", "Other Gender Leaderboard", "Mixed Leaderboard"
 const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGenderClick, activeButton, setActiveButton }) => {
@@ -133,13 +134,27 @@ function UserHome() {
     };
 
     // ------------------------------------- Availability Functions -------------------------------------
-    const [isAvailable, setIsAvailable] = useState(false);
-    
-    const handleAvailabilityToggle = () => {
-        setIsAvailable(!isAvailable);
-    };
+    const [availability, setAvailability] = useState(false);
 
-    // API Call: Updating availability
+    const handleAvailabilityToggle = async () => {
+        const updatedAvailability = await updateAvailability();
+            setAvailability(updatedAvailability);
+    };
+    
+    async function fetchAvailability() {
+        try {
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData || !userData.jwtToken) {
+                console.error("No JWT token found!");
+                return;
+            }
+            setAvailability(userData.available);
+        } catch (error) {
+            console.error("Error fetching availability status:", error);
+        }
+    }
+
+    // API call: Update availability of user in database
     async function updateAvailability() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -147,24 +162,33 @@ function UserHome() {
                 console.error("No JWT token found!");
                 return;
             }
-            
+
+            const newAvailability = !userData.available;
+
             const response = await axios.put(
-                "http://localhost:8080/users/update-availability",
+                `http://localhost:8080/users/update-availability?availability=${newAvailability}`,
+                {},
                 {
                     withCredentials: true,
                     headers: {
                         Authorization: `Bearer ${userData.jwtToken}`
-                    },
-                    data: {
-                        "available": isAvailable
                     }
                 }
             );
-            handleAvailabilityToggle();
+
+            if (response.status === 200) {
+                userData.available = newAvailability;
+                localStorage.setItem("userData", JSON.stringify(userData));
+                return newAvailability;
+            }
         } catch (error) {
             console.error("Error updating availability: ", error);
         }
     }
+
+    useEffect(() => {
+        fetchAvailability();
+    }, []);
 
     // ------------------------------------- Scheduled Tournaments Functions -------------------------------------
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
@@ -309,6 +333,10 @@ function UserHome() {
         getOtherGenderLeaderboard();
     }, []);
 
+    useEffect(() => {
+        updateAvailability();
+    }, availability);
+
     return (
         <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             {/* ROW CONTAINER: JOIN TOURNAMENT, MY SCHEDULED TOURNAMENTS */}
@@ -343,12 +371,12 @@ function UserHome() {
                             <label className = "relative inline-flex items-center cursor-pointer">
                                 <input
                                     type = "checkbox"
-                                    checked = {isAvailable}
+                                    checked = {availability}
                                     onChange = {handleAvailabilityToggle}
                                     className = "sr-only peer"
                                 />
                                 <div className = "w-11 h-6 bg-secondary-color-light-gray rounded-full peer peer-checked:bg-primary-color-green peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-primary-color-white after:border-primary-color-light-gray after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                <span className = "ml-3 text-sm font-medium text-gray-700"> { isAvailable ? "Yes" : "No" } </span>
+                                <span className = "ml-3 text-sm font-medium text-gray-700"> { availability ? "Yes" : "No" } </span>
                             </label>
                         </div>
                     </div>
