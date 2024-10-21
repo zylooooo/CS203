@@ -3,8 +3,8 @@ package com.example.backend.repository;
 import com.example.backend.model.Match;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
+import java.util.*;
 
 public interface MatchRepository extends MongoRepository<Match, String> {
-    List<Match> findByTournamentName(String tournamentName);
+    Optional<List<Match>> findByTournamentName(String tournamentName);
 }
