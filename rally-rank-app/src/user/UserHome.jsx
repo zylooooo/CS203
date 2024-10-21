@@ -4,7 +4,7 @@ import React, { useState, useEffect, act } from "react";
 import { FaCrown, FaMedal } from "react-icons/fa";
 
 // Component: Leaderboard Buttons - "Top", "Other Gender Leaderboard", "Mixed Leaderboard"
-const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGenderClick, activeButton, setActiveButton }) => {        // Need to add "Mixed Gender, Other Gender buttons"
+const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGenderClick, activeButton, setActiveButton }) => {
     const handleButtonClick = (index) => {
         setActiveButton(index);
         if (index === 0) {
@@ -37,6 +37,12 @@ const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGe
 
 // Component: Leaderboard Card
 const LeaderboardCard = ({ leaderboardPlayer, rank }) => {
+    const navigate = useNavigate();
+
+    const handleLeaderboardPlayerCardClick = () => {
+        navigate("/other-user-profile", { state : {player: leaderboardPlayer } });
+    };
+
     const getRankIcon = (rank) => {
         switch(rank) {
             case 1:
@@ -50,7 +56,10 @@ const LeaderboardCard = ({ leaderboardPlayer, rank }) => {
         }
     };
     return (
-        <div className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-105 w-full h-2/5" style = {{ backgroundColor: "#F2F2F2"}}>
+        <div
+            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-105 w-full h-2/5" style = {{ backgroundColor: "#F2F2F2"}}
+            onClick = {handleLeaderboardPlayerCardClick}
+        >
             <div>
                 <h3 className = "text-lg font-bold mb-2"> {leaderboardPlayer.firstName} {leaderboardPlayer.lastName} </h3>
                 <h3 className = "text-md"> Username: {leaderboardPlayer.username} </h3>
