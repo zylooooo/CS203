@@ -6,7 +6,7 @@ import com.example.backend.repository.*;
 import jakarta.validation.constraints.NotNull;
 
 import com.example.backend.exception.UserNotFoundException;
-
+import com.example.backend.exception.MatchNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,7 +299,8 @@ public class UserService {
             }
     
             // Fetch all matches for this tournament
-            List<Match> tournamentMatches = matchRepository.findByTournamentName(tournament.getTournamentName());
+            List<Match> tournamentMatches = matchRepository.findByTournamentName(tournament.getTournamentName())
+                .orElseThrow(() -> new MatchNotFoundException(tournament.getTournamentName()));
             
             // Update each match
             for (Match match : tournamentMatches) {

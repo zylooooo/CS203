@@ -81,15 +81,12 @@ public class Tournament {
         private List<Round> rounds = new ArrayList<>();
     }
 
+    // Storing the match object id only
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Round {
         private List<String> matches = new ArrayList<>();
-    }
-
-    @AssertTrue(message = "End date must be after start date") boolean isValidDateRange() {
-        return endDate != null && startDate != null && endDate.isAfter(startDate);
     }
 
     @AssertTrue(message = "Minimum elo must be less than maximum elo!") boolean isValidEloRange() {
