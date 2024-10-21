@@ -35,7 +35,7 @@ const TournamentCard = ({ tournamentType }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate("/tournament-details", {state: tournament});
+        navigate("/tournament-details", { state: { tournamentName: tournament.tournamentName } });      // Only pass the tournament name state, for backend call in TournamentDetails.jsx
     };
 
     const formatDate = (dateString) => {
