@@ -3,6 +3,9 @@ package com.example.backend.controller;
 import com.example.backend.model.Tournament;
 import com.example.backend.service.TournamentService;
 import com.example.backend.exception.TournamentNotFoundException;
+import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.exception.MatchNotFoundException;
+import com.example.backend.service.BracketService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +27,7 @@ import java.util.*;
 public class AdminsTournamentsController {
 
     private final TournamentService tournamentService;
+    private final BracketService bracketService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminsTournamentsController.class);
 
@@ -152,6 +156,22 @@ public class AdminsTournamentsController {
     // Get tournament history by adminName
 
 
-    
+    // Generate bracket for tournament
+    @PutMapping("/generate-bracket")
+    public ResponseEntity<?> generateBracket(@RequestBody Tournament tournament) {
+        try {
+            Map<String, Object> response = bracketService.generateBracket(tournament);
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (MatchNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        }   catch (Exception e) {
+            logger.error("Error generating bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
+        }
+    }
 }
-
