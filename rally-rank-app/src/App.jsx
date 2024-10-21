@@ -25,7 +25,7 @@ import UserSignUp from "./user/UserSignUp";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
-import TournamentCardTemplate from "./user/TournamentCardTemplate";
+import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
 import EditProfileForm from "./user/EditProfileForm";
 
@@ -163,7 +163,7 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <MainLayout>
-                                    <TournamentCardTemplate />
+                                    <TournamentDetails />
                                 </MainLayout>
                             </PrivateRoute>
                         }
