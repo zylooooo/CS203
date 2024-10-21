@@ -103,7 +103,6 @@ function UserTournaments() {
 
     const handleAvailableTournamentClick = () => {
         getAvailableTournaments();
-        setDisplayTournamentType(availableTournaments);
     }
 
     const handleMyScheduledTournamentsClick = () => {
@@ -122,7 +121,7 @@ function UserTournaments() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/scheduled",
+                "http://localhost:8080/users/tournaments/available-tournaments",
                 {
                     withCredentials: true,
                     headers: {
@@ -132,11 +131,10 @@ function UserTournaments() {
             );
 
             setAvailableTournaments(response.data);
-            //setDisplayTournamentType(response.data);
+            setDisplayTournamentType(response.data);
         } catch (error) {
             console.error("Error fetching available tournaments: ", error);
             setAvailableTournaments([]);
-            //setDisplayTournamentType([]);
         } finally {
             setLoading(false);
         }
@@ -153,7 +151,7 @@ function UserTournaments() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/available-tournaments",
+                "http://localhost:8080/users/tournaments/scheduled",
                 {
                     withCredentials: true,
                     headers: {
@@ -161,7 +159,6 @@ function UserTournaments() {
                     }
                 }
             );
-
             setMyScheduledTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
