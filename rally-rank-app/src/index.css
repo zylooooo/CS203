@@ -90,4 +90,8 @@
     .btn:hover::after {
         transform: scaleX(1); /* Show underline on hover */
     }
+
+    body {
+        background-color: #fffcf2; /* Change to your desired color */
+    }
 }
