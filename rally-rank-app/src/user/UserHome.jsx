@@ -178,7 +178,7 @@ function UserHome() {
 
             if (response.status === 200) {
                 userData.available = newAvailability;
-                localStorage.setItem("userData", JSON.stringify(userData));
+                localStorage.setItem("userData", JSON.stringify(userData));     // Updates the new availability in the userData to be passed around
                 return newAvailability;
             }
         } catch (error) {
@@ -186,9 +186,14 @@ function UserHome() {
         }
     }
 
+    // ------------------------------------- useEffect() -------------------------------------
     useEffect(() => {
         fetchAvailability();
     }, []);
+
+    useEffect(() => {
+        updateAvailability();
+    }, availability);
 
     // ------------------------------------- Scheduled Tournaments Functions -------------------------------------
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
@@ -332,10 +337,6 @@ function UserHome() {
         getMixedGenderLeaderboard();
         getOtherGenderLeaderboard();
     }, []);
-
-    useEffect(() => {
-        updateAvailability();
-    }, availability);
 
     return (
         <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
