@@ -44,6 +44,11 @@ function UserSignUp() {
     return age;
   }
 
+    const capitalizeFirstLetter = (string) => {
+      if (!string) return "";
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
   // Function to check if the email & username are already in use
   async function checkCredentialsAvailablity(formData) {
     try {
@@ -83,8 +88,8 @@ function UserSignUp() {
           username: formData.username,
           email: formData.email,
           password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          firstName: capitalizeFirstLetter(formData.firstName),
+          lastName: capitalizeFirstLetter(formData.lastName),
           phoneNumber: formData.phone,
           gender: formData.gender,
           dateOfBirth: formData.dob,
