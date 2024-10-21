@@ -10,7 +10,7 @@ import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
+import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 
 // Component imports
@@ -253,11 +253,11 @@ function App() {
 
                     {/* New Route for Editing Tournaments */}
                     <Route
-                        path="/administrator-edit-tournaments" // Updated to include a parameter
+                        path="/administrator-edit-tournaments" 
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorEditTournaments />
+                                    <AdministratorEditTournament />
                                 </MainLayout>
                             </AdminRoute>
                         }
