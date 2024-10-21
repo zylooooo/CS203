@@ -11,7 +11,7 @@ const AdminTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) => {
         {/* Tournament Name */}
         <div className="flex flex-col gap-1">
           <label htmlFor="tournamentName" className="block text-sm font-medium text-gray-700">
-            Tournament Name
+            Tournament Name 
           </label>
           <input
             className="border p-2 w-full"
@@ -248,5 +248,10 @@ function AdministratorCreateTournaments() {
 }
 
 export default AdministratorCreateTournaments;
+
+
+
+
+
 
 
