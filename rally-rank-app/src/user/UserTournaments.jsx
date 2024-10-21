@@ -63,26 +63,37 @@ const TournamentCard = ({ tournamentType }) => {
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
                         <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
-                        <p> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
-                        <p> Game: {tournament.category} </p>
-                        <p> Gender: {tournament.gender} </p>
-                        <p> Player Capacity: {tournament.playerCapacity} </p>
-                        <p>
-                            {tournament.playerCapacity - tournament.playersPool.length > 0
-                            ? `${tournament.playerCapacity - tournament.playersPool.length} slots left!`
-                            : "Slots are full!"}
-                        </p>
+                        <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
+                        <p className = "mb-2"> Game: {tournament.category} </p>
+                        <p className = "mb-2"> Gender: {tournament.gender} </p>
+                        <p className = "mb-2"> Player Capacity: {tournament.playerCapacity} </p>
                     </div>
 
-                    <div className = "card-section-two border-l pl-4 flex-none w-1/3">
-                        <p className = "font-semibold"> Venue: </p>
-                        <p> {tournament.location} </p>
+                    <div className = "card-section-two border-l pl-4 flex-none w-1/3 relative">
+                        <p className = "font-semibold mb-2"> Venue: {tournament.location} </p>
                         {tournament.remarks && (
                             <>
                                 <p className = "font-semibold mt-2"> Remarks: </p>
-                                <p> {tournament.remarks} </p>
+                                <p className = "mb-2"> {tournament.remarks} </p>
                             </>
                         )}
+                        <div className="absolute bottom-2 right-2 text-right">
+                            <p
+                                style = {{
+                                    color: tournament.playerCapacity - tournament.playersPool.length <= 10
+                                    ? "red"
+                                    : "black",
+                                    fontWeight: tournament.playerCapacity - tournament.playersPool.length <= 10
+                                    ? 700
+                                    : "normal"
+                                }}
+                                className = "font-semibold mb-2"
+                            >
+                                {tournament.playerCapacity - tournament.playersPool.length > 0
+                                ? `Slots left: ${tournament.playerCapacity - tournament.playersPool.length}`
+                                : "Slots are full!"}
+                            </p>
+                        </div>
                     </div>
                 </div>
             ))}

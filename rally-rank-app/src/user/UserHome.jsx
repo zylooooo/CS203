@@ -191,10 +191,6 @@ function UserHome() {
         fetchAvailability();
     }, []);
 
-    useEffect(() => {
-        updateAvailability();
-    }, availability);
-
     // ------------------------------------- Scheduled Tournaments Functions -------------------------------------
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
 
