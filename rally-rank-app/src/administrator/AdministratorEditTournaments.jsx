@@ -17,11 +17,8 @@ const AdminEditTournamentsForm = ({ register, handleSubmit, errors, onSubmit }) 
       }
 
       const response = await axios.get(
-        "http://localhost:8080/admins/tournaments",  
+        `http://localhost:8080/admins/tournaments?tournamentName=${tournamentName}`,  
         {
-          params: {
-            tournamentName: tournamentName
-          },
           withCredentials: true,
           headers: {
               Authorization: `Bearer ${adminData.jwtToken}`
