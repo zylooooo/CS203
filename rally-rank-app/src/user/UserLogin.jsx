@@ -76,6 +76,7 @@ function UserLogin() {
                 role: "USER",
                 jwtToken: response.token,
                 gender: userDataResponse.gender,
+                available: userDataResponse.available,
             };
         
             // Change state to user
