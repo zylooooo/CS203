@@ -10,7 +10,6 @@ import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.MatchNotFoundException;
 
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,77 +27,31 @@ public class BracketService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Generates a bracket for the given tournament.
+     * 
+     * @param tournament The tournament for which to generate a bracket.
+     * @return A map containing the updated tournament and the newly created matches.
+     */
     public Map<String, Object> generateBracket(Tournament tournament) {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> error = new HashMap<>();
 
         try {
-            // Get a copy of the players pool from the tournament object
-            List<String> playersPool = new ArrayList<>(tournament.getPlayersPool());
-            int actualPlayerSize = playersPool.size();
+            List<String> playersForNewRound = getPlayersForNewRound(tournament);
+            List<String> newMatches = createNewRound(tournament, playersForNewRound);
 
-            // Get the rounds list from the tournament object and then populate it with the list of matches
-            List<Tournament.Round> rounds = tournament.getBracket().getRounds();
-            // New list of match ids
-            List<String> matches = new ArrayList<>();
+            // Add the new round to the tournament bracket
+            tournament.getBracket().getRounds().add(new Tournament.Round(newMatches));
+            
+            // Save the updated tournament
+            Tournament savedTournament = tournamentRepository.save(tournament);
+            response.put("tournament", savedTournament);
 
-            if (!isPowerOfTwo(actualPlayerSize)) {
-                logger.info("Actual player size is not a power of two, forming a preliminary round");
-                int nextPowerOfTwo = 1;
-                while (nextPowerOfTwo < actualPlayerSize) {
-                    nextPowerOfTwo *= 2;
-                }
-                int numberOfPreliminaryPlayers = (actualPlayerSize - (nextPowerOfTwo / 2)) * 2;
+            // Fetch and return only the matches from the most recent round
+            List<Match> mostRecentMatches = matchRepository.findAllById(newMatches);
+            response.put("matches", mostRecentMatches);
 
-                // Shuffle the players pool and pick out randomly the number of preliminary players who are going to be playing in the preliminary round
-                Collections.shuffle(playersPool);
-                List<String> preliminaryPlayersPool = playersPool.subList(0, numberOfPreliminaryPlayers);
-
-                for (int i = 0; i < numberOfPreliminaryPlayers / 2; i++) {
-                    // For each player pair, create a new match and save it to the database
-                    Match match = new Match();
-                    match.setTournamentName(tournament.getTournamentName());
-                    List<String> players = new ArrayList<>();
-                    players.add(preliminaryPlayersPool.get(i));
-                    players.add(preliminaryPlayersPool.get(preliminaryPlayersPool.size() - 1 - i));
-                    match.setPlayers(players);
-                    matchRepository.save(match);
-                    matches.add(match.getId());
-                }
-            } else {
-                logger.info("Actual player size is a power of two, forming an actual bracket");
-                // Sort the players pool by elo in descending order
-                List<String> sortedPlayers = playersPool.stream()
-                    .map(username -> userRepository.findByUsername(username)
-                        .orElseThrow(() -> new UserNotFoundException(username)))
-                    .sorted(Comparator.comparingInt(User::getElo).reversed())
-                    .map(User::getUsername)
-                    .collect(Collectors.toList());
-                logger.info("Sorted players: {}", sortedPlayers);
-
-                int numberOfMatches = sortedPlayers.size() / 2;
-                for (int i = 0; i < numberOfMatches; i++) {
-                    // For each player pair, create a new match and save it to the databsase
-                    Match match = new Match();
-                    match.setTournamentName(tournament.getTournamentName());
-                    List<String> players = new ArrayList<>();
-                    players.add(sortedPlayers.get(i));
-                    players.add(sortedPlayers.get(sortedPlayers.size() - 1 - i));
-                    match.setPlayers(players);
-                    matchRepository.save(match);
-                    matches.add(match.getId());
-                }
-            } 
-
-            // Add the list of match ids to the rounds and then add the rounds to the brackets
-            rounds.add(new Tournament.Round(matches));
-            tournament.setBracket(new Tournament.Bracket(rounds));
-            response.put("tournament", tournamentRepository.save(tournament));
-
-            // Return the list of the match objects that were created
-            List<Match> matchesList = matchRepository.findByTournamentName(tournament.getTournamentName())
-                .orElseThrow(() -> new MatchNotFoundException(tournament.getTournamentName()));
-            response.put("matches", matchesList);
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage(), e);
             error.put("error", e.getMessage());
@@ -115,9 +68,113 @@ public class BracketService {
         return response;
     }
 
-    // Helper method to check if the number of players is a power of two
+    /**
+     * Determines the players for the new round.
+     * @throws MatchNotFoundException if a match is not found
+     */
+    private List<String> getPlayersForNewRound(Tournament tournament) throws MatchNotFoundException {
+        List<String> tournamentPlayersPool = new ArrayList<>(tournament.getPlayersPool());
+        if (tournament.getBracket() == null || tournament.getBracket().getRounds().isEmpty()) {
+            return tournamentPlayersPool;
+        }
+
+        Set<String> playersParticipated = new HashSet<>();
+        List<String> winners = new ArrayList<>();
+        List<Tournament.Round> rounds = tournament.getBracket().getRounds();
+
+        for (int i = 0; i < rounds.size(); i++) {
+            Tournament.Round round = rounds.get(i);
+            List<Match> matches = matchRepository.findAllById(round.getMatches());
+            if (matches.size() != round.getMatches().size()) {
+                throw new MatchNotFoundException("One or more matches not found for round " + i);
+            }
+            
+            for (Match match : matches) {
+                playersParticipated.addAll(match.getPlayers());
+                
+                if (i == rounds.size() - 1 && match.getMatchWinner() != null) {
+                    winners.add(match.getMatchWinner());
+                }
+            }
+        }
+
+        List<String> playersForNewRound = tournamentPlayersPool.stream()
+            .filter(player -> !playersParticipated.contains(player))
+            .collect(Collectors.toList());
+
+        playersForNewRound.addAll(winners);
+        return playersForNewRound;
+    }
+
+    /**
+     * Creates a new round of matches.
+     */
+    private List<String> createNewRound(Tournament tournament, List<String> playersForNewRound) {
+        List<String> newMatches = new ArrayList<>();
+        if (!isPowerOfTwo(playersForNewRound.size())) {
+            generatePreliminaryRound(tournament, playersForNewRound, newMatches);
+        } else {
+            generateProperBracket(tournament, playersForNewRound, newMatches);
+        }
+        return newMatches;
+    }
+
+    /**
+     * Generates a preliminary round when the number of players is not a power of two.
+     */
+    private void generatePreliminaryRound(Tournament tournament, List<String> players, List<String> newMatches) {
+        logger.info("Forming a preliminary round");
+        int preliminaryPlayersCount = calculatePreliminaryPlayersCount(players.size());
+        Collections.shuffle(players);
+        
+        for (int i = 0; i < preliminaryPlayersCount / 2; i++) {
+            Match match = createMatch(tournament, players.get(i), players.get(preliminaryPlayersCount - 1 - i));
+            newMatches.add(match.getId());
+        }
+    }
+
+    /**
+     * Generates a proper bracket when the number of players is a power of two.
+     */
+    private void generateProperBracket(Tournament tournament, List<String> players, List<String> newMatches) {
+        logger.info("Forming an actual bracket");
+        List<String> sortedPlayers = sortPlayersByElo(players);
+
+        for (int i = 0; i < sortedPlayers.size() / 2; i++) {
+            Match match = createMatch(tournament, sortedPlayers.get(i), sortedPlayers.get(sortedPlayers.size() - 1 - i));
+            newMatches.add(match.getId());
+        }
+    }
+
+    /**
+     * Creates and saves a new match.
+     */
+    private Match createMatch(Tournament tournament, String player1, String player2) {
+        Match match = new Match();
+        match.setTournamentName(tournament.getTournamentName());
+        match.setPlayers(Arrays.asList(player1, player2));
+        return matchRepository.save(match);
+    }
+
+    /**
+     * Sorts players by their ELO rating in descending order.
+     * @throws UserNotFoundException if a user is not found
+     */
+    private List<String> sortPlayersByElo(List<String> players) throws UserNotFoundException {
+        return players.stream()
+            .map(username -> userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username)))
+            .sorted(Comparator.comparingInt(User::getElo).reversed())
+            .map(User::getUsername)
+            .collect(Collectors.toList());
+    }
+
     private boolean isPowerOfTwo(int n) {
         return n > 0 && (n & (n - 1)) == 0;
     }
-    
+
+    private int calculatePreliminaryPlayersCount(int playerCount) {
+        int nextPowerOfTwo = Integer.highestOneBit(playerCount - 1) << 1;
+        return (playerCount - (nextPowerOfTwo / 2)) * 2;
+    }
 }
