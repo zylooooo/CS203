@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 // Administrator imports
-import AdminSignUp from "./administrator/AdminSignUp";
+import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
@@ -82,7 +82,7 @@ function App() {
                         path="/administrator-sign-up"
                         element={
                             <MainLayout>
-                                <AdminSignUp />
+                                <AdministratorSignup />
                             </MainLayout>
                         }
                     />
