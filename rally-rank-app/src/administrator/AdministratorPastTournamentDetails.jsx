@@ -5,14 +5,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 // Component: Tournament Details Card
-const AdministratorTournamentDetails = () => {
+const AdministratorPastTournamentDetails = () => {
     const navigate = useNavigate();
 
     const location = useLocation();
 
-    const fromPage = location.state?.from || "/administrator-tournaments";      // to retrieve page where admins clicked for tournament details
+    const fromPage = location.state?.from || "/administrator-tournament-history";      // to retrieve page where admins clicked for tournament details
 
-    const tournamentName = location.state;
+    const tournamentName = location.state.tournamentName;
+
+    const isMyPastTournament = location.state.isMyPastTournaments;
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
@@ -93,41 +95,27 @@ const AdministratorTournamentDetails = () => {
                 {tournamentDetails.remarks && (
                     <p className = "mb-2 text-lg"> <strong> Remarks: </strong> {tournamentDetails.remarks} </p>
                 )}
-                <p className = "mb-2 text-lg">
-                    {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
-                    ? <span><strong> Slots Available: </strong> {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length} </span>
-                    : <span><strong> "Slots are full!"</strong></span>}                    
-                </p>
 
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
-                <div className = "map-api-container h-64 border rounded-[8px]">
-                    <p className = "text-center p-4"> Insert map here. </p>
-                </div>
 
                 <div className = "flex justify-between items-start mt-4">
                     <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
-                        <p
-                            style = {{
-                                color: tournamentDetails.playerCapacity - tournamentDetails.playersPool.length <= 10
-                                ? "red"
-                                : "black",
-                                fontWeight: tournamentDetails.playerCapacity - tournamentDetails.playersPool.length <= 10
-                                ? 700
-                                : "normal"
-                            }}
-                            className = "text-md text-gray-500 absolute top-4 right-4 font-semibold"
-                        >
-                            {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
-                            ? `Slots left: ${tournamentDetails.playerCapacity - tournamentDetails.playersPool.length}`
-                            : "Slots are full!"}
+                        <p className = "text-md text-gray-500 absolute top-4 right-4 font-semibold">
+                            Total Players: {tournamentDetails.playersPool.length}
                         </p>
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
-                                    <li key = {index} className = "mt-5 mb-5"> {player} </li>
-                                    
+                                    <li key = {index} className = "mt-5 mb-5 flex justify-between items-center"> 
+                                        <span>{index}. {player}</span>
+                                        { isMyPastTournament && (
+                                          <button className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold self-end ">
+                                              Strike
+                                          </button>
+                                        )}
+                                    </li>
                                 ))}
                             </ol>
                         ) : (
@@ -135,23 +123,13 @@ const AdministratorTournamentDetails = () => {
                         )}
                     </div>
 
-                    <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
-                        <button
-                            // WIP: To be updated when API call to generate brackets are finalised.
-                            // onClick = {handleGenerateBracketsClick}
-                            className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
-                        >
-                            Generate Brackets
-                        </button>
-
-                        <button
-                            // WIP: To be updated when API call for fixtures (brackets) are finalised.
-                            // onClick = {handleShowFixturesClick}
-                            className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
-                        >
-                            Show Fixtures
-                        </button>
-                    </div>
+                    <button
+                        // WIP: To be updated when API call for fixtures (brackets) are finalised.
+                        // onClick = {handleShowFixturesClick}
+                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                    >
+                        Show Fixtures
+                    </button>
 
                 </div>
             </div>
@@ -159,4 +137,4 @@ const AdministratorTournamentDetails = () => {
     );
 };
 
-export default AdministratorTournamentDetails;
+export default AdministratorPastTournamentDetails;

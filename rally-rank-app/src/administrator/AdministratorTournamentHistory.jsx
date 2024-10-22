@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 // Component: Tournament Card (for AdministratorTournaments)
-const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
+const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -20,7 +20,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/administrator-tournament-details", { state: tournamentName });
+            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments } });
         }, 200);
     }
 
@@ -70,8 +70,8 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
                         </div>
 
                         {/* EDIT TOURNAMENT BUTTON */}
-                        <div className = "edit-tournament-button mt-auto ml-auto">
-                        {isMyTournaments && (
+                        {/* <div className = "edit-tournament-button mt-auto ml-auto">
+                        {isMyPastTournaments && (
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -82,7 +82,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
                             Edit Tournament
                         </button>
                         )}
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>
@@ -124,25 +124,23 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
     );
 }
 
-function AdministratorTournaments() {
-
-    const navigate = useNavigate();
+function AdministratorTournamentHistory() {
 
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const [tournaments, setTournaments] = useState([]);
 
-    const [allTournaments, setAllTournaments] = useState([]);
+    const [allPastTournaments, setAllPastTournaments] = useState([]);
 
-    const [myTournaments, setMyTournaments] = useState([]);
+    const [myPastTournaments, setMyPastTournaments] = useState([]);
 
-    const [isMyTournaments, setIsMyTournaments] = useState(false);
+    const [isMyPastTournaments, setIsMyPastTournaments] = useState(false);
 
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTournaments(allTournaments);
-            setIsMyTournaments(false);
+            setTournaments(allPastTournaments);
+            setIsMyPastTournaments(false);
         }, 300);
         setIsTransitioning(false);
     }
@@ -150,18 +148,14 @@ function AdministratorTournaments() {
     const handleMyClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTournaments(myTournaments);
-            setIsMyTournaments(true);
+            setTournaments(myPastTournaments);
+            setIsMyPastTournaments(true);
         }, 300);
         setIsTransitioning(false);
     }
 
-    const handleCreateClick = () => {
-        navigate("/administrator-create-tournaments");
-    }
-
-    // API Call: Retrieve all ongoing and future tournaments
-    async function getAllTournaments() {
+    // API Call: Retrieve all completed tournaments
+    async function getAllPastTournaments() {
         try {
             const adminData = JSON.parse(localStorage.getItem('adminData'));
             if (!adminData || !adminData.jwtToken) {
@@ -171,7 +165,7 @@ function AdministratorTournaments() {
 
             const response = await axios.get(
 
-                // MAY HAVE TO CHANGE ROUTER
+                // EDIT ROUTER
                 "http://localhost:8080/admins/tournaments",
                 {
                     withCredentials: true,
@@ -181,18 +175,18 @@ function AdministratorTournaments() {
                 }
             );
 
-            setAllTournaments(response.data);
+            setAllPastTournaments(response.data);
             setTournaments(response.data); 
 
         } catch (error) {
             console.error('Error fetching available tournaments:', error);
-            setAllTournaments([]); 
+            setAllPastTournaments([]);
             setTournaments([]); 
         }
     }
 
-    // API Call: Retrieve all tournaments created by the Admin
-    async function getMyTournaments() {
+    // API Call: Retrieve all tournaments completed tournaments created by Admin
+    async function getMyPastTournaments() {
         try {
             const adminData = JSON.parse(localStorage.getItem('adminData'));
             if (!adminData || !adminData.jwtToken) {
@@ -201,7 +195,8 @@ function AdministratorTournaments() {
             }
 
             const response = await axios.get(
-              // EDIT ROUTER WHEN BACKEND LOGIC IS IMPLEMENTED
+
+              // EDIT ROUTER 
                 "http://localhost:8080/admins/tournaments",
                 {
                     withCredentials: true,
@@ -211,21 +206,20 @@ function AdministratorTournaments() {
                 }
             );
 
-            setMyTournaments(response.data);
+            setMyPastTournaments(response.data);
             setTournaments(response.data); 
 
         } catch (error) {
 
             console.error('Error fetching available tournaments:', error);
-            setMyTournaments([]); 
+            setMyPastTournaments([]); 
             setTournaments([]); 
-    
         }
     }
 
     useEffect(() => {
-        getAllTournaments();
-        getMyTournaments();
+        getAllPastTournaments();
+        getMyPastTournaments();
     }, []);
 
 
@@ -234,7 +228,7 @@ function AdministratorTournaments() {
             <div className = "row-container flex flex-col w-full p-14 gap-8">
 
                 {/* LABELS */}
-                <TournamentsButtons buttons = {["All Tournaments", "My Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
+                <TournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
                 {/* SEARCH BAR */}
                 <div className = "tournaments-search-bar flex gap-3">
@@ -249,18 +243,7 @@ function AdministratorTournaments() {
                 </div>
 
                 {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
-
-                 {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end cursor-zoom-in ">
-                <button
-                onClick = {handleCreateClick}
-                className = "body font-semibold py-2 px-4 rounded-lg shadow-md  hover:shadow-md transition duration-300 ease-in-out "
-                style = {{ backgroundColor: "#fffcf2" }}
-                >
-                    Create Tournament
-                </button>
-                </div>
+                <Tournaments tournaments = { tournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
 
             </div>
         </div>
@@ -268,5 +251,5 @@ function AdministratorTournaments() {
 
 }
 
-export default AdministratorTournaments;
+export default AdministratorTournamentHistory;
 

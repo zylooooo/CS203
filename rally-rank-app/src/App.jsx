@@ -7,11 +7,12 @@ import "./index.css";
 import AdminSignUp from "./administrator/AdminSignUp";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
-import AdministratorTools from "./administrator/AdministratorTools";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
+import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
+import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
 // Component imports
 import MainLayout from "./components/MainLayout";
@@ -204,15 +205,25 @@ function App() {
                             </PrivateRoute>
                         }
                     />
-                
 
                     {/* Protected Admin Routes */}
                     <Route
-                        path="/administrator-tools"
+                        path="/administrator-tournament-history"
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorTools />
+                                    <AdministratorTournamentHistory />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/administrator-past-tournament-details"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorPastTournamentDetails />
                                 </MainLayout>
                             </AdminRoute>
                         }
