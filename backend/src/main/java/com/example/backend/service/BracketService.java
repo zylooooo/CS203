@@ -40,6 +40,10 @@ public class BracketService {
         try {
             List<String> playersForNewRound = getPlayersForNewRound(tournament);
             List<String> newMatches = createNewRound(tournament, playersForNewRound);
+            if (playersForNewRound.isEmpty() || newMatches.isEmpty()) {
+                response.put("error", "No matches can be generated for the new round!");
+                return response;
+            }
 
             // Add the new round to the tournament bracket
             tournament.getBracket().getRounds().add(new Tournament.Round(newMatches));
