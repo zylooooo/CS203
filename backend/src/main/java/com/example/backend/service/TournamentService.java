@@ -4,8 +4,7 @@ import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 import com.example.backend.repository.TournamentRepository;
 import com.example.backend.repository.UserRepository;
-import com.example.backend.exception.TournamentNotFoundException;
-import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.exception.*;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -88,6 +87,24 @@ public class TournamentService {
         try {
             tournament.setCreatedBy(adminName); // Set the creator of the tournament
 
+            // Set creation and update timestamps
+            LocalDateTime currentTime = LocalDateTime.now();
+            tournament.setCreatedAt(currentTime);
+            tournament.setUpdatedAt(currentTime);
+
+            // Validate start date
+            LocalDate oneMonthAfterCreation = currentTime.toLocalDate().plusMonths(1);
+            if (tournament.getStartDate().isBefore(oneMonthAfterCreation)) {
+                errors.put("startDate", "Start date must be at least one month after the creation date");
+                return Pair.of(Optional.empty(), errors);
+            }
+
+            // Now set the start date to trigger the closingSignupDate calculation
+            LocalDate startDate = tournament.getStartDate();
+            if (startDate != null) {
+                tournament.setStartDate(startDate);
+            }
+
             // Validate the tournament object
             Errors validationErrors = new BeanPropertyBindingResult(tournament, "tournament");
             validator.validate(tournament, validationErrors);
@@ -105,10 +122,7 @@ public class TournamentService {
                 return Pair.of(Optional.empty(), errors);
             }
 
-            // Set creation and update timestamps
-            LocalDateTime currentTime = LocalDateTime.now();
-            tournament.setCreatedAt(currentTime);
-            tournament.setUpdatedAt(currentTime);
+             
 
             Tournament savedTournament = tournamentRepository.save(tournament);
             logger.info("Tournament created successfully: {}", savedTournament.getTournamentName());
@@ -288,9 +302,10 @@ public class TournamentService {
 
             List<Tournament> userAvailableTournaments = allTournaments.stream()
                 .filter(tournament -> {
-                    // Check if the tournament has already started or ended
-                    if (tournament.getStartDate().isBefore(currentDate) || tournament.getStartDate().isEqual(currentDate)) {
-                        return false; // Tournament has started or is starting today, so it's not available
+
+                    // Check if the closing signup date is either today or in the future
+                    if (tournament.getClosingSignupDate().isBefore(currentDate) || tournament.getClosingSignupDate().isEqual(currentDate)) {
+                        return false; // Tournament has closed for signups
                     }
 
                     // Check if the tournament is not full
@@ -313,6 +328,18 @@ public class TournamentService {
                         return false;
                     }
 
+                    // Get the user's strike reports
+                    List<User.StrikeReport> strikeReports = user.getStrikeReports();
+
+                    // For each strike report, check if the tournament was created by the same admin
+                    for (User.StrikeReport strikeReport : strikeReports) {
+                        // Check if the tournament was created by the same admin and if the strike was issued within the last month
+                        if (strikeReport.getIssuedBy().equals(tournament.getCreatedBy()) && 
+                            strikeReport.getDateCreated().isAfter(LocalDateTime.now().minusMonths(1))) {
+                            return false;
+                        }
+                    }
+
                     // Check if the user's age matches the tournament category
                     int userAge = user.getAge();
                     switch (tournament.getCategory()) {
@@ -326,6 +353,10 @@ public class TournamentService {
                             logger.warn("Unknown tournament category: {}", tournament.getCategory());
                             return false;
                     }
+
+                    
+
+                    
                 })
                 .collect(Collectors.toList());
 
@@ -343,4 +374,89 @@ public class TournamentService {
             throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
         }
     }
+
+     /**
+     * Allows a user to join a tournament.
+     *
+     * @param username the name of the user trying to join the tournament
+     * @param tournamentName the name of the tournament to join
+     * @throws UserNotFoundException if the user is not found
+     * @throws TournamentNotFoundException if the tournament is not found
+     * @throws InvalidJoinException if the user is not eligible to join the tournament
+     */
+    // public void joinTournament(String username, String tournamentName) 
+    //         throws TournamentNotFoundException, InvalidJoinException {
+    //     try {
+
+    //         // Get available tournaments for the user
+    //         List<Tournament> availableTournaments = getUserAvailableTournaments(username);
+
+    //         // if available tournaments is empty, throw an exception
+    //         if (availableTournaments.isEmpty()) {
+    //             throw new InvalidJoinException("No available tournaments found for the user");
+    //         }
+
+           
+    //         // Find the tournament in the list of available tournaments
+    //         Tournament tournamentToJoin = availableTournaments.stream()
+    //             .filter(t -> t.getTournamentName().equals(tournamentName))
+    //             .findFirst()
+    //             .orElseThrow(() -> new InvalidJoinException("Tournament is not available for joining"));
+
+    //         // If we've reached this point, the tournament is available for the user to join
+    //         // Add the user to the tournament's players pool
+    //         tournamentToJoin.getPlayersPool().add(username);
+
+    //         // Save the updated tournament
+    //         tournamentRepository.save(tournamentToJoin);
+
+    //         logger.info("User {} successfully joined tournament {}", username, tournamentName);
+    //     } catch (TournamentNotFoundException e) {
+    //         logger.error("Error joining tournament: {}", e.getMessage());
+    //         throw e;
+    //     } catch (InvalidJoinException e) {
+    //         logger.error("Invalid join attempt: {}", e.getMessage());
+    //         throw e;
+    //     } catch (Exception e) {
+    //         logger.error("Unexpected error during tournament join", e);
+    //         throw new RuntimeException("An unexpected error occurred while joining the tournament", e);
+    //     }
+    // }
+
+    public void joinTournament(String username, String tournamentName) 
+        throws TournamentNotFoundException, InvalidJoinException {
+        try {
+            List<Tournament> availableTournaments = getUserAvailableTournaments(username);
+
+            if (availableTournaments.isEmpty()) {
+                logger.info("No available tournaments found for user: {}", username);
+                throw new InvalidJoinException("No available tournaments found for the user");
+            }
+
+            Tournament tournamentToJoin = availableTournaments.stream()
+                .filter(t -> t.getTournamentName().equals(tournamentName))
+                .findFirst()
+                .orElse(null);
+
+            if (tournamentToJoin == null) {
+                logger.info("Tournament '{}' is not available for user: {}", tournamentName, username);
+                throw new InvalidJoinException("Tournament is not available for joining");
+            }
+
+            tournamentToJoin.getPlayersPool().add(username);
+            tournamentRepository.save(tournamentToJoin);
+
+            logger.info("User '{}' successfully joined tournament '{}'", username, tournamentName);
+        } catch (TournamentNotFoundException | InvalidJoinException e) {
+            logger.info("Join tournament failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error during tournament join", e);
+            throw new RuntimeException("An unexpected error occurred while joining the tournament", e);
+        }
+    }
+
+    
+
+
 }

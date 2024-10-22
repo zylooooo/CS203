@@ -81,6 +81,12 @@ public class AuthController {
     public ResponseEntity<?> userLogin(@RequestBody UserLoginDto loginDto) {
         try {
             UserPrincipal authenticatedUser = authenticationService.userAuthenticate(loginDto);
+
+            // Check for strike limit -> If 3 strikes, the user is banned, so prevent login
+            if (userService.hasExceededStrikeLimit(authenticatedUser.getUsername())) {
+                throw new UserBannedException("Your account has been banned due to having 3 strikes.");
+            }
+
             String jwtToken = jwtService.generateToken(authenticatedUser);
             LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getJwtExpiration());
             return ResponseEntity.ok(loginResponse);
@@ -96,7 +102,12 @@ public class AuthController {
             logger.error("Bad credentials: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("Invalid password"));
-        } catch (Exception e) {
+        } catch (UserBannedException e) {
+            logger.error("User banned: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("Your account has been banned due to having 3 strikes."));
+        }
+        catch (Exception e) {
             logger.error("Error occurred during login", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred during login"));
