@@ -62,15 +62,15 @@ public class UsersTournamentsController {
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
     @GetMapping("/ongoing")
-    public ResponseEntity<?> getOngoingTournaments() {
+    public ResponseEntity<?> getCurrentAndFutureTournaments() {
         try {
-            List<Tournament> ongoingTournaments = tournamentService.getOngoingTournaments();
-            logger.info("Total ongoing tournaments: {}", ongoingTournaments.size());
-            return ResponseEntity.ok(ongoingTournaments);
+            List<Tournament> currentAndFutureTournaments = tournamentService.getCurrentAndFutureTournaments();
+            logger.info("Total current and future tournaments: {}", currentAndFutureTournaments.size());
+            return ResponseEntity.ok(currentAndFutureTournaments);
         } catch (Exception e) {
-            logger.error("Unexpected error getting ongoing tournaments!", e);
+            logger.error("Unexpected error getting current and future tournaments!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("An unexpected error occurred while fetching ongoing tournaments"));
+                .body(new ErrorResponse("An unexpected error occurred while fetching current and future tournaments"));
         }
     }
 
