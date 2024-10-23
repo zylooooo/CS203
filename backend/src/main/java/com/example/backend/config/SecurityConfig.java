@@ -46,7 +46,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/**", "/users/signup/check-credentials-availability").permitAll()
                 .requestMatchers("/users","/users/**", "/usersTournaments/**").hasRole("USER")
                 .requestMatchers("/admins/**", "/adminsTournaments/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow all OPTIONS requests (for CORS preflight)

@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.service.AdminService;
 import com.example.backend.service.UserService;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.exception.UserNotFoundException;
@@ -23,6 +24,7 @@ import java.util.*;
 public class UsersController {
 
     private final UserService userService;
+    private final AdminService adminService;
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     // health check endpoint to get all the users
@@ -62,52 +64,6 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("An unexpected error occurred while retrieving the user profile!"));
         }
-    }
-
-    @GetMapping("/signup/check-credentials-availability")
-    public ResponseEntity<?> checkCredentialsAvailability(@RequestParam(required = false) String username, @RequestParam(required = false) String email) {
-        Map<String, Object> response = new HashMap<>();
-
-        if (username == null && email == null) {
-            return ResponseEntity.badRequest()
-                .body(new ErrorResponse("Either username or email must be provided!"));
-        }
-
-        StringBuilder message = new StringBuilder();
-        boolean hasError = false;
-
-        // Check if username is provided and if it exists
-        if (username != null) {
-            boolean usernameExists = userService.checkIfUsernameExists(username);
-            response.put("usernameAvailable", !usernameExists);
-            if (usernameExists) {
-                message.append("Username is already taken.");
-            }
-        }
-
-        // Check if email is provided and if it exists
-        if (email != null) {
-            boolean emailExists = userService.checkIfEmailExists(email);
-            response.put("emailAvailable", !emailExists);
-            if (emailExists) {
-                message.append("Email is already in use.");
-            }
-        }
-
-        // If no errors and both username and email are provided, set both as available
-        if (!hasError && message.length() == 0) {
-            if (username != null && email != null) {
-                message.append("Username and email are available.");
-            } else if (username != null) {
-                message.append("Username is available.");
-            } else {
-                message.append("Email is available.");
-            }
-        }
-
-        response.put("message", message.toString().trim());
-
-        return ResponseEntity.ok(response);
     }
 
     /**

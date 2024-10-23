@@ -27,7 +27,7 @@ function UserNavBar() {
                 sm:px-6 is the padding for medium screens
                 px-4 is the padding for small screens
             */}
-            <div className="mx-auto max-w-7xl lg:px-8 sm:px-6 px-4"> 
+            <div className="mx-auto max-w-8xl lg:px-8 sm:px-6 px-4 mr-20 ml-20"> 
                 <div className="flex justify-between h-20">
                     <div className="flex-shrink-0 flex items-center">
                         <NavLink to="/users/home">
@@ -37,9 +37,9 @@ function UserNavBar() {
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">
                         <NavLink to="/users/home" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Home</NavLink>
                         <NavLink to="/users/Tournaments" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Tournaments</NavLink>
-                        <NavLink to="/news" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>News</NavLink>
+                        <NavLink to="/past-tournaments" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}> My Past Tournaments</NavLink>
                         <NavLink to="/user-profile" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Your Profile</NavLink>
-                        <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary-color-green hover:bg-secondary-color-dark-green transition-colors duration-200">Logout</button>
+                        <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-custom-green bg-custom-green-hover transition-colors duration-200" style = {{ color: "white" }}>Logout</button>
                     </div>
                 </div>
             </div>
