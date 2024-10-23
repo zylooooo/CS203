@@ -236,7 +236,7 @@ public class AuthController {
             boolean accountNameExists = (adminService.checkIfAdminNameExists(accountName) || userService.checkIfUsernameExists(accountName));
             response.put("accountNameAvailable", !accountNameExists);
             if (accountNameExists) {
-                message.append("Username is already taken.");
+                message.append("Account name is already taken.");
             }
         }
 
@@ -245,7 +245,7 @@ public class AuthController {
             boolean emailExists = (userService.checkIfEmailExists(email) || adminService.checkIfEmailExists(email));
             response.put("emailAvailable", !emailExists);
             if (emailExists) {
-                message.append("Email is already in use.");
+                message.append(" Email is already in use.");
             }
         }
 
