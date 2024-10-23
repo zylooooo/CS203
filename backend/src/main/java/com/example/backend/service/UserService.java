@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final int STRIKE_LIMIT = 3;
 
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
@@ -51,6 +52,18 @@ public class UserService {
             logger.error("Error fetching all users", e);
             throw new RuntimeException("Error fetching users", e);
         }
+    }
+
+    /*
+     * Checks if a user has exceeded the strike limit.
+     *
+     * @param username the username of the user to check.
+     * @return true if the user has exceeded the strike limit, false otherwise.
+     */
+    public boolean hasExceededStrikeLimit(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return user.getStrikeReports().size() >= STRIKE_LIMIT;
     }
 
     /**

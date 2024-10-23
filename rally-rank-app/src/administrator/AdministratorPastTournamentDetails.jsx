@@ -65,7 +65,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                             <p className = "text-sm font-medium">
                                 Strikes are issued to players who have displayed unsportsmanlike conduct during tournaments.
                             </p>
-                            <p className = "text-sm font-medium">
+                            <p className = "text-sm font-medium" style={{ color: '#FF6961' }}>
                                 Issuing a strike to this player will temporarily ban them from joining your future tournaments.
                             </p>
                         </div>
