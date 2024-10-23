@@ -236,12 +236,8 @@ function AdministratorTournaments() {
     const filteredTournaments = tournaments.filter(
         (tournament) =>
             tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tournament.location.toLowerCase().includes(searchTerm.toLowerCase())
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-
-
 
     return (
         <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
@@ -251,7 +247,7 @@ function AdministratorTournaments() {
                 <TournamentsButtons buttons = {["All Tournaments", "My Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
                 {/* SEARCH BAR */}
-                <div className = "tournaments-search-bar flex gap-3">
+                {/* <div className = "tournaments-search-bar flex gap-3">
                 <input
                 className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type = "text"
@@ -260,15 +256,32 @@ function AdministratorTournaments() {
                 <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
                     Search
                 </button>
+                </div> */}
+
+                <div className="flex flex-col p-9 px-20">
+                    <div className = "tournaments-search-bar flex mb-5 gap-3">
+                        <input
+                            type = "text"
+                            placeholder = "Search by Tournament Name or Admin Name"
+                            value = { searchTerm }
+                            onChange = { (e) => setSearchTerm(e.target.value) }
+                            className = "p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+                            Search
+                        </button>
+                    </div>
+
+                    <Tournaments tournaments = { filteredTournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
                 </div>
 
                 {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
+                {/* <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } /> */}
 
                  {/* CREATE TOURNAMENT BUTTON */}
                 <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end cursor-zoom-in ">
                 <button
-                onClick = {handleCreateClick}
+                onClick = { handleCreateClick }
                 className = "body font-semibold py-2 px-4 rounded-lg shadow-md  hover:shadow-md transition duration-300 ease-in-out "
                 style = {{ backgroundColor: "#fffcf2" }}
                 >

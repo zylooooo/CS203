@@ -5,11 +5,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
+// ROUTERS NEED TO BE CHECKED AND CHANGED
+
 // Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
 const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
 
     const { register, handleSubmit, formState: { errors }} = useForm();
 
+    // API Call: Create and issue strike to user
     async function submitStrike(reportDetails) {
         try {
             const adminData = JSON.parse(localStorage.getItem('adminData'));
@@ -224,7 +227,7 @@ const AdministratorPastTournamentDetails = () => {
                     <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
-                        <p className = "text-md text-gray-500 absolute top-4 right-4 font-semibold">
+                        <p className = "text-md text-gray-500 absolute top-4 right-10 font-semibold">
                             Total Players: {tournamentDetails.playersPool.length}
                         </p>
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
@@ -234,8 +237,8 @@ const AdministratorPastTournamentDetails = () => {
                                         <span>{index}. {player} </span>
                                         { isMyPastTournament && (
                                           <button 
-                                          className = "px-4 py-2 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end"
-                                          style = {{ color: "#ed2939" , boxShadow: "0 2px 4px rgba(237, 41, 57, 0.5)"}}
+                                          className = "px-4 py-2 mr-6 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end text-primary-color-white"
+                                          style = {{ backgroundColor: "#FF6961"}}
                                           onClick = {() => handleIssueStrikeClick(player) }
                                           >
                                               Issue Strike
