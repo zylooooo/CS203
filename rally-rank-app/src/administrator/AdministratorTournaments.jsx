@@ -2,6 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
+// WIP: Tournaments under 'All Tournaments' doesn't allow Admin to edit tournament details, even if created by Admin
+
 // Component: Tournament Card (for AdministratorTournaments)
 const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
 
@@ -34,7 +36,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -171,9 +173,7 @@ function AdministratorTournaments() {
             }
 
             const response = await axios.get(
-
-                // MAY HAVE TO CHANGE ROUTER
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/ongoing",
                 {
                     withCredentials: true,
                     headers: {
@@ -186,7 +186,9 @@ function AdministratorTournaments() {
             setTournaments(response.data); 
 
         } catch (error) {
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setAllTournaments([]); 
             setTournaments([]); 
         }
@@ -202,8 +204,7 @@ function AdministratorTournaments() {
             }
 
             const response = await axios.get(
-              // EDIT ROUTER WHEN BACKEND LOGIC IS IMPLEMENTED
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/scheduled",
                 {
                     withCredentials: true,
                     headers: {
@@ -216,8 +217,9 @@ function AdministratorTournaments() {
             setTournaments(response.data); 
 
         } catch (error) {
-
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setMyTournaments([]); 
             setTournaments([]); 
     
@@ -269,14 +271,14 @@ function AdministratorTournaments() {
                 </div>
 
                  {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end cursor-zoom-in ">
-                <button
-                onClick = { handleCreateClick }
-                className = "body font-semibold py-2 px-4 rounded-lg shadow-md  hover:shadow-md transition duration-300 ease-in-out "
-                style = {{ backgroundColor: "#fffcf2" }}
-                >
-                    Create Tournament
-                </button>
+                <div className = "tournament-actions flex fixed right-14 bottom-8 justify-end cursor-zoom-in ">
+                    <button
+                    onClick = { handleCreateClick }
+                    className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-custom-green text-primary-color-white hover:shadow-md transition duration-300 ease-in-out"
+                    // style = {{ backgroundColor: "#56AE57" }}
+                    >
+                        Create Tournament
+                    </button>
                 </div>
 
             </div>

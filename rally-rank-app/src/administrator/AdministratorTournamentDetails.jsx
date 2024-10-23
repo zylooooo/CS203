@@ -54,10 +54,10 @@ const AdministratorTournamentDetails = () => {
             }
 
         } catch (error) {
-
-            console.error('Error fetching tournament:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching tournament:', error.response.data.error);
             setTournamentDetails({});
-
         } 
     }
 

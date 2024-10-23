@@ -13,7 +13,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
     const { register, handleSubmit, formState: { errors }} = useForm();
 
     // API Call: Create and issue strike to user
-    async function submitStrike(reportDetails) {
+    async function strikeUser(reportDetails) {
         try {
             const adminData = JSON.parse(localStorage.getItem('adminData'));
             if (!adminData || !adminData.jwtToken) {
@@ -22,16 +22,17 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
             }
 
             const response = await axios.post(
-              // EDIT ROUTER WHEN BACKEND LOGIC IS IMPLEMENTED
                 "http://localhost:8080/admins/strike",
+                {
+                    username: strikePlayer,
+                    tournamentName: tournamentName,
+                    reportDetails: reportDetails
+                },
                 {
                     withCredentials: true,
                     headers: {
                         Authorization: `Bearer ${adminData.jwtToken}`
-                    },
-                    username: strikePlayer,
-                    tournamentName: tournamentName,
-                    reportDetails: reportDetails
+                    }
                 }
             );
 
@@ -40,13 +41,15 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
 
         } catch (error) {
 
-            console.error('Error submiting strike:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error submiting strike:', error.response.data.error);
     
         }
     }
 
     const onSubmit = async (data) => {
-        const response = await submitStrike(data.reason);
+        const response = await strikeUser(data.reason);
 
         if (response !== undefined) {
             alert("Strike successfully issued!");
@@ -56,12 +59,12 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
 
     return (
         <div className="main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
-            <div className = "strike-report-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[500px] bg-primary-color-white">
+            <div className = "strike-report-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[550px] bg-primary-color-white">
                 <form onSubmit = { handleSubmit(onSubmit) }>
                     <div className = "flex flex-col gap-6"> 
 
                         <div className = "flex flex-col gap-2">
-                            <h1 className = "text-2xl font-semibold">Strike {strikePlayer}</h1>
+                            <h1 className = "text-2xl font-semibold">Strike Report</h1>
                             <p className = "text-sm font-medium">
                                 Strikes are issued to players who have displayed unsportsmanlike conduct during tournaments.
                             </p>
@@ -73,9 +76,9 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                         <div className = "flex flex-col gap-2 justify-evenly">
                             <label
                                 htmlFor = "reason"
-                                className = "block text-sm font-medium"
+                                className = "block text-sm"
                             >
-                                Please state your reason for issuing this strike.
+                                Please state your reason for issuing this strike to <strong> {strikePlayer}</strong>.
                             </label>
                             <input
                                 className = "border-b shadow-sm p-2"
@@ -181,15 +184,15 @@ const AdministratorPastTournamentDetails = () => {
             }
 
         } catch (error) {
-
-            console.error('Error fetching tournament:', error);
+            alert(error.response.data.error);
+            console.error('Error fetching tournament:', error.response.data.error);
             setTournamentDetails({});
 
         } 
     }
 
     useEffect(() => {
-        getTournamentByName(tournamentName);
+        getTournamentByName(tournamentName); 
     }, []);
 
     if (!tournamentDetails) {
@@ -211,7 +214,7 @@ const AdministratorPastTournamentDetails = () => {
                         <h1 className = "text-2xl font-bold mb-2 mt-1"> {tournamentDetails.tournamentName} </h1>
                     </div>
                 </div>
-                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} </p>
+                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} - {formatDate(tournamentDetails.endDate)}</p>
                 <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
                 <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
                 <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
