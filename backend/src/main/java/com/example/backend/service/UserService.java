@@ -311,17 +311,13 @@ public class UserService {
                     players.remove(username);
                     matchesModified++; // for logging purposes
                     
-                    logger.info("Removed user {} from match {} in tournament {}", username, match.getMatchName(), tournament.getTournamentName());
-                    
                     // Automatically set the match winner if there is only one player left
                     if (players.size() == 1) {
                         String winner = players.get(0);
                         match.setMatchWinner(winner);
                         match.setCompleted(true);
-                        logger.info("Set {} as winner for match {} in tournament {}", winner, match.getMatchName(), tournament.getTournamentName());
                     } else if (players.isEmpty()) { // If no players are left, mark the match as completed without a winner
                         match.setCompleted(true);
-                        logger.info("Marked match {} as completed without a winner in tournament {}", match.getMatchName(), tournament.getTournamentName());
                     }
     
                     match.setSets(new ArrayList<>()); // Reset the sets for the match

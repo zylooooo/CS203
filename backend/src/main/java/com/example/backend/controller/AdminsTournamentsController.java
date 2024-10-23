@@ -6,6 +6,7 @@ import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.MatchNotFoundException;
 import com.example.backend.service.BracketService;
+import com.example.backend.model.Match;
 
 import lombok.RequiredArgsConstructor;
 
@@ -157,12 +158,15 @@ public class AdminsTournamentsController {
 
 
     // Generate bracket for tournament
-    @PutMapping("/generate-bracket")
-    public ResponseEntity<?> generateBracket(@RequestBody Tournament tournament) {
+    @PutMapping("/generate-bracket/{tournamentName}")
+    public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
         try {
-            Map<String, Object> response = bracketService.generateBracket(tournament);
+            Map<String, Object> response = bracketService.generateBracket(tournamentName);
             return ResponseEntity.ok(response);
-        } catch (UserNotFoundException e) {
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch(UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", e.getMessage()));
         } catch (MatchNotFoundException e) {
@@ -172,6 +176,23 @@ public class AdminsTournamentsController {
             logger.error("Error generating bracket: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
+        }
+    }
+
+    // Update the match results
+    @PutMapping("/update-match")
+    public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
+        try {
+            Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
+            return ResponseEntity.ok(updatedMatch);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid match details provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating match results: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the match results"));
         }
     }
 }
