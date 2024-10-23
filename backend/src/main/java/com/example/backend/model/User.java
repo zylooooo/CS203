@@ -71,7 +71,7 @@ public class User {
     private boolean isAvailable;
     
     @Valid
-    private List<StrikeReport> strikeReports;
+    private List<StrikeReport> strikeReports = new ArrayList<>();
 
     @Data
     @NoArgsConstructor

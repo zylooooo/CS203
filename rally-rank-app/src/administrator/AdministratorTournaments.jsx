@@ -238,27 +238,18 @@ function AdministratorTournaments() {
             tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    //------------------------------------------------------------------------------------
 
     return (
         <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
-            <div className = "row-container flex flex-col w-full p-14 gap-8">
+            <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
 
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Tournaments", "My Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                {/* SEARCH BAR */}
-                {/* <div className = "tournaments-search-bar flex gap-3">
-                <input
-                className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type = "text"
-                placeholder = "Search tournaments..."
-                />
-                <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-                    Search
-                </button>
-                </div> */}
+                <div className="flex flex-col">
 
-                <div className="flex flex-col p-9 px-20">
+                    {/* SEARCH BAR */}
                     <div className = "tournaments-search-bar flex mb-5 gap-3">
                         <input
                             type = "text"
@@ -272,11 +263,10 @@ function AdministratorTournaments() {
                         </button>
                     </div>
 
+                    {/* TOURNAMENT LISTS */}
                     <Tournaments tournaments = { filteredTournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
-                </div>
 
-                {/* TOURNAMENT LISTS */}
-                {/* <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } /> */}
+                </div>
 
                  {/* CREATE TOURNAMENT BUTTON */}
                 <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end cursor-zoom-in ">

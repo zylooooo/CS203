@@ -204,27 +204,44 @@ function AdministratorTournamentHistory() {
     }, []);
 
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
+
     return (
         <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
-            <div className = "row-container flex flex-col w-full p-14 gap-8">
+            <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
 
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                {/* SEARCH BAR */}
-                <div className = "tournaments-search-bar flex gap-3">
-                <input
-                className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type = "text"
-                placeholder = "Search tournaments..."
-                />
-                <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-                    Search
-                </button>
-                </div>
+                <div className="flex flex-col">
 
-                {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+                    {/* SEARCH BAR */}
+                    <div className = "tournaments-search-bar flex mb-5 gap-3">
+                        <input
+                            type = "text"
+                            placeholder = "Search by Tournament Name or Admin Name"
+                            value = { searchTerm }
+                            onChange = { (e) => setSearchTerm(e.target.value) }
+                            className = "p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+                            Search
+                        </button>
+                    </div>
+
+                    {/* TOURNAMENT LISTS */}
+                    <Tournaments tournaments = { filteredTournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+
+                </div>
 
             </div>
         </div>
