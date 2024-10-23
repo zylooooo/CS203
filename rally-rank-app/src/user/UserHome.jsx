@@ -154,7 +154,7 @@ function UserHome() {
         }
     }
 
-    // API call: Update availability of user in database
+    // ----------------------- API call: Update availability of user in database -----------------------
     async function updateAvailability() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -194,7 +194,7 @@ function UserHome() {
     // ------------------------------------- Scheduled Tournaments Functions -------------------------------------
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
 
-    // API Call: Retrieving list of user's scheduled tournaments
+    // ----------------------- API Call: Retrieving list of user's scheduled tournaments -----------------------
     async function getScheduledTournaments() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -248,7 +248,7 @@ function UserHome() {
         getMixedGenderLeaderboard();
     }
 
-    // API Call: Receiving players in the leaderboard (User's gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (User's gender) -----------------------
     async function getDefaultLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -275,7 +275,7 @@ function UserHome() {
         }
     }
 
-    // API Call: Receiving players in the leaderboard (Opoosite of user's gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (Opoosite of user's gender) -----------------------
     async function getOtherGenderLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -301,7 +301,7 @@ function UserHome() {
         }
     }
 
-    // API Call: Receiving players in the leaderboard (Mixed gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (Mixed gender) -----------------------
     async function getMixedGenderLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
