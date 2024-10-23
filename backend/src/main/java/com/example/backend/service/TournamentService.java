@@ -227,32 +227,14 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found in history.
      * @throws RuntimeException if there's an error during the database operation or any unexpected errors during the process.
      */
-    public List<Tournament> getAllHistory() throws TournamentNotFoundException {
-        try {
-            logger.info("Attempting to fetch all tournaments history!");
-
-            List<Tournament> allTournaments = getAllTournaments();
-            if (allTournaments.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
-
-            List<Tournament> allTournamentsHistory = allTournaments.stream()
-                .filter(t -> t.getEndDate() != null)
-                .collect(Collectors.toList());
-
-            if (allTournamentsHistory.isEmpty()) {
-                throw new TournamentNotFoundException();
-            }
-
-            logger.info("Total tournaments history: {}", allTournamentsHistory.size());
-            return allTournamentsHistory;
-        } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found!", e);
-            throw e;
-        } catch (Exception e) {
-            logger.error("Error fetching all tournaments history", e);
-            throw new RuntimeException("Unexpected error occurred while fetching all tournaments history", e);
-        }
+    public List<Tournament> getAllHistory() {
+        List<Tournament> allTournaments = tournamentRepository.findAll();
+        List<Tournament> pastTournaments = allTournaments.stream()
+            .filter(tournament -> tournament.getEndDate() != null)
+            .collect(Collectors.toList());
+    
+        logger.info("Retrieved {} past tournaments.", pastTournaments.size());
+        return pastTournaments;
     }
 
     /**
@@ -384,45 +366,6 @@ public class TournamentService {
      * @throws TournamentNotFoundException if the tournament is not found
      * @throws InvalidJoinException if the user is not eligible to join the tournament
      */
-    // public void joinTournament(String username, String tournamentName) 
-    //         throws TournamentNotFoundException, InvalidJoinException {
-    //     try {
-
-    //         // Get available tournaments for the user
-    //         List<Tournament> availableTournaments = getUserAvailableTournaments(username);
-
-    //         // if available tournaments is empty, throw an exception
-    //         if (availableTournaments.isEmpty()) {
-    //             throw new InvalidJoinException("No available tournaments found for the user");
-    //         }
-
-           
-    //         // Find the tournament in the list of available tournaments
-    //         Tournament tournamentToJoin = availableTournaments.stream()
-    //             .filter(t -> t.getTournamentName().equals(tournamentName))
-    //             .findFirst()
-    //             .orElseThrow(() -> new InvalidJoinException("Tournament is not available for joining"));
-
-    //         // If we've reached this point, the tournament is available for the user to join
-    //         // Add the user to the tournament's players pool
-    //         tournamentToJoin.getPlayersPool().add(username);
-
-    //         // Save the updated tournament
-    //         tournamentRepository.save(tournamentToJoin);
-
-    //         logger.info("User {} successfully joined tournament {}", username, tournamentName);
-    //     } catch (TournamentNotFoundException e) {
-    //         logger.error("Error joining tournament: {}", e.getMessage());
-    //         throw e;
-    //     } catch (InvalidJoinException e) {
-    //         logger.error("Invalid join attempt: {}", e.getMessage());
-    //         throw e;
-    //     } catch (Exception e) {
-    //         logger.error("Unexpected error during tournament join", e);
-    //         throw new RuntimeException("An unexpected error occurred while joining the tournament", e);
-    //     }
-    // }
-
     public void joinTournament(String username, String tournamentName) 
         throws TournamentNotFoundException, InvalidJoinException {
         try {
@@ -455,6 +398,57 @@ public class TournamentService {
             throw new RuntimeException("An unexpected error occurred while joining the tournament", e);
         }
     }
+
+    /**
+     * Retrieves current and future tournaments created by a specific admin.
+     *
+     * @param adminName the name of the admin who created the tournaments
+     * @return a List of current and future tournaments created by the specified admin
+     * @throws RuntimeException if there's an unexpected error during the retrieval process
+     */
+     public List<Tournament> getAdminUpcomingTournaments(String adminName) {
+        try {
+            logger.info("Fetching upcoming tournaments created by admin: {}", adminName);
+            List<Tournament> currentAndFutureTournaments = getCurrentAndFutureTournaments();
+            
+            List<Tournament> adminUpcomingTournaments = currentAndFutureTournaments.stream()
+                .filter(t -> t.getCreatedBy().equals(adminName))
+                .collect(Collectors.toList());
+
+            logger.info("Found {} upcoming tournaments created by admin: {}", adminUpcomingTournaments.size(), adminName);
+            return adminUpcomingTournaments;
+        } catch (Exception e) {
+            logger.error("Error fetching upcoming tournaments created by admin: {}", adminName);
+            throw new RuntimeException("Unexpected error occurred while fetching upcoming tournaments created by admin", e);
+        }
+    }
+
+    /**
+     * Retrieves the history of tournaments created by a specific admin.
+     *
+     * @param adminName the name of the admin who created the tournaments
+     * @return a List of past tournaments created by the specified admin
+     * @throws RuntimeException if there's an unexpected error during the retrieval process
+     */
+    public List<Tournament> getAdminHistory(String adminName) {
+        try {
+            List<Tournament> allHistory = getAllHistory();
+            
+            List<Tournament> adminTournamentHistory = allHistory.stream()
+                .filter(t -> t.getCreatedBy().equals(adminName))
+                .collect(Collectors.toList());
+
+            logger.info("Found {} past tournaments for admin: {}", adminTournamentHistory.size(), adminName);
+            return adminTournamentHistory;
+        } catch (TournamentNotFoundException e) {
+            logger.info("No tournament history found for admin: {}", adminName);
+            return Collections.emptyList();
+        } catch (Exception e) {
+            logger.error("Error fetching tournament history for admin: {}", adminName, e);
+            throw new RuntimeException("Unexpected error occurred while fetching tournament history for admin", e);
+        }
+    }
+    
 
     
 
