@@ -163,7 +163,7 @@ public class UserService {
      * @throws RuntimeException if there is an unexpected error during the update.
      */
     public Map<String, Object> updateUser(@NotNull String username, @NotNull User newUserDetails)
-            throws UserNotFoundException, IllegalArgumentException, RuntimeException {
+            throws UserNotFoundException, IllegalArgumentException, RuntimeException, MatchNotFoundException {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
 
@@ -192,6 +192,25 @@ public class UserService {
                 return response;
             }
 
+             // Check if username is being updated
+            boolean isUsernameUpdated = newUserDetails.getUsername() != null && !user.getUsername().equals(newUserDetails.getUsername());
+
+            if (isUsernameUpdated) {
+                // Get all the tournaments and filter out the ones that the user is participating in
+                List<Tournament> tournaments = tournamentService.getAllTournaments().stream()
+                    .filter(tournament -> tournament.getPlayersPool().contains(username))
+                    .collect(Collectors.toList());
+                
+                // For each tournament, update the username in the players pool
+                for (Tournament tournament : tournaments) {
+                    tournament.getPlayersPool().set(tournament.getPlayersPool().indexOf(username), newUserDetails.getUsername());
+                    tournamentRepository.save(tournament);
+
+                    // Update matches for this tournament
+                    updateMatchesForTournament(tournament.getTournamentName(), username, newUserDetails.getUsername());
+                }
+            }
+
             // Update only non-null fields
             Optional.ofNullable(newUserDetails.getEmail()).ifPresent(user::setEmail);
             Optional.ofNullable(newUserDetails.getPassword())
@@ -215,6 +234,52 @@ public class UserService {
 
         return response;
     }
+
+
+    /*
+     * Helper method used by updateUser to update the matches for a tournament.
+     * 
+     * @param tournamentName the name of the tournament.
+     * @param oldUsername the old username to be replaced.
+     * @param newUsername the new username to replace the old username.
+     * @throws MatchNotFoundException if no matches are found for the tournament.
+     */
+    
+    private void updateMatchesForTournament(String tournamentName, String oldUsername, String newUsername) throws MatchNotFoundException {
+        List<Match> matches = matchRepository.findByTournamentName(tournamentName)
+            .orElseThrow(() -> new MatchNotFoundException(tournamentName));
+    
+        for (Match match : matches) {
+            boolean matchUpdated = false;
+            
+            // Update players list
+            if (match.getPlayers().contains(oldUsername)) {
+                match.getPlayers().set(match.getPlayers().indexOf(oldUsername), newUsername);
+                matchUpdated = true;
+            }
+    
+            // Update sets
+            for (Match.Set set : match.getSets()) {
+                if (set.getSetWinner().equals(oldUsername)) {
+                    set.setSetWinner(newUsername);
+                    matchUpdated = true;
+                }
+            }
+    
+            // Update match winner
+            if (match.getMatchWinner() != null && match.getMatchWinner().equals(oldUsername)) {
+                match.setMatchWinner(newUsername);
+                matchUpdated = true;
+            }
+    
+            // Save the match if any updates were made
+            if (matchUpdated) {
+                matchRepository.save(match);
+            }
+        }
+    }
+
+
 
     /**
      * Updates the availability of a user based on the username.
