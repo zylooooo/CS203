@@ -192,7 +192,6 @@ public class AdminsTournamentsController {
                 .body(Map.of("error", "An unexpected error occurred while updating the match results"));
         }
     }
-}
 
     /**
      * Retrieves the history of tournaments created by the authenticated admin.
@@ -255,12 +254,4 @@ public class AdminsTournamentsController {
                 .body(new ErrorResponse("An unexpected error occurred while fetching upcoming tournaments"));
         }
     }
-
-   
-   
-   
-    
-
-
-    
 }
