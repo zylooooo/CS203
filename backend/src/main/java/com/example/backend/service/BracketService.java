@@ -142,6 +142,20 @@ public class BracketService {
      */
     private void generateProperBracket(Tournament tournament, List<String> players, List<String> newMatches) {
         logger.info("Forming an actual bracket");
+
+        // Check if the bracket or rounds are null, initialize if necessary
+        if (tournament.getBracket() == null) {
+            tournament.setBracket(new Tournament.Bracket());
+        }
+        if (tournament.getBracket().getRounds() == null) {
+            tournament.getBracket().setRounds(new ArrayList<>());
+        }
+
+        List<Tournament.Round> rounds = tournament.getBracket().getRounds();
+        if (rounds.isEmpty()) {
+            rounds.add(new Tournament.Round(new ArrayList<>()));
+        }
+
         List<String> sortedPlayers = sortPlayersByElo(players);
 
         for (int i = 0; i < sortedPlayers.size() / 2; i++) {
