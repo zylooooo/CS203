@@ -80,7 +80,7 @@ function UserSignUp() {
             } else {
                 const response = await createUser(formData);
                 if (response !== undefined) {
-                setSuccessMessage("You have successfully verified and account! Login to enter RallyRank!"); // may need to let state enter to authverify
+                setSuccessMessage("You have successfully verified an account! Login to enter RallyRank!"); // may need to let state enter to authverify
                 navigate("/auth/user-verify");
                 }
             }
