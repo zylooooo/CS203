@@ -9,6 +9,7 @@ import java.time.LocalDate;
 public interface TournamentRepository extends MongoRepository<Tournament, String> {
     Optional<Tournament> findByTournamentName(String tournamentName);
     boolean existsByTournamentName(String tournamentName);
+    List<Tournament> findAllByCreatedBy(String adminName);
 
     @Query("{'startDate': { $gte: ?0 }, 'isOngoing': true}")
     Optional<List<Tournament>> findOngoingTournaments(LocalDate currentDate);
