@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-// Component: Tournament Details Card
+// Component: Tournament Details Card (for AdministratorTournaments)
 const AdministratorTournamentDetails = () => {
     const navigate = useNavigate();
 

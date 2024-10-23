@@ -126,6 +126,7 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
 
 function AdministratorTournaments() {
 
+//--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
 
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -227,6 +228,19 @@ function AdministratorTournaments() {
         getAllTournaments();
         getMyTournaments();
     }, []);
+
+
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
 
 
     return (
