@@ -2,7 +2,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// ROUTERS NEED TO BE CHANGED
+// WIP: Tournaments under 'All Past Tournaments' doesn't allow Admin to Strike players, even if created by Admin
 
 // Component: Tournament Card (for AdministratorTournamentHistory)
 const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
@@ -38,7 +38,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
                         <div className = "flex items-center mb-2 justify-between">
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
-                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
+                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}</p>
                         <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
                         <p className = "mb-2"> Game: {tournament.category} </p>
                         <p className = "mb-2"> Gender: {tournament.gender} </p>
@@ -145,9 +145,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-
-                // EDIT ROUTER
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/all-history",
                 {
                     withCredentials: true,
                     headers: {
@@ -160,7 +158,9 @@ function AdministratorTournamentHistory() {
             setTournaments(response.data); 
 
         } catch (error) {
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setAllPastTournaments([]);
             setTournaments([]); 
         }
@@ -176,9 +176,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-
-              // EDIT ROUTER 
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/my-history",
                 {
                     withCredentials: true,
                     headers: {
@@ -191,8 +189,9 @@ function AdministratorTournamentHistory() {
             setTournaments(response.data); 
 
         } catch (error) {
-
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setMyPastTournaments([]); 
             setTournaments([]); 
         }

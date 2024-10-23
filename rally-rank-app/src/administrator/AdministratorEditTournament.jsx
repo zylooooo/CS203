@@ -189,9 +189,11 @@ async function updateTournament(data) {
             return;
         }
 
+        const today = new Date();
+
         const response = await axios.put(
-            // REPLACE WITH ACTUAL ROUTER
-            "http://localhost:8080/admins/",
+            // WIP: REPLACE WITH ACTUAL ROUTER
+            "http://localhost:8080/admins/tournaments/create",
             {
                 tournamentName: data.tournamentName,
                 startDate: data.startDate,
@@ -226,7 +228,7 @@ function AdministratorEditTournament() {
     const { register, handleSubmit, formState: { errors }} = useForm();
 
     const onSubmit = (data) => {
-        // REPLACE WITH API CALL WHEN BACKEND LOGIC IS IMPLEMENTED
+        // WIP: REPLACE WITH API CALL 
         // updateTournament(data);
         console.log("Form submitted:", data);
       };

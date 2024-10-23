@@ -93,10 +93,7 @@ function AdministratorSignUp() {
             }
         }
         } catch (error) {
-            console.error("Error checking credentials:", error);
-            if (error.response) {
-                console.log(error.response.data.error);
-            }
+            console.error("Error checking credentials:", error.response.data.error);
         };
     };
 
