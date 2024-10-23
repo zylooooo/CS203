@@ -2,6 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
+// ROUTERS NEED TO BE CHANGED
+
 // Component: Tournament Card (for AdministratorTournamentHistory)
 const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
 
