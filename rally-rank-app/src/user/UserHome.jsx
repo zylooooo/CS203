@@ -1,8 +1,13 @@
+// Package Imports
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect, act } from "react";
+
+// Icon Imports
 import { FaCrown, FaMedal } from "react-icons/fa";
-import { set } from "react-hook-form";
+
+// Assets and Components Imports
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 // Component: Leaderboard Buttons - "Top", "Other Gender Leaderboard", "Mixed Leaderboard"
 const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGenderClick, activeButton, setActiveButton }) => {
@@ -154,7 +159,7 @@ function UserHome() {
         }
     }
 
-    // API call: Update availability of user in database
+    // ----------------------- API call: Update availability of user in database -----------------------
     async function updateAvailability() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -194,7 +199,7 @@ function UserHome() {
     // ------------------------------------- Scheduled Tournaments Functions -------------------------------------
     const [scheduledTournaments, setScheduledTournaments] = useState([]);
 
-    // API Call: Retrieving list of user's scheduled tournaments
+    // ----------------------- API Call: Retrieving list of user's scheduled tournaments -----------------------
     async function getScheduledTournaments() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -205,7 +210,7 @@ function UserHome() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/available-tournaments",
+                "http://localhost:8080/users/tournaments/scheduled",
                 {
                     withCredentials: true,
                     headers: {
@@ -248,7 +253,7 @@ function UserHome() {
         getMixedGenderLeaderboard();
     }
 
-    // API Call: Receiving players in the leaderboard (User's gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (User's gender) -----------------------
     async function getDefaultLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -275,7 +280,7 @@ function UserHome() {
         }
     }
 
-    // API Call: Receiving players in the leaderboard (Opoosite of user's gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (Opoosite of user's gender) -----------------------
     async function getOtherGenderLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -301,7 +306,7 @@ function UserHome() {
         }
     }
 
-    // API Call: Receiving players in the leaderboard (Mixed gender)
+    // ----------------------- API Call: Receiving players in the leaderboard (Mixed gender) -----------------------
     async function getMixedGenderLeaderboard() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -334,8 +339,22 @@ function UserHome() {
         getOtherGenderLeaderboard();
     }, []);
 
+    // Functionality to ensure 'Successful Login Alert' is displayed when rendering the User's Homepage as well.
+    const location = useLocation();
+    const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || "");
+
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage("");
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
     return (
         <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             {/* ROW CONTAINER: JOIN TOURNAMENT, MY SCHEDULED TOURNAMENTS */}
             <div className = "row-container flex flex-col w-3/5 gap-8">
                 {/* JOIN TOURNAMENT */}
