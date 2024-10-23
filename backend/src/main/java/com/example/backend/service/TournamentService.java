@@ -128,23 +128,21 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no ongoing or future tournaments are found.
      * @throws RuntimeException if there's an error during the database operation or any unexpected errors during the process.
      */
-    public List<Tournament> getOngoingTournaments() {
-        LocalDate currentDate = LocalDate.now();
-        List<Tournament> ongoingAndFutureTournaments = tournamentRepository.findAll().stream()
-            .filter(t -> t.isOngoing() || 
-                         (t.getStartDate().isBefore(currentDate) && t.getEndDate().isAfter(currentDate)) ||
-                         (t.getStartDate().isAfter(currentDate) && t.getEndDate().isAfter(currentDate)))
+    public List<Tournament> getCurrentAndFutureTournaments() {
+        
+        List<Tournament> currentAndFutureTournaments = tournamentRepository.findAll().stream()
+            .filter(t -> t.getEndDate() == null)
             .collect(Collectors.toList());
 
-        logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
+        logger.info("Found {} current and future tournaments", currentAndFutureTournaments.size());
 
-        // Log details of each ongoing and future tournament
-        for (Tournament t : ongoingAndFutureTournaments) {
-            logger.info("Tournament: {}, Start Date: {}, End Date: {}, Is Ongoing: {}", 
-                        t.getTournamentName(), t.getStartDate(), t.getEndDate(), t.isOngoing());
+        // Log details of each current and future tournament
+        for (Tournament t : currentAndFutureTournaments) {
+            logger.info("Tournament: {}, Start Date: {}, End Date: {}", 
+                        t.getTournamentName(), t.getStartDate(), t.getEndDate());
         }
 
-        return ongoingAndFutureTournaments;
+        return currentAndFutureTournaments;
     }
 
     /**
@@ -161,9 +159,8 @@ public class TournamentService {
             List<Tournament> allTournaments = getAllTournaments();
 
             List<Tournament> currentTournaments = allTournaments.stream()
-                .filter(t -> t.isOngoing() &&
-                            (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)) && 
-                            (t.getEndDate().isAfter(currentDate) || t.getEndDate().isEqual(currentDate)))
+                .filter(t -> t.getEndDate() == null &&
+                            (t.getStartDate().isBefore(currentDate) || t.getStartDate().isEqual(currentDate)))
                 .collect(Collectors.toList());
 
             if (currentTournaments.isEmpty()) {
@@ -189,10 +186,10 @@ public class TournamentService {
     public List<Tournament> getUserUpcomingTournaments(String username) throws RuntimeException {
         try {
             logger.info("Starting getUserUpcomingTournaments for user: {}", username);
-            List<Tournament> ongoingTournaments = this.getOngoingTournaments();
-            logger.info("Retrieved {} ongoing tournaments", ongoingTournaments.size());
+            List<Tournament> currentAndFutureTournaments = this.getCurrentAndFutureTournaments();
+            logger.info("Retrieved {} current and future tournaments", currentAndFutureTournaments.size());
 
-            List<Tournament> userUpcomingTournaments = ongoingTournaments.stream()
+            List<Tournament> userUpcomingTournaments = currentAndFutureTournaments.stream()
                 .filter(tournament -> tournament.getPlayersPool().contains(username))
                 .collect(Collectors.toList());
 
@@ -220,14 +217,13 @@ public class TournamentService {
         try {
             logger.info("Attempting to fetch all tournaments history!");
 
-            LocalDate currentDate = LocalDate.now();
             List<Tournament> allTournaments = getAllTournaments();
             if (allTournaments.isEmpty()) {
                 throw new TournamentNotFoundException();
             }
 
             List<Tournament> allTournamentsHistory = allTournaments.stream()
-                .filter(t -> t.getEndDate().isBefore(currentDate) && !t.isOngoing())
+                .filter(t -> t.getEndDate() != null)
                 .collect(Collectors.toList());
 
             if (allTournamentsHistory.isEmpty()) {
