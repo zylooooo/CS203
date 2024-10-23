@@ -45,32 +45,32 @@ public class BracketService {
         Map<String, String> error = new HashMap<>();
 
         try {
-            Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+            Tournament existingTournament = tournamentRepository.findByTournamentName(tournamentName)
                 .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
 
             // Initialize the bracket if it's null
-            if (tournament.getBracket() == null) {
-                tournament.setBracket(new Tournament.Bracket());
+            if (existingTournament.getBracket() == null) {
+                existingTournament.setBracket(new Tournament.Bracket());
             }
 
             // Initialize the rounds if they're null
-            if (tournament.getBracket().getRounds() == null) {
-                tournament.getBracket().setRounds(new ArrayList<>());
+            if (existingTournament.getBracket().getRounds() == null) {
+                existingTournament.getBracket().setRounds(new ArrayList<>());
             }
 
-            List<String> playersForNewRound = getPlayersForNewRound(tournament);
-            List<String> newMatches = createNewRound(tournament, playersForNewRound);
+            List<String> playersForNewRound = getPlayersForNewRound(existingTournament);
+            List<String> newMatches = createNewRound(existingTournament, playersForNewRound);
             if (playersForNewRound.isEmpty() || newMatches.isEmpty()) {
                 response.put("error", "No matches can be generated for the new round!");
                 return response;
             }
 
             // Add the new round to the tournament bracket
-            tournament.getBracket().getRounds().add(new Tournament.Round(newMatches));
-            tournament.setUpdatedAt(LocalDateTime.now());
+            existingTournament.getBracket().getRounds().add(new Tournament.Round(newMatches));
+            existingTournament.setUpdatedAt(LocalDateTime.now());
             
             // Save the updated tournament
-            Tournament savedTournament = tournamentRepository.save(tournament);
+            Tournament savedTournament = tournamentRepository.save(existingTournament);
             response.put("tournament", savedTournament);
 
             // Fetch and return only the matches from the most recent round
