@@ -38,6 +38,16 @@ public class BracketService {
         Map<String, String> error = new HashMap<>();
 
         try {
+            // Initialize the bracket if it's null
+            if (tournament.getBracket() == null) {
+                tournament.setBracket(new Tournament.Bracket());
+            }
+
+            // Initialize the rounds if they're null
+            if (tournament.getBracket().getRounds() == null) {
+                tournament.getBracket().setRounds(new ArrayList<>());
+            }
+
             List<String> playersForNewRound = getPlayersForNewRound(tournament);
             List<String> newMatches = createNewRound(tournament, playersForNewRound);
             if (playersForNewRound.isEmpty() || newMatches.isEmpty()) {
@@ -142,14 +152,6 @@ public class BracketService {
      */
     private void generateProperBracket(Tournament tournament, List<String> players, List<String> newMatches) {
         logger.info("Forming an actual bracket");
-
-        // Check if the bracket or rounds are null, initialize if necessary
-        if (tournament.getBracket() == null) {
-            tournament.setBracket(new Tournament.Bracket());
-        }
-        if (tournament.getBracket().getRounds() == null) {
-            tournament.getBracket().setRounds(new ArrayList<>());
-        }
 
         List<Tournament.Round> rounds = tournament.getBracket().getRounds();
         if (rounds.isEmpty()) {
