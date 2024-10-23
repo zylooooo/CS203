@@ -29,7 +29,7 @@ import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
 import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
-import EditProfileForm from "./user/EditProfileForm";
+import UserEditProfile from "./user/UserEditProfile";
 import OtherUserProfile from "./user/OtherUserProfile";
 import UserPastTournaments from "./user/UserPastTournaments";
 
@@ -178,7 +178,7 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <MainLayout>
-                                    <EditProfileForm />
+                                    <UserEditProfile />
                                 </MainLayout>
                             </PrivateRoute>
                         }
