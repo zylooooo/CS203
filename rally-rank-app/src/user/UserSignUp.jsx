@@ -12,15 +12,15 @@ import signupPicture from "../assets/user-sign-up-picture.jpg";
 function UserSignUp() {
     const location = useLocation();
     const navigate = useNavigate();
+    const steps = [1, 2, 3];
+    const [step, setStep] = useState(1);
     const { email } = location.state || {};
     const [signupError, setSignupError] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
     const { register, handleSubmit, watch, trigger, formState: { errors }} = useForm();
-    const [step, setStep] = useState(1);
-    const steps = [1, 2, 3];
     const [clickableSteps, setClickableSteps] = useState([]); // Clickable steps, including the current step.
     const [completedSteps, setCompletedSteps] = useState([]); // Completed steps, displayed as green in color.
-    const [alertMessage, setAlertMessage] = useState("");
-
+    
     const stepFields = {
         1: ["email", "username"],
         2: ["firstName", "lastName", "gender", "dob", "phone"],

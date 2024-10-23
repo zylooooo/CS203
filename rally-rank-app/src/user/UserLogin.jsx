@@ -171,7 +171,7 @@ function UserLogin() {
                         <div className="text-xs text-center pt-2">
                             Don't have a RallyRank account?
                             <Link
-                                to="/sign-up"
+                                to="/auth/user-signup"
                                 className="hover:text-primary-color-green font-bold underline p-2 text-secondary-color-dark-green"
                             >
                                 <br />
