@@ -2,7 +2,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// Component: Tournament Card (for AdministratorTournaments)
+// Component: Tournament Card (for AdministratorTournamentHistory)
 const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
@@ -21,13 +21,6 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
         setIsTransitioning(true);
         setTimeout(() => {
             navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments } });
-        }, 200);
-    }
-
-    const handleEditClick = (tournamentName) => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            navigate("/administrator-edit-tournaments", { state: tournamentName });
         }, 200);
     }
 
@@ -69,20 +62,6 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
                         )}
                         </div>
 
-                        {/* EDIT TOURNAMENT BUTTON */}
-                        {/* <div className = "edit-tournament-button mt-auto ml-auto">
-                        {isMyPastTournaments && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditClick(tournament.tournamentName);
-                            }}
-                            className="font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
-                        >
-                            Edit Tournament
-                        </button>
-                        )}
-                        </div> */}
                     </div>
 
                 </div>
@@ -91,10 +70,10 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
     );
 };
 
-// Component: Tournaments Buttons (for AdministratorTournaments)
+// Component: Tournaments Buttons (for AdministratorTournamentHistory)
 const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
 
-    const [activeButton, setActiveButton] = useState(0); // 'All Tournaments' Button will be the first active button
+    const [activeButton, setActiveButton] = useState(0); // 'All Past Tournaments' Button will be the first active button
 
     const handleButtonClick = (index) => {
         setActiveButton(index);
