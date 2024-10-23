@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 // Administrator imports
-import AdminSignUp from "./administrator/AdminSignUp";
+import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
@@ -29,7 +29,7 @@ import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
 import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
-import EditProfileForm from "./user/EditProfileForm";
+import UserEditProfile from "./user/UserEditProfile";
 import OtherUserProfile from "./user/OtherUserProfile";
 import UserPastTournaments from "./user/UserPastTournaments";
 
@@ -82,7 +82,7 @@ function App() {
                         path="/administrator-sign-up"
                         element={
                             <MainLayout>
-                                <AdminSignUp />
+                                <AdministratorSignup />
                             </MainLayout>
                         }
                     />
@@ -178,7 +178,7 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <MainLayout>
-                                    <EditProfileForm />
+                                    <UserEditProfile />
                                 </MainLayout>
                             </PrivateRoute>
                         }
