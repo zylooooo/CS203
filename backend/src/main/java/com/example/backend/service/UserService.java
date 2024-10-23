@@ -1,10 +1,7 @@
 package com.example.backend.service;
 
-import com.example.backend.model.Tournament;
-import com.example.backend.model.User;
-import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.AdminRepository;
-import com.example.backend.repository.TournamentRepository;
+import com.example.backend.model.*;
+import com.example.backend.repository.*;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -29,8 +26,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
+    private final MatchRepository matchRepository;
     private final TournamentRepository tournamentRepository;
     private final TournamentService tournamentService;
+    
 
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
@@ -189,7 +188,6 @@ public class UserService {
                 user.setElo(newUserDetails.getElo());
             Optional.ofNullable(newUserDetails.getGender()).ifPresent(user::setGender);
             Optional.ofNullable(newUserDetails.getDateOfBirth()).ifPresent(user::setDateOfBirth);
-            Optional.ofNullable(newUserDetails.getMedicalInformation()).ifPresent(user::setMedicalInformation);
             Optional.ofNullable(newUserDetails.getProfilePic()).ifPresent(user::setProfilePic);
             Optional.ofNullable(newUserDetails.getUsername()).ifPresent(user::setUsername);
             Optional.ofNullable(newUserDetails.getFirstName()).ifPresent(user::setFirstName);
@@ -253,13 +251,13 @@ public class UserService {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new UserNotFoundException(username));
 
-            List<Tournament> ongoingAndFutureTournaments = tournamentService.getOngoingTournaments();
-            logger.info("Found {} ongoing and future tournaments", ongoingAndFutureTournaments.size());
+            List<Tournament> currentAndFutureTournaments = tournamentService.getCurrentAndFutureTournaments();
+            logger.info("Found {} current and future tournaments", currentAndFutureTournaments.size());
 
-            if (!ongoingAndFutureTournaments.isEmpty()) {
-                updateTournaments(ongoingAndFutureTournaments, username);
+            if (!currentAndFutureTournaments.isEmpty()) {
+                updateTournamentsWhenUserIsDeleted(currentAndFutureTournaments, username);
             } else {
-                logger.info("No ongoing tournaments found. Proceeding with user deletion.");
+                logger.info("No current and future tournaments found. Proceeding with user deletion.");
             }
 
             userRepository.delete(user);
@@ -274,7 +272,7 @@ public class UserService {
     }
 
     /**
-     * Updates the tournaments by removing the specified user from the players pool
+     * Private method only used in deleteUser. Updates the tournaments by removing the specified user from the players pool
      * and handling any incomplete matches they are part of.
      *
      * This method checks each tournament for the specified user and performs the
@@ -288,56 +286,56 @@ public class UserService {
      * @param tournaments the list of tournaments to update.
      * @param username    the username of the user to be removed from the tournaments.
      */
-    private void updateTournaments(List<Tournament> tournaments, String username) {
+    private void updateTournamentsWhenUserIsDeleted(List<Tournament> tournaments, String username) {
+
         for (Tournament tournament : tournaments) {
             boolean tournamentModified = false;
-
-            List<String> playersPool = tournament.getPlayersPool();
-            if (playersPool != null && playersPool.remove(username)) {
+            int matchesModified = 0; // for logging purposes
+    
+            // Remove user from players pool
+            if (tournament.getPlayersPool().remove(username)) {
                 tournamentModified = true;
-                logger.info("Removed user {} from players pool of tournament {}", username,
-                        tournament.getTournamentName());
+                logger.info("Removed user {} from players pool of tournament {}", username, tournament.getTournamentName());
             }
+    
+            // Fetch all matches for this tournament
+            List<Match> tournamentMatches = matchRepository.findByTournamentName(tournament.getTournamentName());
+            
+            // Update each match
+            for (Match match : tournamentMatches) {
 
-            // Check each match in the tournament for the user
-            List<Tournament.Match> matches = tournament.getMatches();
-            if (matches != null) {
-                for (Tournament.Match match : matches) {
+                // If the match is not completed and the user is a participant
+                if (!match.isCompleted() && match.getPlayers().contains(username)) {
                     List<String> players = match.getPlayers();
-                    // If the match is incomplete and the user is a participant
-                    if (!match.isCompleted() && players != null && players.contains(username)) {
-                        players.remove(username); // Remove the user from the match
-                        tournamentModified = true; // Mark tournament as modified
-                        logger.info("Removed user {} from incomplete match in tournament {}", username,
-                                tournament.getTournamentName());
-
-                        // Determine the match winner if there are remaining players
-                        if (!players.isEmpty()) {
-                            String winner = players.get(0);
-                            match.setMatchWinner(winner);
-                            match.setCompleted(true);
-                            match.setRounds(new ArrayList<>());
-                            logger.info("Set {} as winner and deleted all rounds for match in tournament {}", winner,
-                                    tournament.getTournamentName());
-                        } else {
-                            // If no players are left, mark the match as completed without a winner
-                            match.setCompleted(true);
-                            match.setRounds(new ArrayList<>());
-                            logger.info(
-                                    "Marked match as completed without a winner and deleted all rounds in tournament {}",
-                                    tournament.getTournamentName());
-                        }
+                    players.remove(username);
+                    matchesModified++; // for logging purposes
+                    
+                    logger.info("Removed user {} from match {} in tournament {}", username, match.getMatchName(), tournament.getTournamentName());
+                    
+                    // Automatically set the match winner if there is only one player left
+                    if (players.size() == 1) {
+                        String winner = players.get(0);
+                        match.setMatchWinner(winner);
+                        match.setCompleted(true);
+                        logger.info("Set {} as winner for match {} in tournament {}", winner, match.getMatchName(), tournament.getTournamentName());
+                    } else if (players.isEmpty()) { // If no players are left, mark the match as completed without a winner
+                        match.setCompleted(true);
+                        logger.info("Marked match {} as completed without a winner in tournament {}", match.getMatchName(), tournament.getTournamentName());
                     }
+    
+                    match.setSets(new ArrayList<>()); // Reset the sets for the match
+                    matchRepository.save(match);
+                    tournamentModified = true;
                 }
             }
-
-            // If the tournament was modified, save the changes
+    
+            // Save the tournament if modified
             if (tournamentModified) {
-                Tournament updatedTournament = tournamentRepository.save(tournament);
-                logger.info("Updated tournament {}: players pool size = {}, matches size = {}",
-                        updatedTournament.getTournamentName(),
-                        updatedTournament.getPlayersPool() != null ? updatedTournament.getPlayersPool().size() : 0,
-                        updatedTournament.getMatches() != null ? updatedTournament.getMatches().size() : 0);
+                tournamentRepository.save(tournament);
+                logger.info("Updated tournament {}: removed user from players pool, modified {} matches", 
+                            tournament.getTournamentName(), matchesModified);
+            } else {
+                logger.info("No changes made to tournament {}", tournament.getTournamentName());
             }
         }
     }
