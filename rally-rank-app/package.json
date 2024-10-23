@@ -14,6 +14,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@hookform/devtools": "^4.3.1",
     "axios": "^1.7.7",
+    "daisyui": "^4.12.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
