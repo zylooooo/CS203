@@ -8,12 +8,18 @@ import com.example.backend.model.Match;
 import com.example.backend.model.User;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.MatchNotFoundException;
+import com.example.backend.exception.TournamentNotFoundException;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.Errors;
+import org.springframework.validation.BeanPropertyBindingResult;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +32,7 @@ public class BracketService {
     private final TournamentRepository tournamentRepository;
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
+    private final LocalValidatorFactoryBean validator;
 
     /**
      * Generates a bracket for the given tournament.
@@ -33,11 +40,14 @@ public class BracketService {
      * @param tournament The tournament for which to generate a bracket.
      * @return A map containing the updated tournament and the newly created matches.
      */
-    public Map<String, Object> generateBracket(Tournament tournament) {
+    public Map<String, Object> generateBracket(String tournamentName) {
         Map<String, Object> response = new HashMap<>();
         Map<String, String> error = new HashMap<>();
 
         try {
+            Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+                .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
             // Initialize the bracket if it's null
             if (tournament.getBracket() == null) {
                 tournament.setBracket(new Tournament.Bracket());
@@ -57,6 +67,7 @@ public class BracketService {
 
             // Add the new round to the tournament bracket
             tournament.getBracket().getRounds().add(new Tournament.Round(newMatches));
+            tournament.setUpdatedAt(LocalDateTime.now());
             
             // Save the updated tournament
             Tournament savedTournament = tournamentRepository.save(tournament);
@@ -196,5 +207,30 @@ public class BracketService {
     private int calculatePreliminaryPlayersCount(int playerCount) {
         int nextPowerOfTwo = Integer.highestOneBit(playerCount - 1) << 1;
         return (playerCount - (nextPowerOfTwo / 2)) * 2;
+    }
+
+    // Service to update the match results 
+    public Match updateMatchResults(Match newMatchDetails) {
+        try {
+            // Validate the match details that is being passed in
+            Errors errors = new BeanPropertyBindingResult(newMatchDetails, "match");
+            validator.validate(newMatchDetails, errors);
+
+            if (errors.hasErrors()) {
+                List<String> errorMessages = errors.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+                throw new IllegalArgumentException(String.join(", ", errorMessages));
+            }
+
+            // Update the match details in the database
+            Match updatedMatch = matchRepository.save(newMatchDetails);
+            return updatedMatch;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }
