@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import loginBackground from "../assets/login-picture.jpg";
+import axios from "axios";
 
 // Form imports
 import { useForm } from "react-hook-form";
@@ -8,6 +9,8 @@ import { DevTool } from "@hookform/devtools";
 
 // Authentication imports
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
+
+import rallyRankLogo from "../assets/Rally-Rank-Logo.svg"; // Import the RallyRank logo
 
 function AdministratorLogin() {
   const form = useForm();
@@ -17,23 +20,46 @@ function AdministratorLogin() {
   const navigate = useNavigate(); // For navigation after login
   const [loginError, setLoginError] = useState(""); // State for handling login errors
 
-  const onSubmit = async (data) => {
-    try {
-      // Implement your API call for admin authentication
-      const response = await authenticateAdmin(data.username, data.password);
+  async function authenticateAdmin(adminName, password) {
+      try {
+          const response = await axios.post(
+              "http://localhost:8080/auth/admin-login",
+              { adminName, password },
+              { withCredentials: true } // Allow credentials (cookies) to be sent with the request
+          );
+          
+          if (response.status === 200) {
+              setLoginError("Successfully login!");
 
-      if (response.success) {
-        // Assume response.admin contains admin data
-        loginAdmin(response.admin); // Update AuthContext with admin data
-        navigate("/administrator-tournaments"); // Redirect to admin tournaments page
-      } else {
-        // Handle authentication failure
-        setLoginError(response.message || "Invalid credentials");
+              // Return the LoginResponse object containing JWT and expiration time
+              return response.data;
+          }
+      } catch (error) {
+          setLoginError(error.response.data.error)
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      setLoginError("An unexpected error occurred. Please try again.");
-    }
+  }
+
+  const onSubmit = async (formData) => {
+      // Call the authenticateUser function with username and password
+      const response = await authenticateAdmin(
+          formData.adminName,
+          formData.password
+      );
+
+      if (response !== undefined) {
+          // Store user in local database
+          const adminData = {
+              adminName: formData.adminName,
+              role: "admin",
+              jwtToken: response.token,
+          };
+      
+          // Change state to user
+          loginAdmin(adminData);
+
+          // Re-route to home
+          navigate("/administrator-tournaments");
+      } 
   };
 
   return (
@@ -42,7 +68,7 @@ function AdministratorLogin() {
         className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
         style={{ backgroundImage: `url(${loginBackground})` }}
       >
-        {/* TESTING CODE REMOVE LATER */}
+        {/* TESTING CODE REMOVE LATER
         <button
           type="button"
           className="button mt-6 font-bold hover:shadow-inner"
@@ -52,9 +78,9 @@ function AdministratorLogin() {
           }}
         >
           Manual Admin Login
-        </button>
-        <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
-          <h1 className=" font-bold text-2xl">Administrator Login</h1>
+        </button> */}
+        <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
+          <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
             <form
               className="card px-2 py-4 border-none shadow-none bg-primary-color-white"
               onSubmit={handleSubmit(onSubmit)}
@@ -62,21 +88,25 @@ function AdministratorLogin() {
             >
               <div>
                 <label
-                  htmlFor="username"
+                  htmlFor="adminName"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Username
+               
                 </label>
                 <input
-                  className="input"
+                  className="w-full border-0 border-b border-gray-300  focus:outline-none p-2"
+                  style={{
+                      borderBottomColor: "#555555",
+                      borderBottomWidth: "1.5px",
+                  }}
                   type="text"
-                  id="username"
-                  placeholder="admin"
-                  {...register("username", {
-                    required: "Username is required",
+                  id="adminName"
+                  placeholder="Administrator Username"
+                  {...register("adminName", {
+                    required: "Admin Username is required",
                   })}
                 />
-                <p className="error">{errors.username?.message}</p>
+                <p className="error">{errors.adminName?.message}</p>
               </div>
 
               <div>
@@ -84,13 +114,17 @@ function AdministratorLogin() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+              
                 </label>
                 <input
                   type="password"
                   id="password"
-                  className="input"
-                  placeholder="••••••••"
+                  className="w-full border-0 border-b border-gray-300  focus:outline-none p-2"
+                                style={{
+                                    borderBottomColor: "#555555",
+                                    borderBottomWidth: "1.5px",
+                                }}
+                  placeholder="Password"
                   {...register("password", {
                     required: "Password is required",
                   })}
@@ -105,6 +139,7 @@ function AdministratorLogin() {
               <button
                 type="submit"
                 className="button mt-6 font-bold hover:shadow-inner"
+                style = {{ backgroundColor: "#80b577" }}
               >
                 Log In
               </button>
@@ -121,11 +156,19 @@ function AdministratorLogin() {
                   Sign up as a new administrator!
                 </Link>
               </div>
+              <div className="text-xs text-center">
+                  <Link
+                      to="/auth/admin-verify"
+                      className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
+                  >
+                      Looking to verify? Click here
+                  </Link>
+              </div>
             </form>
           </div>
 
           <DevTool control={control} />
-        <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+        <div className="card p-7 rounded-[8px] bg-primary-color-white border-none items-center">
           <div className="text-ms flex flex-row justify-center align-item">
             RallyRank Player?
             <Link

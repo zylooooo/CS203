@@ -33,7 +33,7 @@ const allPlayers = [
     isAvailable : true,
     strikeReport : [
       {
-        reportedDetails : "angry",
+        reportDetails : "angry",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "adminName"
       },
@@ -66,17 +66,17 @@ const allPlayers = [
     isAvailable : true,
     strikeReport : [
       {
-        reportedDetails : "angry",
+        reportDetails : "angry",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "adminName"
       },
       {
-        reportedDetails : "angry",
+        reportDetails : "angry",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "adminName"
       },
       {
-        reportedDetails : "reason for ban",
+        reportDetails : "reason for ban",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "<reference to adminName>"
       },
@@ -136,12 +136,12 @@ const allPlayers = [
     isAvailable : true,
     strikeReport : [
       {
-        reportedDetails : "angry",
+        reportDetails : "angry",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "adminName"
       },
       {
-        reportedDetails : "threw racket at me",
+        reportDetails : "threw racket at me",
         dateCreated : "2024-09-29 13:30",
         issuedBy : "<reference to adminName>"
       },
@@ -244,7 +244,7 @@ const StrikeReport = ({ player, onClose, setPlayers }) => {
     onClose();
     
     // EDIT TO ADD STRIKE REPORT TO STRIKEREPORT ARRAY (POST)
-    // 1. reportedDetails = data.reason
+    // 1. reportDetails = data.reason
     // 2. dateCreated = new Date()
     // 3. issuedBy = get adminName from session
     setPlayers((prevPlayers) => {
@@ -328,7 +328,7 @@ const ViewStrike = ({ player, onClose }) => {
         <h2 className="text-xl font-bold mb-4">Strikes for {player.firstName} {player.lastName}</h2>
         {player.strikeReport.map((report, index) => (
             <div key={index} className="border p-2 rounded">
-              <p><strong>Reason:</strong> {report.reportedDetails}</p>
+              <p><strong>Reason:</strong> {report.reportDetails}</p>
               <p><strong>Date Created:</strong> {report.dateCreated}</p>
               <p><strong>Issued By:</strong> {report.issuedBy}</p>
             </div>

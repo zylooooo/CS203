@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
 import loginBackground from "../assets/login-picture.jpg";
+import rallyRankLogo from "../assets/Rally-Rank-Logo.svg"; // Import the RallyRank logo
 
 function UserLogin() {
     const form = useForm();
@@ -32,13 +33,31 @@ function UserLogin() {
             );
 
             if (response.status === 200) {
-                setLoginError("Successfully login!");
+                setLoginError("Successfully logged in!");
 
                 // Return the LoginResponse object containing JWT and expiration time
                 return response.data;
             }
         } catch (error) {
-            setLoginError(error.response.data.error)
+            setLoginError(error.response.data.error);
+        }
+    }
+
+    async function retrieveUserData(jwtToken) {
+        try {
+            const response = await axios.get(
+                "http://localhost:8080/users/profile",
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${jwtToken}`
+                    }
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching user data: ", error);
+            return null;
         }
     }
 
@@ -49,14 +68,18 @@ function UserLogin() {
             formData.password
         );
 
+        const userDataResponse = await retrieveUserData(response.token);
+
         if (response !== undefined) {
             // Store user in local database
             const userData = {
                 username: formData.username,
                 role: "USER",
                 jwtToken: response.token,
+                gender: userDataResponse.gender,
+                available: userDataResponse.available,
             };
-
+        
             // Change state to user
             loginUser(userData);
 
@@ -64,28 +87,16 @@ function UserLogin() {
             navigate("/users/home");
         } 
     };
-
+    
     return (
         <>
             <div
                 className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
                 style={{ backgroundImage: `url(${loginBackground})` }}
             >
-                {/* TESTING CODE REMOVE LATER */}
-                <button
-                    type="button"
-                    className="button mt-6 font-bold hover:shadow-inner"
-                    onClick={() => {
-                        loginUser({ name: "Test User", role: "user" });
-                        navigate("/users/home");
-                    }}
-                >
-                    Manual User Login
-                </button>
-                <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
-                    <h1 className="font-bold text-2xl bg-special-blue">
-                        Player Login
-                    </h1>
+                <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
+                    {/* Replace heading with RallyRank logo */}
+                    <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
                     <form
                         className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
                         onSubmit={handleSubmit(onSubmit)}
@@ -96,10 +107,14 @@ function UserLogin() {
                                 htmlFor="username"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Username
+                              
                             </label>
                             <input
-                                className="input"
+                                className="w-full border-0 border-b border-gray-300  focus:outline-none p-2"
+                                style={{
+                                    borderBottomColor: "#555555",
+                                    borderBottomWidth: "1.5px",
+                                }}
                                 type="text"
                                 id="username"
                                 placeholder="Username"
@@ -115,13 +130,17 @@ function UserLogin() {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Password
+                                
                             </label>
                             <input
                                 type="password"
                                 id="password"
-                                className="input"
-                                placeholder="••••••••"
+                                className="w-full border-0 border-b border-gray-300 focus:outline-none p-2"
+                                style={{
+                                    borderBottomColor: "#555555",
+                                    borderBottomWidth: "1.5px",
+                                }}
+                                placeholder="Password"
                                 {...register("password", {
                                     required: "Password is required",
                                 })}
@@ -138,6 +157,7 @@ function UserLogin() {
                         <button
                             type="submit"
                             className="button mt-6 font-bold hover:shadow-inner"
+                            style = {{ backgroundColor: "#80b577" }}
                         >
                             Log In
                         </button>
@@ -168,7 +188,7 @@ function UserLogin() {
                         </div>
                     </form>
                 </div>
-                <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+                <div className="card p-7 rounded-[8px] bg-primary-color-white border-none items-center">
                     <div className="text-ms flex flex-row justify-center align-item">
                         RallyRank Administrator?
                         <Link

@@ -4,11 +4,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 
 // Administrator imports
+import AdminSignUp from "./administrator/AdminSignUp";
+import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
-import AdministratorTools from "./administrator/AdministratorTools";
-import AdministratorViewTournaments from "./administrator/AdministratorViewTournaments";
+import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
+import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
+import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
+import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
+import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
 // Component imports
 import MainLayout from "./components/MainLayout";
@@ -16,17 +20,18 @@ import MainLayout from "./components/MainLayout";
 // Public imports
 import MainHomepage from "./public/MainHomepage";
 import News from "./public/News";
-import UserSignUp from "./user/UserSignUp";
-import AdminSignUp from "./public/AdminSignUp";
 
 // User imports
 import UserHome from "./user/UserHome";
+import UserSignUp from "./user/UserSignUp";
 import UserLogin from "./user/UserLogin";
 import UserProfile from "./user/UserProfile";
 import UserTournaments from "./user/UserTournaments";
-import TournamentCardTemplate from "./user/TournamentCardTemplate";
+import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
 import EditProfileForm from "./user/EditProfileForm";
+import OtherUserProfile from "./user/OtherUserProfile";
+import UserPastTournaments from "./user/UserPastTournaments";
 
 // Authentication imports
 import { AuthProvider } from "./authentication/AuthContext";
@@ -112,6 +117,17 @@ function App() {
                         }
                     />
 
+                    {/* AdminVerify */}
+                    <Route
+                        path="/auth/admin-verify"
+                        element={
+                            <MainLayout>
+                                <AdminVerify />
+                            </MainLayout>
+                        }
+                    />
+
+
                     {/* Protected Player Routes */}
                     <Route
                         path="/users/home"
@@ -151,7 +167,7 @@ function App() {
                         element={
                             <PrivateRoute>
                                 <MainLayout>
-                                    <TournamentCardTemplate />
+                                    <TournamentDetails />
                                 </MainLayout>
                             </PrivateRoute>
                         }
@@ -167,15 +183,47 @@ function App() {
                             </PrivateRoute>
                         }
                     />
-                
+
+                    <Route
+                        path="/other-user-profile"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <OtherUserProfile />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/past-tournaments"
+                        element={
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserPastTournaments />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
 
                     {/* Protected Admin Routes */}
                     <Route
-                        path="/administrator-tools"
+                        path="/administrator-tournament-history"
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorTools />
+                                    <AdministratorTournamentHistory />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/administrator-past-tournament-details"
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorPastTournamentDetails />
                                 </MainLayout>
                             </AdminRoute>
                         }
@@ -186,7 +234,7 @@ function App() {
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorViewTournaments />
+                                    <AdministratorTournaments />
                                 </MainLayout>
                             </AdminRoute>
                         }
@@ -203,13 +251,24 @@ function App() {
                         }
                     />
 
-                    {/* New Route for Editing Tournaments */}
                     <Route
-                        path="/administrator-edit-tournaments" // Updated to include a parameter
+                        path="/administrator-tournament-details"
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorEditTournaments />
+                                    <AdministratorTournamentDetails />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* New Route for Editing Tournaments */}
+                    <Route
+                        path="/administrator-edit-tournaments" 
+                        element={
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorEditTournament />
                                 </MainLayout>
                             </AdminRoute>
                         }
