@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
@@ -40,8 +39,8 @@ public class Tournament {
     @FutureOrPresent(message = "Start date must be today or in the future!")
     private LocalDate startDate;
 
-    @NotNull(message = "End date is required!")
-    private LocalDate endDate;
+    // Set to null if the tournament is not yet ended, this field is only updated when the tournament is ended
+    private LocalDate endDate = null;
     
     @NotBlank(message = "Location is required!")
     private String location;
@@ -60,9 +59,6 @@ public class Tournament {
 
     private List<String> playersPool = new ArrayList<>();
 
-    @Valid
-    private List<Match> matches = new ArrayList<>();
-
     private String remarks;
 
     @NotBlank(message = "Category is required!")
@@ -73,27 +69,23 @@ public class Tournament {
     @Min(value = 2, message = "Player capacity must be at least 2!")
     private Integer playerCapacity;
 
-    private boolean isOngoing = true;
+    // Each tournament has a bracket, 
+    // each bracket has a list of rounds,
+    // each round has a list of matches
+    private Bracket bracket;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Match {
-        @NotNull(message = "Start date is required")
-        private LocalDateTime startDate;
-        private List<String> players;
-        @Valid
-        private List<Round> rounds;
-        private String matchWinner;
-        private boolean isCompleted;
+    public static class Bracket {
+        private List<Round> rounds = new ArrayList<>();
+    }
 
-        @Data
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Round {
-            private String score;
-            private String roundWinner;
-        }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Round {
+        private List<String> matches = new ArrayList<>();
     }
 
     @AssertTrue(message = "End date must be after start date") boolean isValidDateRange() {
