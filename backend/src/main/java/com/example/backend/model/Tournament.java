@@ -39,6 +39,9 @@ public class Tournament {
     @FutureOrPresent(message = "Start date must be today or in the future!")
     private LocalDate startDate;
 
+    @NotNull(message = "Closing signup date is required!")
+    private LocalDate closingSignupDate;
+
     // Set to null if the tournament is not yet ended, this field is only updated when the tournament is ended
     private LocalDate endDate = null;
     
@@ -88,9 +91,14 @@ public class Tournament {
         private List<String> matches = new ArrayList<>();
     }
 
-    @AssertTrue(message = "End date must be after start date") boolean isValidDateRange() {
-        return endDate != null && startDate != null && endDate.isAfter(startDate);
+     // method to set the closingSignupDate and startDate
+     public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+        if (startDate != null) {
+            this.closingSignupDate = startDate.minusWeeks(2);
+        }
     }
+
 
     @AssertTrue(message = "Minimum elo must be less than maximum elo!") boolean isValidEloRange() {
         if (minElo != null && maxElo != null) {

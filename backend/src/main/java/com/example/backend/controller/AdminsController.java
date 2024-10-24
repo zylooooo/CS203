@@ -2,12 +2,16 @@ package com.example.backend.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.exception.AdminNotFoundException;
+import com.example.backend.exception.InvalidStrikeException;
+import com.example.backend.exception.TournamentNotFoundException;
+import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.model.Admin;
 import com.example.backend.service.AdminService;
 
@@ -104,4 +108,36 @@ public class AdminsController {
                 .body(Map.of("error", "An unexpected error occurred during admin deletion"));
         }
     }
+
+    @PostMapping("/strike")
+    public ResponseEntity<?> strikeUser(@RequestBody Map<String, String> strikeRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        String username = strikeRequest.get("username");
+        String tournamentName = strikeRequest.get("tournamentName");
+        String reportDetails = strikeRequest.get("reportDetails");
+
+        if (username == null || tournamentName == null || reportDetails == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Missing required fields"));
+        }
+
+        try {
+            adminService.strikeUser(adminName, username, tournamentName, reportDetails);
+            return ResponseEntity.ok(Map.of("message", "Strike issued successfully"));
+        } catch (UserNotFoundException | TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (InvalidStrikeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error during strike issuance: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while issuing the strike"));
+        }
+    }
+
+
+
 }
