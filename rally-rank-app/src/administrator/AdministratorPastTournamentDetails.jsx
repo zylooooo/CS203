@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-// ROUTERS NEED TO BE CHECKED AND CHANGED
 
 // Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
 const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {

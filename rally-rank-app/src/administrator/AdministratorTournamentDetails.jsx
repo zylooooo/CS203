@@ -73,7 +73,7 @@ const AdministratorTournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
+            <div className = "flex flex-col w-3/5 gap-4 border2 p-10 rounded-[8px]">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
                         <FontAwesomeIcon
@@ -96,16 +96,16 @@ const AdministratorTournamentDetails = () => {
                 <p className = "mb-2 text-lg">
                     {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
                     ? <span><strong> Slots Available: </strong> {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length} </span>
-                    : <span><strong> "Slots are full!"</strong></span>}                    
+                    : <span><strong> Slots are full!</strong></span>}                    
                 </p>
 
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
-                <div className = "map-api-container h-64 border rounded-[8px]">
+                <div className = "map-api-container h-64 border2 rounded-[8px]">
                     <p className = "text-center p-4"> Insert map here. </p>
                 </div>
 
                 <div className = "flex justify-between items-start mt-4">
-                    <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
+                    <div className = "players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
                         <p
@@ -139,7 +139,7 @@ const AdministratorTournamentDetails = () => {
                         <button
                             // WIP: To be updated when API call to generate brackets are finalised.
                             // onClick = {handleGenerateBracketsClick}
-                            className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
+                            className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
                         >
                             Generate Brackets
                         </button>
@@ -147,7 +147,7 @@ const AdministratorTournamentDetails = () => {
                         <button
                             // WIP: To be updated when API call for fixtures (brackets) are finalised.
                             // onClick = {handleShowFixturesClick}
-                            className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
+                            className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
                         >
                             Show Fixtures
                         </button>
