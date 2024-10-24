@@ -36,7 +36,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border2 card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -75,11 +75,12 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
                         <div className = "edit-tournament-button mt-auto ml-auto">
                         {isMyTournaments && (
                         <button
-                            onClick={(e) => {
+                            onClick = {(e) => {
                                 e.stopPropagation();
                                 handleEditClick(tournament.tournamentName);
                             }}
-                            className="font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
+                            className = "font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
+                            style = {{ color: "#80B577" }}
                         >
                             Edit Tournament
                         </button>
@@ -243,7 +244,7 @@ function AdministratorTournaments() {
     //------------------------------------------------------------------------------------
 
     return (
-        <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
+        <div className = {`tournaments-page main-container flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
 
                 {/* LABELS */}
@@ -258,9 +259,9 @@ function AdministratorTournaments() {
                             placeholder = "Search by Tournament Name or Admin Name"
                             value = { searchTerm }
                             onChange = { (e) => setSearchTerm(e.target.value) }
-                            className = "p-2 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className = "card-background p-2 border2 border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
+                        <button className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
                             Search
                         </button>
                     </div>

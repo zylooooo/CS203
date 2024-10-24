@@ -47,7 +47,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
     }, []);
 
     return (
-        <div className = "mt-5 edit-tournament-details p-6 rounded-lg shadow-md w-3/5 mx-auto">
+        <div className = "mt-5 edit-tournament-details p-6 card-background rounded-lg shadow-md w-3/5 mx-auto">
             <form onSubmit = { handleSubmit(onSubmit) }>
                 <h2 className = "text-xl font-extrabold">Edit Tournament</h2>
 
@@ -56,7 +56,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "tournamentName" className = "block text-sm font-medium text-gray-700">Tournament Name</label>
                         <input
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             type = "text"
                             id = "tournamentName"
                             placeholder = "Enter Tournament Name"
@@ -69,7 +69,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "startDate" className = "block text-sm font-medium text-gray-700">Start Date</label>
                         <input
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             type = "date"
                             id = "startDate"
                             defaultValue = { tournament.startDate }
@@ -81,7 +81,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "venue" className = "block text-sm font-medium text-gray-700">Venue</label>
                         <input
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             type = "text"
                             id = "venue"
                             defaultValue = { tournament.location }
@@ -93,7 +93,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "gender" className = "block text-sm font-medium text-gray-700">Gender Specification</label>
                         <select
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             id = "gender"
                             defaultValue = { tournament.gender }
                             {...register("gender", { required: "Gender specification is required" })}
@@ -108,7 +108,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "category" className = "block text-sm font-medium text-gray-700">Age Category</label>
                         <select
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             id = "category"
                             defaultValue = { tournament.category }
                             {...register("category", { required: "Age category is required" })}
@@ -125,7 +125,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                         <label htmlFor = "minElo" className = "block text-sm font-medium text-gray-700">Elo Rating Range</label>
                         <div className="flex gap-2">
                             <input
-                                className = "border p-2 w-full"
+                                className = "border2 p-2 w-full"
                                 type = "number"
                                 id = "minElo"
                                 placeholder = "Min Elo"
@@ -134,7 +134,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             />
                             <span>-</span>
                             <input
-                                className = "border p-2 w-full"
+                                className = "border2 p-2 w-full"
                                 type = "number"
                                 id = "maxElo"
                                 placeholder = "Max Elo"
@@ -148,7 +148,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "maxPlayers" className = "block text-sm font-medium text-gray-700">Max Players</label>
                         <input
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             type = "number"
                             id = "maxPlayers"
                             defaultValue = { tournament.playerCapacity }
@@ -160,7 +160,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                     <div className = "flex flex-col gap-1">
                         <label htmlFor = "remarks" className = "block text-sm font-medium text-gray-700">Remarks</label>
                         <input
-                            className = "border p-2 w-full"
+                            className = "border2 p-2 w-full"
                             type = "text"
                             id = "remarks"
                             defaultValue = { tournament.remarks }
@@ -169,7 +169,7 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
 
                     <div className = "flex justify-evenly gap-5 p-10">
                         <button
-                            className = "font-bold border px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
+                            className = "font-bold border2 px-14 py-2 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green"
                             type = "submit"
                         >
                             Update Tournament

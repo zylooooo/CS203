@@ -36,6 +36,11 @@
         border-radius: 1rem;
     }
 
+    .border2 {
+        border-radius: 1rem;
+        border: 1px solid #d4d4d4;
+    }
+
     .leaderboard-box {
         border-radius: 5px;
     }
@@ -93,6 +98,10 @@
 
     body {
         background-color: #fffcf2;
+    }
+
+    .card-background {
+        background-color: #fffdf9;
     }
 
     .bg-custom-green {
