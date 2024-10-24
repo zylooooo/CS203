@@ -1,9 +1,10 @@
 package com.example.backend.service;
 
-import com.example.backend.model.Tournament;
-import com.example.backend.model.User;
-import com.example.backend.repository.TournamentRepository;
-import com.example.backend.repository.UserRepository;
+import com.example.backend.model.*;
+import com.example.backend.repository.*;
+
+import jakarta.validation.constraints.NotNull;
+
 import com.example.backend.exception.*;
 
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TournamentService {
 
+
     private final TournamentRepository tournamentRepository;
     private final UserRepository userRepository;
+    private final MatchRepository matchRepository;
     private final LocalValidatorFactoryBean validator;
 
     private static final Logger logger = LoggerFactory.getLogger(TournamentService.class);
@@ -389,6 +392,8 @@ public class TournamentService {
             tournamentToJoin.getPlayersPool().add(username);
             tournamentRepository.save(tournamentToJoin);
 
+            // Update the 
+
             logger.info("User '{}' successfully joined tournament '{}'", username, tournamentName);
         } catch (TournamentNotFoundException | InvalidJoinException e) {
             logger.info("Join tournament failed: {}", e.getMessage());
@@ -448,6 +453,167 @@ public class TournamentService {
             throw new RuntimeException("Unexpected error occurred while fetching tournament history for admin", e);
         }
     }
+
+    /**
+     * Updates a tournament's details based on the provided tournament name and new details.
+     * There are two cases:
+     * 1) If there is at least one user in the playersPool, only certain fields can be updated.
+     * 2) If there are no players in playersPool, more fields can be updated.
+     *
+     * @param tournamentName    the name of the tournament to be updated.
+     * @param newTournamentDetails the Tournament object containing the new details.
+     * @return a map containing the updated Tournament object or errors if any.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the new tournament details are invalid.
+     * @throws RuntimeException if there is an unexpected error during the update.
+     */
+    public Map<String, Object> updateTournament(@NotNull String tournamentName, @NotNull Tournament newTournamentDetails)
+            throws TournamentNotFoundException, IllegalArgumentException, MatchNotFoundException {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
+
+        Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+                .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        // Check if the tournament has ended
+        if (tournament.getEndDate() != null) {
+            errors.put("error", "Cannot update a tournament that has already ended");
+            response.put("errors", errors);
+            return response;
+        }
+
+        try {
+            Errors validationErrors = new BeanPropertyBindingResult(newTournamentDetails, "tournament");
+            validator.validate(newTournamentDetails, validationErrors);
+
+            if (validationErrors.hasErrors()) {
+                validationErrors.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+                );
+            }
+
+            boolean hasPlayers = !tournament.getPlayersPool().isEmpty();
+
+            // Common validations for both cases
+
+            // Check if the tournament name is already taken
+            if (newTournamentDetails.getTournamentName() != null && !tournament.getTournamentName().equals(newTournamentDetails.getTournamentName())) {
+                if (tournamentRepository.existsByTournamentName(newTournamentDetails.getTournamentName())) {
+                    errors.put("tournamentName", "Tournament name already exists!");
+                }
+            }
+
+            // Check if the start date is at least one month after the creation date
+            if (newTournamentDetails.getStartDate() != null && 
+                newTournamentDetails.getStartDate().isBefore(tournament.getCreatedAt().toLocalDate().plusMonths(1))) {
+                errors.put("startDate", "Start date must be at least one month after the creation date!");
+            }
+
+            // Check if the player capacity is not less than the current number of players
+            if (newTournamentDetails.getPlayerCapacity() != null && 
+                newTournamentDetails.getPlayerCapacity() < tournament.getPlayersPool().size()) {
+                errors.put("playerCapacity", "Player capacity cannot be less than the current number of players!");
+            }
+
+            // Case 2: No players in playersPool
+            if (!hasPlayers) {
+                // Check if the elo range is valid
+                if (newTournamentDetails.getMinElo() != null && newTournamentDetails.getMaxElo() != null &&
+                    newTournamentDetails.getMinElo() > newTournamentDetails.getMaxElo()) {
+                    errors.put("eloRange", "Minimum elo must be less than or equal to maximum elo!");
+                }
+            }
+
+            if (!errors.isEmpty()) {
+                response.put("errors", errors);
+                return response;
+            }
+
+            // Update non null fields
+
+            Optional.ofNullable(newTournamentDetails.getCreatedBy()).ifPresent(tournament::setCreatedBy);
+            Optional.ofNullable(newTournamentDetails.getLocation()).ifPresent(tournament::setLocation);
+            Optional.ofNullable(newTournamentDetails.getTournamentName()).ifPresent(name -> {
+                tournament.setTournamentName(name);
+                updateMatchesTournamentName(tournamentName, name);
+            });
+            tournament.setUpdatedAt(LocalDateTime.now());
+            Optional.ofNullable(newTournamentDetails.getStartDate()).ifPresent(tournament::setStartDate);
+            Optional.ofNullable(newTournamentDetails.getRemarks()).ifPresent(tournament::setRemarks);
+            Optional.ofNullable(newTournamentDetails.getPlayerCapacity()).ifPresent(tournament::setPlayerCapacity);
+
+            // Update the elo range, gender, category and closing signup date if there are no players in the playersPool
+            if (!hasPlayers) {
+                Optional.ofNullable(newTournamentDetails.getMinElo()).ifPresent(tournament::setMinElo);
+                Optional.ofNullable(newTournamentDetails.getMaxElo()).ifPresent(tournament::setMaxElo);
+                Optional.ofNullable(newTournamentDetails.getGender()).ifPresent(tournament::setGender);
+                Optional.ofNullable(newTournamentDetails.getCategory()).ifPresent(tournament::setCategory);
+            }
+
+            response.put("tournament", tournamentRepository.save(tournament));
+        } catch (Exception e) {
+            response.put("error", "An unexpected error occurred during tournament update");
+            throw e;
+        }
+
+        return response;
+    }
+
+    /*
+     * Helper method used by updateTournament to update the matches for a tournament.
+     * When the tournament name is updated, the matches for the tournament must be updated as well.
+     * 
+     * @param oldTournamentName the old name of the tournament.
+     * @param newTournamentName the new name of the tournament.
+     * @throws MatchNotFoundException if no matches are found for the tournament.
+     */
+
+    private void updateMatchesTournamentName(String oldTournamentName, String newTournamentName) {
+        List<Match> matches = matchRepository.findByTournamentName(oldTournamentName)
+            .orElseThrow(() -> new MatchNotFoundException(oldTournamentName));
+        
+        for (Match match : matches) {
+            match.setTournamentName(newTournamentName);
+            matchRepository.save(match);
+        }
+    }
+
+    /*
+     * Deletes a tournament and related matches.
+     * 
+     * @param tournamentName the name of the tournament to be deleted.
+     * @param adminName the name of the admin who created the tournament.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the tournament does not belong to the admin or has already ended.
+     */
+
+    public void deleteTournament(String tournamentName, String adminName) 
+        throws TournamentNotFoundException, IllegalArgumentException {
+    Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        // Check if the tournament belongs to the admin
+        if (!tournament.getCreatedBy().equals(adminName)) {
+            throw new IllegalArgumentException("You did not create this tournament!");
+        }
+
+        // Check if the tournament has ended
+        if (tournament.getEndDate() != null) {
+            throw new IllegalArgumentException("Cannot delete a tournament that has already ended");
+        }
+
+        // Delete related matches
+        List<Match> matches = matchRepository.findByTournamentName(tournamentName)
+                .orElse(Collections.emptyList());
+        matchRepository.deleteAll(matches);
+
+        // Delete the tournament
+        tournamentRepository.delete(tournament);
+
+        logger.info("Tournament and related matches deleted successfully: {}", tournamentName);
+    }
+
+
     
 
     
