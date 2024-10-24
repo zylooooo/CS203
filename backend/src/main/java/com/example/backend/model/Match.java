@@ -22,8 +22,6 @@ public class Match {
 
     @NotBlank(message = "Tournament name is required!")
     private String tournamentName;
-    private String matchName;
-
     @NotNull(message = "Start date is required!")
     private LocalDateTime startDate;
 
