@@ -243,10 +243,6 @@ const StrikeReport = ({ player, onClose, setPlayers }) => {
     console.log(data);
     onClose();
     
-    // EDIT TO ADD STRIKE REPORT TO STRIKEREPORT ARRAY (POST)
-    // 1. reportDetails = data.reason
-    // 2. dateCreated = new Date()
-    // 3. issuedBy = get adminName from session
     setPlayers((prevPlayers) => {
       const updatedPlayers = [...prevPlayers];
       const playerIndex = updatedPlayers.findIndex(

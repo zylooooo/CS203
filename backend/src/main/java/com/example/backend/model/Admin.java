@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.validation.constraints.*;
 
-import java.util.List;
 import java.time.LocalDateTime;
 
 @Data
@@ -35,10 +34,6 @@ public class Admin {
     @NotBlank(message = "Password is required!")
     @Size(min = 8, message = "Password must be at least 8 characters long!") 
     private String password;
-
-    private List<String> createdTournaments;
-
-    private String profilePic;
 
     @Indexed(unique = true)
     @NotBlank(message = "Admin name is required!")

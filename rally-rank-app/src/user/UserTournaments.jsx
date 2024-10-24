@@ -31,11 +31,16 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
 }
 
 // Component: Tournament Card (for UserTournaments)
-const TournamentCard = ({ tournamentType }) => {
+const TournamentCard = ({ tournamentType, isAvailable }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate("/tournament-details", { state: { tournamentName: tournament.tournamentName } });      // Only pass the tournament name state, for backend call in TournamentDetails.jsx
+        navigate("/tournament-details", { 
+            state: {
+                tournamentName: tournament.tournamentName,
+                isAvailable,
+            }
+        });
     };
 
     const formatDate = (dateString) => {
@@ -104,6 +109,8 @@ const TournamentCard = ({ tournamentType }) => {
 function UserTournaments() {
 
     // ------------------------------------- Tournament Functions -------------------------------------
+    const [activeButton, setActiveButton] = useState(0);
+    
     const [displayTournamentType, setDisplayTournamentType] = useState([]);
 
     const [availableTournaments, setAvailableTournaments] = useState([]);
@@ -113,10 +120,12 @@ function UserTournaments() {
     const [loading, setLoading] = useState(true);
 
     const handleAvailableTournamentClick = () => {
+        setActiveButton(0);
         getAvailableTournaments();
     }
 
     const handleMyScheduledTournamentsClick = () => {
+        setActiveButton(1);
         getMyScheduledTournaments();
         setDisplayTournamentType(myScheduledTournaments)
     }
@@ -170,6 +179,7 @@ function UserTournaments() {
                     }
                 }
             );
+            console.log("scheduled: ", response.data);
             setMyScheduledTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
@@ -207,7 +217,7 @@ function UserTournaments() {
                 {loading ? (
                     <p> Loading tournaments... </p>
                     ) : displayTournamentType.length > 0 ? (
-                    <TournamentCard tournamentType = {displayTournamentType} />
+                    <TournamentCard tournamentType = {displayTournamentType} isAvailable = {activeButton === 0} />
                     ) : (
                     <p> No tournaments found. </p>
                 )}

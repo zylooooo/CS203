@@ -8,7 +8,7 @@ import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
-import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
+import CreateTournaments from "./administrator/CreateTournaments";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
@@ -245,7 +245,7 @@ function App() {
                         element={
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorCreateTournaments />
+                                    <CreateTournaments />
                                 </MainLayout>
                             </AdminRoute>
                         }

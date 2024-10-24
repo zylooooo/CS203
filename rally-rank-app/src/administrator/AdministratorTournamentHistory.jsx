@@ -2,7 +2,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// Component: Tournament Card (for AdministratorTournaments)
+// WIP: Tournaments under 'All Past Tournaments' doesn't allow Admin to Strike players, even if created by Admin
+
+// Component: Tournament Card (for AdministratorTournamentHistory)
 const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
@@ -24,17 +26,10 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
         }, 200);
     }
 
-    const handleEditClick = (tournamentName) => {
-        setIsTransitioning(true);
-        setTimeout(() => {
-            navigate("/administrator-edit-tournaments", { state: tournamentName });
-        }, 200);
-    }
-
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border2 rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -43,7 +38,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
                         <div className = "flex items-center mb-2 justify-between">
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
-                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
+                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}</p>
                         <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
                         <p className = "mb-2"> Game: {tournament.category} </p>
                         <p className = "mb-2"> Gender: {tournament.gender} </p>
@@ -69,20 +64,6 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
                         )}
                         </div>
 
-                        {/* EDIT TOURNAMENT BUTTON */}
-                        {/* <div className = "edit-tournament-button mt-auto ml-auto">
-                        {isMyPastTournaments && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditClick(tournament.tournamentName);
-                            }}
-                            className="font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
-                        >
-                            Edit Tournament
-                        </button>
-                        )}
-                        </div> */}
                     </div>
 
                 </div>
@@ -91,10 +72,10 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
     );
 };
 
-// Component: Tournaments Buttons (for AdministratorTournaments)
+// Component: Tournaments Buttons (for AdministratorTournamentHistory)
 const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
 
-    const [activeButton, setActiveButton] = useState(0); // 'All Tournaments' Button will be the first active button
+    const [activeButton, setActiveButton] = useState(0); // 'All Past Tournaments' Button will be the first active button
 
     const handleButtonClick = (index) => {
         setActiveButton(index);
@@ -164,9 +145,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-
-                // EDIT ROUTER
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/all-history",
                 {
                     withCredentials: true,
                     headers: {
@@ -179,7 +158,9 @@ function AdministratorTournamentHistory() {
             setTournaments(response.data); 
 
         } catch (error) {
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setAllPastTournaments([]);
             setTournaments([]); 
         }
@@ -195,9 +176,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-
-              // EDIT ROUTER 
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/my-history",
                 {
                     withCredentials: true,
                     headers: {
@@ -210,8 +189,9 @@ function AdministratorTournamentHistory() {
             setTournaments(response.data); 
 
         } catch (error) {
-
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setMyPastTournaments([]); 
             setTournaments([]); 
         }
@@ -223,27 +203,44 @@ function AdministratorTournamentHistory() {
     }, []);
 
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
+
     return (
         <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
-            <div className = "row-container flex flex-col w-full p-14 gap-8">
+            <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
 
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                {/* SEARCH BAR */}
-                <div className = "tournaments-search-bar flex gap-3">
-                <input
-                className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type = "text"
-                placeholder = "Search tournaments..."
-                />
-                <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-                    Search
-                </button>
-                </div>
+                <div className="flex flex-col">
 
-                {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+                    {/* SEARCH BAR */}
+                    <div className = "tournaments-search-bar flex mb-5 gap-3">
+                        <input
+                            type = "text"
+                            placeholder = "Search by Tournament Name or Admin Name"
+                            value = { searchTerm }
+                            onChange = { (e) => setSearchTerm(e.target.value) }
+                            className = "p-2 border2 border-gray-300 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
+                            Search
+                        </button>
+                    </div>
+
+                    {/* TOURNAMENT LISTS */}
+                    <Tournaments tournaments = { filteredTournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+
+                </div>
 
             </div>
         </div>

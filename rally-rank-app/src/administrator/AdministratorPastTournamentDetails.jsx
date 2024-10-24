@@ -1,10 +1,124 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-// Component: Tournament Details Card
+
+// Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
+const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
+
+    const { register, handleSubmit, formState: { errors }} = useForm();
+
+    // API Call: Create and issue strike to user
+    async function strikeUser(reportDetails) {
+        try {
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            if (!adminData || !adminData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.post(
+                "http://localhost:8080/admins/strike",
+                {
+                    username: strikePlayer,
+                    tournamentName: tournamentName,
+                    reportDetails: reportDetails
+                },
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`
+                    }
+                }
+            );
+
+            console.log(response.data);
+            return response.data;
+
+        } catch (error) {
+
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error submiting strike:', error.response.data.error);
+    
+        }
+    }
+
+    const onSubmit = async (data) => {
+        const response = await strikeUser(data.reason);
+
+        if (response !== undefined) {
+            alert("Strike successfully issued!");
+            setStrikeOpen(false);
+        }
+    }
+
+    return (
+        <div className="main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
+            <div className = "strike-report-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[550px] bg-primary-color-white">
+                <form onSubmit = { handleSubmit(onSubmit) }>
+                    <div className = "flex flex-col gap-6"> 
+
+                        <div className = "flex flex-col gap-2">
+                            <h1 className = "text-2xl font-semibold">Strike Report</h1>
+                            <p className = "text-sm font-medium">
+                                Strikes are issued to players who have displayed unsportsmanlike conduct during tournaments.
+                            </p>
+                            <p className = "text-sm font-medium" style={{ color: '#FF6961' }}>
+                                Issuing a strike to this player will temporarily ban them from joining your future tournaments.
+                            </p>
+                        </div>
+
+                        <div className = "flex flex-col gap-2 justify-evenly">
+                            <label
+                                htmlFor = "reason"
+                                className = "block text-sm"
+                            >
+                                Please state your reason for issuing this strike to <strong> {strikePlayer}</strong>.
+                            </label>
+                            <input
+                                className = "border-b shadow-sm p-2"
+                                type = "text"
+                                id = "reason"
+                                placeholder = "Reason"
+                                {...register("reason", {
+                                    required: "This field is required.",
+                                })}
+                            />
+                            <p className = "error"> {errors.reason?.message} </p>
+                        </div>
+
+                        <div className = "flex justify-between">
+                            {/* CANCEL */}
+                            <button
+                                type = "button"
+                                onClick = {() => setStrikeOpen(false)}
+                                className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
+                            >
+                                Cancel
+                            </button>
+
+                            {/* SUBMIT */}
+                            <button
+                                type = "submit"
+                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                            >
+                                Submit
+                            </button>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    );
+}
+
+// Component: Tournament Details Card (for AdministratorTournamentHistory)
 const AdministratorPastTournamentDetails = () => {
     const navigate = useNavigate();
 
@@ -21,6 +135,19 @@ const AdministratorPastTournamentDetails = () => {
     const handleBackButtonClick = () => {
         navigate(fromPage);
     }
+
+    // -------------------------- STRIKE REPORT FUNCTIONS ------------------------------
+
+    const [strikeOpen, setStrikeOpen] = useState(false);
+
+    const [strikePlayer, setStrikePlayer] = useState("");
+
+    const handleIssueStrikeClick = (player) => {
+        setStrikePlayer(player);
+        setStrikeOpen(true);
+    }
+
+    // --------------------------------------------------------------------------------
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -56,15 +183,15 @@ const AdministratorPastTournamentDetails = () => {
             }
 
         } catch (error) {
-
-            console.error('Error fetching tournament:', error);
+            alert(error.response.data.error);
+            console.error('Error fetching tournament:', error.response.data.error);
             setTournamentDetails({});
 
         } 
     }
 
     useEffect(() => {
-        getTournamentByName(tournamentName);
+        getTournamentByName(tournamentName); 
     }, []);
 
     if (!tournamentDetails) {
@@ -74,7 +201,7 @@ const AdministratorPastTournamentDetails = () => {
     }
 
     return (
-        <div className = "tournament-card-template main-container flex">
+        <div className = "tournament-card-template main-container flex relative">
             <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
@@ -86,7 +213,7 @@ const AdministratorPastTournamentDetails = () => {
                         <h1 className = "text-2xl font-bold mb-2 mt-1"> {tournamentDetails.tournamentName} </h1>
                     </div>
                 </div>
-                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} </p>
+                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} - {formatDate(tournamentDetails.endDate)}</p>
                 <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
                 <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
                 <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
@@ -102,17 +229,21 @@ const AdministratorPastTournamentDetails = () => {
                     <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
-                        <p className = "text-md text-gray-500 absolute top-4 right-4 font-semibold">
+                        <p className = "text-md text-gray-500 absolute top-4 right-10 font-semibold">
                             Total Players: {tournamentDetails.playersPool.length}
                         </p>
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
                                     <li key = {index} className = "mt-5 mb-5 flex justify-between items-center"> 
-                                        <span>{index}. {player}</span>
+                                        <span>{index}. {player} </span>
                                         { isMyPastTournament && (
-                                          <button className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold self-end ">
-                                              Strike
+                                          <button 
+                                          className = "px-4 py-2 mr-6 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end text-primary-color-white"
+                                          style = {{ backgroundColor: "#FF6961"}}
+                                          onClick = {() => handleIssueStrikeClick(player) }
+                                          >
+                                              Issue Strike
                                           </button>
                                         )}
                                     </li>
@@ -133,6 +264,12 @@ const AdministratorPastTournamentDetails = () => {
 
                 </div>
             </div>
+
+            {/* STRIKE REPORT CARD */}
+            {strikeOpen && 
+                <StrikeReportCard tournamentName = { tournamentName } strikePlayer = { strikePlayer } setStrikeOpen = { setStrikeOpen }/> 
+            }
+
         </div>
     );
 };

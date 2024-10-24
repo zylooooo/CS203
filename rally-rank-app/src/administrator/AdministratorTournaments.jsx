@@ -2,6 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
+// WIP: Tournaments under 'All Tournaments' doesn't allow Admin to edit tournament details, even if created by Admin
+
 // Component: Tournament Card (for AdministratorTournaments)
 const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
 
@@ -34,7 +36,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border2 card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -73,11 +75,12 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
                         <div className = "edit-tournament-button mt-auto ml-auto">
                         {isMyTournaments && (
                         <button
-                            onClick={(e) => {
+                            onClick = {(e) => {
                                 e.stopPropagation();
                                 handleEditClick(tournament.tournamentName);
                             }}
-                            className="font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
+                            className = "font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
+                            style = {{ color: "#80B577" }}
                         >
                             Edit Tournament
                         </button>
@@ -126,6 +129,7 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
 
 function AdministratorTournaments() {
 
+//--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
 
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -170,9 +174,7 @@ function AdministratorTournaments() {
             }
 
             const response = await axios.get(
-
-                // MAY HAVE TO CHANGE ROUTER
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/ongoing",
                 {
                     withCredentials: true,
                     headers: {
@@ -185,7 +187,9 @@ function AdministratorTournaments() {
             setTournaments(response.data); 
 
         } catch (error) {
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setAllTournaments([]); 
             setTournaments([]); 
         }
@@ -201,8 +205,7 @@ function AdministratorTournaments() {
             }
 
             const response = await axios.get(
-              // EDIT ROUTER WHEN BACKEND LOGIC IS IMPLEMENTED
-                "http://localhost:8080/admins/tournaments",
+                "http://localhost:8080/admins/tournaments/scheduled",
                 {
                     withCredentials: true,
                     headers: {
@@ -215,8 +218,9 @@ function AdministratorTournaments() {
             setTournaments(response.data); 
 
         } catch (error) {
-
-            console.error('Error fetching available tournaments:', error);
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error fetching available tournaments:', error.response.data.error);
             setMyTournaments([]); 
             setTournaments([]); 
     
@@ -229,37 +233,53 @@ function AdministratorTournaments() {
     }, []);
 
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
     return (
-        <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
-            <div className = "row-container flex flex-col w-full p-14 gap-8">
+        <div className = {`tournaments-page main-container flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
+            <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
 
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Tournaments", "My Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                {/* SEARCH BAR */}
-                <div className = "tournaments-search-bar flex gap-3">
-                <input
-                className = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type = "text"
-                placeholder = "Search tournaments..."
-                />
-                <button className = "border border-blue-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white transition">
-                    Search
-                </button>
+                <div className="flex flex-col">
+
+                    {/* SEARCH BAR */}
+                    <div className = "tournaments-search-bar flex mb-5 gap-3">
+                        <input
+                            type = "text"
+                            placeholder = "Search by Tournament Name or Admin Name"
+                            value = { searchTerm }
+                            onChange = { (e) => setSearchTerm(e.target.value) }
+                            className = "card-background p-2 border2 border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
+                            Search
+                        </button>
+                    </div>
+
+                    {/* TOURNAMENT LISTS */}
+                    <Tournaments tournaments = { filteredTournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
+
                 </div>
 
-                {/* TOURNAMENT LISTS */}
-                <Tournaments tournaments = { tournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
-
                  {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-12 bottom-8 justify-end cursor-zoom-in ">
-                <button
-                onClick = {handleCreateClick}
-                className = "body font-semibold py-2 px-4 rounded-lg shadow-md  hover:shadow-md transition duration-300 ease-in-out "
-                style = {{ backgroundColor: "#fffcf2" }}
-                >
-                    Create Tournament
-                </button>
+                <div className = "tournament-actions flex fixed right-14 bottom-8 justify-end cursor-zoom-in ">
+                    <button
+                    onClick = { handleCreateClick }
+                    className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-custom-green text-primary-color-white hover:shadow-md transition duration-300 ease-in-out"
+                    // style = {{ backgroundColor: "#56AE57" }}
+                    >
+                        Create Tournament
+                    </button>
                 </div>
 
             </div>
