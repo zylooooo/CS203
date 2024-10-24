@@ -16,9 +16,15 @@ function AdministratorLogin() {
   const form = useForm();
   const { register, control, handleSubmit, formState } = form;
   const { errors } = formState;
-  const { loginAdmin } = useAuth(); // Destructure loginAdmin from AuthContext
+  const { loginAdmin, isAdminLoggedIn } = useAuth(); // Destructure loginAdmin from AuthContext
   const navigate = useNavigate(); // For navigation after login
   const [loginError, setLoginError] = useState(""); // State for handling login errors
+
+  useEffect(() => {
+    if (isAdminLoggedIn) {
+      navigate("administrator-tournaments");
+    }
+  }, [navigate, isAdminLoggedIn])
 
   async function authenticateAdmin(adminName, password) {
       try {

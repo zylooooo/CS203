@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { useFormState } from 'react-hook-form';
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -8,19 +9,24 @@ export const useAuth = () => useContext(AuthContext);
 
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // For player/user
-    const [admin, setAdmin] = useState(null); // For admin
+    const [user, setUser] = useState(null);
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+    const [admin, setAdmin] = useState(null);
+    const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+    const [currentPath, setCurrentPath] = useState("");
 
     useEffect(() => {
         // Check for stored user in localStorage
         const storedUser = JSON.parse(localStorage.getItem('userData'));
+        const storedAdmin = JSON.parse(localStorage.getItem('adminData'));
+
         if (storedUser) {
+            setIsUserLoggedIn(true);
             setUser(storedUser);
         }
 
-        // Check for stored admin in localStorage
-        const storedAdmin = JSON.parse(localStorage.getItem('adminData'));
         if (storedAdmin) {
+            setIsAdminLoggedIn(true);
             setAdmin(storedAdmin);
         }
     }, []);
@@ -28,24 +34,28 @@ export const AuthProvider = ({ children }) => {
     // Login as user
     const loginUser = (userData) => {
         setUser(userData);
+        setIsUserLoggedIn(true);
         localStorage.setItem('userData', JSON.stringify(userData));
     };
     
     // Login as admin
     const loginAdmin = (adminData) => {
         setAdmin(adminData);
+        setIsAdminLoggedIn(true);
         localStorage.setItem('adminData', JSON.stringify(adminData));
     };
 
     // Logout user
     const logoutUser = () => {
         setUser(null);
+        setIsUserLoggedIn(false);
         localStorage.removeItem('userData');
     };
 
     // Logout admin
     const logoutAdmin = () => {
         setAdmin(null);
+        setIsAdminLoggedIn(false);
         localStorage.removeItem('adminData');
     };
 
@@ -53,13 +63,15 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider
             value={{
                 user,
-                admin,
                 loginUser,
-                loginAdmin,
                 logoutUser,
+                isUserLoggedIn,
+                admin,
+                loginAdmin,
                 logoutAdmin,
-                isUserLoggedIn: !!user,
-                isAdminLoggedIn: !!admin,
+                isAdminLoggedIn,
+                currentPath,
+                setCurrentPath,
             }}
         >
             {children}
