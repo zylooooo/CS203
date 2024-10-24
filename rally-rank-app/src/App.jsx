@@ -58,15 +58,15 @@ function App() {
                         }
                     />
 
-                    {/* NEWS PAGE */}
-                    <Route
+                    {/* NEWS PAGE --> KIV */}
+                    {/* <Route
                         path = "/news"
                         element = {
                             <MainLayout>
                                 <News />
                             </MainLayout>
                         }
-                    />
+                    /> */}
 
                     {/* USER SIGNUP PAGE */}
                     <Route
