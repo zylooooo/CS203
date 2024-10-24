@@ -49,17 +49,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('adminData');
     };
 
-    // TESTING CODE REMOVE LATER
-    const manualLoginUser = () => {
-        const testUser = { name: "Test User", role: "user" };
-        loginUser(testUser);
-    };
-    
-    const manualLoginAdmin = () => {
-        const testAdmin = { name: "Test Admin", role: "admin" };
-        loginAdmin(testAdmin);
-    };
-
     return (
         <AuthContext.Provider
             value={{

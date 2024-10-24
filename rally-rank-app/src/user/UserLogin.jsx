@@ -79,6 +79,7 @@ function UserLogin() {
                 username: formData.username,
                 role: "USER",
                 jwtToken: response.token,
+                jwtExpiration: response.expiresIn,
                 gender: userDataResponse.gender,
                 available: userDataResponse.available,
             };
