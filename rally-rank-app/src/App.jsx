@@ -1,44 +1,45 @@
+// Package Imports
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // CSS imports
 import "./index.css";
 
-// Administrator imports
-import AdministratorSignup from "./administrator/AdministratorSignup";
-import AdminVerify from "./administrator/AdminVerify";
-import AdministratorLogin from "./administrator/AdministratorLogin";
-import AdministratorTournaments from "./administrator/AdministratorTournaments";
-import CreateTournaments from "./administrator/CreateTournaments";
-import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
-import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
-import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
-import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
-
-// Component imports
+// Assets and Component Imports
 import MainLayout from "./components/MainLayout";
 
-// Public imports
+// Public Imports
+// import News from "./public/News";                    --> KIV: To be implemented if time permits.
 import MainHomepage from "./public/MainHomepage";
-import News from "./public/News";
 
-// User imports
+// User Imports
 import UserHome from "./user/UserHome";
-import UserSignUp from "./user/UserSignUp";
 import UserLogin from "./user/UserLogin";
-import UserProfile from "./user/UserProfile";
-import UserTournaments from "./user/UserTournaments";
-import TournamentDetails from "./user/TournamentDetails";
 import UserVerify from "./user/UserVerify";
+import UserSignUp from "./user/UserSignUp";
+import UserProfile from "./user/UserProfile";
 import UserEditProfile from "./user/UserEditProfile";
+import UserTournaments from "./user/UserTournaments";
 import OtherUserProfile from "./user/OtherUserProfile";
+import TournamentDetails from "./user/TournamentDetails";
 import UserPastTournaments from "./user/UserPastTournaments";
 
-// Authentication imports
-import { AuthProvider } from "./authentication/AuthContext";
-import PrivateRoute from "./authentication/PrivateRoute";
-import AdminRoute from "./authentication/AdminRoute";
+// Administrator Imports
+import AdminVerify from "./administrator/AdminVerify";
+import CreateTournaments from "./administrator/CreateTournaments";
+import AdministratorLogin from "./administrator/AdministratorLogin";
+import AdministratorSignup from "./administrator/AdministratorSignup";
+import AdministratorTournaments from "./administrator/AdministratorTournaments";
+import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
+import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
+import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
+import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
-// NotFound import
+// Authentication Imports
+import AdminRoute from "./authentication/AdminRoute";
+import PrivateRoute from "./authentication/PrivateRoute";
+import { AuthProvider } from "./authentication/AuthContext";
+
+// Not Found Imports
 import NotFound from "./NotFound";
 
 function App() {
@@ -46,81 +47,81 @@ function App() {
         <AuthProvider>
             <Router>
                 <Routes>
-                    {/* Public Routes */}
-                    {/* MainHomepage */}
+                    {/* ---------------------- PUBLIC ROUTES ---------------------- */}
+                    {/* MAIN PAGE */}
                     <Route
-                        path="/"
-                        element={
+                        path = "/"
+                        element = {
                             <MainLayout>
                                 <MainHomepage />
                             </MainLayout>
                         }
                     />
 
-                    {/* News */}
+                    {/* NEWS PAGE */}
                     <Route
-                        path="/news"
-                        element={
+                        path = "/news"
+                        element = {
                             <MainLayout>
                                 <News />
                             </MainLayout>
                         }
                     />
 
-                    {/* User SignUp */}
+                    {/* USER SIGNUP PAGE */}
                     <Route
-                        path="/auth/user-signup"
-                        element={
+                        path = "/auth/user-signup"
+                        element = {
                             <MainLayout>
                                 <UserSignUp />
                             </MainLayout>
                         }
                     />
 
-                    {/* Admin SignUp */}
+                    {/* ADMINISTRATOR SIGNUP PAGE*/}
                     <Route
-                        path="/administrator-sign-up"
-                        element={
+                        path = "/administrator-sign-up"
+                        element = {
                             <MainLayout>
                                 <AdministratorSignup />
                             </MainLayout>
                         }
                     />
 
-                    {/* UserLogin */}
+                    {/* USER LOGIN PAGE */}
                     <Route
-                        path="/auth/user-login"
-                        element={
+                        path = "/auth/user-login"
+                        element = {
                             <MainLayout>
                                 <UserLogin />
                             </MainLayout>
                         }
                     />
 
-                    {/* UserVerify */}
+                    {/* USER VERIFY PAGE */}
                     <Route
-                        path="/auth/user-verify"
-                        element={
+                        path = "/auth/user-verify"
+                        element = {
                             <MainLayout>
                                 <UserVerify />
                             </MainLayout>
                         }
                     />
 
-                    {/* AdministratorLogin */}
+                    {/* ADMINISTRATOR LOGIN PAGE */}
                     <Route
-                        path="/administrator-login"
-                        element={
+                        path = "/administrator-login"
+                        element = {
                             <MainLayout>
                                 <AdministratorLogin />
                             </MainLayout>
                         }
                     />
 
-                    {/* AdminVerify */}
+                    {/* ADMINISTRATOR VERIFY PAGE */}
                     <Route
-                        path="/auth/admin-verify"
-                        element={
+                        path = "/auth/admin-verify"
+                        element = {
                             <MainLayout>
                                 <AdminVerify />
                             </MainLayout>
@@ -128,10 +129,11 @@ function App() {
                     />
 
 
-                    {/* Protected Player Routes */}
+                    {/* ---------------------- PROTECTED: PLAYER ROUTES ---------------------- */}
+                    {/* USER'S HOME PAGE */}
                     <Route
-                        path="/users/home"
-                        element={
+                        path = "/users/home"
+                        element = {
                             <PrivateRoute>
                                 <MainLayout>
                                     <UserHome />
@@ -140,9 +142,10 @@ function App() {
                         }
                     />
 
+                    {/* USER'S TOURNAMENTS PAGE */}
                     <Route
-                        path="/users/tournaments"
-                        element={
+                        path = "/users/tournaments"
+                        element = {
                             <PrivateRoute>
                                 <MainLayout>
                                     <UserTournaments />
@@ -151,20 +154,10 @@ function App() {
                         }
                     />
 
+                    {/* TOURNAMENT DETAILS */}
                     <Route
-                        path="/user-profile"
-                        element={
-                            <PrivateRoute>
-                                <MainLayout>
-                                    <UserProfile />
-                                </MainLayout>
-                            </PrivateRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/tournament-details"
-                        element={
+                        path = "/tournament-details"
+                        element = {
                             <PrivateRoute>
                                 <MainLayout>
                                     <TournamentDetails />
@@ -173,31 +166,10 @@ function App() {
                         }
                     />
 
+                    {/* USER'S PAST TOURNAMENTS PAGE */}
                     <Route
-                        path="/user-profile/edit"
-                        element={
-                            <PrivateRoute>
-                                <MainLayout>
-                                    <UserEditProfile />
-                                </MainLayout>
-                            </PrivateRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/other-user-profile"
-                        element={
-                            <PrivateRoute>
-                                <MainLayout>
-                                    <OtherUserProfile />
-                                </MainLayout>
-                            </PrivateRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/past-tournaments"
-                        element={
+                        path = "/past-tournaments"
+                        element = {
                             <PrivateRoute>
                                 <MainLayout>
                                     <UserPastTournaments />
@@ -206,32 +178,47 @@ function App() {
                         }
                     />
 
-                    {/* Protected Admin Routes */}
+                    {/* USER'S PROFILE PAGE */}
                     <Route
-                        path="/administrator-tournament-history"
-                        element={
-                            <AdminRoute>
+                        path = "/user-profile"
+                        element = {
+                            <PrivateRoute>
                                 <MainLayout>
-                                    <AdministratorTournamentHistory />
+                                    <UserProfile />
                                 </MainLayout>
-                            </AdminRoute>
+                            </PrivateRoute>
                         }
                     />
 
+                    {/* EDIT PROFILE PAGE */}
                     <Route
-                        path="/administrator-past-tournament-details"
-                        element={
-                            <AdminRoute>
+                        path = "/user-profile/edit"
+                        element = {
+                            <PrivateRoute>
                                 <MainLayout>
-                                    <AdministratorPastTournamentDetails />
+                                    <UserEditProfile />
                                 </MainLayout>
-                            </AdminRoute>
+                            </PrivateRoute>
                         }
                     />
 
+                    {/* OTHER USER'S PROFILE PAGE */}
                     <Route
-                        path="/administrator-tournaments"
-                        element={
+                        path = "/user-profile/1"
+                        element = {
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <OtherUserProfile />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* ---------------------- PROTECTED: ADMINISTRATOR ROUTES ---------------------- */}
+                    {/* ADMINISTRATOR'S TOURNAMENT PAGE */}
+                    <Route
+                        path = "/administrator-tournaments"
+                        element = {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorTournaments />
@@ -240,9 +227,34 @@ function App() {
                         }
                     />
 
+                    {/* ADMINISTRATOR'S (ALL) TOURNAMENT HISTORY PAGE */}
                     <Route
-                        path="/administrator-create-tournaments"
-                        element={
+                        path = "/administrator-tournament-history"
+                        element = {
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorTournamentHistory />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* ADMINISTRATOR'S (CREATED) PAST TOURNAMENTS PAGE */}
+                    <Route
+                        path = "/administrator-past-tournament-details"
+                        element = {
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorPastTournamentDetails />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* ADMINISTRATOR'S CREATE TOURNAMENTS PAGE */}
+                    <Route
+                        path = "/administrator-create-tournaments"
+                        element = {
                             <AdminRoute>
                                 <MainLayout>
                                     <CreateTournaments />
@@ -251,9 +263,10 @@ function App() {
                         }
                     />
 
+                    {/* TOURNAMENT DETAILS */}
                     <Route
-                        path="/administrator-tournament-details"
-                        element={
+                        path = "/administrator-tournament-details"
+                        element = {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorTournamentDetails />
@@ -262,10 +275,10 @@ function App() {
                         }
                     />
 
-                    {/* New Route for Editing Tournaments */}
+                    {/* EDIT TOURNAMENTS CREATED */}
                     <Route
-                        path="/administrator-edit-tournaments" 
-                        element={
+                        path = "/administrator-edit-tournaments" 
+                        element = {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorEditTournament />
@@ -274,10 +287,10 @@ function App() {
                         }
                     />
 
-                    {/* Fallback Route */}
+                    {/* FALLBACK ROUTE */}
                     <Route
-                        path="*"
-                        element={
+                        path = "*"
+                        element = {
                             <MainLayout>
                                 <NotFound />
                             </MainLayout>
