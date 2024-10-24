@@ -21,6 +21,8 @@ import jakarta.validation.constraints.*;
 @Document(collection = "user")
 public class User {
 
+    private final int BASE_ELO = 400;
+
     @Id
     private String id;
 
@@ -40,7 +42,7 @@ public class User {
     private String phoneNumber;
 
     // Default elo is 400
-    private int elo = 400;
+    private int elo = BASE_ELO;
 
     @NotBlank(message = "Gender is required!")
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Gender must be either 'M', 'F', 'Male', or 'Female'.")
@@ -53,10 +55,6 @@ public class User {
     @NotNull(message = "Age is required!")
     @Min(value = 0, message = "Age must be greater than 0!")
     private int age;
-
-    private List<String> participatedTournaments;
-
-    private String profilePic;
 
     @NotBlank(message = "Username is required!")
     @Indexed(unique = true)
