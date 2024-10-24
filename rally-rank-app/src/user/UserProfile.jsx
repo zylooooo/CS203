@@ -114,6 +114,9 @@ function UserProfile() {
                                 <p className = "mt-4 text-sm mb-4">
                                     <strong> Date of Birth: </strong> {new Date(dateOfBirth).toLocaleDateString()}
                                 </p>
+                                <p className = "mt-4 text-sm mb-4">
+                                    <strong> Elo Rating: </strong> {elo}
+                                </p>
                             </div>
                         </div>
                     </>
@@ -127,7 +130,7 @@ function UserProfile() {
                         {strikeReports.map((report, index) => (
                             <div key = {index} className = "mt-4">
                                 <p>
-                                    <strong> Reason: </strong> {report.reason}
+                                    <strong> Reason: </strong> {report.reportDetails}
                                 </p>
                                 <p>
                                     <strong> Date Issued: </strong> {new Date(report.dateCreated).toLocaleDateString()}

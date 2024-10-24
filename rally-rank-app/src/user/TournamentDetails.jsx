@@ -29,6 +29,7 @@ const TournamentDetails = () => {
         }
     }, [tournamentDetails]);
 
+    // ----------------------- API Call: Posting user's username when joining a tournament  -----------------------
     const handleJoinTournamentButtonClick = async () => {
         if (!isFull) {
             try {
@@ -40,7 +41,8 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/join-${tournamentName}`,
+                    `http://localhost:8080/users/tournaments/join-${tournamentName}`,
+                    {},
                     {
                         withCredentials: true,
                         headers: {
@@ -55,7 +57,7 @@ const TournamentDetails = () => {
                     // Success Message
                 }
             } catch (error) {
-                console.error("Error joining tournament", error);
+                console.error("Error joining tournament:", error.response ? error.response.data : error.message);
             }
         } else {
             console.log("Tournament is full. Button shouldn't even appear.");
