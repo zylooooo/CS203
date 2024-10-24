@@ -1,5 +1,5 @@
 // React imports
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Navigation imports
 import { Link, useNavigate } from "react-router-dom";
@@ -22,10 +22,17 @@ function UserLogin() {
     const form = useForm();
     const { register, handleSubmit, formState } = form;
     const { errors } = formState;
-    const { loginUser } = useAuth();
+    const { loginUser, isUserLoggedIn } = useAuth();
     const navigate = useNavigate();
     const [loginError, setLoginError] = useState(""); 
     const [successMessage, setSuccessMessage] = useState("");
+
+    // Used for persistent pages. Will redirect the user back to homepage upon reload of page
+    useEffect(() => {
+        if (isUserLoggedIn) {
+            navigate("/users/home")
+        }
+    }, [navigate, isUserLoggedIn])
 
     async function authenticateUser(username, password) {
         try {
@@ -79,6 +86,7 @@ function UserLogin() {
                 username: formData.username,
                 role: "USER",
                 jwtToken: response.token,
+                jwtExpiration: response.expiresIn,
                 gender: userDataResponse.gender,
                 available: userDataResponse.available,
             };

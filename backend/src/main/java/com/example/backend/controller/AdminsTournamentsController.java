@@ -1,8 +1,13 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Tournament;
+import com.example.backend.responses.ErrorResponse;
 import com.example.backend.service.TournamentService;
 import com.example.backend.exception.TournamentNotFoundException;
+import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.exception.MatchNotFoundException;
+import com.example.backend.service.BracketService;
+import com.example.backend.model.Match;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +29,7 @@ import java.util.*;
 public class AdminsTournamentsController {
 
     private final TournamentService tournamentService;
+    private final BracketService bracketService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminsTournamentsController.class);
 
@@ -132,16 +138,12 @@ public class AdminsTournamentsController {
      * @throws TournamentNotFoundException if no tournaments are found in history.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-    @GetMapping("/history")
+    @GetMapping("/all-history")
     public ResponseEntity<?> getAllTournamentsHistory() {
         try {
             List<Tournament> allTournamentsHistory = tournamentService.getAllHistory();
             logger.info("Total tournaments history: {}", allTournamentsHistory.size());
             return ResponseEntity.ok(allTournamentsHistory);
-        } catch (TournamentNotFoundException e) {
-            logger.error("No tournaments found!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error getting all tournaments history!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -149,9 +151,187 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Get tournament history by adminName
+    // Generate bracket for tournament
+    @PutMapping("/generate-bracket/{tournamentName}")
+    public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> response = bracketService.generateBracket(tournamentName);
+            return ResponseEntity.ok(response);
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (MatchNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        }   catch (Exception e) {
+            logger.error("Error generating bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
+        }
+    }
+
+    // Update the match results
+    @PutMapping("/update-match")
+    public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
+        try {
+            Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
+            return ResponseEntity.ok(updatedMatch);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid match details provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating match results: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the match results"));
+        }
+    }
+
+    /**
+     * Retrieves the history of tournaments created by the authenticated admin.
+     *
+     * @return a ResponseEntity with the list of past tournaments created by the admin or an error message if an exception occurs.
+     */
+    @GetMapping("/my-history")
+    public ResponseEntity<?> getAdminTournamentHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        try {
+            List<Tournament> tournamentHistory = tournamentService.getAdminHistory(adminName);
+            logger.info("Retrieved {} past tournaments for admin: {}", tournamentHistory.size(), adminName);
+            return ResponseEntity.ok(tournamentHistory);
+        } catch (Exception e) {
+            logger.error("Error getting tournament history for admin: {}", adminName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred while fetching tournament history"));
+        }
+    }
 
 
-    
+    /*
+     * Retrieves current and future tournaments from the database.
+     * 
+     * @return a ResponseEntity with the list of current and future tournaments or an error message if an exception occurs.
+     * 
+     */
+    @GetMapping("/ongoing")
+    public ResponseEntity<?> getCurrentAndFutureTournaments() {
+        try {
+            List<Tournament> currentAndFutureTournaments = tournamentService.getCurrentAndFutureTournaments();
+            logger.info("Total current and future tournaments: {}", currentAndFutureTournaments.size());
+            return ResponseEntity.ok(currentAndFutureTournaments);
+        } catch (Exception e) {
+            logger.error("Unexpected error getting current and future tournaments!", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred while fetching current and future tournaments"));
+        }
+    }
+
+     /**
+     * Retrieves ongoing and future tournaments created by the admin.
+     *
+     * @return a ResponseEntity with the list of upcoming tournaments created by the admin or an error message if an exception occurs.
+     */
+    @GetMapping("/scheduled")
+    public ResponseEntity<?> getAdminScheduledTournaments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        try {
+            logger.info("Received request to get upcoming tournaments created by admin: {}", adminName);
+            List<Tournament> upcomingTournaments = tournamentService.getAdminUpcomingTournaments(adminName);
+            return ResponseEntity.ok(upcomingTournaments);
+        } catch (Exception e) {
+            logger.error("Error getting upcoming tournaments created by admin: {}", adminName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred while fetching upcoming tournaments"));
+        }
+    }
+
+     /**
+     * Edit a tournament's details based on the provided tournament name and new details.
+     *
+     * @param tournamentName the name of the tournament to be updated.
+     * @param newTournamentDetails the Tournament object containing the new details.
+     * @return a ResponseEntity with the updated Tournament object or error messages if validation fails.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the new tournament details are invalid.
+     * @throws RuntimeException if there is an unexpected error during the update.
+     */
+    @PutMapping("/edit-{tournamentName}")
+    public ResponseEntity<?> updateTournament(@PathVariable String tournamentName, @RequestBody Tournament newTournamentDetails) {
+
+        logger.info("Received request to update tournament: {}", tournamentName);
+        try {
+            Map<String, Object> result = tournamentService.updateTournament(tournamentName, newTournamentDetails);
+
+            if (result.containsKey("tournament")) {
+                logger.info("Tournament updated successfully: {}", tournamentName);
+                return ResponseEntity.ok(result.get("tournament"));
+            } else {
+                logger.warn("Tournament update failed due to validation errors: {}", result.get("errors"));
+                return ResponseEntity.badRequest().body(result.get("errors"));
+            } 
+
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (MatchNotFoundException e) {
+            logger.error("Match not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid tournament details provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error in updateTournament", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the tournament"));
+        }
+    }
+
+
+    /**
+     * Deletes a tournament and related matches.
+     * 
+     * @param tournamentName the name of the tournament to be deleted.
+     * @return a ResponseEntity with a success message or error messages if validation fails.
+     */
+
+    @DeleteMapping("/{tournamentName}")
+    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        logger.info("Received request to delete tournament: {} by admin: {}", tournamentName, adminName);
+        try {
+            tournamentService.deleteTournament(tournamentName, adminName);
+            logger.info("Tournament deleted successfully: {}", tournamentName);
+            return ResponseEntity.ok().body(Map.of("message", "Tournament deleted successfully"));
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid delete request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error in deleteTournament", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while deleting the tournament"));
+        }
+    }
+
+
+
+
+
+
 }
-

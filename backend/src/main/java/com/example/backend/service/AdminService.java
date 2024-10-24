@@ -7,22 +7,28 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import com.example.backend.exception.AdminNotFoundException;
+import com.example.backend.exception.*;
 import com.example.backend.model.Admin;
+import com.example.backend.model.Tournament;
+import com.example.backend.model.User;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.TournamentRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
 
+    private final TournamentRepository tournamentRepository;
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
 
@@ -72,6 +78,18 @@ public class AdminService {
             if (!errors.isEmpty()) {
                 response.put("errors", errors);
                 return response;
+            }
+
+            // If the admin name is updated, update the tournaments where this admin is the creator
+            boolean adminNameUpdated = newAdminDetails.getAdminName() != null && !admin.getAdminName().equals(newAdminDetails.getAdminName());
+
+            if (adminNameUpdated) {
+                // Update tournaments where this admin is the creator
+                List<Tournament> tournaments = tournamentRepository.findAllByCreatedBy(adminName);
+                for (Tournament tournament : tournaments) {
+                    tournament.setCreatedBy(newAdminDetails.getAdminName());
+                    tournamentRepository.save(tournament);
+                }
             }
 
             // Update only non-null fields
@@ -152,46 +170,88 @@ public class AdminService {
         return adminRepository.existsByEmail(email);
     }
 
-    // /**
-    //  * Issues a strike to a user.
-    //  *
-    //  * @param adminName The name of the admin issuing the strike.
-    //  * @param username The username of the user being struck.
-    //  * @param tournamentId The ID of the tournament related to this strike.
-    //  * @param reportDetails The details of the strike report.
-    //  * @throws AdminNotFoundException if the admin is not found.
-    //  * @throws UserNotFoundException if the user is not found.
-    //  * @throws UnauthorizedStrikeException if the admin is not authorized to strike this user.
-    //  * @throws StrikeTimeExceededException if the strike is issued more than a week after the tournament end date.
-    //  */
-    // public void strikeUser(String adminName, String username, String tournamentName, String reportDetails) 
-    //         throws AdminNotFoundException, UserNotFoundException, UnauthorizedStrikeException, StrikeTimeExceededException {
-        
-    //     // Get the admin
-    //     Admin admin = getAdminByAdminName(adminName);
+    /**
+     * Issues a strike to a user. This feature is only accessible through the admin tournaments history page.
+     *
+     * @param adminName The name of the admin issuing the strike.
+     * @param username The username of the user being struck.
+     * @param tournamentName The name of the tournament related to this strike.
+     * @param reportDetails The details of the strike report.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws TournamentNotFoundException if the tournament is not found.
+     * @throws InvalidStrikeException if the strike is invalid.
+     */
+    public void strikeUser(String adminName, String username, String tournamentName, String reportDetails) 
+            throws UserNotFoundException, TournamentNotFoundException, InvalidStrikeException {
 
-
-    //     User user = userRepository.findByUsername(username)
-    //             .orElseThrow(() -> new UserNotFoundException(username));
+        // This username passed in must already exist in the tournament's players pool
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
 
         
-    //     // Get the tournament 
-    //     Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
-    //             .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+        // Get the tournament 
+        Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+                .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        // Check if the user is in the tournament's players pool
+        if (!tournament.getPlayersPool().contains(username)) {
+            throw new UserNotFoundException(username);
+        }
+
+        // Strikes can only be issued after the tournament has ended, up to a week after
+        if (tournament.getEndDate() == null || tournament.getEndDate().plusDays(7).isBefore(LocalDate.now())) {
+            throw new InvalidStrikeException("Strikes can only be issued after the tournament has ended, up to a week after.");
+        }
+
+        // Get the user's strikeReports
+        List<User.StrikeReport> strikeReports = user.getStrikeReports();
+
+        // If user has no strikes, add a new strike report
+        if (strikeReports.isEmpty()) {
+
+            logger.info("Admin {} issued a strike to user {} for tournament {}", adminName, username, tournamentName);
+            strikeReports.add(new User.StrikeReport(reportDetails, LocalDateTime.now(), adminName));
+
+            // Set the user's strikeReports
+            user.setStrikeReports(strikeReports);
+
+            // Save the user
+            userRepository.save(user);
+            return;
+        }
+
+        // Check if the user has already been struck 3 times
+        if (strikeReports.size() >= 3) {
+            throw new InvalidStrikeException("User has already been struck 3 times.");
+        }
 
         
-        
-    //     // Check whether the tournaments players pool contains the username    
-    //     if (!tournament.getPlayersPool().contains(username)) {
-    //         throw new UnauthorizedStrikeException("You can only strike players who participated in your past tournaments.");
-    //     }
 
-       
-    //     // Check if the strike is being issued within a week of the tournament end date
-        
+        // If user has 1 or 2 strikes, check if the strike is being issued within a week of the most recent strike by this admin
+        LocalDateTime mostRecentStrikeDate = strikeReports.stream()
+                .filter(strike -> strike.getIssuedBy().equals(adminName))
+                .map(User.StrikeReport::getDateCreated)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
 
-    //     userRepository.save(user);
-    // }
+        // Admin cannot issue a strike more than once a week on the same user
+        if (mostRecentStrikeDate != null && mostRecentStrikeDate.plusDays(7).isAfter(LocalDateTime.now())) {
+            throw new InvalidStrikeException("Admin cannot issue a strike more than once a week on the same user.");
+        }
+
+        // Add the new strike report
+        strikeReports.add(new User.StrikeReport(reportDetails, LocalDateTime.now(), adminName));
+
+        // Set the user's strikeReports
+        user.setStrikeReports(strikeReports);
+
+        // Save the user
+        userRepository.save(user);
+
+        logger.info("Admin {} issued a strike to user {} for tournament {}. Current strike count: {}", adminName, username, tournamentName, strikeReports.size());
+
+    }
+
 
 
 

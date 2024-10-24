@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.model.Tournament;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.service.TournamentService;
+import com.example.backend.exception.InvalidJoinException;
 import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 
@@ -98,6 +99,14 @@ public class UsersTournamentsController {
         }
     }
 
+
+    /**
+     * Retrieves the user's scheduled tournaments.
+     * 
+     * @return a ResponseEntity with the list of scheduled tournaments for the user or an error message if an exception occurs.
+     * @throws RuntimeException for any unexpected errors during the retrieval process.
+     */
+
     // Router to get the user's scheduled tournaments
     @GetMapping("/scheduled")
     public ResponseEntity<?> getUserUpcomingTournaments() {
@@ -172,6 +181,38 @@ public class UsersTournamentsController {
                 .body(new ErrorResponse("An unexpected error occurred while fetching user available tournaments"));
         }
     }
+
+    /**
+     * Allows a user to join a tournament.
+     *
+     * @param tournamentName the name of the tournament to join
+     * @return a ResponseEntity with a success message or an error message if an exception occurs
+     */
+    @PostMapping("/join-{tournamentName}")
+    public ResponseEntity<?> joinTournament(@PathVariable String tournamentName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        try {
+            tournamentService.joinTournament(username, tournamentName);
+            logger.info("User {} successfully joined tournament {}", username, tournamentName);
+            return ResponseEntity.ok("Successfully joined the tournament: " + tournamentName);
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("Tournament not found: " + tournamentName));
+        } catch (InvalidJoinException e) {
+            logger.error("Invalid join attempt for tournament: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error during tournament join: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("An unexpected error occurred while joining the tournament"));
+        }
+    }
+
+
 
 
 
