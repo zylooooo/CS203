@@ -3,11 +3,16 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect} from "react";
 
 // Component: Tournament Card (for UserTournaments)
-const TournamentCard = ({ tournamentType }) => {
+const TournamentCard = ({ userPastTournaments }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate("/tournament-details", {state: tournament});
+        navigate("/tournament-details", {
+            state: {
+                ...tournament,
+                isPastTournament: true
+            }
+        });
     };
 
     const formatDate = (dateString) => {
@@ -23,7 +28,7 @@ const TournamentCard = ({ tournamentType }) => {
 
     return (
         <div className = "flex flex-col gap-5 w-full">
-            {tournamentType.map((tournament, index) => (
+            {userPastTournaments.map((tournament, index) => (
                 <div
                     key = {index}
                     className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
@@ -34,25 +39,19 @@ const TournamentCard = ({ tournamentType }) => {
                         <div className = "flex items-center mb-2">
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
-                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
-                        <p> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
-                        <p> Game: {tournament.category} </p>
-                        <p> Gender: {tournament.gender} </p>
-                        <p> Player Capacity: {tournament.playerCapacity} </p>
-                        <p>
-                            {tournament.playerCapacity - tournament.playersPool.length > 0
-                            ? `${tournament.playerCapacity - tournament.playersPool.length} slots left!`
-                            : "Slots are full!"}
-                        </p>
+                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} to {formatDate(tournament.endDate)} </p>
+                        <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
+                        <p className = "mb-2"> Game: {tournament.category} </p>
+                        <p className = "mb-2"> Gender: {tournament.gender} </p>
+                        
                     </div>
 
-                    <div className = "card-section-two border-l pl-4 flex-none w-1/3">
-                        <p className = "font-semibold"> Venue: </p>
-                        <p> {tournament.location} </p>
+                    <div className = "card-section-two border-l pl-4 flex-none w-1/3 relative">
+                        <p className = "font-semibold mb-2"> Venue: {tournament.location} </p>
                         {tournament.remarks && (
                             <>
                                 <p className = "font-semibold mt-2"> Remarks: </p>
-                                <p> {tournament.remarks} </p>
+                                <p className = "mb-2"> {tournament.remarks} </p>
                             </>
                         )}
                     </div>
@@ -65,7 +64,6 @@ const TournamentCard = ({ tournamentType }) => {
 function UserPastTournaments() {
 
     // ------------------------------------- Tournament Functions -------------------------------------
-
     const [pastTournaments, setPastTournaments] = useState([]);
 
     const [loading, setLoading] = useState(true);
