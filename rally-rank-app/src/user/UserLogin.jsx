@@ -16,6 +16,8 @@ import { useAuth } from "../authentication/AuthContext"; // Import the AuthConte
 import loginBackground from "../assets/login-picture.jpg";
 import rallyRankLogo from "../assets/Rally-Rank-Logo.svg"; // Import the RallyRank logo
 
+import AlertMessageSuccess from "../components/AlertMessageSuccess"
+
 function UserLogin() {
     const form = useForm();
     const { register, handleSubmit, formState } = form;
@@ -23,6 +25,7 @@ function UserLogin() {
     const { loginUser } = useAuth();
     const navigate = useNavigate();
     const [loginError, setLoginError] = useState(""); 
+    const [successMessage, setSuccessMessage] = useState("");
 
     async function authenticateUser(username, password) {
         try {
@@ -33,7 +36,7 @@ function UserLogin() {
             );
 
             if (response.status === 200) {
-                setLoginError("Successfully logged in!");
+                setSuccessMessage("You have successfully logged in! Enjoy RallyRank.")
 
                 // Return the LoginResponse object containing JWT and expiration time
                 return response.data;
@@ -84,7 +87,7 @@ function UserLogin() {
             loginUser(userData);
 
             // Re-route to home
-            navigate("/users/home");
+            navigate("/users/home", { state: { successMessage: "You have successfully logged in! Enjoy RallyRank." } });
         } 
     };
     
@@ -94,6 +97,7 @@ function UserLogin() {
                 className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
                 style={{ backgroundImage: `url(${loginBackground})` }}
             >
+                <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
                 <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
                     {/* Replace heading with RallyRank logo */}
                     <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />

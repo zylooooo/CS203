@@ -3,11 +3,13 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Step1, Step2, Step3 } from "./user-sign-up-components/SignUpSteps";
+
 
 // Assets and Components Imports
-import AlertMessageWarning from "../components/AlertMessageWarning";
 import signupPicture from "../assets/user-sign-up-picture.jpg";
+import AlertMessageWarning from "../components/AlertMessageWarning";
+import AlertMessageSuccess from "../components/AlertMessageSuccess"
+import { Step1, Step2, Step3 } from "./user-sign-up-components/SignUpSteps";
 
 function UserSignUp() {
     const location = useLocation();
@@ -17,6 +19,7 @@ function UserSignUp() {
     const { email } = location.state || {};
     const [signupError, setSignupError] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const { register, handleSubmit, watch, trigger, formState: { errors }} = useForm();
     const [clickableSteps, setClickableSteps] = useState([]); // Clickable steps, including the current step.
     const [completedSteps, setCompletedSteps] = useState([]); // Completed steps, displayed as green in color.
@@ -77,7 +80,7 @@ function UserSignUp() {
             } else {
                 const response = await createUser(formData);
                 if (response !== undefined) {
-                alert("Successfully registered! Please move on to verification!");
+                setSuccessMessage("You have successfully verified and account! Login to enter RallyRank!"); // may need to let state enter to authverify
                 navigate("/auth/user-verify");
                 }
             }
@@ -100,11 +103,12 @@ function UserSignUp() {
                 setCompletedSteps([...completedSteps, step]);
                 setClickableSteps([...clickableSteps, step]);
                 setStep(step + 1);
+                setAlertMessage("Both username and email address are available");
             } else {
                 if (!response.data.accountNameAvailable && !response.data.emailAvailable) {
                     setAlertMessage("Both username and email address entered has already been taken.");
                 }
-                else if (!response.data.accountNameAvailablee) {
+                else if (!response.data.accountNameAvailable) {
                     setAlertMessage("Username taken. Enter another one.");
                 }
                 else if (!response.data.emailAvailable) {
@@ -155,6 +159,7 @@ function UserSignUp() {
                 className = "bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col items-center"
                 style = {{ backgroundImage: `url(${signupPicture})` }}
             >
+                <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
                 <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
                 <div className = "flex gap-9 p-10 mt-4">
                     {steps.map((num) => (
