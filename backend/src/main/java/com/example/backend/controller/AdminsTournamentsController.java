@@ -297,4 +297,41 @@ public class AdminsTournamentsController {
     }
 
 
+    /**
+     * Deletes a tournament and related matches.
+     * 
+     * @param tournamentName the name of the tournament to be deleted.
+     * @return a ResponseEntity with a success message or error messages if validation fails.
+     */
+
+    @DeleteMapping("/{tournamentName}")
+    public ResponseEntity<?> deleteTournament(@PathVariable String tournamentName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
+
+        logger.info("Received request to delete tournament: {} by admin: {}", tournamentName, adminName);
+        try {
+            tournamentService.deleteTournament(tournamentName, adminName);
+            logger.info("Tournament deleted successfully: {}", tournamentName);
+            return ResponseEntity.ok().body(Map.of("message", "Tournament deleted successfully"));
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid delete request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error in deleteTournament", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while deleting the tournament"));
+        }
+    }
+
+
+
+
+
+
 }
