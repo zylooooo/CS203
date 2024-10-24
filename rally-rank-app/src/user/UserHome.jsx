@@ -1,10 +1,12 @@
 // Package Imports
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import React, { useState, useEffect, act } from "react";
+import React, { useState, useEffect } from "react";
 
 // Icon Imports
 import { FaCrown, FaMedal } from "react-icons/fa";
+import SportsTennisIcon from '@mui/icons-material/SportsTennis';
+
 
 // Assets and Components Imports
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
@@ -27,10 +29,10 @@ const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGe
             {buttons.map((buttonLabel, index) => (
                 <button
                     key = {index}
-                    className = {`btn transition-colors duration-300 ${
+                    className = {`btn transition-colors duration-300 text-sm font-semibold${
                         activeButton === index
-                        ? "active-button underline text-blue-600"       // active state
-                        : "text-gray-700 hover:text-blue-500"           // inactive state
+                        ? "active-button underline text-blue-600"       // Active State
+                        : "text-gray-700 hover:text-blue-500"           // Inactive State
                     }`}
                     onClick = {() => handleButtonClick(index)}
                 >
@@ -227,7 +229,7 @@ function UserHome() {
     // ------------------------------------- Leaderboard Functions -------------------------------------
     const [defaultLeaderboardPlayers, setDefaultLeaderboardPlayers] = useState([]);
 
-    const [userGender, setUserGender] = useState("")                                            // to retrieve the user's gender from userData
+    const [userGender, setUserGender] = useState("")                                            // Retrieve the user's gender from userData
 
     const [otherGenderLeaderboardPlayers, setOtherGenderLeaderboardPlayers] = useState([]);
 
@@ -359,13 +361,14 @@ function UserHome() {
             <div className = "row-container flex flex-col w-3/5 gap-8">
                 {/* JOIN TOURNAMENT */}
                 <div className = "join-tournament-container bg-white p-6 gap-2 h-1/5">
-                    <h2 className = "text-xl font-semibold mb-4"> Join a tournament today! </h2>
+                    <h2 className = "text-xl font-semibold mb-4"> Join A Tournament Today! </h2>
                     <button
-                        className = "join-tournament-button bg-green-600 text-white font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full"
+                        className = "join-tournament-button bg-green-600 text-white font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full h-3/5"
                         onClick = {handleJoinTournament}
-                        style = {{ backgroundColor: "#E0E0E0" }}
+                        style = {{ backgroundColor: "#DDF2D1", color: "#343434" }}
                     >
-                        Join!
+                        <SportsTennisIcon className = "text-xl" style = {{ marginRight: '8px', verticalAlign: 'middle', color: "#343434" }} />
+                        Let's Go!
                     </button>
                 </div>
                 {/* MY SCHEDULED TOURNAMENTS */}
