@@ -80,6 +80,18 @@ public class AdminService {
                 return response;
             }
 
+            // If the admin name is updated, update the tournaments where this admin is the creator
+            boolean adminNameUpdated = newAdminDetails.getAdminName() != null && !admin.getAdminName().equals(newAdminDetails.getAdminName());
+
+            if (adminNameUpdated) {
+                // Update tournaments where this admin is the creator
+                List<Tournament> tournaments = tournamentRepository.findAllByCreatedBy(adminName);
+                for (Tournament tournament : tournaments) {
+                    tournament.setCreatedBy(newAdminDetails.getAdminName());
+                    tournamentRepository.save(tournament);
+                }
+            }
+
             // Update only non-null fields
             Optional.ofNullable(newAdminDetails.getEmail()).ifPresent(admin::setEmail);
             Optional.ofNullable(newAdminDetails.getPassword())

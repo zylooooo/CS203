@@ -10,16 +10,57 @@ const TournamentDetails = () => {
 
     const location = useLocation();
 
-    const fromPage = location.state?.from || "/users/tournaments";      // to retrieve page where users clicked for tournament details
+    const [hasJoined, setHasJoined] = useState(false);
+
+    const tournamentName = location.state?.tournamentName;                  // to be used as parameter for getting the tournament details by name (following backend api)
+
+    const isAvailable = location.state?.isAvailable;                        // to be used for displaying 'Join Tournament' button or not
+
+    const isPastTournament = location.state?.isPastTournament || false;     // to be used for changes in tournament details for past tournaments
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
-    const [hasJoined, setHasJoined] = useState(false);
+    const [isFull, setIsFull] = useState(false);
 
-    const tournamentName = location.state?.tournamentName;              // to be used as parameter for getting the tournament details by name (backend api)
+    useEffect(() => {
+        if (tournamentDetails) {
+            const playerPoolLength = tournamentDetails.playersPool.length;
+            setIsFull(playerPoolLength >= tournamentDetails.playerCapacity);
+        }
+    }, [tournamentDetails]);
 
-    const handleJoinClick = () => {
-        setHasJoined(true);
+    const handleJoinTournamentButtonClick = async () => {
+        if (!isFull) {
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                if (!userData || !userData.jwtToken) {
+                    console.error("No JWT Token found!");
+                    // Alert Message
+                    return;
+                }
+
+                const response = await axios.post(
+                    `http://localhost:8080/join-${tournamentName}`,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${userData.jwtToken}`,
+                        },
+                    }
+                );
+
+                if (response.status == 200) {
+                    setHasJoined(true);
+                    console.log(response.data);
+                    // Success Message
+                }
+            } catch (error) {
+                console.error("Error joining tournament", error);
+            }
+        } else {
+            console.log("Tournament is full. Button shouldn't even appear.");
+            // Alert Message
+        }
     }
 
     const handleLeaveTournamentClick = () => {
@@ -27,8 +68,11 @@ const TournamentDetails = () => {
     }
 
     const handleBackButtonClick = () => {
-        navigate(fromPage);
-    }
+        navigate(-1);
+        if (!window.history.state) {
+            navigate("/users/home");
+        }
+    };
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
     // const handleShowFixturesButtonClick = () => {
@@ -97,60 +141,57 @@ const TournamentDetails = () => {
                         />
                         <h1 className = "text-2xl font-bold mb-2 mt-1"> {tournamentDetails.tournamentName} </h1>
                     </div>
-                    <button
-                        onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinClick}
-                        className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
-                        style= {{
-                            backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
-                            border: "none",
-                            color: "white",
-                            padding: "8px 16px",
-                            borderRadius: "8px",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            transition: "background-color 0.3s ease"
-                        }}
-                    >
-                        {hasJoined ? "Leave Tournament" : "Join Tournament"}
-                    </button>
+                    {!isFull && isAvailable && (
+                        <button
+                            onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                            className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                            style= {{
+                                backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
+                                border: "none",
+                                color: "white",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                transition: "background-color 0.3s ease",
+                            }}
+                        >
+                            {hasJoined ? "Leave Tournament" : "Join Tournament"}
+                        </button>
+                    )}
                 </div>
-                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} </p>
+                <p className = "mb-2 text-lg">
+                    <strong> Date: </strong> 
+                    {!isPastTournament 
+                        ? formatDate(tournamentDetails.startDate)
+                        : `${formatDate(tournamentDetails.startDate)} to ${formatDate(tournamentDetails.endDate)}`
+                    }
+                </p>
                 <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
                 <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
                 <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
                 <p className = "mb-2 text-lg"> <strong> Gender: </strong> {tournamentDetails.gender} </p>
-                <p className = "mb-2 text-lg"> <strong> Player Capacity: </strong> {tournamentDetails.playerCapacity} </p>
+                {!isPastTournament && (
+                    <>
+                        <p className = "mb-2 text-lg"> <strong> Player Capacity: </strong> {tournamentDetails.playerCapacity} </p>
+                        <p className = "mb-2 text-lg">
+                            {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
+                            ? <span><strong> Slots Available: </strong> {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length} </span>
+                            : <span><strong> "Slots are full!"</strong></span>}                    
+                        </p>
+                    </>
+                )}
                 {tournamentDetails.remarks && (
                     <p className = "mb-2 text-lg"> <strong> Remarks: </strong> {tournamentDetails.remarks} </p>
                 )}
-                <p className = "mb-2 text-lg">
-                    {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
-                    ? <span><strong> Slots Available: </strong> {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length} </span>
-                    : <span><strong> "Slots are full!"</strong></span>}                    
-                </p>
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
                 <div className = "map-api-container h-64 border rounded-[8px]">
                     <p className = "text-center p-4"> Insert map here. </p>
                 </div>
                 <div className = "flex justify-between items-start mt-4">
                     <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
-                        <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
+                        <h2 className = "text-xl font-semibold mb-2"> {isPastTournament ? "Players" : "Current Players"} </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
-                        <p
-                            style = {{
-                                color: tournamentDetails.playerCapacity - tournamentDetails.playersPool.length <= 10
-                                ? "red"
-                                : "black",
-                                fontWeight: tournamentDetails.playerCapacity - tournamentDetails.playersPool.length <= 10
-                                ? 700
-                                : "normal"
-                            }}
-                            className = "text-md text-gray-500 absolute top-4 right-4 font-semibold"
-                        >
-                            {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
-                            ? `Slots left: ${tournamentDetails.playerCapacity - tournamentDetails.playersPool.length}`
-                            : "Slots are full!"}
-                        </p>
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
@@ -167,7 +208,7 @@ const TournamentDetails = () => {
                         // onClick = {handleShowFixturesClick}
                         className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
                     >
-                        Show Fixtures
+                        {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>
                 </div>
             </div>

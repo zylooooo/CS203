@@ -4,6 +4,10 @@ import com.example.backend.model.Tournament;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.service.TournamentService;
 import com.example.backend.exception.TournamentNotFoundException;
+import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.exception.MatchNotFoundException;
+import com.example.backend.service.BracketService;
+import com.example.backend.model.Match;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +29,7 @@ import java.util.*;
 public class AdminsTournamentsController {
 
     private final TournamentService tournamentService;
+    private final BracketService bracketService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminsTournamentsController.class);
 
@@ -146,6 +151,48 @@ public class AdminsTournamentsController {
         }
     }
 
+    // Get tournament history by adminName
+
+
+    // Generate bracket for tournament
+    @PutMapping("/generate-bracket/{tournamentName}")
+    public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> response = bracketService.generateBracket(tournamentName);
+            return ResponseEntity.ok(response);
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (MatchNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        }   catch (Exception e) {
+            logger.error("Error generating bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
+        }
+    }
+
+    // Update the match results
+    @PutMapping("/update-match")
+    public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
+        try {
+            Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
+            return ResponseEntity.ok(updatedMatch);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid match details provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating match results: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the match results"));
+        }
+    }
+
     /**
      * Retrieves the history of tournaments created by the authenticated admin.
      *
@@ -207,12 +254,4 @@ public class AdminsTournamentsController {
                 .body(new ErrorResponse("An unexpected error occurred while fetching upcoming tournaments"));
         }
     }
-
-   
-   
-   
-    
-
-
-    
 }

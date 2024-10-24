@@ -66,59 +66,6 @@ class TournamentTest {
         assertTrue(result);
     }
 
-    // @Test
-    // void isValidDateRange_WithValidRange_ShouldReturnTrue() {
-    //     // Arrange
-    //     tournament.setStartDate(LocalDate.of(2023, 1, 1));
-    //     tournament.setEndDate(LocalDate.of(2023, 1, 2));
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertTrue(result);
-    // }
-
-    // @Test
-    // void isValidDateRange_WithInvalidRange_ShouldReturnFalse() {
-    //     // Arrange
-    //     tournament.setStartDate(LocalDate.of(2023, 1, 2));
-    //     tournament.setEndDate(LocalDate.of(2023, 1, 1));
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertFalse(result);
-    // }
-
-    // @Test
-    // void isValidDateRange_WithEqualDates_ShouldReturnFalse() {
-    //     // Arrange
-    //     LocalDate date = LocalDate.of(2023, 1, 1);
-    //     tournament.setStartDate(date);
-    //     tournament.setEndDate(date);
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertFalse(result);
-    // }
-
-    // @Test
-    // void isValidDateRange_WithNullValues_ShouldReturnFalse() {
-    //     // Arrange
-    //     tournament.setStartDate(null);
-    //     tournament.setEndDate(null);
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertFalse(result);
-    // }
-
     @Test
     void isEloRangeProvided_WithBothValuesProvided_ShouldReturnTrue() {
         // Arrange
@@ -197,29 +144,4 @@ class TournamentTest {
         assertTrue(result);
     }
 
-    // @Test
-    // void isValidDateRange_WithNullStartDate_ShouldReturnFalse() {
-    //     // Arrange
-    //     tournament.setStartDate(null);
-    //     tournament.setEndDate(LocalDate.of(2023, 1, 2));
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertFalse(result);
-    // }
-
-    // @Test
-    // void isValidDateRange_WithNullEndDate_ShouldReturnFalse() {
-    //     // Arrange
-    //     tournament.setStartDate(LocalDate.of(2023, 1, 1));
-    //     tournament.setEndDate(null);
-
-    //     // Act
-    //     boolean result = tournament.isValidDateRange();
-
-    //     // Assert
-    //     assertFalse(result);
-    // }
 }
