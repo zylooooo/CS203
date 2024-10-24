@@ -50,8 +50,9 @@ function AdministratorLogin() {
           // Store user in local database
           const adminData = {
               adminName: formData.adminName,
-              role: "admin",
+              role: "ADMIN",
               jwtToken: response.token,
+              jwtExpiration: response.expiresIn,
           };
       
           // Change state to user
