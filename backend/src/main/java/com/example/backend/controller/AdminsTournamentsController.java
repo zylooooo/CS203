@@ -272,4 +272,19 @@ public class AdminsTournamentsController {
                 .body(Map.of("error", "An unexpected error occurred while updating the elo rating"));
         }
     }
+
+    @PutMapping("/{tournamentName}/end")
+    public ResponseEntity<?> updateTournamentEndDate(@PathVariable String tournamentName) {
+        try {
+            Tournament updatedTournament = bracketService.updateTournamentEndDate(tournamentName);
+            return ResponseEntity.ok(updatedTournament);
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating tournament end date: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the tournament end date"));
+        }
+    }
 }

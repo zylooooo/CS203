@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -232,5 +233,14 @@ public class BracketService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+    
+    // Service to close the tournament
+    public Tournament updateTournamentEndDate(String tournamentName) {
+        Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        tournament.setEndDate(LocalDate.now());
+        return tournamentRepository.save(tournament);
     }
 }
