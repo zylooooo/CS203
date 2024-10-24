@@ -1,7 +1,7 @@
 // Package Imports
 import React, { useEffect, useState } from "react";
 
-const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
+const AlertMessageInformation = ({ message, onClose, duration = 3000 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [hasMessage, setHasMessage] = useState(false);
 
@@ -30,8 +30,8 @@ const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
     return (
         <div
             role = "alert"
-            className = {`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 alert alert-error flex items-center text-white p-4 rounded-lg shadow-md transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            style = {{ backgroundColor: "#FCA5A1", height: "50px" }}
+            className = {`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 alert alert-info flex items-center text-white p-4 rounded-lg shadow-md transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+            style = {{ backgroundColor: "#5bc0de", height: "50px" }}
         >
             <svg
                 xmlns = "http://www.w3.org/2000/svg"
@@ -47,7 +47,7 @@ const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
                     d = "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
             </svg>
-            <span> {message} </span>
+            <span className = "ml-2"> {message} </span>
             <button
                 onClick = {onClose}
                 className = "ml-6 text-white font-bold">
@@ -55,6 +55,6 @@ const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
             </button>
         </div>
     );
-}
+};
 
-export default AlertMessageWarning;
+export default AlertMessageInformation;

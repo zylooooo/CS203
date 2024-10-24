@@ -1,6 +1,9 @@
+// Package Imports
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// Icon Imports
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -98,21 +101,22 @@ function UserEditProfile() {
     // ----------------------- API Call: Updating user's edited data -----------------------
     const handleSubmitChanges = async (e) => {
         e.preventDefault();
-
+    
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
-
+    
             if (!userData || !userData.jwtToken) {
                 console.error("No JWT Token found!");
                 return;
             }
+    
+            const usernameChanged = formData.username !== originalData.username; // Check if the username has been changed.
+            const passwordChanged = formData.password && formData.password !== originalData.password; // Check if the password field has input.
 
-            const usernameChanged = formData.username !== originalData.username;    // Check if the username has been changed.
-            const passwordChanged = formData.password !== originalData.password;    // Check if the password has been changed.
-
-            console.log("formdata: ", formData.password);
-            console.log("og data ", originalData.password);
-
+            console.log("Original Password: ", originalData.password);
+            console.log("Form Data Password: ", formData.password);
+            console.log("Was password changed? Y = true, N = false", passwordChanged);
+    
             const response = await axios.put(
                 "http://localhost:8080/users/update",
                 {
@@ -134,18 +138,28 @@ function UserEditProfile() {
                 }
             );
 
+            console.log("After State 1 Original Password: ", originalData.password);
+            console.log("After State 1 Form Data Password: ", formData.password);
+            console.log("Was password changed 1? Y = true, N = false", passwordChanged);
+    
             if (response.status === 200) {
                 localStorage.setItem("userData", JSON.stringify({
                     ...userData,
                     ...response.data
                 }));
-
-                if (usernameChanged || passwordChanged) {
+                console.log("After State 2 Original Password: ", originalData.password);
+                console.log("After State 2 Form Data Password: ", formData.password);
+                console.log("Was password changed 2? Y = true, N = false", passwordChanged);
+    
+                if (usernameChanged) {
                     localStorage.removeItem("userData");
                     alert("You have been logged out. Redirecting you to user login page...");
                     setTimeout(() => {
                         navigate("/auth/user-login");
                     }, 1000);
+                } else if (passwordChanged) {
+                    alert("Password changed successfully.");
+                    navigate("/user-profile");
                 } else {
                     navigate("/user-profile");
                 }
@@ -156,6 +170,7 @@ function UserEditProfile() {
             setError(errorMessage);
         }
     };
+    
 
     return (
         <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg shadow-md w-2/5 mx-auto">
