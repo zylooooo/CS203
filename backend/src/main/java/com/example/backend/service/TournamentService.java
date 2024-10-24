@@ -578,6 +578,40 @@ public class TournamentService {
         }
     }
 
+    /*
+     * Deletes a tournament and related matches.
+     * 
+     * @param tournamentName the name of the tournament to be deleted.
+     * @param adminName the name of the admin who created the tournament.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the tournament does not belong to the admin or has already ended.
+     */
+
+    public void deleteTournament(String tournamentName, String adminName) 
+        throws TournamentNotFoundException, IllegalArgumentException {
+    Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        // Check if the tournament belongs to the admin
+        if (!tournament.getCreatedBy().equals(adminName)) {
+            throw new IllegalArgumentException("You did not create this tournament!");
+        }
+
+        // Check if the tournament has ended
+        if (tournament.getEndDate() != null) {
+            throw new IllegalArgumentException("Cannot delete a tournament that has already ended");
+        }
+
+        // Delete related matches
+        List<Match> matches = matchRepository.findByTournamentName(tournamentName)
+                .orElse(Collections.emptyList());
+        matchRepository.deleteAll(matches);
+
+        // Delete the tournament
+        tournamentRepository.delete(tournament);
+
+        logger.info("Tournament and related matches deleted successfully: {}", tournamentName);
+    }
 
 
     
