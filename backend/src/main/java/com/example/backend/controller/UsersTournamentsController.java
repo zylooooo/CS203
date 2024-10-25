@@ -6,6 +6,7 @@ import com.example.backend.service.TournamentService;
 import com.example.backend.exception.InvalidJoinException;
 import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
+import com.example.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import java.util.*;
 public class UsersTournamentsController {
 
     private final TournamentService tournamentService;
+    private final UserService userService;
 
     private static final Logger logger = LoggerFactory.getLogger(UsersTournamentsController.class);
 
@@ -213,9 +215,20 @@ public class UsersTournamentsController {
     }
 
 
+    // Controller that allows the users to leave the tournament
+    @DeleteMapping("/leave-{tournamentName}")
+    public ResponseEntity<?> leaveTournament(@PathVariable String tournamentName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
 
-
-
-
-    
+        try {
+            userService.leaveTournament(tournamentName, username);
+            logger.info("User {} successfully left tournament {}", username, tournamentName);
+            return ResponseEntity.ok(Map.of("message", "User " + username + " successfully left the tournament " + tournamentName));
+        } catch (TournamentNotFoundException | UserNotFoundException | IllegalArgumentException e) {
+            logger.error("Error leaving tournament: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("Tournament not found: " + tournamentName));
+        }
+    } 
 }
