@@ -59,6 +59,7 @@ public class User {
 
     @NotBlank(message = "Username is required!")
     @Indexed(unique = true)
+    @Pattern(regexp = "^[^/]+$", message = "username cannot contain a forward slash (/)")
     private String username;
 
     @NotBlank(message = "First name is required!")   

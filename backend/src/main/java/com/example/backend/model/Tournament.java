@@ -24,6 +24,7 @@ public class Tournament {
 
     @NotBlank(message = "Tournament name is required!")
     @Indexed(unique = true)
+    @Pattern(regexp = "^[^/]+$", message = "Tournament name cannot contain a forward slash (/)")
     private String tournamentName;
 
     @PastOrPresent(message = "Tournament must be created in the past or the present!")
