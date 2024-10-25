@@ -292,10 +292,39 @@ public class AdminsTournamentsController {
         }
     }
 
+    // Update the players pool of a tournament
+    @PutMapping("/{tournamentName}/add-players")
+    public ResponseEntity<?> updatePlayersPool(@PathVariable String tournamentName, @RequestBody List<String> players) {
+        try {
+            Map<String, Object> result = tournamentService.updatePlayersPool(tournamentName, players);
+            
+            if (result.containsKey("error")) {
+                return ResponseEntity.badRequest().body(result);
+            }
+            
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("Unexpected error updating players pool for tournament: {}", tournamentName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the players pool: " + e.getMessage()));
+        }
+    }
 
-
-
-
+    // Allow the admin to remove a player from the tournament
+    @DeleteMapping("/{tournamentName}/{username}")
+    public ResponseEntity<?> removePlayerFromTournament(@PathVariable String tournamentName, @PathVariable String username) {
+        try {
+            Tournament updatedTournament = tournamentService.removePlayerFromTournament(tournamentName, username);
+            return ResponseEntity.ok(updatedTournament);
+        } catch (TournamentNotFoundException | UserNotFoundException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error removing player from tournament: {}", tournamentName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while removing the player from the tournament"));
+        }
+    }
 
     // Generate bracket for tournament
     @PutMapping("/generate-bracket/{tournamentName}")
