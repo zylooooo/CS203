@@ -130,6 +130,9 @@ function UserProfile() {
                         {strikeReports.map((report, index) => (
                             <div key = {index} className = "mt-4">
                                 <p>
+                                    <strong> Strike {index + 1}: </strong> {report.reportDetails}
+                                </p>
+                                <p>
                                     <strong> Reason: </strong> {report.reportDetails}
                                 </p>
                                 <p>

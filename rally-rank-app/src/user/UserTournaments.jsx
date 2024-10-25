@@ -31,14 +31,15 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
 }
 
 // Component: Tournament Card (for UserTournaments)
-const TournamentCard = ({ tournamentType, isAvailable }) => {
+const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTournament }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate("/tournament-details", { 
+        navigate(`/tournament-details/${tournament.tournamentName}`, {
             state: {
                 tournamentName: tournament.tournamentName,
-                isAvailable,
+                isAvailableTournament,
+                isScheduledTournament,
             }
         });
     };
@@ -217,9 +218,13 @@ function UserTournaments() {
                 {loading ? (
                     <p> Loading tournaments... </p>
                     ) : displayTournamentType.length > 0 ? (
-                    <TournamentCard tournamentType = {displayTournamentType} isAvailable = {activeButton === 0} />
+                        <TournamentCard
+                            tournamentType = {displayTournamentType}
+                            isAvailableTournament = {activeButton === 0}
+                            isScheduledTournament = {activeButton === 1}
+                        />
                     ) : (
-                    <p> No tournaments found. </p>
+                        <p> No tournaments found. </p>
                 )}
             </div>
         </div>
