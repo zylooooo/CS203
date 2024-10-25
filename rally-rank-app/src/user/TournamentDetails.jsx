@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faA, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, faVenus, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 // Component: Tournament Details Card
 const TournamentDetails = () => {
@@ -12,15 +12,25 @@ const TournamentDetails = () => {
 
     const [hasJoined, setHasJoined] = useState(false);
 
-    const tournamentName = location.state?.tournamentName;                  // to be used as parameter for getting the tournament details by name (following backend api)
+    const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
 
-    const isAvailable = location.state?.isAvailable;                        // to be used for displaying 'Join Tournament' button or not
+    const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
 
-    const isPastTournament = location.state?.isPastTournament || false;     // to be used for changes in tournament details for past tournaments
+    const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
     const [isFull, setIsFull] = useState(false);
+
+    // Function to be used to display the gender icon for tournament details.
+    const getGenderIcon = (gender) => {
+        switch (gender.toLowerCase()) {
+            case 'male':
+                return faMars;
+            default:
+                return faVenus;
+        }
+    };
 
     useEffect(() => {
         if (tournamentDetails) {
@@ -92,7 +102,7 @@ const TournamentDetails = () => {
         return `${day} ${month} ${year}`;
     };
 
-    // API call: Retrieved tournament details by taking the tournament name (as a state)
+    // ------------------------------------- API call: Retrieved tournament details by taking the tournament name (as a state) -------------------------------------
     async function getTournamentDetailsByName() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -133,21 +143,42 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
+            <div className = "flex flex-col w-3/5 gap-4 shadow-xl p-8 rounded-[12px]" style = {{ backgroundColor: "white" }}>
+
                 <div className = "flex justify-between items-center mb-4">
-                    <div className = "flex items-center gap-4">
+                    {/* BACK BUTTON */}
+                    <div className="flex items-center gap-4 flex-grow">
                         <FontAwesomeIcon
                             icon = {faArrowLeft}
                             onClick = {handleBackButtonClick}
-                            className = "back-icon cursor-pointer text-xl"
+                            className = "back-icon cursor-pointer text-xl mt-3"
                         />
-                        <h1 className = "text-2xl font-bold mb-2 mt-1"> {tournamentDetails.tournamentName} </h1>
+                        <h1 className = "text-2xl font-bold mt-1"> {tournamentDetails.tournamentName} </h1>
                     </div>
-                    {!isFull && isAvailable && (
+                    {/* SLOTS LEFT */}
+                    {!isPastTournament && (
+                        <div 
+                            className = "text-lg font-bold text-right mr-5" 
+                            style = {{ color: tournamentDetails.playerCapacity - tournamentDetails.playersPool.length < 10 ? 'red' : 'inherit' }}
+                        >
+                            {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0 ? (
+                                <>
+                                    Slots Left: {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length}!
+                                    
+                                </>
+                            ) : (
+                                <span>
+                                    Slots are full!
+                                </span>
+                            )}
+                     </div>
+                    )}
+                    {/* JOIN BUTTON */}
+                    {!isFull && isAvailableTournament && (
                         <button
                             onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
                             className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
-                            style= {{
+                            style = {{
                                 backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
                                 border: "none",
                                 color: "white",
@@ -162,42 +193,90 @@ const TournamentDetails = () => {
                         </button>
                     )}
                 </div>
-                <p className = "mb-2 text-lg">
-                    <strong> Date: </strong> 
-                    {!isPastTournament 
-                        ? formatDate(tournamentDetails.startDate)
-                        : `${formatDate(tournamentDetails.startDate)} to ${formatDate(tournamentDetails.endDate)}`
-                    }
-                </p>
-                <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
-                <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
-                <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
-                <p className = "mb-2 text-lg"> <strong> Gender: </strong> {tournamentDetails.gender} </p>
-                {!isPastTournament && (
-                    <>
-                        <p className = "mb-2 text-lg"> <strong> Player Capacity: </strong> {tournamentDetails.playerCapacity} </p>
-                        <p className = "mb-2 text-lg">
-                            {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0
-                            ? <span><strong> Slots Available: </strong> {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length} </span>
-                            : <span><strong> "Slots are full!"</strong></span>}                    
+
+                {/* LINE DIVIDER */}
+                <div style = {{ height: "1px", backgroundColor: "#DDDDDD" }} />
+
+                <div className = "flex flex-row gap-20 mt-4 mb-1">
+                    {/* LEFT SECTION */}
+                    <div className = "ml-10 w-1/2">
+                        {/* TOURNAMENT DATE */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {faCalendarAlt}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {!isPastTournament
+                                ? formatDate(tournamentDetails.startDate)
+                                : `${formatDate(tournamentDetails.startDate)} to ${formatDate(tournamentDetails.endDate)}`
+                            }
                         </p>
-                    </>
-                )}
-                {tournamentDetails.remarks && (
-                    <p className = "mb-2 text-lg"> <strong> Remarks: </strong> {tournamentDetails.remarks} </p>
-                )}
-                <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
-                <div className = "map-api-container h-64 border rounded-[8px]">
-                    <p className = "text-center p-4"> Insert map here. </p>
+                        {/* TOURNAMENT ELO RATING RANGE */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {faStar}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {tournamentDetails.minElo} to {tournamentDetails.maxElo}
+                        </p>
+                        {/* TOURNAMENT LOCATION */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {faMapMarkerAlt}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {tournamentDetails.location}
+                        </p>
+                    </div>
+                    {/* RIGHT SECTION */}
+                    <div>
+                        {/* TOURNAMENT GAME CATEGORY */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {faGamepad}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {tournamentDetails.category}
+                        </p>
+                        {/* TOURNAMENT GENDER */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {getGenderIcon(tournamentDetails.gender)}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {tournamentDetails.gender}
+                        </p>
+                        {/* TOURNAMENT ORGANISER */}
+                        <p className = "mb-5 text-lg">
+                            <FontAwesomeIcon
+                                icon = {faUserTie}
+                                className = "mr-4 h-5 w-5 align-middle"
+                            />
+                            {tournamentDetails.createdBy}
+                        </p>
+                    </div>
                 </div>
-                <div className = "flex justify-between items-start mt-4">
-                    <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
+
+                {/* LINE DIVIDER */}
+                <div style = {{ height: "1px", backgroundColor: "#DDDDDD" }} />
+
+                {/* TOURNAMENT REMARKS */}
+                <div className = "ml-10 w-1/2">
+                    {tournamentDetails.remarks && (
+                        <p className = "mb-5 text-lg"> <strong> Remarks: </strong> {tournamentDetails.remarks} </p>
+                    )}
+                    <p className = "mt-2 text-lg"> Max Players: <span className = "text-xl" style = {{ color: "red" }}> <strong>{tournamentDetails.playerCapacity}</strong> </span> </p>
+                </div>
+
+                {/* LIST OF PLAYERS ENROLLED IN TOURNAMENT */}
+                <div className = "flex justify-between items-start">
+                    <div className = "players-list mt-2 p-4 shadow-lg rounded-[8px] w-2/3 relative ml-8">
                         <h2 className = "text-xl font-semibold mb-2"> {isPastTournament ? "Players" : "Current Players"} </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
-                                    <li key = {index} className = "mt-5 mb-5"> {player} </li>
+                                    <li className = "mt-5 mb-5 font-semibold"> Username: {player} </li>
                                     
                                 ))}
                             </ol>

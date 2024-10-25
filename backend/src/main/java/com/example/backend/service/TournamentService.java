@@ -277,6 +277,89 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found in the database.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
+    // public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException {
+    //     try {
+    //         User user = userRepository.findByUsername(username)
+    //             .orElseThrow(() -> new UserNotFoundException(username));
+
+    //         List<Tournament> allTournaments = getAllTournaments();
+    //         LocalDate currentDate = LocalDate.now();
+
+    //         List<Tournament> userAvailableTournaments = allTournaments.stream()
+    //             .filter(tournament -> {
+
+    //                 // Check if the closing signup date is either today or in the future
+    //                 if (tournament.getClosingSignupDate().isBefore(currentDate) || tournament.getClosingSignupDate().isEqual(currentDate)) {
+    //                     return false; // Tournament has closed for signups
+    //                 }
+
+    //                 // Check if the tournament is not full
+    //                 if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
+    //                     return false;
+    //                 }
+
+    //                 // Check if the user is not already in the tournament
+    //                 if (tournament.getPlayersPool().contains(username)) {
+    //                     return false;
+    //                 }
+
+    //                 // Check if the user's ELO is within the tournament's range
+    //                 if (user.getElo() < tournament.getMinElo() || user.getElo() > tournament.getMaxElo()) {
+    //                     return false;
+    //                 }
+
+    //                 // Check if the tournament's gender requirement matches the user's gender
+    //                 if (!tournament.getGender().equalsIgnoreCase(user.getGender())) {
+    //                     return false;
+    //                 }
+
+    //                 // Get the user's strike reports
+    //                 List<User.StrikeReport> strikeReports = user.getStrikeReports();
+
+    //                 // For each strike report, check if the tournament was created by the same admin
+    //                 for (User.StrikeReport strikeReport : strikeReports) {
+    //                     // Check if the tournament was created by the same admin and if the strike was issued within the last month
+    //                     if (strikeReport.getIssuedBy().equals(tournament.getCreatedBy()) && 
+    //                         strikeReport.getDateCreated().isAfter(LocalDateTime.now().minusMonths(1))) {
+    //                         return false;
+    //                     }
+    //                 }
+
+    //                 // Check if the user's age matches the tournament category
+    //                 int userAge = user.getAge();
+    //                 switch (tournament.getCategory()) {
+    //                     case "U16":
+    //                         return userAge <= 16;
+    //                     case "U21":
+    //                         return userAge <= 21;
+    //                     case "Open":
+    //                         return true;
+    //                     default:
+    //                         logger.warn("Unknown tournament category: {}", tournament.getCategory());
+    //                         return false;
+    //                 }
+
+                    
+
+                    
+    //             })
+    //             .collect(Collectors.toList());
+
+    //         logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
+    //         return userAvailableTournaments;
+
+    //     } catch (UserNotFoundException e) {
+    //         logger.error("User not found: {}", username);
+    //         throw e;
+    //     } catch (TournamentNotFoundException e) {
+    //         logger.error("No tournaments found");
+    //         throw e;
+    //     } catch (Exception e) {
+    //         logger.error("Error fetching user available tournaments", e);
+    //         throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
+    //     }
+    // }
+
     public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException {
         try {
             User user = userRepository.findByUsername(username)
@@ -286,68 +369,11 @@ public class TournamentService {
             LocalDate currentDate = LocalDate.now();
 
             List<Tournament> userAvailableTournaments = allTournaments.stream()
-                .filter(tournament -> {
-
-                    // Check if the closing signup date is either today or in the future
-                    if (tournament.getClosingSignupDate().isBefore(currentDate) || tournament.getClosingSignupDate().isEqual(currentDate)) {
-                        return false; // Tournament has closed for signups
-                    }
-
-                    // Check if the tournament is not full
-                    if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
-                        return false;
-                    }
-
-                    // Check if the user is not already in the tournament
-                    if (tournament.getPlayersPool().contains(username)) {
-                        return false;
-                    }
-
-                    // Check if the user's ELO is within the tournament's range
-                    if (user.getElo() < tournament.getMinElo() || user.getElo() > tournament.getMaxElo()) {
-                        return false;
-                    }
-
-                    // Check if the tournament's gender requirement matches the user's gender
-                    if (!tournament.getGender().equalsIgnoreCase(user.getGender())) {
-                        return false;
-                    }
-
-                    // Get the user's strike reports
-                    List<User.StrikeReport> strikeReports = user.getStrikeReports();
-
-                    // For each strike report, check if the tournament was created by the same admin
-                    for (User.StrikeReport strikeReport : strikeReports) {
-                        // Check if the tournament was created by the same admin and if the strike was issued within the last month
-                        if (strikeReport.getIssuedBy().equals(tournament.getCreatedBy()) && 
-                            strikeReport.getDateCreated().isAfter(LocalDateTime.now().minusMonths(1))) {
-                            return false;
-                        }
-                    }
-
-                    // Check if the user's age matches the tournament category
-                    int userAge = user.getAge();
-                    switch (tournament.getCategory()) {
-                        case "U16":
-                            return userAge <= 16;
-                        case "U21":
-                            return userAge <= 21;
-                        case "Open":
-                            return true;
-                        default:
-                            logger.warn("Unknown tournament category: {}", tournament.getCategory());
-                            return false;
-                    }
-
-                    
-
-                    
-                })
+                .filter(tournament -> isUserEligibleForTournament(user, tournament, currentDate, true))
                 .collect(Collectors.toList());
 
             logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
             return userAvailableTournaments;
-
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", username);
             throw e;
@@ -355,8 +381,125 @@ public class TournamentService {
             logger.error("No tournaments found");
             throw e;
         } catch (Exception e) {
-            logger.error("Error fetching user available tournaments", e);
+            logger.error("Unexpected error in getUserAvailableTournaments", e);
             throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
+        }
+    }
+
+
+    /**
+     * Retrieves all users that are eligible to participate in a tournament.
+     *
+     * @param tournamentName the name of the tournament to retrieve users for.
+     * @param adminName the name of the admin who created the tournament.
+     * @return a List of users that are eligible to participate in the tournament.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     */
+    public List<User> getAvailableUsersForTournament(String tournamentName, String adminName) 
+            throws TournamentNotFoundException, IllegalArgumentException {
+        logger.info("Getting available users for tournament: {} created by admin: {}", tournamentName, adminName);
+        
+        Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+            .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+
+        if (!tournament.getCreatedBy().equals(adminName)) {
+            throw new IllegalArgumentException("This tournament was not created by the specified admin");
+        }
+
+        // Check if the tournament has already ended
+        if (tournament.getEndDate() != null) {
+            throw new IllegalArgumentException("Cannot get available users for a tournament that has already ended");
+        }
+
+        List<User> allUsers = userRepository.findAll();
+        LocalDate currentDate = LocalDate.now();
+
+        return allUsers.stream()
+            .filter(user -> isUserEligibleForTournament(user, tournament, currentDate, false) && user.isEnabled() && user.isAvailable())
+            .collect(Collectors.toList());
+    }
+
+
+    /*
+     * Helper method used by getAvailableUsersForTournament and getUserAvailableTournaments
+     * to check if a user is eligible to participate in a tournament.
+     * Based on the criteria in the tournament's signup and tournament details.
+     */
+
+    private boolean isUserEligibleForTournament(User user, Tournament tournament, LocalDate currentDate, boolean isUserSignup) {
+        return (isUserSignup ? isSignupOpen(tournament, currentDate) : isTournamentUpcoming(tournament, currentDate)) &&
+               isTournamentNotFull(tournament) &&
+               isUserNotAlreadyInTournament(user, tournament) &&
+               isUserEloInRange(user, tournament) &&
+               isUserGenderMatching(user, tournament) &&
+               isUserNotStriked(user, tournament) &&
+               isUserAgeEligible(user, tournament);
+    }
+
+    // Checks if the signup is open for the tournament
+    private boolean isSignupOpen(Tournament tournament, LocalDate currentDate) {
+        return currentDate.isBefore(tournament.getClosingSignupDate());
+    }
+
+    // Checks if the tournament is upcoming
+    private boolean isTournamentUpcoming(Tournament tournament, LocalDate currentDate) {
+        return tournament.getStartDate().isAfter(currentDate);
+    }
+
+    // Checks if the tournament is not full
+    private boolean isTournamentNotFull(Tournament tournament) {
+        return tournament.getPlayersPool().size() < tournament.getPlayerCapacity();
+    }
+
+    // Checks if the user is not already in the tournament
+    private boolean isUserNotAlreadyInTournament(User user, Tournament tournament) {
+        return !tournament.getPlayersPool().contains(user.getUsername());
+    }
+
+    // Checks if the user's elo is in the tournament's range
+    private boolean isUserEloInRange(User user, Tournament tournament) {
+        return user.getElo() >= tournament.getMinElo() && user.getElo() <= tournament.getMaxElo();
+    }
+
+    // Checks if the user's gender matches the tournament's gender requirement
+    private boolean isUserGenderMatching(User user, Tournament tournament) {
+        return tournament.getGender().equalsIgnoreCase(user.getGender());
+    }
+
+    private boolean isUserNotStriked(User user, Tournament tournament) {
+        List<User.StrikeReport> strikeReports = user.getStrikeReports();
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        long recentStrikeCount = strikeReports.stream()
+            .filter(strike -> strike.getIssuedBy().equals(tournament.getCreatedBy()))
+            .filter(strike -> strike.getDateCreated().isAfter(oneMonthAgo))
+            .count();
+
+
+        if (strikeReports.size() >= 3) {
+            return false; // User has at least 3 strikes
+        }
+
+        if (recentStrikeCount > 0) {
+            return false; // User has at least one strike within the last month
+        }
+
+        return true;
+    }
+
+    // Checks if the user's age matches the tournament category 
+    private boolean isUserAgeEligible(User user, Tournament tournament) {
+        int userAge = user.getAge();
+        switch (tournament.getCategory()) {
+            case "U16":
+                return userAge <= 16;
+            case "U21":
+                return userAge <= 21;
+            case "Open":
+                return true;
+            default:
+                logger.warn("Unknown tournament category: {}", tournament.getCategory());
+                return false;
         }
     }
 
@@ -391,8 +534,6 @@ public class TournamentService {
 
             tournamentToJoin.getPlayersPool().add(username);
             tournamentRepository.save(tournamentToJoin);
-
-            // Update the 
 
             logger.info("User '{}' successfully joined tournament '{}'", username, tournamentName);
         } catch (TournamentNotFoundException | InvalidJoinException e) {
@@ -478,6 +619,13 @@ public class TournamentService {
         // Check if the tournament has ended
         if (tournament.getEndDate() != null) {
             errors.put("error", "Cannot update a tournament that has already ended");
+            response.put("errors", errors);
+            return response;
+        }
+
+        // If bracket is not null, return an error
+        if (tournament.getBracket() != null) {
+            errors.put("error", "Cannot update a tournament after the bracket has been generated");
             response.put("errors", errors);
             return response;
         }
@@ -611,6 +759,9 @@ public class TournamentService {
 
         logger.info("Tournament and related matches deleted successfully: {}", tournamentName);
     }
+
+
+
 
     // Service to add the users to the tournament
     public Map<String, Object> updatePlayersPool(String tournamentName, List<String> players) {
