@@ -535,8 +535,6 @@ public class TournamentService {
             tournamentToJoin.getPlayersPool().add(username);
             tournamentRepository.save(tournamentToJoin);
 
-            // Update the 
-
             logger.info("User '{}' successfully joined tournament '{}'", username, tournamentName);
         } catch (TournamentNotFoundException | InvalidJoinException e) {
             logger.info("Join tournament failed: {}", e.getMessage());
@@ -621,6 +619,13 @@ public class TournamentService {
         // Check if the tournament has ended
         if (tournament.getEndDate() != null) {
             errors.put("error", "Cannot update a tournament that has already ended");
+            response.put("errors", errors);
+            return response;
+        }
+
+        // If bracket is not null, return an error
+        if (tournament.getBracket() != null) {
+            errors.put("error", "Cannot update a tournament after the bracket has been generated");
             response.put("errors", errors);
             return response;
         }
