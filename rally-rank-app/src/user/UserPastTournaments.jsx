@@ -63,7 +63,7 @@ const TournamentCard = ({ userPastTournaments }) => {
 
 function UserPastTournaments() {
 
-    // ------------------------------------- Tournament Functions -------------------------------------
+    // ------------------------------------- Past Tournament Functions -------------------------------------
     const [pastTournaments, setPastTournaments] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -72,7 +72,7 @@ function UserPastTournaments() {
         getPastTournaments();
     }
 
-    // API Call: Retrieiving past tournaments
+    // ------------------------------------- API Call: Retrieiving user's past tournaments -------------------------------------
     async function getPastTournaments() {
         setLoading(true);
         try {
@@ -91,7 +91,7 @@ function UserPastTournaments() {
                     }
                 }
             );
-
+            
             setPastTournaments(response.data);
         } catch (error) {
             console.error("Error fetching available tournaments: ", error);

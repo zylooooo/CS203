@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParam } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, faVenus, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
@@ -8,10 +8,9 @@ import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, fa
 const TournamentDetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { tournamentName } = useParam();
     const [isFull, setIsFull] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
-    // const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
+    const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
     const [tournamentDetails, setTournamentDetails] = useState(null);
     const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
     const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
@@ -68,7 +67,6 @@ const TournamentDetails = () => {
                     setHasJoined(true);
                     console.log(response.data);
                     // Success Message
-                    window.location.reload();
                 }
             } catch (error) {
                 console.error("Error joining tournament:", error.response ? error.response.data : error.message);
