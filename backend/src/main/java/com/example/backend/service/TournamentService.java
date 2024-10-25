@@ -519,7 +519,7 @@ public class TournamentService {
 
             if (availableTournaments.isEmpty()) {
                 logger.info("No available tournaments found for user: {}", username);
-                throw new InvalidJoinException("No available tournaments found for the user");
+                throw new InvalidJoinException("No available tournaments found for the user: " + username);
             }
 
             Tournament tournamentToJoin = availableTournaments.stream()
@@ -735,9 +735,8 @@ public class TournamentService {
      * @throws IllegalArgumentException if the tournament does not belong to the admin or has already ended.
      */
 
-    public void deleteTournament(String tournamentName, String adminName) 
-        throws TournamentNotFoundException, IllegalArgumentException {
-    Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+    public void deleteTournament(String tournamentName, String adminName) throws TournamentNotFoundException, IllegalArgumentException {
+        Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
             .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
 
         // Check if the tournament belongs to the admin
@@ -764,9 +763,150 @@ public class TournamentService {
 
 
 
+    // Service to add the users to the tournament
+    public Map<String, Object> updatePlayersPool(String tournamentName, List<String> players) {
+        Tournament tournament;
+        List<String> addedPlayers = new ArrayList<>();
+        List<String> skippedPlayers = new ArrayList<>();
+        Map<String, Object> result = new HashMap<>();
 
+        try {
+            tournament = getTournamentByName(tournamentName);
+        } catch (TournamentNotFoundException | IllegalArgumentException e) {
+            logger.error("Error accessing tournament: {}", e.getMessage());
+            result.put("error", e.getMessage());
+            return result;
+        }
+
+        for (String username : players) {
+            processPlayer(username, tournament, addedPlayers, skippedPlayers);
+        }
+
+        try {
+            if (!addedPlayers.isEmpty()) {
+                tournamentRepository.save(tournament);
+                result.put("message", "Players pool updated successfully");
+            } else {
+                result.put("message", "No changes made to the players pool");
+            }
+            
+            result.put("addedPlayers", addedPlayers);
+            result.put("skippedPlayers", skippedPlayers);
+            
+            return result;
+        } catch (Exception e) {
+            logger.error("Error saving tournament: {}", e.getMessage());
+            result.put("error", "Failed to save tournament after updating players pool");
+            return result;
+        }
+    }
+
+    private void processPlayer(String username, Tournament tournament, List<String> addedPlayers, List<String> skippedPlayers) {
+        try {
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+            if (isEligibleForTournament(user, tournament)) {
+                List<String> playersPool = tournament.getPlayersPool();
+                if (playersPool == null) {
+                    playersPool = new ArrayList<>();
+                    tournament.setPlayersPool(playersPool);
+                }
+                
+                if (!playersPool.contains(username)) {
+                    playersPool.add(username);
+                    addedPlayers.add(username);
+                    logger.info("Added player {} to tournament {}", username, tournament.getTournamentName());
+                } else {
+                    logger.info("Player {} is already in the tournament {}", username, tournament.getTournamentName());
+                    skippedPlayers.add(username + " (already in tournament)");
+                }
+            } else {
+                logger.info("Player {} is not eligible for the tournament {}", username, tournament.getTournamentName());
+                skippedPlayers.add(username + " (not eligible)");
+            }
+        } catch (UserNotFoundException e) {
+            logger.info("Skipped player {}: User not found", username);
+            skippedPlayers.add(username + " (user not found)");
+        } catch (Exception e) {
+            logger.error("Unexpected error processing player {}: {}", username, e.getMessage());
+            skippedPlayers.add(username + " (unexpected error)");
+        }
+    }
+
+    private boolean isEligibleForTournament(User user, Tournament tournament) {
+        // Check if the tournament is full
+        if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
+            return false;
+        }
+
+        // Check if the user's ELO is within the tournament's range
+        if (user.getElo() < tournament.getMinElo() || user.getElo() > tournament.getMaxElo()) {
+            return false;
+        }
+
+        // Check if the tournament's gender requirement matches the user's gender
+        if (!tournament.getGender().equalsIgnoreCase(user.getGender())) {
+            return false;
+        }
+
+        // Check user's age against tournament category
+        int userAge = user.getAge();
+        switch (tournament.getCategory()) {
+            case "U16":
+                if (userAge > 16) return false;
+                break;
+            case "U21":
+                if (userAge > 21) return false;
+                break;
+            case "Open":
+                break;
+            default:
+                logger.warn("Unknown tournament category: {}", tournament.getCategory());
+                return false;
+        }
+
+        // Check for recent strikes
+        for (User.StrikeReport strikeReport : user.getStrikeReports()) {
+            if (strikeReport.getIssuedBy().equals(tournament.getCreatedBy()) && 
+                strikeReport.getDateCreated().isAfter(LocalDateTime.now().minusMonths(1))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
     
+    // Remove a user from the tournament
+    public Tournament removePlayerFromTournament(String tournamentName, String username) {
+        try {
+            Tournament tournament = getTournamentByName(tournamentName);
 
+            if (tournament.getClosingSignupDate() != null && tournament.getClosingSignupDate().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("Closing sign up date has passed!");
+            }
+
+            List<String> playersPool = tournament.getPlayersPool() == null ? new ArrayList<>() : tournament.getPlayersPool();
+
+            // Check if the user is in the tournament
+            if (!userRepository.existsByUsername(username)) {
+                throw new UserNotFoundException(username);
+            }
+            if (!playersPool.contains(username)) {
+                throw new IllegalArgumentException("User is not in the tournament!");
+            }
+
+            playersPool.remove(username);
+            tournament.setPlayersPool(playersPool);
+            return tournamentRepository.save(tournament);
+        } catch (TournamentNotFoundException | UserNotFoundException | IllegalArgumentException e) {
+            logger.error("Error removing player from tournament: {}", tournamentName, e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error removing player from tournament: {}", tournamentName, e);
+            throw new RuntimeException("Unexpected error removing player from tournament", e);
+        }
+    }
     
 
 
