@@ -93,11 +93,7 @@
     .btn:hover::after {
         transform: scaleX(1); /* Show underline on hover */
     }
-
-    body {
-        background-color: #fffbf7;
-    }
-
+    
     .card-background {
         background-color: #fffdf9;
     }
