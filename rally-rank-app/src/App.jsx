@@ -156,7 +156,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/tournament-details"
+                        path = "/tournament-details/:tournamentName"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>

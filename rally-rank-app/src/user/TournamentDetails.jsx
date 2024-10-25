@@ -1,26 +1,29 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParam } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, faVenus, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 // Component: Tournament Details Card
 const TournamentDetails = () => {
     const navigate = useNavigate();
-
     const location = useLocation();
-
-    const [hasJoined, setHasJoined] = useState(false);
-
-    const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
-
-    const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
-
-    const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
-
-    const [tournamentDetails, setTournamentDetails] = useState(null);
-
+    const { tournamentName } = useParam();
     const [isFull, setIsFull] = useState(false);
+    const [hasJoined, setHasJoined] = useState(false);
+    // const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
+    const [tournamentDetails, setTournamentDetails] = useState(null);
+    const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
+    const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
+    const isScheduledTournament = location.state?.isScheduledTournament;
+
+    const isTwoWeeks = (startDate) => {
+        const currentDate = new Date();
+        const tournamentStartDate = new Date(startDate);
+        const timeDifference = tournamentStartDate - currentDate;
+        const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        return daysDifference === 14;
+    }
 
     // Function to be used to display the gender icon for tournament details.
     const getGenderIcon = (gender) => {
@@ -65,6 +68,7 @@ const TournamentDetails = () => {
                     setHasJoined(true);
                     console.log(response.data);
                     // Success Message
+                    window.location.reload();
                 }
             } catch (error) {
                 console.error("Error joining tournament:", error.response ? error.response.data : error.message);
@@ -75,6 +79,7 @@ const TournamentDetails = () => {
         }
     }
 
+    // ----------------------- API Call: Removing user's username when leaving a tournament  ----------------------- (WAIT FOR ROUTER FROM BACKEND)
     const handleLeaveTournamentClick = () => {
         setHasJoined(false);
     }
@@ -102,7 +107,7 @@ const TournamentDetails = () => {
         return `${day} ${month} ${year}`;
     };
 
-    // ------------------------------------- API call: Retrieved tournament details by taking the tournament name (as a state) -------------------------------------
+    // ------------------------------------- API call: Retrieve tournament details by taking the tournament name (as a state) -------------------------------------
     async function getTournamentDetailsByName() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -153,7 +158,7 @@ const TournamentDetails = () => {
                             onClick = {handleBackButtonClick}
                             className = "back-icon cursor-pointer text-xl mt-3"
                         />
-                        <h1 className = "text-2xl font-bold mt-1"> {tournamentDetails.tournamentName} </h1>
+                        <h1 className = "text-2xl font-bold mt-2"> {tournamentDetails.tournamentName} </h1>
                     </div>
                     {/* SLOTS LEFT */}
                     {!isPastTournament && (
@@ -163,7 +168,7 @@ const TournamentDetails = () => {
                         >
                             {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length > 0 ? (
                                 <>
-                                    Slots Left: {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length}!
+                                    Slots Left: {tournamentDetails.playerCapacity - tournamentDetails.playersPool.length}
                                     
                                 </>
                             ) : (
@@ -173,12 +178,12 @@ const TournamentDetails = () => {
                             )}
                      </div>
                     )}
-                    {/* JOIN BUTTON */}
-                    {!isFull && isAvailableTournament && (
+                    {/* JOIN/LEAVE BUTTON */}
+                    {!isFull && isAvailableTournament && !isScheduledTournament && (
                         <button
-                            onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                            className = "bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
-                            style = {{
+                            onClick={hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                            className="bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                            style={{
                                 backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
                                 border: "none",
                                 color: "white",
@@ -190,6 +195,26 @@ const TournamentDetails = () => {
                             }}
                         >
                             {hasJoined ? "Leave Tournament" : "Join Tournament"}
+                        </button>
+                    )}
+
+                    {/* LEAVE BUTTON FOR SCHEDULED TOURNAMENT */}
+                    {isScheduledTournament && !isTwoWeeks(tournamentDetails.startDate) && (
+                        <button
+                            onClick={handleLeaveTournamentClick}
+                            className="bg-red-500 border text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
+                            style={{
+                                backgroundColor: "#FF6961",
+                                border: "none",
+                                color: "white",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                transition: "background-color 0.3s ease",
+                            }}
+                        >
+                            Leave Tournament
                         </button>
                     )}
                 </div>
