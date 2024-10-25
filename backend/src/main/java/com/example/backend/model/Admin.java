@@ -37,6 +37,7 @@ public class Admin {
 
     @Indexed(unique = true)
     @NotBlank(message = "Admin name is required!")
+    @Pattern(regexp = "^[^/]+$", message = "Admin name cannot contain a forward slash (/)")
     private String adminName;
 
     // Default role is ADMIN FOR JWT
