@@ -105,7 +105,7 @@ const ScheduledTournamentCard = ({ scheduledTournaments }) => {
                 scheduledTournaments.map((scheduledTournament, index) => (
                     <div
                         key = {index}
-                        className = "scheduled-tournament-card bg-blue-700 p-4 rounded-md shadow-md cursor-pointer hover:shadow-lg transition"
+                        className = "scheduled-tournament-card bg-blue-700 p-4 rounded-[20px] shadow-md cursor-pointer hover:shadow-lg transition"
                         style = {{ backgroundColor: "#DDF2D1" }}
                         onClick = {() => handleScheduledTournamentCardClick(scheduledTournament)}
                     >
