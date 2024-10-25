@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,7 +22,8 @@ import jakarta.validation.constraints.*;
 @Document(collection = "user")
 public class User {
 
-    private final int BASE_ELO = 1200;
+    @Transient
+    private static final int BASE_ELO = 1200;
 
     @Id
     private String id;
@@ -41,7 +43,6 @@ public class User {
     @Pattern(regexp = "^(?:6\\d{7}|[89]\\d{7}|1800\\d{7}|1900\\d{7})$", message = "Invalid phone number!") 
     private String phoneNumber;
 
-    // Default elo is 400
     private int elo = BASE_ELO;
 
     @NotBlank(message = "Gender is required!")
