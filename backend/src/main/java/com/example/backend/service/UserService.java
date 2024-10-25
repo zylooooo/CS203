@@ -220,7 +220,7 @@ public class UserService {
                 user.setElo(newUserDetails.getElo());
             Optional.ofNullable(newUserDetails.getGender()).ifPresent(user::setGender);
             Optional.ofNullable(newUserDetails.getDateOfBirth()).ifPresent(user::setDateOfBirth);
-            Optional.ofNullable(newUserDetails.getProfilePic()).ifPresent(user::setProfilePic);
+            // Optional.ofNullable(newUserDetails.getProfilePic()).ifPresent(user::setProfilePic);
             Optional.ofNullable(newUserDetails.getUsername()).ifPresent(user::setUsername);
             Optional.ofNullable(newUserDetails.getFirstName()).ifPresent(user::setFirstName);
             Optional.ofNullable(newUserDetails.getLastName()).ifPresent(user::setLastName);

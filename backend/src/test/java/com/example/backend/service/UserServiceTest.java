@@ -189,7 +189,7 @@ class UserServiceTest {
         updatedUser.setElo(1500);
         updatedUser.setGender("Female");
         updatedUser.setDateOfBirth(LocalDate.of(1990, 1, 1));
-        updatedUser.setProfilePic("newpic.jpg");
+        // updatedUser.setProfilePic("newpic.jpg");
         updatedUser.setFirstName("Jane");
         updatedUser.setLastName("Doe");
         updatedUser.setAvailable(true);
@@ -215,7 +215,7 @@ class UserServiceTest {
         assertEquals(1500, resultUser.getElo());
         assertEquals("Female", resultUser.getGender());
         assertEquals(LocalDate.of(1990, 1, 1), resultUser.getDateOfBirth());
-        assertEquals("newpic.jpg", resultUser.getProfilePic());
+        // assertEquals("newpic.jpg", resultUser.getProfilePic());
         assertEquals("Jane", resultUser.getFirstName());
         assertEquals("Doe", resultUser.getLastName());
         assertTrue(resultUser.isAvailable());

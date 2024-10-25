@@ -21,7 +21,7 @@ import jakarta.validation.constraints.*;
 @Document(collection = "user")
 public class User {
 
-    private final int BASE_ELO = 400;
+    private final int BASE_ELO = 1200;
 
     @Id
     private String id;
