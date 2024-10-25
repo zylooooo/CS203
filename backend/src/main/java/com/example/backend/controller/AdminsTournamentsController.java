@@ -8,6 +8,7 @@ import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.MatchNotFoundException;
 import com.example.backend.service.BracketService;
 import com.example.backend.model.Match;
+import com.example.backend.service.EloRatingService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ public class AdminsTournamentsController {
 
     private final TournamentService tournamentService;
     private final BracketService bracketService;
+    private final EloRatingService eloRatingService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminsTournamentsController.class);
 
@@ -148,45 +150,6 @@ public class AdminsTournamentsController {
             logger.error("Unexpected error getting all tournaments history!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "An unexpected error occurred while fetching all tournaments history"));
-        }
-    }
-
-    // Generate bracket for tournament
-    @PutMapping("/generate-bracket/{tournamentName}")
-    public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
-        try {
-            Map<String, Object> response = bracketService.generateBracket(tournamentName);
-            return ResponseEntity.ok(response);
-        } catch (TournamentNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
-        } catch(UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
-        } catch (MatchNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
-        }   catch (Exception e) {
-            logger.error("Error generating bracket: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
-        }
-    }
-
-    // Update the match results
-    @PutMapping("/update-match")
-    public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
-        try {
-            Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
-            return ResponseEntity.ok(updatedMatch);
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid match details provided: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Unexpected error updating match results: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while updating the match results"));
         }
     }
 
@@ -334,4 +297,74 @@ public class AdminsTournamentsController {
 
 
 
+    // Generate bracket for tournament
+    @PutMapping("/generate-bracket/{tournamentName}")
+    public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> response = bracketService.generateBracket(tournamentName);
+            return ResponseEntity.ok(response);
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch(UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (MatchNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        }   catch (Exception e) {
+            logger.error("Error generating bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "An unexpected error occurred while generating the bracket!"));
+        }
+    }
+
+    // Update the match results
+    @PutMapping("/update-match")
+    public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
+        try {
+            Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
+            return ResponseEntity.ok(updatedMatch);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid match details provided: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating match results: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the match results"));
+        }
+    }
+
+    // Calculate and update the elo rating of the players after a match
+    @PutMapping("/{matchId}/update-elo")
+    public ResponseEntity<?> updateEloRating(@PathVariable String matchId) {
+        try {
+            eloRatingService.updateEloRating(matchId);
+            return ResponseEntity.ok(Map.of("message", "Elo rating updated successfully"));
+        } catch (MatchNotFoundException | UserNotFoundException | TournamentNotFoundException e) {
+            logger.error("Error updating elo rating: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating elo rating: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the elo rating"));
+        }
+    }
+
+    @PutMapping("/{tournamentName}/end")
+    public ResponseEntity<?> updateTournamentEndDate(@PathVariable String tournamentName) {
+        try {
+            Tournament updatedTournament = bracketService.updateTournamentEndDate(tournamentName);
+            return ResponseEntity.ok(updatedTournament);
+        } catch (TournamentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error updating tournament end date: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while updating the tournament end date"));
+        }
+    }
 }
