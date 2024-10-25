@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Tournament;
+import com.example.backend.model.User;
 import com.example.backend.responses.ErrorResponse;
 import com.example.backend.service.TournamentService;
 import com.example.backend.exception.TournamentNotFoundException;
@@ -292,9 +293,37 @@ public class AdminsTournamentsController {
         }
     }
 
+     /**
+     * Retrieves all users that are eligible to participate in a tournament.
+     * @param tournamentName the name of the tournament to retrieve users for.
+     * @return a ResponseEntity with the list of eligible users or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the request is invalid.
+     * @throws Exception if an unexpected error occurs during the retrieval process.
+     */
+    @GetMapping("/{tournamentName}/available-users")
+    public ResponseEntity<?> getAvailableUsersForTournament(@PathVariable String tournamentName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String adminName = authentication.getName();
 
-
-
+        try {
+            logger.info("Received request to get available users for tournament: {} by admin: {}", tournamentName, adminName);
+            List<User> availableUsers = tournamentService.getAvailableUsersForTournament(tournamentName, adminName);
+            return ResponseEntity.ok(availableUsers);
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", tournamentName);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Unexpected error getting available users for tournament: {}", tournamentName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while fetching available users for the tournament"));
+        }
+    }
 
 
     // Generate bracket for tournament
