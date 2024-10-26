@@ -24,13 +24,14 @@ import TournamentDetails from "./user/TournamentDetails";
 import UserPastTournaments from "./user/UserPastTournaments";
 
 // Administrator Imports
+import Fixtures from "./administrator/Fixtures";
 import AdminVerify from "./administrator/AdminVerify";
-import CreateTournaments from "./administrator/CreateTournaments";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
+import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
@@ -257,7 +258,7 @@ function App() {
                         element = {
                             <AdminRoute>
                                 <MainLayout>
-                                    <CreateTournaments />
+                                    <AdministratorCreateTournaments />
                                 </MainLayout>
                             </AdminRoute>
                         }
@@ -282,6 +283,18 @@ function App() {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorEditTournament />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* VIEW FIXTURES */}
+                    <Route
+                        path = "/administrator-tournament-fixtures" 
+                        element = {
+                            <AdminRoute>
+                                <MainLayout>
+                                    <Fixtures />
                                 </MainLayout>
                             </AdminRoute>
                         }

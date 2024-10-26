@@ -38,7 +38,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
                         <div className = "flex items-center mb-2 justify-between">
                             <p> Organiser: {tournament.createdBy} </p>
                         </div>
-                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} - {formatDate(tournament.endDate)}</p>
+                        <p className = "mb-2"> Date: {formatDate(tournament.startDate)} to {formatDate(tournament.endDate)}</p>
                         <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
                         <p className = "mb-2"> Game: {tournament.category} </p>
                         <p className = "mb-2"> Gender: {tournament.gender} </p>
