@@ -72,12 +72,21 @@ public class BracketService {
             
             // Save the updated tournament
             Tournament savedTournament = tournamentRepository.save(existingTournament);
-            response.put("tournament", savedTournament);
 
-            // Fetch and return only the matches from the most recent round
-            List<Match> mostRecentMatches = matchRepository.findAllById(newMatches);
-            response.put("matches", mostRecentMatches);
+            // Fetch all of the matches grouped by the round
+            List<Map<String, Object>> roundsWithMatches = new ArrayList<>();
+            for (int i = 0; i < savedTournament.getBracket().getRounds().size(); i++) {
+                Tournament.Round round = savedTournament.getBracket().getRounds().get(i);
+                List<Match> matchesInRound = matchRepository.findAllById(round.getMatches());
 
+                Map<String, Object> roundMap = new HashMap<>();
+                roundMap.put("roundNumber", i);
+                roundMap.put("matches", matchesInRound);
+                roundsWithMatches.add(roundMap);
+            }
+
+            response.put("rounds", roundsWithMatches);
+            return response;
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage(), e);
             error.put("error", e.getMessage());
