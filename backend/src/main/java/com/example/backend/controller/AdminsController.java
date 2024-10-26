@@ -37,8 +37,9 @@ public class AdminsController {
 
 
     /**
-     * Retrieves the admin profile based on the admin name
-     * @return the admin object associated with the authenticated admin
+     * Retrieves the admin profile based on the authenticated admin's name.
+     * 
+     * @return a ResponseEntity containing the admin object or an error message if the admin is not found or an exception occurs.
      */
     @GetMapping("/profile")
     public ResponseEntity<?> getAdminProfile() {
@@ -67,8 +68,9 @@ public class AdminsController {
     /**
      * Updates an admin's details.
      *
-     * @param adminDetails the Admin object containing the updated admin details.
-     * @return a ResponseEntity containing the updated admin details or error messages.
+     * @param newAdminDetails the Admin object containing the updated admin details.
+     * @return a ResponseEntity containing the updated admin details or error messages if validation fails.
+     * @throws Exception if an unexpected error occurs during the update process.
      */
     @PutMapping("/update")
     public ResponseEntity<?> updateAdmin(@RequestBody Admin newAdminDetails) {
@@ -90,6 +92,12 @@ public class AdminsController {
         }
     }
 
+    /**
+     * Deletes the authenticated admin's account.
+     * 
+     * @return a ResponseEntity with a success message or error messages if the admin is not found or an exception occurs.
+     * @throws Exception if an unexpected error occurs during the deletion process.
+     */
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -109,6 +117,16 @@ public class AdminsController {
         }
     }
 
+    /**
+     * Issues a strike against a user in a tournament.
+     * 
+     * @param strikeRequest a map containing the username, tournament name, and report details for the strike.
+     * @return a ResponseEntity with a success message or error messages if validation fails.
+     * @throws UserNotFoundException if the specified user is not found.
+     * @throws TournamentNotFoundException if the specified tournament is not found.
+     * @throws InvalidStrikeException if the strike request is invalid.
+     * @throws Exception if an unexpected error occurs during the strike issuance.
+     */
     @PostMapping("/strike")
     public ResponseEntity<?> strikeUser(@RequestBody Map<String, String> strikeRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

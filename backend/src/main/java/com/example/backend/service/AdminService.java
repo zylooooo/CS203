@@ -250,13 +250,5 @@ public class AdminService {
 
         logger.info("Admin {} issued a strike to user {} for tournament {}. Current strike count: {}", adminName, username, tournamentName, strikeReports.size());
 
-    }
-
-
-
-
-
-
-
-    
+    }    
 }

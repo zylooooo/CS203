@@ -217,7 +217,7 @@ public class AdminsTournamentsController {
     }
 
      /**
-     * Edit a tournament's details based on the provided tournament name and new details.
+     * Edits a tournament's details based on the provided tournament name and new details.
      *
      * @param tournamentName the name of the tournament to be updated.
      * @param newTournamentDetails the Tournament object containing the new details.
@@ -266,6 +266,9 @@ public class AdminsTournamentsController {
      * 
      * @param tournamentName the name of the tournament to be deleted.
      * @return a ResponseEntity with a success message or error messages if validation fails.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws IllegalArgumentException if the delete request is invalid.
+     * @throws RuntimeException if there is an unexpected error during the deletion.
      */
 
     @DeleteMapping("/{tournamentName}")
@@ -325,7 +328,14 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Update the players pool of a tournament
+    /**
+     * Updates the players pool of a tournament.
+     * 
+     * @param tournamentName the name of the tournament to update the players pool for.
+     * @param players the list of players to be added to the tournament.
+     * @return a ResponseEntity with the result of the update or error messages if validation fails.
+     * @throws Exception if an unexpected error occurs during the update process.
+     */
     @PutMapping("/{tournamentName}/add-players")
     public ResponseEntity<?> updatePlayersPool(@PathVariable String tournamentName, @RequestBody List<String> players) {
         try {
@@ -343,7 +353,17 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Allow the admin to remove a player from the tournament
+    /**
+     * Allows the admin to remove a player from the tournament.
+     * 
+     * @param tournamentName the name of the tournament to remove the player from.
+     * @param username the username of the player to be removed.
+     * @return a ResponseEntity with the updated tournament object or error messages if validation fails.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws UserNotFoundException if no user with the given username is found.
+     * @throws IllegalArgumentException if the request is invalid.
+     * @throws Exception if an unexpected error occurs during the removal process.
+     */
     @DeleteMapping("/{tournamentName}/{username}")
     public ResponseEntity<?> removePlayerFromTournament(@PathVariable String tournamentName, @PathVariable String username) {
         try {
@@ -359,7 +379,16 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Generate bracket for tournament
+    /**
+     * Generates a bracket for the tournament.
+     * 
+     * @param tournamentName the name of the tournament for which to generate the bracket.
+     * @return a ResponseEntity with the result of the bracket generation or error messages if validation fails.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws UserNotFoundException if no user is found.
+     * @throws MatchNotFoundException if no match is found.
+     * @throws Exception if an unexpected error occurs during the bracket generation process.
+     */
     @PutMapping("/generate-bracket/{tournamentName}")
     public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
         try {
@@ -381,7 +410,14 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Update the match results
+    /**
+     * Updates the match results.
+     * 
+     * @param newMatchDetails the Match object containing the new match details.
+     * @return a ResponseEntity with the updated Match object or error messages if validation fails.
+     * @throws IllegalArgumentException if the match details are invalid.
+     * @throws Exception if an unexpected error occurs during the update process.
+     */
     @PutMapping("/update-match")
     public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
         try {
@@ -398,7 +434,16 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Calculate and update the elo rating of the players after a match
+    /**
+     * Calculates and updates the Elo rating of the players after a match.
+     * 
+     * @param matchId the ID of the match for which to update the Elo rating.
+     * @return a ResponseEntity with a success message or error messages if validation fails.
+     * @throws MatchNotFoundException if no match with the given ID is found.
+     * @throws UserNotFoundException if no user is found.
+     * @throws TournamentNotFoundException if no tournament is found.
+     * @throws Exception if an unexpected error occurs during the update process.
+     */
     @PutMapping("/{matchId}/update-elo")
     public ResponseEntity<?> updateEloRating(@PathVariable String matchId) {
         try {
@@ -415,6 +460,14 @@ public class AdminsTournamentsController {
         }
     }
 
+    /**
+     * Updates the end date of a tournament.
+     * 
+     * @param tournamentName the name of the tournament to update the end date for.
+     * @return a ResponseEntity with the updated Tournament object or error messages if validation fails.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws Exception if an unexpected error occurs during the update process.
+     */
     @PutMapping("/{tournamentName}/end")
     public ResponseEntity<?> updateTournamentEndDate(@PathVariable String tournamentName) {
         try {

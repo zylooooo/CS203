@@ -38,8 +38,8 @@ public class BracketService {
     /**
      * Generates a bracket for the given tournament.
      * 
-     * @param tournament The tournament for which to generate a bracket.
-     * @return A map containing the updated tournament and the newly created matches.
+     * @param tournamentName The name of the tournament for which to generate a bracket.
+     * @return A map containing the rounds of matches generated for the tournament or an error message.
      */
     public Map<String, Object> generateBracket(String tournamentName) {
         Map<String, Object> response = new HashMap<>();
@@ -104,8 +104,11 @@ public class BracketService {
     }
 
     /**
-     * Determines the players for the new round.
-     * @throws MatchNotFoundException if a match is not found
+     * Determines the players eligible for the new round in the tournament.
+     * 
+     * @param tournament The tournament for which to determine eligible players.
+     * @return A list of player usernames eligible for the new round.
+     * @throws MatchNotFoundException if a match is not found during the process.
      */
     private List<String> getPlayersForNewRound(Tournament tournament) throws MatchNotFoundException {
         List<String> tournamentPlayersPool = new ArrayList<>(tournament.getPlayersPool());
@@ -142,7 +145,11 @@ public class BracketService {
     }
 
     /**
-     * Creates a new round of matches.
+     * Creates a new round of matches based on the players available.
+     * 
+     * @param tournament The tournament for which to create the new round.
+     * @param playersForNewRound The list of players eligible for the new round.
+     * @return A list of match IDs for the newly created matches.
      */
     private List<String> createNewRound(Tournament tournament, List<String> playersForNewRound) {
         List<String> newMatches = new ArrayList<>();
@@ -156,6 +163,10 @@ public class BracketService {
 
     /**
      * Generates a preliminary round when the number of players is not a power of two.
+     * 
+     * @param tournament The tournament for which to generate the preliminary round.
+     * @param players The list of players participating in the preliminary round.
+     * @param newMatches The list to which the new match IDs will be added.
      */
     private void generatePreliminaryRound(Tournament tournament, List<String> players, List<String> newMatches) {
         logger.info("Forming a preliminary round");
@@ -170,6 +181,10 @@ public class BracketService {
 
     /**
      * Generates a proper bracket when the number of players is a power of two.
+     * 
+     * @param tournament The tournament for which to generate the proper bracket.
+     * @param players The list of players participating in the bracket.
+     * @param newMatches The list to which the new match IDs will be added.
      */
     private void generateProperBracket(Tournament tournament, List<String> players, List<String> newMatches) {
         logger.info("Forming an actual bracket");
@@ -188,7 +203,12 @@ public class BracketService {
     }
 
     /**
-     * Creates and saves a new match.
+     * Creates and saves a new match in the database.
+     * 
+     * @param tournament The tournament in which the match is being created.
+     * @param player1 The username of the first player.
+     * @param player2 The username of the second player.
+     * @return The created Match object.
      */
     private Match createMatch(Tournament tournament, String player1, String player2) {
         Match match = new Match();
@@ -199,7 +219,10 @@ public class BracketService {
 
     /**
      * Sorts players by their ELO rating in descending order.
-     * @throws UserNotFoundException if a user is not found
+     * 
+     * @param players The list of player usernames to be sorted.
+     * @return A list of player usernames sorted by ELO rating.
+     * @throws UserNotFoundException if a user is not found during the sorting process.
      */
     private List<String> sortPlayersByElo(List<String> players) throws UserNotFoundException {
         return players.stream()
@@ -210,16 +233,35 @@ public class BracketService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Checks if a number is a power of two.
+     * 
+     * @param n The number to check.
+     * @return True if the number is a power of two, false otherwise.
+     */
     private boolean isPowerOfTwo(int n) {
         return n > 0 && (n & (n - 1)) == 0;
     }
 
+    /**
+     * Calculates the number of players needed for a preliminary round.
+     * 
+     * @param playerCount The total number of players participating.
+     * @return The count of players needed for the preliminary round.
+     */
     private int calculatePreliminaryPlayersCount(int playerCount) {
         int nextPowerOfTwo = Integer.highestOneBit(playerCount - 1) << 1;
         return (playerCount - (nextPowerOfTwo / 2)) * 2;
     }
 
-    // Service to update the match results 
+    /**
+     * Updates the match results based on the provided match details.
+     * 
+     * @param newMatchDetails The Match object containing the updated match details.
+     * @return The updated Match object.
+     * @throws IllegalArgumentException if the match details are invalid.
+     * @throws Exception if an unexpected error occurs during the update process.
+     */
     public Match updateMatchResults(Match newMatchDetails) {
         try {
             // Validate the match details that is being passed in
@@ -244,7 +286,13 @@ public class BracketService {
         }
     }
     
-    // Service to close the tournament
+    /**
+     * Updates the end date of a tournament.
+     * 
+     * @param tournamentName The name of the tournament to update.
+     * @return The updated Tournament object.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     */
     public Tournament updateTournamentEndDate(String tournamentName) {
         Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
             .orElseThrow(() -> new TournamentNotFoundException(tournamentName));

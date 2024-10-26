@@ -26,7 +26,15 @@ public class EloRatingService {
     private final TournamentRepository tournamentRepository;
     private final UserRepository userRepository;
 
-    // Methood to calculate and update the elo rating of the users
+    /**
+     * Updates the Elo rating of users based on the match results.
+     * 
+     * @param matchId the ID of the match for which to update the Elo ratings.
+     * @throws MatchNotFoundException if no match with the given ID is found.
+     * @throws UserNotFoundException if a user involved in the match is not found.
+     * @throws TournamentNotFoundException if the tournament associated with the match is not found.
+     * @throws RuntimeException if an unexpected error occurs during the update process.
+     */
     public void updateEloRating(String matchId) {
         try {
             // Find the match from the repository with the id provided
@@ -84,12 +92,26 @@ public class EloRatingService {
         }
     }
 
-    // Formula to calculate the expected winning of a player based on the elo rating of the two players
+    /**
+     * Calculates the expected winning probability of a player based on their Elo rating.
+     * 
+     * @param player0Elo the Elo rating of the first player.
+     * @param player1Elo the Elo rating of the second player.
+     * @return the expected winning probability of the first player.
+     */
     private double calculateExpectedWinning(int player0Elo, int player1Elo) {
         return 1.0 / (1.0 + Math.pow(10, ((double) player1Elo - (double) player0Elo) / 400.0));
     }
 
-    // Method to calculate the dynamic k-factor for the specific match
+    /**
+     * Calculates the dynamic K-factor for a match based on tournament and player details.
+     * 
+     * @param tournament the tournament in which the match is played.
+     * @param match the match for which to calculate the K-factor.
+     * @param player0 the first player involved in the match.
+     * @param player1 the second player involved in the match.
+     * @return the calculated K-factor.
+     */
     private double getDynamicKFactor(Tournament tournament, Match match, User player0, User player1) {
         // Set the base k-factor to be the number of players in the tournament
         double k = tournament.getPlayersPool().size();

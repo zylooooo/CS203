@@ -550,7 +550,15 @@ public class UserService {
         }
     }
 
-    // Service that allows the users to leave the tournament
+    /**
+     * Allows a user to leave a tournament.
+     *
+     * @param tournamentName the name of the tournament to leave.
+     * @param username the name of the player to leave the tournament.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws IllegalArgumentException if the user is not in the tournament.
+     */
     public void leaveTournament(String tournamentName, String username) {
         try {
             Tournament tournament = tournamentService.getTournamentByName(tournamentName);
