@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 // WIP: Tournaments under 'All Tournaments' doesn't allow Admin to edit tournament details, even if created by Admin
 
 // Component: Tournament Card (for AdministratorTournaments)
-const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
+const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdministrator }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -15,6 +15,10 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
         const year = date.toLocaleString('en-US', { year: 'numeric' });
 
         return `${day} ${month} ${year}`;
+    }
+
+    const checkThisAdmin = (adminName) => {
+        return adminName === thisAdministrator;
     }
 
     const navigate = useNavigate();
@@ -73,7 +77,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning }) => {
 
                         {/* EDIT TOURNAMENT BUTTON */}
                         <div className = "edit-tournament-button mt-auto ml-auto">
-                        {isMyTournaments && (
+                        {checkThisAdmin(tournament.createdBy) && (
                         <button
                             onClick = {(e) => {
                                 e.stopPropagation();
@@ -132,6 +136,8 @@ function AdministratorTournaments() {
 //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
 
+    const [thisAdministrator, setThisAdministrator] = useState(null);
+
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const [tournaments, setTournaments] = useState([]);
@@ -184,7 +190,9 @@ function AdministratorTournaments() {
             );
 
             setAllTournaments(response.data);
-            setTournaments(response.data); 
+            setTournaments(response.data);
+    
+        
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
@@ -216,6 +224,8 @@ function AdministratorTournaments() {
 
             setMyTournaments(response.data);
             setTournaments(response.data); 
+
+            setThisAdministrator(adminData.adminName);
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
@@ -267,7 +277,7 @@ function AdministratorTournaments() {
                     </div>
 
                     {/* TOURNAMENT LISTS */}
-                    <Tournaments tournaments = { filteredTournaments } isMyTournaments = { isMyTournaments } setIsTransitioning = { setIsTransitioning } />
+                    <Tournaments tournaments = {filteredTournaments} isMyTournaments = {isMyTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator} />
 
                 </div>
 
