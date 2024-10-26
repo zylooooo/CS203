@@ -21,6 +21,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Service class responsible for managing tournaments, including creating, retrieving, updating, and deleting tournaments.
+ * It also handles user participation and eligibility checks for tournaments.
+ */
 @Service
 @RequiredArgsConstructor
 public class TournamentService {
@@ -63,7 +67,7 @@ public class TournamentService {
     }
 
     /**
-     * Checks if a tournament name is available.
+     * Checks if a tournament name is available for use.
      *
      * @param tournamentName the name of the tournament to check.
      * @return true if the tournament name is available, false otherwise.
@@ -77,11 +81,11 @@ public class TournamentService {
     }
 
     /**
-     * Creates a new tournament.
+     * Creates a new tournament with the specified details.
      *
      * @param tournament the tournament object to be created.
      * @param adminName  the name of the admin creating the tournament.
-     * @return a Pair with the created tournament (if successful) or error messages (if validation fails).
+     * @return a Pair containing the created tournament (if successful) or error messages (if validation fails).
      * @throws RuntimeException if there's an unexpected error during the creation process.
      */
     public Pair<Optional<Tournament>, Map<String, String>> createTournament(Tournament tournament, String adminName) {
@@ -163,7 +167,7 @@ public class TournamentService {
     }
 
     /**
-     * Retrieves all current tournaments.
+     * Retrieves all current tournaments that are ongoing.
      *
      * @return a List of current tournaments.
      * @throws TournamentNotFoundException if no tournaments are found.
@@ -224,9 +228,9 @@ public class TournamentService {
     }
 
     /**
-     * Retrieves all tournaments history.
+     * Retrieves the history of all tournaments that have ended and are not ongoing.
      *
-     * @return a List of tournaments that have ended and are not ongoing.
+     * @return a List of tournaments that have ended.
      * @throws TournamentNotFoundException if no tournaments are found in history.
      * @throws RuntimeException if there's an error during the database operation or any unexpected errors during the process.
      */
@@ -269,7 +273,7 @@ public class TournamentService {
     }
 
     /**
-     * Retrieves all of the tournaments that a user can participate in.
+     * Retrieves all tournaments that a user can participate in based on eligibility criteria.
      *
      * @param username the name of the user to retrieve the available tournaments for.
      * @return a List of tournaments that the user can participate in.
@@ -277,89 +281,6 @@ public class TournamentService {
      * @throws TournamentNotFoundException if no tournaments are found in the database.
      * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-    // public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException {
-    //     try {
-    //         User user = userRepository.findByUsername(username)
-    //             .orElseThrow(() -> new UserNotFoundException(username));
-
-    //         List<Tournament> allTournaments = getAllTournaments();
-    //         LocalDate currentDate = LocalDate.now();
-
-    //         List<Tournament> userAvailableTournaments = allTournaments.stream()
-    //             .filter(tournament -> {
-
-    //                 // Check if the closing signup date is either today or in the future
-    //                 if (tournament.getClosingSignupDate().isBefore(currentDate) || tournament.getClosingSignupDate().isEqual(currentDate)) {
-    //                     return false; // Tournament has closed for signups
-    //                 }
-
-    //                 // Check if the tournament is not full
-    //                 if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
-    //                     return false;
-    //                 }
-
-    //                 // Check if the user is not already in the tournament
-    //                 if (tournament.getPlayersPool().contains(username)) {
-    //                     return false;
-    //                 }
-
-    //                 // Check if the user's ELO is within the tournament's range
-    //                 if (user.getElo() < tournament.getMinElo() || user.getElo() > tournament.getMaxElo()) {
-    //                     return false;
-    //                 }
-
-    //                 // Check if the tournament's gender requirement matches the user's gender
-    //                 if (!tournament.getGender().equalsIgnoreCase(user.getGender())) {
-    //                     return false;
-    //                 }
-
-    //                 // Get the user's strike reports
-    //                 List<User.StrikeReport> strikeReports = user.getStrikeReports();
-
-    //                 // For each strike report, check if the tournament was created by the same admin
-    //                 for (User.StrikeReport strikeReport : strikeReports) {
-    //                     // Check if the tournament was created by the same admin and if the strike was issued within the last month
-    //                     if (strikeReport.getIssuedBy().equals(tournament.getCreatedBy()) && 
-    //                         strikeReport.getDateCreated().isAfter(LocalDateTime.now().minusMonths(1))) {
-    //                         return false;
-    //                     }
-    //                 }
-
-    //                 // Check if the user's age matches the tournament category
-    //                 int userAge = user.getAge();
-    //                 switch (tournament.getCategory()) {
-    //                     case "U16":
-    //                         return userAge <= 16;
-    //                     case "U21":
-    //                         return userAge <= 21;
-    //                     case "Open":
-    //                         return true;
-    //                     default:
-    //                         logger.warn("Unknown tournament category: {}", tournament.getCategory());
-    //                         return false;
-    //                 }
-
-                    
-
-                    
-    //             })
-    //             .collect(Collectors.toList());
-
-    //         logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
-    //         return userAvailableTournaments;
-
-    //     } catch (UserNotFoundException e) {
-    //         logger.error("User not found: {}", username);
-    //         throw e;
-    //     } catch (TournamentNotFoundException e) {
-    //         logger.error("No tournaments found");
-    //         throw e;
-    //     } catch (Exception e) {
-    //         logger.error("Error fetching user available tournaments", e);
-    //         throw new RuntimeException("Unexpected error occurred while fetching user available tournaments", e);
-    //     }
-    // }
-
     public List<Tournament> getUserAvailableTournaments(String username) throws UserNotFoundException, TournamentNotFoundException {
         try {
             User user = userRepository.findByUsername(username)
@@ -388,7 +309,7 @@ public class TournamentService {
 
 
     /**
-     * Retrieves all users that are eligible to participate in a tournament.
+     * Retrieves all users that are eligible to participate in a specific tournament.
      *
      * @param tournamentName the name of the tournament to retrieve users for.
      * @param adminName the name of the admin who created the tournament.
@@ -504,13 +425,13 @@ public class TournamentService {
     }
 
      /**
-     * Allows a user to join a tournament.
+     * Allows a user to join a tournament if they meet the eligibility criteria.
      *
-     * @param username the name of the user trying to join the tournament
-     * @param tournamentName the name of the tournament to join
-     * @throws UserNotFoundException if the user is not found
-     * @throws TournamentNotFoundException if the tournament is not found
-     * @throws InvalidJoinException if the user is not eligible to join the tournament
+     * @param username the name of the user trying to join the tournament.
+     * @param tournamentName the name of the tournament to join.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws TournamentNotFoundException if the tournament is not found.
+     * @throws InvalidJoinException if the user is not eligible to join the tournament.
      */
     public void joinTournament(String username, String tournamentName) 
         throws TournamentNotFoundException, InvalidJoinException {
@@ -548,11 +469,11 @@ public class TournamentService {
     /**
      * Retrieves current and future tournaments created by a specific admin.
      *
-     * @param adminName the name of the admin who created the tournaments
-     * @return a List of current and future tournaments created by the specified admin
-     * @throws RuntimeException if there's an unexpected error during the retrieval process
+     * @param adminName the name of the admin who created the tournaments.
+     * @return a List of current and future tournaments created by the specified admin.
+     * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
-     public List<Tournament> getAdminUpcomingTournaments(String adminName) {
+    public List<Tournament> getAdminUpcomingTournaments(String adminName) {
         try {
             logger.info("Fetching upcoming tournaments created by admin: {}", adminName);
             List<Tournament> currentAndFutureTournaments = getCurrentAndFutureTournaments();
@@ -572,9 +493,9 @@ public class TournamentService {
     /**
      * Retrieves the history of tournaments created by a specific admin.
      *
-     * @param adminName the name of the admin who created the tournaments
-     * @return a List of past tournaments created by the specified admin
-     * @throws RuntimeException if there's an unexpected error during the retrieval process
+     * @param adminName the name of the admin who created the tournaments.
+     * @return a List of past tournaments created by the specified admin.
+     * @throws RuntimeException if there's an unexpected error during the retrieval process.
      */
     public List<Tournament> getAdminHistory(String adminName) {
         try {
@@ -727,14 +648,13 @@ public class TournamentService {
     }
 
     /*
-     * Deletes a tournament and related matches.
-     * 
+     * Deletes a tournament and its related matches.
+     *
      * @param tournamentName the name of the tournament to be deleted.
      * @param adminName the name of the admin who created the tournament.
      * @throws TournamentNotFoundException if no tournament with the given name is found.
      * @throws IllegalArgumentException if the tournament does not belong to the admin or has already ended.
      */
-
     public void deleteTournament(String tournamentName, String adminName) throws TournamentNotFoundException, IllegalArgumentException {
         Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
             .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
@@ -763,7 +683,13 @@ public class TournamentService {
 
 
 
-    // Service to add the users to the tournament
+    /**
+     * Updates the players pool for a tournament.
+     *
+     * @param tournamentName the name of the tournament to update.
+     * @param players a List of player names to add to the tournament.
+     * @return a Map containing the updated tournament and lists of added and skipped players.
+     */
     public Map<String, Object> updatePlayersPool(String tournamentName, List<String> players) {
         Tournament tournament;
         List<String> addedPlayers = new ArrayList<>();
@@ -801,6 +727,14 @@ public class TournamentService {
         }
     }
 
+    /**
+     * Processes a player to add them to the tournament if they are eligible.
+     *
+     * @param username the name of the player to process.
+     * @param tournament the tournament to add the player to.
+     * @param addedPlayers a List to store the names of players added to the tournament.
+     * @param skippedPlayers a List to store the names of players not added to the tournament.
+     */
     private void processPlayer(String username, Tournament tournament, List<String> addedPlayers, List<String> skippedPlayers) {
         try {
             User user = userRepository.findByUsername(username)
@@ -834,6 +768,13 @@ public class TournamentService {
         }
     }
 
+    /**
+     * Checks if a user is eligible to participate in a tournament.
+     *
+     * @param user the user to check eligibility for.
+     * @param tournament the tournament to check eligibility for.
+     * @return true if the user is eligible, false otherwise.
+     */
     private boolean isEligibleForTournament(User user, Tournament tournament) {
         // Check if the tournament is full
         if (tournament.getPlayersPool().size() >= tournament.getPlayerCapacity()) {
@@ -877,7 +818,16 @@ public class TournamentService {
         return true;
     }
     
-    // Remove a user from the tournament
+    /**
+     * Removes a user from a tournament.
+     *
+     * @param tournamentName the name of the tournament to remove the player from.
+     * @param username the name of the player to remove from the tournament.
+     * @return the updated tournament.
+     * @throws TournamentNotFoundException if no tournament with the given name is found.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws IllegalArgumentException if the closing signup date has passed.
+     */
     public Tournament removePlayerFromTournament(String tournamentName, String username) {
         try {
             Tournament tournament = getTournamentByName(tournamentName);
@@ -907,7 +857,4 @@ public class TournamentService {
             throw new RuntimeException("Unexpected error removing player from tournament", e);
         }
     }
-    
-
-
 }

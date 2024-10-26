@@ -43,7 +43,13 @@ public class AuthController {
     private final JwtService jwtService;
     private final AdminService adminService;
     private final UserService userService;
- 
+
+    /**
+     * Handles user signup by creating a new user account.
+     * 
+     * @param userRegisterDto the data transfer object containing user registration details.
+     * @return a ResponseEntity containing the created user or error messages if validation fails.
+     */
     @PostMapping("/user-signup")
     public ResponseEntity<?> userSignup(@RequestBody UserRegisterDto userRegisterDto) {
         try {
@@ -61,6 +67,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Handles admin signup by creating a new admin account.
+     * 
+     * @param adminRegisterDto the data transfer object containing admin registration details.
+     * @return a ResponseEntity containing the created admin or error messages if validation fails.
+     */
     @PostMapping("/admin-signup")
     public ResponseEntity<?> adminSignup(@RequestBody AdminRegisterDto adminRegisterDto) {
         try {
@@ -77,6 +89,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Handles user login by authenticating the user and generating a JWT token.
+     * 
+     * @param loginDto the data transfer object containing user login details.
+     * @return a ResponseEntity containing the login response with the JWT token or error messages if authentication fails.
+     */
     @PostMapping("/user-login")
     public ResponseEntity<?> userLogin(@RequestBody UserLoginDto loginDto) {
         try {
@@ -114,6 +132,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Handles admin login by authenticating the admin and generating a JWT token.
+     * 
+     * @param loginDto the data transfer object containing admin login details.
+     * @return a ResponseEntity containing the login response with the JWT token or error messages if authentication fails.
+     */
     @PostMapping("/admin-login")
     public ResponseEntity<?> adminLogin(@RequestBody AdminLoginDto loginDto) {
         try {
@@ -140,6 +164,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Verifies a user based on the provided verification details.
+     * 
+     * @param verifyDto the data transfer object containing user verification details.
+     * @return a ResponseEntity with a success message or error messages if verification fails.
+     */
     @PostMapping("/user-verify")
     public ResponseEntity<?> userVerify(@RequestBody UserVerifyDto verifyDto) {
 
@@ -169,6 +199,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Verifies an admin based on the provided verification details.
+     * 
+     * @param verifyDto the data transfer object containing admin verification details.
+     * @return a ResponseEntity with a success message or error messages if verification fails.
+     */
     @PostMapping("/admin-verify")
     public ResponseEntity<?> adminVerify(@RequestBody AdminVerifyDto verifyDto) {
         try {
@@ -200,6 +236,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Resends the verification code to the specified email address.
+     * 
+     * @param payload a map containing the email address for which to resend the verification code.
+     * @return a ResponseEntity with a success message or error messages if validation fails.
+     */
     @PostMapping("/resend-verification")
     public ResponseEntity<?> resendVerificationCode(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
@@ -230,6 +272,13 @@ public class AuthController {
     }
 
 
+    /**
+     * Checks the availability of credentials (username or email) for registration.
+     * 
+     * @param accountName the username to check for availability.
+     * @param email the email address to check for availability.
+     * @return a ResponseEntity with the availability status or error messages if validation fails.
+     */
     @GetMapping("/check-credentials-availability")
     public ResponseEntity<?> checkCredentialsAvailability(@RequestParam(required = false) String accountName, @RequestParam(required = false) String email) {
         Map<String, Object> response = new HashMap<>();
@@ -275,6 +324,4 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
-
 }

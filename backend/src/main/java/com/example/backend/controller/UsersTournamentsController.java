@@ -39,7 +39,6 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournament with the specified name is found.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-
     @GetMapping("/{tournamentName}")
     public ResponseEntity<?> getTournamentByName(@PathVariable String tournamentName) {
         try {
@@ -101,18 +100,14 @@ public class UsersTournamentsController {
         }
     }
 
-
     /**
      * Retrieves the user's scheduled tournaments.
      * 
      * @return a ResponseEntity with the list of scheduled tournaments for the user or an error message if an exception occurs.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-
-    // Router to get the user's scheduled tournaments
     @GetMapping("/scheduled")
     public ResponseEntity<?> getUserUpcomingTournaments() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -125,7 +120,7 @@ public class UsersTournamentsController {
         }
     }
 
-     /**
+    /**
      * Retrieves the tournaments history for a specific user.
      * 
      * @param username the name of the user to retrieve the tournaments history for.
@@ -152,7 +147,6 @@ public class UsersTournamentsController {
                 .body(new ErrorResponse("An unexpected error occurred while fetching tournaments history by user"));
         }
     }
-
 
     /**
      * Retrieves the available tournaments for a specific user.
@@ -187,8 +181,11 @@ public class UsersTournamentsController {
     /**
      * Allows a user to join a tournament.
      *
-     * @param tournamentName the name of the tournament to join
-     * @return a ResponseEntity with a success message or an error message if an exception occurs
+     * @param tournamentName the name of the tournament to join.
+     * @return a ResponseEntity with a success message or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if the tournament is not found.
+     * @throws InvalidJoinException if the join attempt is invalid.
+     * @throws RuntimeException for any unexpected errors during the join process.
      */
     @PostMapping("/join-{tournamentName}")
     public ResponseEntity<?> joinTournament(@PathVariable String tournamentName) {
@@ -214,8 +211,15 @@ public class UsersTournamentsController {
         }
     }
 
-
-    // Controller that allows the users to leave the tournament
+    /**
+     * Allows users to leave a tournament.
+     * 
+     * @param tournamentName the name of the tournament to leave.
+     * @return a ResponseEntity with a success message or an error message if an exception occurs.
+     * @throws TournamentNotFoundException if the tournament is not found.
+     * @throws UserNotFoundException if the user is not found.
+     * @throws IllegalArgumentException if the leave request is invalid.
+     */
     @DeleteMapping("/leave-{tournamentName}")
     public ResponseEntity<?> leaveTournament(@PathVariable String tournamentName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -230,5 +234,5 @@ public class UsersTournamentsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse("Tournament not found: " + tournamentName));
         }
-    } 
+    }
 }

@@ -25,7 +25,11 @@ public class UsersController {
     private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
-    // health check endpoint to get all the users
+    /**
+     * Retrieves all users from the database.
+     * 
+     * @return a ResponseEntity containing a list of all users or an error message if an exception occurs.
+     */
     @GetMapping
     ResponseEntity<?> getAllUsers() {
         try {
@@ -38,11 +42,11 @@ public class UsersController {
     }
 
     /**
-     * Retrieves the user profile based on the user name
-     * @param username the username of the user to retrieve, must not be null or empty
-     * @return the user object associated with the specified username
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the retrieval process
+     * Retrieves the user profile based on the authenticated user's username.
+     * 
+     * @return a ResponseEntity containing the user object associated with the authenticated user or an error message if the user is not found.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the retrieval process.
      */
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile() {
@@ -65,12 +69,12 @@ public class UsersController {
     }
 
     /**
-     * Updates the user details based on the user name
-     * @param username the username of the user to update, must not be null or empty
-     * @param newUserDetails the new details of the user to be updated
-     * @return the updated user object
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the update process
+     * Updates the user details based on the authenticated user's username.
+     * 
+     * @param newUserDetails the new details of the user to be updated.
+     * @return a ResponseEntity containing the updated user object or error messages if validation fails.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the update process.
      */
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody User newUserDetails) {
@@ -92,12 +96,12 @@ public class UsersController {
     }
 
     /**
-     * Updates the availability of a user based on the user name
-     * @param username the username of the user to update, must not be null or empty
-     * @param availability the new availability status of the user
-     * @return the updated user object
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the update process
+     * Updates the availability status of the authenticated user.
+     * 
+     * @param availability the new availability status of the user.
+     * @return a ResponseEntity containing the updated user object or error messages if validation fails.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the update process.
      */
     @PutMapping("/update-availability")
     public ResponseEntity<?> updateUserAvailability(@RequestParam Boolean availability) {
@@ -119,11 +123,11 @@ public class UsersController {
     }
 
     /**
-     * Deletes a user based on the user name
-     * @param username the username of the user to delete, must not be null or empty
-     * @return a ResponseEntity with a success message if the user is deleted successfully
-     * @throws UserNotFoundException if no user with the username is found in the database
-     * @throws RuntimeException if there is an unexpected error during the deletion process
+     * Deletes the authenticated user's account.
+     * 
+     * @return a ResponseEntity with a success message if the user is deleted successfully or error messages if the user is not found.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the deletion process.
      */
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUser() {
@@ -144,7 +148,13 @@ public class UsersController {
         }
     }
 
-    // Synchronous method to get the default leaderboard for the user
+    /**
+     * Retrieves the default leaderboard for the authenticated user.
+     * 
+     * @return a ResponseEntity containing the default leaderboard or error messages if an exception occurs.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the retrieval process.
+     */
     @GetMapping("/leaderboard")
     public ResponseEntity<?> getDefaultLeaderBoard() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -168,7 +178,13 @@ public class UsersController {
         }
     }
 
-    // Synchronous method to get the opposite gender leaderboard for the user
+    /**
+     * Retrieves the opposite gender leaderboard for the authenticated user.
+     * 
+     * @return a ResponseEntity containing the opposite gender leaderboard or error messages if an exception occurs.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the retrieval process.
+     */
     @GetMapping("/leaderboard/opposite-gender")
     public ResponseEntity<?> getOppositeGenderLeaderboard() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -192,7 +208,13 @@ public class UsersController {
         }
     }
     
-    // Synchronous method to get the mixed gender leaderboard for the user
+    /**
+     * Retrieves the mixed gender leaderboard for the authenticated user.
+     * 
+     * @return a ResponseEntity containing the mixed gender leaderboard or error messages if an exception occurs.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the retrieval process.
+     */
     @GetMapping("/leaderboard/mixed-gender")
     public ResponseEntity<?> getMixedGenderLeaderboard() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
