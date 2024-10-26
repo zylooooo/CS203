@@ -147,6 +147,14 @@ const AdministratorPastTournamentDetails = () => {
         setStrikeOpen(true);
     }
 
+    // help fix this please
+    const isWithinOneWeek = (tournamentEndDate) => {
+        const today = new Date();
+        const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return tournamentEndDate >= oneWeekAgo;
+    };
+
+
     // --------------------------------------------------------------------------------
 
     const formatDate = (dateString) => {
@@ -202,7 +210,7 @@ const AdministratorPastTournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex relative">
-            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
+            <div className = "flex flex-col w-3/5 gap-4 border2 p-8 rounded-[8px]">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
                         <FontAwesomeIcon
@@ -213,7 +221,7 @@ const AdministratorPastTournamentDetails = () => {
                         <h1 className = "text-2xl font-bold mb-2 mt-1"> {tournamentDetails.tournamentName} </h1>
                     </div>
                 </div>
-                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} - {formatDate(tournamentDetails.endDate)}</p>
+                <p className = "mb-2 text-lg"> <strong> Date: </strong> {formatDate(tournamentDetails.startDate)} to {formatDate(tournamentDetails.endDate)}</p>
                 <p className = "mb-2 text-lg"> <strong> Organiser: </strong> {tournamentDetails.createdBy} </p>
                 <p className = "mb-2 text-lg"> <strong> Elo Rating Criteria: </strong> {tournamentDetails.minElo} to {tournamentDetails.maxElo} </p>
                 <p className = "mb-2 text-lg"> <strong> Game Category: </strong> {tournamentDetails.category} </p>
@@ -226,18 +234,27 @@ const AdministratorPastTournamentDetails = () => {
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
 
                 <div className = "flex justify-between items-start mt-4">
-                    <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
+                    <div className = "players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
                         <p className = "text-md text-gray-500 absolute top-4 right-10 font-semibold">
                             Total Players: {tournamentDetails.playersPool.length}
                         </p>
+                        { isMyPastTournament && !isWithinOneWeek(tournamentDetails.endDate) && (
+                            <div className = "flex justify-center items-center">
+                                <p className = "text-md text-red-color font-semibold">
+                                    Unable to issue strikes to players at this time as your tournament has ended more than a week ago.
+                                </p>
+                        </div>
+                        )}
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
                                     <li key = {index} className = "mt-5 mb-5 flex justify-between items-center"> 
                                         <span>{index}. {player} </span>
-                                        { isMyPastTournament && (
+
+                                        {/* ISSUE STRIKE BUTTON */}
+                                        { isMyPastTournament && isWithinOneWeek(tournamentDetails.endDate) && (
                                           <button 
                                           className = "px-4 py-2 mr-6 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end text-primary-color-white"
                                           style = {{ backgroundColor: "#FF6961"}}
@@ -246,6 +263,7 @@ const AdministratorPastTournamentDetails = () => {
                                               Issue Strike
                                           </button>
                                         )}
+
                                     </li>
                                 ))}
                             </ol>
@@ -257,9 +275,9 @@ const AdministratorPastTournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         // onClick = {handleShowFixturesClick}
-                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                        className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
                     >
-                        Show Fixtures
+                        Show Results
                     </button>
 
                 </div>

@@ -222,7 +222,7 @@ CreateTournamentForm.propTypes = {
 };
 
 
-function CreateTournaments() {
+function AdministratorCreateTournaments() {
 
     const navigate = useNavigate();
 
@@ -272,7 +272,7 @@ function CreateTournaments() {
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
-            alert(error.response.data.error);
+            alert("There was an error creating your tournament. \nPlease ensure the start date is at least 1 month from today, and that all fields are properly filled up.");
             console.error('Error creating tournaments:', error.response.data.error);
         }
     }
@@ -300,7 +300,7 @@ function CreateTournaments() {
             if (firstResponse.data.isAvailable && firstResponse.status === 200) {
                 return firstResponse.data.isAvailable;
             } else {
-                alert(firstResponse.data.error);
+                alert("Tournament name is already taken! Please try another name.");
             }
 
         } catch (error) {
@@ -337,4 +337,4 @@ function CreateTournaments() {
     );
 }
 
-export default CreateTournaments;
+export default AdministratorCreateTournaments;

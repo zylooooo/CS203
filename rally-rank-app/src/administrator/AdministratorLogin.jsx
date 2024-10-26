@@ -22,7 +22,7 @@ function AdministratorLogin() {
 
   useEffect(() => {
     if (isAdminLoggedIn) {
-      navigate("administrator-tournaments");
+      navigate("/administrator-tournaments");
     }
   }, [navigate, isAdminLoggedIn])
 

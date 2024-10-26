@@ -16,6 +16,10 @@ const AdministratorTournamentDetails = () => {
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
+    const [fixtures, setFixtures] = useState(null);
+
+    // const [tournamentStatus, setTournamentStatus] = useState("");
+
     const handleBackButtonClick = () => {
         navigate(fromPage);
     }
@@ -55,7 +59,7 @@ const AdministratorTournamentDetails = () => {
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
-            alert(error.response.data.error);
+            alert(error.response.data);
             console.error('Error fetching tournament:', error.response.data.error);
             setTournamentDetails({});
         } 
@@ -69,6 +73,55 @@ const AdministratorTournamentDetails = () => {
         return (
             <p className = "font-semibold text-lg mt-10"> Loading tournament details... </p>
         );
+    }
+
+    // API Call: Generate Brackets
+    async function generateBrackets() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            if (!adminData || !adminData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.put(
+                `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`
+                    }
+                }
+            );
+
+            console.log(response.data);
+            if (response.status === 200) {
+
+                if (response.data.error !== undefined) {
+                    alert(response.data.error);
+                } else {
+                    setFixtures(response.data);
+                    alert("Brackets generated successfully! View the fixtures below.");
+                }
+
+            } else {
+                alert("There was an error generating the brackets. Please try again.");
+            }
+
+        } catch (error) {
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error generating brackets:', error.response.data.error);
+        }
+    }
+
+    const handleGenerateBracketsClick = () => {
+        generateBrackets();
+    }
+
+    const handleShowFixturesClick = () => {
+        navigate("/administrator-tournament-fixtures", { state: fixtures });
     }
 
     return (
@@ -138,7 +191,7 @@ const AdministratorTournamentDetails = () => {
                     <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
                         <button
                             // WIP: To be updated when API call to generate brackets are finalised.
-                            // onClick = {handleGenerateBracketsClick}
+                            onClick = {handleGenerateBracketsClick}
                             className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
                         >
                             Generate Brackets
@@ -146,7 +199,7 @@ const AdministratorTournamentDetails = () => {
 
                         <button
                             // WIP: To be updated when API call for fixtures (brackets) are finalised.
-                            // onClick = {handleShowFixturesClick}
+                            onClick = {handleShowFixturesClick}
                             className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold"
                         >
                             Show Fixtures
