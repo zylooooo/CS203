@@ -162,7 +162,7 @@ function UserHome() {
         }
     }
 
-    // ----------------------- API call: Update availability of user in database -----------------------
+    // ----------------------- API Call: Update availability of user in database -----------------------
     async function updateAvailability() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -221,7 +221,8 @@ function UserHome() {
                     }
                 }
             );
-            setScheduledTournaments(response.data);
+            const sortedTournaments = response.data.sort((date1, date2) => new Date(date1.startDate) - new Date(date2.startDate));
+            setScheduledTournaments(sortedTournaments);
         } catch (error) {
             console.error("Error fetching scheduled tournaments: ", error);
         }
@@ -230,7 +231,7 @@ function UserHome() {
     // ------------------------------------- Leaderboard Functions -------------------------------------
     const [defaultLeaderboardPlayers, setDefaultLeaderboardPlayers] = useState([]);
 
-    const [userGender, setUserGender] = useState("")                                            // Retrieve the user's gender from userData
+    const [userGender, setUserGender] = useState("")        // Retrieve the user's gender from userData
 
     const [otherGenderLeaderboardPlayers, setOtherGenderLeaderboardPlayers] = useState([]);
 
