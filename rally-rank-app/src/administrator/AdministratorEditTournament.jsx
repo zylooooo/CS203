@@ -3,13 +3,22 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 
-// Component: Admin Edit Tournament Form
-const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
+function AdministratorEditTournament() {
+
     const location = useLocation();
 
     const tournamentName = location.state || {};
 
     const [tournament, setTournament] = useState({});
+
+    const [formData, setFormData] = useState(tournament);
+
+    useEffect(() => { setFormData(tournament); }, [tournament]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevData => ({ ...prevData, [name]: value }));
+    };
 
     // API Call: Retrieve tournament details by tournament name
     async function getTournamentByName() {
@@ -42,12 +51,74 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
         } 
     }
 
+    // WIP: API Call: Update tournament details
+    async function updateTournament(data) {
+        try {
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+                if (!adminData || !adminData.jwtToken) {
+                    console.error('No JWT token found');
+                return;
+            }
+
+            const today = new Date();
+            const tournamentName = tournament.tournamentName;
+
+            const updatedTournamentDetails = {
+                tournamentName: data.tournamentName || tournament.tournamentName,
+                createdAt: tournament.createdAt,
+                updatedAt: today,
+                createdBy: tournament.adminName,
+                startDate: data.startDate || tournament.startDate,
+                endDate: null,
+                location: data.location || tournament.location,
+                minElo: data.minElo || tournament.minElo,
+                maxElo: data.maxElo || tournament.maxElo,
+                gender: data.gender || tournament.gender,
+                playersPool: tournament.playersPool,
+                remarks: data.remarks || tournament.remarks,
+                category: data.category || tournament.category,
+                playerCapacity: data.maxPlayers || tournament.playerCapacity,
+                bracket: tournament.bracket
+            }
+
+            const response = await axios.put(
+                // WIP: REPLACE WITH ACTUAL ROUTER
+                `http://localhost:8080/admins/tournaments/edit-${tournamentName}`,
+                updatedTournamentDetails,
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`
+                    }
+                }
+            );
+
+            // if (response.status === 200) {
+                return response.data;
+            // }
+
+        } catch (error) {
+            console.error('Error updating tournament:', error.response.data.error);
+        }
+    }
+
     useEffect(() => {
         getTournamentByName();
     }, []);
 
+
+    const { register, handleSubmit, formState: { errors }} = useForm();
+
+    const onSubmit = (data) => {
+        // WIP: REPLACE WITH API CALL 
+        updateTournament(data);
+        console.log("Form submitted:", data);
+      };
+
     return (
-        <div className = "mt-5 edit-tournament-details p-6 card-background rounded-lg shadow-md w-3/5 mx-auto">
+        <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
+            <div className="row-container flex flex-col w-full gap-8">
+            <div className = "mt-5 edit-tournament-details p-6 card-background rounded-lg shadow-md w-3/5 mx-auto">
             <form onSubmit = { handleSubmit(onSubmit) }>
                 <h2 className = "text-xl font-extrabold">Edit Tournament</h2>
 
@@ -59,8 +130,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             className = "border2 p-2 w-full"
                             type = "text"
                             id = "tournamentName"
+                            name = "tournamentName"
                             placeholder = "Enter Tournament Name"
-                            defaultValue = { tournament.tournamentName }
+                            value = { formData.tournamentName || '' }
+                            onChange = { handleChange }
                             {...register("tournamentName", { required: "Tournament name is required" })}
                         />
                         <p className = "error">{ errors.tournamentName?.message }</p>
@@ -72,7 +145,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             className = "border2 p-2 w-full"
                             type = "date"
                             id = "startDate"
-                            defaultValue = { tournament.startDate }
+                            name = "startDate"
+                            placeholder = "Enter Start Date"
+                            value = { formData.startDate || '' }
+                            onChange = { handleChange }
                             {...register("startDate", { required: "Start date is required" })}
                         />
                         <p className="error">{errors.startDate?.message}</p>
@@ -84,7 +160,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             className = "border2 p-2 w-full"
                             type = "text"
                             id = "venue"
-                            defaultValue = { tournament.location }
+                            name = "venue"
+                            placeholder = "Enter Venue"
+                            value = { formData.location || '' }
+                            onChange = { handleChange }
                             {...register("venue", { required: "Venue is required" })}
                         />
                         <p className="error">{errors.venue?.message}</p>
@@ -95,7 +174,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                         <select
                             className = "border2 p-2 w-full"
                             id = "gender"
-                            defaultValue = { tournament.gender }
+                            name = "gender"
+                            placeholder = "Select Gender"
+                            value = { formData.gender || '' }
+                            onChange = { handleChange }
                             {...register("gender", { required: "Gender specification is required" })}
                         >
                             <option value = "">Select Gender</option>
@@ -110,7 +192,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                         <select
                             className = "border2 p-2 w-full"
                             id = "category"
-                            defaultValue = { tournament.category }
+                            name = "category"
+                            placeholder = "Select Category"
+                            value = { formData.category || '' }
+                            onChange = { handleChange }
                             {...register("category", { required: "Age category is required" })}
                         >
                             <option value = "">Select Category</option>
@@ -128,8 +213,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                                 className = "border2 p-2 w-full"
                                 type = "number"
                                 id = "minElo"
+                                name = "minElo"
                                 placeholder = "Min Elo"
-                                defaultValue = { tournament.minElo }
+                                value = { formData.minElo || '' }
+                                onChange = { handleChange }
                                 {...register("minElo", { required: "Minimum Elo rating is required" })}
                             />
                             <span>-</span>
@@ -137,8 +224,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                                 className = "border2 p-2 w-full"
                                 type = "number"
                                 id = "maxElo"
+                                name = "maxElo"
                                 placeholder = "Max Elo"
-                                defaultValue = { tournament.maxElo }
+                                value = { formData.maxElo || '' }
+                                onChange = { handleChange }
                                 {...register("maxElo", { required: "Maximum Elo rating is required" })}
                             />
                         </div>
@@ -151,7 +240,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             className = "border2 p-2 w-full"
                             type = "number"
                             id = "maxPlayers"
-                            defaultValue = { tournament.playerCapacity }
+                            name = "maxPlayers"
+                            placeholder = "Enter Max Players"
+                            value = { formData.playerCapacity || '' }
+                            onChange = { handleChange }
                             {...register("maxPlayers", { required: "Maximum number of players is required" })}
                         />
                         <p className="error">{errors.maxPlayers?.message}</p>
@@ -163,7 +255,10 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                             className = "border2 p-2 w-full"
                             type = "text"
                             id = "remarks"
-                            defaultValue = { tournament.remarks }
+                            name = "remarks"
+                            placeholder = "Enter Remarks"
+                            value = { formData.remarks || '' }
+                            onChange = { handleChange }
                         />
                     </div>
 
@@ -176,69 +271,9 @@ const AdminEditTournamentForm = ({ register, handleSubmit, errors, onSubmit }) =
                         </button>
                     </div>
 
-                </div>
-            </form>
-        </div>
-    );
-};
-
-// API Call: Update tournament details
-async function updateTournament(data) {
-    try {
-        const adminData = JSON.parse(localStorage.getItem('adminData'));
-            if (!adminData || !adminData.jwtToken) {
-                console.error('No JWT token found');
-            return;
-        }
-
-        const today = new Date();
-
-        const response = await axios.put(
-            // WIP: REPLACE WITH ACTUAL ROUTER
-            "http://localhost:8080/admins/tournaments",
-            {
-                tournamentName: data.tournamentName,
-                startDate: data.startDate,
-                location: data.venue,
-                gender: data.gender,
-                category: data.category,
-                minElo: data.minElo,
-                maxElo: data.maxElo,
-                playerCapacity: data.maxPlayers,
-                remarks: data.remarks
-            },
-            {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${adminData.jwtToken}`
-                }
-            }
-        );
-
-        if (response.status === 200) {
-            return response.data;
-        }
-
-    } catch (error) {
-        console.error('Error updating tournament:', error);
-    }
-}
-
-
-function AdministratorEditTournament() {
-
-    const { register, handleSubmit, formState: { errors }} = useForm();
-
-    const onSubmit = (data) => {
-        // WIP: REPLACE WITH API CALL 
-        // updateTournament(data);
-        console.log("Form submitted:", data);
-      };
-
-    return (
-        <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
-            <div className="row-container flex flex-col w-full gap-8">
-                <AdminEditTournamentForm register = {register} handleSubmit = {handleSubmit} errors = {errors} onSubmit = {onSubmit} />
+                    </div>
+                </form>
+            </div>
             </div>
         </div>
     );
