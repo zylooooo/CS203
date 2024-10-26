@@ -9,11 +9,9 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     }
 
@@ -22,7 +20,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments } });
+            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments, } });
         }, 200);
     }
 
@@ -106,6 +104,7 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
 }
 
 function AdministratorTournamentHistory() {
+
 
     const [isTransitioning, setIsTransitioning] = useState(false);
 
