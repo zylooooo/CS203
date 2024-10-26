@@ -124,11 +124,13 @@ const AdministratorPastTournamentDetails = () => {
 
     const location = useLocation();
 
+    const [isThisAdministrator, setIsThisAdministrator] = useState(false);
+
     const fromPage = location.state?.from || "/administrator-tournament-history";      // to retrieve page where admins clicked for tournament details
 
     const tournamentName = location.state.tournamentName;
 
-    const isMyPastTournament = location.state.isMyPastTournaments;
+    const createdBy = location.state.createdBy;
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
@@ -147,13 +149,14 @@ const AdministratorPastTournamentDetails = () => {
         setStrikeOpen(true);
     }
 
-    // help fix this please
-    const isWithinOneWeek = (tournamentEndDate) => {
-        const today = new Date();
-        const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-        return tournamentEndDate >= oneWeekAgo;
+    // function to check if tournament end date is within one week from system date
+    const isWithinOneWeek = (endDate) => {
+        const currentDate = new Date();
+        const tournamentEndDate = new Date(endDate);
+        const timeDifference = currentDate - tournamentEndDate; 
+        const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+        return daysDifference >= 0 && daysDifference <= 7;
     };
-
 
     // --------------------------------------------------------------------------------
 
@@ -188,6 +191,9 @@ const AdministratorPastTournamentDetails = () => {
 
             if (response.status === 200) {
                 setTournamentDetails(response.data);
+                if (adminData.adminName === response.data.createdBy) {
+                    setIsThisAdministrator(true);
+                }
             }
 
         } catch (error) {
@@ -240,7 +246,7 @@ const AdministratorPastTournamentDetails = () => {
                         <p className = "text-md text-gray-500 absolute top-4 right-10 font-semibold">
                             Total Players: {tournamentDetails.playersPool.length}
                         </p>
-                        { isMyPastTournament && !isWithinOneWeek(tournamentDetails.endDate) && (
+                        { isThisAdministrator && !isWithinOneWeek(tournamentDetails.endDate) &&  (
                             <div className = "flex justify-center items-center">
                                 <p className = "text-md text-red-color font-semibold">
                                     Unable to issue strikes to players at this time as your tournament has ended more than a week ago.
@@ -251,10 +257,10 @@ const AdministratorPastTournamentDetails = () => {
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
                                     <li key = {index} className = "mt-5 mb-5 flex justify-between items-center"> 
-                                        <span>{index}. {player} </span>
+                                        <span>{index + 1}. {player} </span>
 
                                         {/* ISSUE STRIKE BUTTON */}
-                                        { isMyPastTournament && isWithinOneWeek(tournamentDetails.endDate) && (
+                                        { isThisAdministrator && isWithinOneWeek(tournamentDetails.endDate) && (
                                           <button 
                                           className = "px-4 py-2 mr-6 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end text-primary-color-white"
                                           style = {{ backgroundColor: "#FF6961"}}
