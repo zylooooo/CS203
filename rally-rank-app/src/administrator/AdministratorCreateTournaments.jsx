@@ -42,8 +42,13 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                         id = "tournamentName"
                         placeholder = "Enter Tournament Name"
                         {...register("tournamentName", {
-                        required: "Tournament name is required",
+                            required: "Tournament name is required",
+                            pattern: {
+                                value: /^[^@#$%^&*()_+=[\]{};'"\\|,.<>?`~]*$/,
+                                message: "Special characters and whitespace are not allowed"
+                            }
                         })}
+                        
                     />
                     <p className = "error">{errors.tournamentName?.message}</p>
                 </div>
@@ -239,10 +244,12 @@ function AdministratorCreateTournaments() {
 
             const today = new Date();
 
+            const trimmedTournamentName = data.tournamentName.trim();
+
             const response = await axios.post(
                 "http://localhost:8080/admins/tournaments/create",
                 {
-                    tournamentName: data.tournamentName,
+                    tournamentName: trimmedTournamentName,
                     createdAt: today,
                     updatedAt: today,
                     createdBy: adminData.adminName,
@@ -267,12 +274,16 @@ function AdministratorCreateTournaments() {
             );
 
             if (response.status === 200) {
+                if (response.data.error !== undefined) {
+                    alert("error: ", response.data.error);
+                    
+                }
                 return response.data;
             }
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
-            alert("There was an error creating your tournament. \nPlease ensure the start date is at least 1 month from today, and that all fields are properly filled up.");
+            alert("error ", error.response.data.error);
             console.error('Error creating tournaments:', error.response.data.error);
         }
     }
