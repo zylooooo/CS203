@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.exception.MatchNotFoundException;
+import com.example.backend.exception.TournamentNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -544,6 +546,31 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    // Service that allows the users to leave the tournament
+    public void leaveTournament(String tournamentName, String username) {
+        try {
+            Tournament tournament = tournamentService.getTournamentByName(tournamentName);
+
+            // Check if the user is already in the tournament
+            if (tournament.getPlayersPool() == null || !tournament.getPlayersPool().contains(username)) {
+                throw new IllegalArgumentException("User is not in the tournament!");
+            }
+
+            // Remove the user from the tournament
+            tournament.getPlayersPool().remove(username);
+
+            tournamentRepository.save(tournament);
+
+            logger.info("User {} left tournament {}", username, tournamentName);
+        } catch (TournamentNotFoundException | UserNotFoundException | IllegalArgumentException e) {
+            logger.error("Error leaving tournament: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error leaving tournament: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }

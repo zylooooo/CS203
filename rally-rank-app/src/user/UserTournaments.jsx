@@ -31,14 +31,15 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
 }
 
 // Component: Tournament Card (for UserTournaments)
-const TournamentCard = ({ tournamentType, isAvailable }) => {
+const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTournament }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate("/tournament-details", { 
+        navigate(`/tournament-details/${tournament.tournamentName}`, {
             state: {
                 tournamentName: tournament.tournamentName,
-                isAvailable,
+                isAvailableTournament,
+                isScheduledTournament,
             }
         });
     };
@@ -59,7 +60,8 @@ const TournamentCard = ({ tournamentType, isAvailable }) => {
             {tournamentType.map((tournament, index) => (
                 <div
                     key = {index}
-                    className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                    className = "flex p-4 bg-white shadow-xl cursor-pointer hover:shadow-lg transition w-full rounded-[12px]"
+                    style = {{ backgroundColor: "#fffcf2" }}
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
                     <div className = "flex-1 pr-4">
@@ -69,20 +71,19 @@ const TournamentCard = ({ tournamentType, isAvailable }) => {
                         </div>
                         <p className = "mb-2"> Date: {formatDate(tournament.startDate)} </p>
                         <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
-                        <p className = "mb-2"> Game: {tournament.category} </p>
                         <p className = "mb-2"> Gender: {tournament.gender} </p>
-                        <p className = "mb-2"> Player Capacity: {tournament.playerCapacity} </p>
                     </div>
-
                     <div className = "card-section-two border-l pl-4 flex-none w-1/3 relative">
                         <p className = "font-semibold mb-2"> Venue: {tournament.location} </p>
+                        <p className = "mb-2"> Game: {tournament.category} </p>
+                        
                         {tournament.remarks && (
                             <>
                                 <p className = "font-semibold mt-2"> Remarks: </p>
                                 <p className = "mb-2"> {tournament.remarks} </p>
                             </>
                         )}
-                        <div className="absolute bottom-2 right-2 text-right">
+                        <div className = "absolute bottom-2 right-2 text-right">
                             <p
                                 style = {{
                                     color: tournament.playerCapacity - tournament.playersPool.length <= 10
@@ -217,9 +218,13 @@ function UserTournaments() {
                 {loading ? (
                     <p> Loading tournaments... </p>
                     ) : displayTournamentType.length > 0 ? (
-                    <TournamentCard tournamentType = {displayTournamentType} isAvailable = {activeButton === 0} />
+                        <TournamentCard
+                            tournamentType = {displayTournamentType}
+                            isAvailableTournament = {activeButton === 0}
+                            isScheduledTournament = {activeButton === 1}
+                        />
                     ) : (
-                    <p> No tournaments found. </p>
+                        <p> No tournaments found. </p>
                 )}
             </div>
         </div>
