@@ -38,24 +38,39 @@ function MainHomePage() {
                     <p className='mt-2 text-xl'>- Serena Williams</p>
                 </div>
             </div>
-            <div className ="flex flex-col ml-4">
-                <h2>What are you waiting for? Sign up now!</h2>
-                <div>
+
+            <div className="flex flex-col items-center mt-12">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                    Ready to join the community?
+                </h2>
+                <p className="text-gray-600 mb-6">
+                    Sign up now and start matching with tennis players near you
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
                     <input
-                        type = "text"
-                        onChange = {handleEmailChange}
+                        type="text"
+                        onChange={handleEmailChange}
                         onKeyDown={handleKeyDown}
-                        placeholder = "Enter your email"
-                        className = "mt-7 ml-6 rounded-l-[10px] rounded-r-none border border-gray-300 w-[450px] p-3 pl-4 focus:outline-none focus:border-blue-500"
+                        placeholder="Enter your email"
+                        className="flex-grow px-4 py-3 rounded-lg border border-gray-300 
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                   shadow-sm"
                     />
                     <button
-                    className = "mt-7 px-4 py-2 text-white rounded-l-none rounded-r-[10px] border" style = {{ backgroundColor: '#A6A6A6'}}
-                    onClick = {handleSignUpClick}
+                        onClick={handleSignUpClick}
+                        className="px-6 py-3 bg-primary-color-green text-white font-semibold rounded-lg
+                                 transform transition-all duration-200
+                                 hover:bg-secondary-color-dark-green hover:scale-105
+                                 focus:outline-none focus:ring-2 focus:ring-primary-color-green focus:ring-offset-2
+                                 shadow-lg hover:shadow-xl
+                                 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!email.trim()}
                     >
-                        Sign Up
+                        Get Started
                     </button>
                 </div>
             </div>
+
         </div>
     );
 }
