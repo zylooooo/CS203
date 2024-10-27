@@ -23,16 +23,29 @@ function MainHomePage() {
 
 
     return (
-        <div className = "homepage flex flex-col w-full">
-
-            {/* Advertisement and Quick Sign Up */}
-            <div className = "relative section-two mx-auto mt-10">
+        <div className="relative w-full">
+            <img 
+                src="../src/assets/view-tennis-racket-hitting-ball.jpg" 
+                alt="Tennis Racket Hitting Ball" 
+                className="w-full max-h-[500px] object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center flex flex-col ">
+                <h1 className="text-5xl font-bold text-white text-center px-4 shadow-text">
+                    The best Tennis Matchmaking App
+                </h1>
+                <p>- Serena Williams</p>
+            </div>
+        </div>
+    );
+}
+            {/* Advertisement and Quick Sign Up
+            <div className = "relative mx-auto mt-10 w-full max-w-7xl flex justify-center items-center">
                 <img 
                     src = "../src/assets/homepage-picture.jpg" 
                     alt = "RallyRank Advertisement" 
                     className = "w-[1350px] h-[500px] object-cover rounded-[15px]"
                 />
-                <div className = "absolute top-0 left-0 w-full h-full flex flex-col items-start justify-center pl-4"> 
+                <div className = "absolute inset-0 flex flex-col items-center justify-center text-center bg-"> 
                     <h2 className = "text-4xl font-bold ml-10" style = {{ color : 'white' }}>
                         The tennis player's favorite app.
                     </h2>
@@ -53,17 +66,16 @@ function MainHomePage() {
                         </button>
                     </div>
                 </div>
-            </div>
+            </div> */}
+            
 
-            {/* About RallyRank */}
+            {/* About RallyRank
             <div className = "section-three mt-10 border w-[1350px] h-[800px] mx-auto bg-blue-100 p-5">
                 <h2 className = "text-5xl font-bold text-gray-800"> About RallyRank </h2>
                 <p className = "mt-4 text-lg text-gray-700">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis rem totam error commodi enim iste nulla fugit, dolores voluptatem cupiditate quasi necessitatibus! Autem suscipit, minima quasi voluptatem commodi nostrum est.
                 </p>
-            </div>
-        </div>
-    );
-}
+            </div> */}
+
 
 export default MainHomePage;

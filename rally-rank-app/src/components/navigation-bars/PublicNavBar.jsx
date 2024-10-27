@@ -13,7 +13,7 @@ function PublicNavBar() {
     };
  
     return (
-        <nav className="shadow-md" style = {{ backgroundColor: "#fffcf2" }}>
+        <nav className="shadow-md">
             {/* 
                 max-w-7xl is the max width of the container
                 lg:px-8 is the padding for large screens
