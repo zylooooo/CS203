@@ -94,8 +94,17 @@ public class AdminService {
 
             // Update only non-null fields
             Optional.ofNullable(newAdminDetails.getEmail()).ifPresent(admin::setEmail);
-            Optional.ofNullable(newAdminDetails.getPassword())
-                    .ifPresent(password -> admin.setPassword(passwordEncoder.encode(password)));
+
+            // Handle password update
+            if (newAdminDetails.getPassword() != null) {
+                // Check if the new password is different from the current hashed password
+                if (!newAdminDetails.getPassword().equals(admin.getPassword())) {
+                    // If different, assume it's a new plaintext password and encode it
+                    admin.setPassword(passwordEncoder.encode(newAdminDetails.getPassword()));
+                }
+                // If it's the same as the current hashed password, do nothing
+            }
+
             Optional.ofNullable(newAdminDetails.getAdminName()).ifPresent(admin::setAdminName);
             Optional.ofNullable(newAdminDetails.getFirstName()).ifPresent(admin::setFirstName);
             Optional.ofNullable(newAdminDetails.getLastName()).ifPresent(admin::setLastName);
