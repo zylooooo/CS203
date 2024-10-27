@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,13 +12,17 @@ const AdministratorTournamentDetails = () => {
 
     const fromPage = location.state?.from || "/administrator-tournaments";      // to retrieve page where admins clicked for tournament details
 
-    const tournamentName = location.state;
+    //const tournamentName = location.state;
+
+    const { tournamentName } = useParams();
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
     const [fixtures, setFixtures] = useState(null);
 
     // const [tournamentStatus, setTournamentStatus] = useState("");
+
+    
 
     const handleBackButtonClick = () => {
         navigate(fromPage);
@@ -153,9 +157,9 @@ const AdministratorTournamentDetails = () => {
                 </p>
 
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
-                <div className = "map-api-container h-64 border2 rounded-[8px]">
+                {/* <div className = "map-api-container h-64 border2 rounded-[8px]">
                     <p className = "text-center p-4"> Insert map here. </p>
-                </div>
+                </div> */}
 
                 <div className = "flex justify-between items-start mt-4">
                     <div className = "players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">

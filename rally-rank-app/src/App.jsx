@@ -266,7 +266,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/administrator-tournament-details"
+                        path = "/administrator/tournament-details/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>
