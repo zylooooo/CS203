@@ -45,7 +45,7 @@ function AdministratorEditTournament() {
         getTournamentByName();
     }, []);
 
-    // ----------------------- API Call: Retrieving the tournament details by the tournament name -----------------------
+    // ----------------------- API Call: Update the tournament details in backend -----------------------
     async function updateTournament(data) {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
