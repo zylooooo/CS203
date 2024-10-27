@@ -293,7 +293,7 @@ public class TournamentService {
 
             List<Tournament> userAvailableTournaments = allTournaments.stream()
                 .filter(tournament -> isUserEligibleForTournament(user, tournament, currentDate, true))
-                .sorted(Comparator.comparing(Tournament::getStartDate).reversed())
+                .sorted(Comparator.comparing(Tournament::getStartDate))
                 .collect(Collectors.toList());
 
             logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);
