@@ -153,6 +153,7 @@ public class TournamentService {
         
         List<Tournament> currentAndFutureTournaments = tournamentRepository.findAll().stream()
             .filter(t -> t.getEndDate() == null)
+            .sorted(Comparator.comparing(Tournament::getStartDate))
             .collect(Collectors.toList());
 
         logger.info("Found {} current and future tournaments", currentAndFutureTournaments.size());
@@ -238,6 +239,7 @@ public class TournamentService {
         List<Tournament> allTournaments = tournamentRepository.findAll();
         List<Tournament> pastTournaments = allTournaments.stream()
             .filter(tournament -> tournament.getEndDate() != null)
+            .sorted(Comparator.comparing(Tournament::getEndDate).reversed())
             .collect(Collectors.toList());
     
         logger.info("Retrieved {} past tournaments.", pastTournaments.size());
@@ -291,6 +293,7 @@ public class TournamentService {
 
             List<Tournament> userAvailableTournaments = allTournaments.stream()
                 .filter(tournament -> isUserEligibleForTournament(user, tournament, currentDate, true))
+                .sorted(Comparator.comparing(Tournament::getStartDate))
                 .collect(Collectors.toList());
 
             logger.info("Found {} available tournaments for user: {}", userAvailableTournaments.size(), username);

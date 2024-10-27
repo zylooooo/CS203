@@ -221,8 +221,7 @@ function UserHome() {
                     }
                 }
             );
-            const sortedTournaments = response.data.sort((date1, date2) => new Date(date1.startDate) - new Date(date2.startDate));
-            setScheduledTournaments(sortedTournaments);
+            setScheduledTournaments(response.data);
         } catch (error) {
             console.error("Error fetching scheduled tournaments: ", error);
         }

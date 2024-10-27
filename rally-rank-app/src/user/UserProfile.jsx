@@ -14,6 +14,18 @@ function UserProfile() {
     const [userProfileInformation, setUserProfileInformation] = useState({});
     const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
 
+    // Function to calculate the proper age of the user.
+    function calculateAge(dob) {
+        const today = new Date();
+        const dateOfBirth = new Date(dob);
+        let age = today.getFullYear() - dateOfBirth.getFullYear();
+        const monthDifference = today.getMonth() - dateOfBirth.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dateOfBirth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const {
         email,
         phoneNumber,
@@ -148,8 +160,12 @@ function UserProfile() {
                                     <strong> Date of Birth: </strong> {new Date(dateOfBirth).toLocaleDateString('en-GB', dateOptions)}
                                 </p>
                                 <p className = "mt-4 text-sm mb-4">
+                                    <strong> Age: </strong> {calculateAge(dateOfBirth)}
+                                </p>
+                                <p className = "mt-4 text-sm mb-4">
                                     <strong> Elo Rating: </strong> {elo}
                                 </p>
+                                
                             </div>
                         </div>
                     </>
@@ -163,15 +179,15 @@ function UserProfile() {
                         {strikeReports.map((report, index) => (
                             <div key = {index} className = "mt-4">
                                 <p>
-                                    <strong> Strike {index + 1}: </strong> {report.reportDetails}
+                                    <strong> Strike {index + 1}: </strong>
                                 </p>
-                                <p>
+                                <p className = "ml-4">
                                     <strong> Reason: </strong> {report.reportDetails}
                                 </p>
-                                <p>
+                                <p className = "ml-4">
                                     <strong> Date Issued: </strong> {new Date(report.dateCreated).toLocaleDateString()}
                                 </p>
-                                <p>
+                                <p className = "ml-4">
                                     <strong> Issued By: </strong> {report.issuedBy}
                                 </p>
                             </div>
