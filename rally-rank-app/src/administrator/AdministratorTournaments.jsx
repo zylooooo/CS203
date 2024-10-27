@@ -7,6 +7,16 @@ import React, { useState, useEffect } from "react";
 // Component: Tournament Card (for AdministratorTournaments)
 const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdministrator }) => {
 
+    const isBeforeStartDate = (startDate) => {
+        const currentDate = new Date();
+        const tournamentStartDate = new Date(startDate);
+        return currentDate < tournamentStartDate;
+    };
+
+    const isBracketsGenerated = (tournamentBrackets) => {
+        return tournamentBrackets != null;
+    }
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
 
@@ -26,9 +36,9 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/administrator-tournament-details", { state: tournamentName });
+            navigate(`/administrator/tournament-details/${tournamentName}`, { state: { tournamentName } });
         }, 200);
-    }
+    };
 
     const handleEditClick = (tournamentName) => {
         setIsTransitioning(true);
@@ -77,18 +87,18 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
 
                         {/* EDIT TOURNAMENT BUTTON */}
                         <div className = "edit-tournament-button mt-auto ml-auto">
-                        {checkThisAdmin(tournament.createdBy) && (
-                        <button
-                            onClick = {(e) => {
-                                e.stopPropagation();
-                                handleEditClick(tournament.tournamentName);
-                            }}
-                            className = "font-semibold p-2 rounded-lg shadow-md hover:shadow-md transition duration-300 ease-in-out ml-4"
-                            style = {{ color: "#80B577" }}
-                        >
-                            Edit Tournament
-                        </button>
-                        )}
+                            {checkThisAdmin(tournament.createdBy) && isBeforeStartDate(tournament.startDate) && !isBracketsGenerated(tournament.bracket) && (
+                                <button
+                                    onClick = {(e) => {
+                                        e.stopPropagation();
+                                        handleEditClick(tournament.tournamentName);
+                                    }}
+                                    className = "font-semibold p-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out ml-4 transform hover:scale-110"
+                                    style = {{ color: "#80B577" }}
+                                >
+                                    Edit Tournament
+                                </button>
+                            )}
                         </div>
                     </div>
 
