@@ -74,7 +74,7 @@ Step1.propTypes = {
         email: PropTypes.object,
         username: PropTypes.object,
     }).isRequired,
-    email: PropTypes.func.isRequired,
+    email: PropTypes.string.isRequired,
 };
 
 export default Step1;

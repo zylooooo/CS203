@@ -187,7 +187,7 @@ function UserSignUp() {
                 <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
                     <form onSubmit = {handleSubmit(onSubmit)}>
                         {step === 1 && (
-                            <Step1 register = {register} errors = {errors} email = {email} />
+                            <Step1 register = {register} errors = {errors} email = {email || ""} />
                         )}
                         {step === 2 && <Step2 register = {register} errors = {errors} />}
                         {step === 3 && (
