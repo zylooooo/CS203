@@ -215,8 +215,18 @@ public class UserService {
 
             // Update only non-null fields
             Optional.ofNullable(newUserDetails.getEmail()).ifPresent(user::setEmail);
-            Optional.ofNullable(newUserDetails.getPassword())
-                    .ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
+
+            // Handle password update
+            if (newUserDetails.getPassword() != null) {
+                // Check if the new password is different from the current hashed password
+                if (!newUserDetails.getPassword().equals(user.getPassword())) {
+                    // If different, assume it's a new plaintext password and encode it
+                    user.setPassword(passwordEncoder.encode(newUserDetails.getPassword()));
+                }
+                // If it's the same as the current hashed password, do nothing
+            }
+
+
             Optional.ofNullable(newUserDetails.getPhoneNumber()).ifPresent(user::setPhoneNumber);
             if (newUserDetails.getElo() != 0)
                 user.setElo(newUserDetails.getElo());
