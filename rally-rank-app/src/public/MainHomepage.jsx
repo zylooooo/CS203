@@ -23,17 +23,38 @@ function MainHomePage() {
 
 
     return (
-        <div className="relative w-full">
-            <img 
-                src="../src/assets/view-tennis-racket-hitting-ball.jpg" 
-                alt="Tennis Racket Hitting Ball" 
-                className="w-full max-h-[500px] object-cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center flex flex-col ">
-                <h1 className="text-5xl font-bold text-white text-center px-4 shadow-text">
-                    The best Tennis Matchmaking App
-                </h1>
-                <p>- Serena Williams</p>
+        <div className="flex flex-col justify-center w-full mt-10">
+            <div className='relative'>
+                <img
+                    src="../src/assets/view-tennis-racket-hitting-ball.jpg"
+                    alt="Tennis Racket Hitting Ball"
+                    className="w-full max-h-[500px] object-cover rounded-xl"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40 rounded-xl"></div>
+                <div className="absolute inset-0 flex items-center justify-center flex flex-col text-white ">
+                    <h1 className="text-6xl font-bold text-center px-4 shadow-text">
+                        The best Tennis Matchmaking App
+                    </h1>
+                    <p className='mt-2 text-xl'>- Serena Williams</p>
+                </div>
+            </div>
+            <div className ="flex flex-col ml-4">
+                <h2>What are you waiting for? Sign up now!</h2>
+                <div>
+                    <input
+                        type = "text"
+                        onChange = {handleEmailChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder = "Enter your email"
+                        className = "mt-7 ml-6 rounded-l-[10px] rounded-r-none border border-gray-300 w-[450px] p-3 pl-4 focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                    className = "mt-7 px-4 py-2 text-white rounded-l-none rounded-r-[10px] border" style = {{ backgroundColor: '#A6A6A6'}}
+                    onClick = {handleSignUpClick}
+                    >
+                        Sign Up
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -50,21 +71,7 @@ function MainHomePage() {
                         The tennis player's favorite app.
                     </h2>
                     <h2 className = "ml-11 mt-1" style = {{ color : 'white' }}> Join RallyRank today. </h2> 
-                    <div className ="quick-sign-up flex ml-4">
-                        <input
-                            type = "text" 
-                            onChange = {handleEmailChange} 
-                            onKeyDown={handleKeyDown}
-                            placeholder = "Enter your email"
-                            className = "mt-7 ml-6 rounded-l-[10px] rounded-r-none border border-gray-300 w-[450px] p-3 pl-4 focus:outline-none focus:border-blue-500"
-                        />
-                        <button
-                        className = "mt-7 px-4 py-2 text-white rounded-l-none rounded-r-[10px] border" style = {{ backgroundColor: '#A6A6A6'}}
-                        onClick = {handleSignUpClick}
-                        >
-                            Sign Up
-                        </button>
-                    </div>
+                    
                 </div>
             </div> */}
             
