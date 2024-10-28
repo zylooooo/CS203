@@ -28,7 +28,9 @@ import UserFixtures from "./user/UserFixtures";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
+import AdministratorProfile from "./administrator/AdministratorProfile";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
+import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
@@ -304,6 +306,30 @@ function App() {
                             <AdminRoute>
                                 <MainLayout>
                                     <AdministratorFixtures />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* ADMINISTRATOR'S PROFILE/ACCOUNT PAGE */}
+                    <Route
+                        path = "/administrator-account" 
+                        element = {
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorProfile />
+                                </MainLayout>
+                            </AdminRoute>
+                        }
+                    />
+
+                    {/* ADMINISTRATOR'S EDIT PROFILE/ACCOUNT PAGE */}
+                    <Route
+                        path = "/administrator-account/edit" 
+                        element = {
+                            <AdminRoute>
+                                <MainLayout>
+                                    <AdministratorEditProfile />
                                 </MainLayout>
                             </AdminRoute>
                         }
