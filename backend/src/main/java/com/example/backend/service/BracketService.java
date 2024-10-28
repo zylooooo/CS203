@@ -187,18 +187,32 @@ public class BracketService {
      * @param newMatches The list to which the new match IDs will be added.
      */
     private void generateProperBracket(Tournament tournament, List<String> players, List<String> newMatches) {
-        logger.info("Forming an actual bracket");
-
+        logger.info("Forming bracket for round: " + tournament.getBracket().getRounds().size());
+        
         List<Tournament.Round> rounds = tournament.getBracket().getRounds();
         if (rounds.isEmpty()) {
             rounds.add(new Tournament.Round(new ArrayList<>()));
         }
 
-        List<String> sortedPlayers = sortPlayersByElo(players);
-
-        for (int i = 0; i < sortedPlayers.size() / 2; i++) {
-            Match match = createMatch(tournament, sortedPlayers.get(i), sortedPlayers.get(sortedPlayers.size() - 1 - i));
-            newMatches.add(match.getId());
+        if (rounds.size() == 1) {
+            List<String> sortedPlayers = sortPlayersByElo(players);
+            for (int i = 0; i < sortedPlayers.size() / 2; i++) {
+                Match match = createMatch(
+                    tournament, 
+                    sortedPlayers.get(i), 
+                    sortedPlayers.get(sortedPlayers.size() - 1 - i)
+                );
+                newMatches.add(match.getId());
+            }
+        } else {
+            for (int i = 0; i < players.size() - 1; i += 2) {
+                Match match = createMatch(
+                    tournament, 
+                    players.get(i), 
+                    players.get(i + 1)
+                );
+                newMatches.add(match.getId());
+            }
         }
     }
 
@@ -264,7 +278,11 @@ public class BracketService {
      */
     public Match updateMatchResults(Match newMatchDetails) {
         try {
-            // Validate the match details that is being passed in
+            // First verify the match exists
+            Match existingMatch = matchRepository.findById(newMatchDetails.getId())
+                .orElseThrow(() -> new MatchNotFoundException("Match not found with ID: " + newMatchDetails.getId()));
+
+            // Validate the match details
             Errors errors = new BeanPropertyBindingResult(newMatchDetails, "match");
             validator.validate(newMatchDetails, errors);
 
@@ -276,9 +294,21 @@ public class BracketService {
                 throw new IllegalArgumentException(String.join(", ", errorMessages));
             }
 
+            if (newMatchDetails.getStartDate() != null) {
+                existingMatch.setStartDate(newMatchDetails.getStartDate());
+            } 
+            if (newMatchDetails.getMatchWinner() != null) {
+                existingMatch.setMatchWinner(newMatchDetails.getMatchWinner());
+            } 
+            if (newMatchDetails.isCompleted()) {
+                existingMatch.setCompleted(true);
+            }
+            if (newMatchDetails.getSets() != null) {
+                existingMatch.setSets(newMatchDetails.getSets());
+            }
+
             // Update the match details in the database
-            Match updatedMatch = matchRepository.save(newMatchDetails);
-            return updatedMatch;
+            return matchRepository.save(existingMatch);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
