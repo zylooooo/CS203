@@ -78,8 +78,35 @@ const TournamentDetails = () => {
     }
 
     // ----------------------- API Call: Removing user's username when leaving a tournament  ----------------------- (WAIT FOR ROUTER FROM BACKEND)
-    const handleLeaveTournamentClick = () => {
-        setHasJoined(false);
+    const handleLeaveTournamentClick = async () => {
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                if (!userData || !userData.jwtToken) {
+                    console.error("No JWT Token found!");
+                    // Alert Message
+                    return;
+                }
+
+                const response = await axios.delete(
+                    `http://localhost:8080/users/tournaments/leave-${tournamentName}`,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${userData.jwtToken}`,
+                        },
+                    }
+                );
+
+                if (response.status == 200) {
+                    setHasJoined(false);
+                    console.log(response.data);
+                    // Success Message
+                }
+            } catch (error) {
+                console.error("Error leaving tournament:", error.response ? error.response.data : error.message);
+                console.log("GOES HERE");
+            }
+
     }
 
     const handleBackButtonClick = () => {
