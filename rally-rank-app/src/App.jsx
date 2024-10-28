@@ -22,9 +22,9 @@ import UserTournaments from "./user/UserTournaments";
 import OtherUserProfile from "./user/OtherUserProfile";
 import TournamentDetails from "./user/TournamentDetails";
 import UserPastTournaments from "./user/UserPastTournaments";
+import UserFixtures from "./user/UserFixtures";
 
 // Administrator Imports
-import Fixtures from "./administrator/Fixtures";
 import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
@@ -34,6 +34,7 @@ import AdministratorTournamentHistory from "./administrator/AdministratorTournam
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
+import AdministratorFixtures from "./administrator/AdministratorFixtures";
 
 // Authentication Imports
 import AdminRoute from "./authentication/AdminRoute";
@@ -129,6 +130,14 @@ function App() {
                         }
                     />
 
+                    <Route
+                        path = "/user-fixtures"
+                        element = {
+                            <MainLayout>
+                                <UserFixtures />
+                            </MainLayout>
+                        }
+                    />
 
                     {/* ---------------------- PROTECTED: PLAYER ROUTES ---------------------- */}
                     {/* USER'S HOME PAGE */}
@@ -294,7 +303,7 @@ function App() {
                         element = {
                             <AdminRoute>
                                 <MainLayout>
-                                    <Fixtures />
+                                    <AdministratorFixtures />
                                 </MainLayout>
                             </AdminRoute>
                         }

@@ -90,9 +90,9 @@ const TournamentDetails = () => {
     };
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
-    // const handleShowFixturesButtonClick = () => {
-    //     navigate("/fixtures")
-    // }
+    const handleShowFixturesButtonClick = () => {
+        navigate("/user-fixtures")
+    }
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -309,7 +309,7 @@ const TournamentDetails = () => {
                     </div>
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
-                        // onClick = {handleShowFixturesClick}
+                        onClick = {handleShowFixturesButtonClick}
                         className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
