@@ -7,7 +7,7 @@ import RobotSleeping from "./assets/robot-not-found.png";
 
 const NotFound = () => {
     return (
-        <div className = "relative h-screen">
+        <div className = "relative h-main">
             <img 
                 src = {RallyRankLogo} 
                 alt = "rally rank logo" 
