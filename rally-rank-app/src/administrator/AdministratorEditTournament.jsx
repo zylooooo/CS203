@@ -13,6 +13,34 @@ function AdministratorEditTournament() {
   const { register, handleSubmit, setValue } = useForm();
   const [availablePlayers, setAvailablePlayers] = useState([]);
 
+
+  // ----------------------- API Call: Deleting the tournament by the tournament name -----------------------
+  async function deleteTournament() {
+    try {
+      const adminData = JSON.parse(localStorage.getItem("adminData"));
+      if (!adminData || !adminData.jwtToken) {
+        console.error("No JWT token found");
+        return;
+      }
+      console.log("JWT token:", adminData.jwtToken);
+      const response = await axios.delete(
+        `http://localhost:8080/admins/tournament/${tournamentName}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${adminData.jwtToken}`,
+          },
+        }
+      );
+      console.log("Tournament deleted successfully:", response.data); // Confirmation log
+      // Redirect to the tournaments list page after deletion
+      navigate("/administrator-tournaments");
+    } catch (error) {
+      console.error("Error deleting tournament:", error.response?.data?.error || error.message);
+    }
+  }
+  
+
   // ----------------------- API Call: Retrieving the available players by the tournament name -----------------------
   async function getAvailablePlayers() {
     try {
@@ -294,7 +322,6 @@ function AdministratorEditTournament() {
                     {tournament.playersPool.map((username, index) => (
                       <li key={index} className="mt-2 mb-2">
                         {username}
-                        {/* Display username with a fallback */}
                       </li>
                     ))}
                   </ol>
@@ -304,7 +331,7 @@ function AdministratorEditTournament() {
                   No players have registered for this tournament.
                 </p>
               )}
-
+  
               {/* ADD PLAYERS TO TOURNAMENT */}
               <div className="flex flex-col gap-1 mt-5">
                 <h3 className="block text-sm font-medium text-gray-700">
@@ -317,7 +344,6 @@ function AdministratorEditTournament() {
                         key={player.id}
                         className="mt-2 mb-2 flex items-center justify-between"
                       >
-                        {/* Display username with fallback */}
                         <span>
                           {player.username ? player.username : "Unnamed Player"}
                         </span>
@@ -336,7 +362,7 @@ function AdministratorEditTournament() {
                   </p>
                 )}
               </div>
-
+  
               {/* TOURNAMENT REMARKS */}
               <div className="flex flex-col gap-1">
                 <label
@@ -351,6 +377,8 @@ function AdministratorEditTournament() {
                   {...register("remarks", { onChange: handleChange })}
                 />
               </div>
+              
+              {/* UPDATE TOURNAMENT BUTTON */}
               <button
                 type="submit"
                 style={{
@@ -369,12 +397,31 @@ function AdministratorEditTournament() {
               >
                 Update Tournament
               </button>
+  
+              {/* DELETE TOURNAMENT BUTTON */}
+              <button
+                onClick={deleteTournament}
+                style={{
+                  marginTop: "1.25rem",
+                  padding: "0.5rem",
+                  color: "white",
+                  backgroundColor: "red",
+                  cursor: "pointer",
+                  display: "block",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+                className="w-1/4 rounded-[20px]"
+              >
+                Delete Tournament
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
   );
+  
 }
 
 export default AdministratorEditTournament;
