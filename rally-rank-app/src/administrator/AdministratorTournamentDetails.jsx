@@ -87,32 +87,51 @@ const AdministratorTournamentDetails = () => {
                 console.error('No JWT token found');
                 return;
             }
-
+    
             const response = await axios.put(
                 `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
                 {},
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`
+                        Authorization: `Bearer ${adminData.jwtToken}`,
                     }
-                }
+                },
             );
-
+    
             console.log(response.data);
             if (response.status === 200) {
-
-                if (response.data.error !== undefined) {
-                    alert(response.data.error);
+    
+                if (response.status === 200) {
+                    if (response.data.error !== undefined) {
+                        alert(response.data.error);
+                    } else {
+                        // Transform the response data into arrays of players by round
+                        const roundsData = response.data.rounds.map(round => {
+                            // Flatten all players from all matches in this round into a single array
+                            const playersInRound = round.matches.reduce((players, match) => {
+                                return [...players, ...match.players];
+                            }, []);
+                            
+                            // console.log("playersInRound", playersInRound);
+                            return {
+                                roundNumber: round.roundnumber,
+                                players: playersInRound
+                            };
+                        });
+        
+                        setFixtures(roundsData);
+                        console.log(roundsData);
+                        alert("Brackets generated successfully! View the fixtures below.");
+                    }
                 } else {
-                    setFixtures(response.data);
-                    alert("Brackets generated successfully! View the fixtures below.");
+                    alert("There was an error generating the brackets. Please try again.");
                 }
-
+    
             } else {
                 alert("There was an error generating the brackets. Please try again.");
             }
-
+    
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
             alert(error.response.data.error);
