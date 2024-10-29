@@ -59,6 +59,18 @@ public class BracketService {
                 existingTournament.getBracket().setRounds(new ArrayList<>());
             }
 
+            // Check if all of the matches in the previous round are compelted
+            if (existingTournament.getBracket().getRounds().size() > 0) {
+                Tournament.Round previousRound = existingTournament.getBracket().getRounds().get(existingTournament.getBracket().getRounds().size() - 1);
+                List<Match> previousRoundMatches = matchRepository.findAllById(previousRound.getMatches());
+                for (Match match : previousRoundMatches) {
+                    if (!match.isCompleted()) {
+                        response.put("error", "All matches in the previous round must be completed before generating a new round!");
+                        return response;
+                    }
+                }
+            }
+
             List<String> playersForNewRound = getPlayersForNewRound(existingTournament);
             List<String> newMatches = createNewRound(existingTournament, playersForNewRound);
             if (playersForNewRound.isEmpty() || newMatches.isEmpty()) {
