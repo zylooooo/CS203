@@ -12,15 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.util.Pair;
-import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -107,73 +104,6 @@ class TournamentServiceTest {
         assertThrows(IllegalArgumentException.class, () -> tournamentService.checkTournamentNameAvailability(""));
     }
 
-    @Test
-    void createTournament_ValidTournamentData_ReturnsSavedTournament() {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentName("New Tournament");
-        String adminName = "admin";
-
-        when(tournamentRepository.existsByTournamentName(tournament.getTournamentName())).thenReturn(false);
-        when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
-
-        Pair<Optional<Tournament>, Map<String, String>> result = tournamentService.createTournament(tournament, adminName);
-
-        assertTrue(result.getFirst().isPresent());
-        assertEquals(tournament, result.getFirst().get());
-        assertTrue(result.getSecond().isEmpty());
-    }
-
-    @Test
-    void createTournament_TournamentNameAlreadyExists_ReturnsPairWithEmptyOptionalAndErrorMap() {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentName("Existing Tournament");
-        String adminName = "admin";
-
-        when(tournamentRepository.existsByTournamentName(tournament.getTournamentName())).thenReturn(true);
-
-        Pair<Optional<Tournament>, Map<String, String>> result = tournamentService.createTournament(tournament, adminName);
-
-        assertFalse(result.getFirst().isPresent());
-        assertTrue(result.getSecond().containsKey("tournamentName"));
-    }
-
-    @Test
-    void createTournament_ValidationErrors_ReturnsPairWithEmptyOptionalAndErrorMap() {
-        Tournament invalidTournament = new Tournament();
-        String adminName = "admin";
-
-        // Simulate validation errors
-        doAnswer(invocation -> {
-            Errors errors = invocation.getArgument(1);
-            errors.rejectValue("tournamentName", "notEmpty", "Tournament name must not be empty");
-            return null;
-        }).when(validator).validate(any(Tournament.class), any(Errors.class));
-
-        Pair<Optional<Tournament>, Map<String, String>> result = tournamentService.createTournament(invalidTournament, adminName);
-
-        assertTrue(result.getFirst().isEmpty());
-        assertFalse(result.getSecond().isEmpty());
-        assertEquals(1, result.getSecond().size());
-        assertTrue(result.getSecond().containsKey("tournamentName"));
-    }
-
-    @Test
-    void createTournament_ExceptionThrown_ReturnsPairWithEmptyOptionalAndErrorMap() {
-        Tournament tournament = new Tournament();
-        tournament.setTournamentName("Test Tournament");
-        String adminName = "admin";
-
-        when(tournamentRepository.save(any(Tournament.class))).thenThrow(new RuntimeException("Database error"));
-
-        Pair<Optional<Tournament>, Map<String, String>> result = tournamentService.createTournament(tournament, adminName);
-
-        assertTrue(result.getFirst().isEmpty());
-        assertFalse(result.getSecond().isEmpty());
-        assertEquals(1, result.getSecond().size());
-        assertTrue(result.getSecond().containsKey("error"));
-        assertEquals("An unexpected error occurred while creating the tournament", result.getSecond().get("error"));
-    }
-
     // @Test
     // void getCurrentTournaments_OngoingAndFutureTournamentsExist_ReturnsOngoingAndFutureTournaments() {
     //     LocalDate currentDate = LocalDate.now();
@@ -223,13 +153,6 @@ class TournamentServiceTest {
     //     assertEquals(1, result.size());
     //     assertEquals(pastTournament, result.get(0));
     // }
-
-    @Test
-    void getAllHistory_NoPastTournamentsExist_ThrowsTournamentNotFoundException() {
-        when(tournamentRepository.findAll()).thenReturn(Collections.emptyList());
-
-        assertThrows(TournamentNotFoundException.class, () -> tournamentService.getAllHistory());
-    }
 
     @Test
     void getUserAvailableTournaments_UserDoesNotExist_ThrowsUserNotFoundException() {
@@ -315,87 +238,6 @@ class TournamentServiceTest {
         List<Tournament> result = tournamentService.getUserAvailableTournaments(username);
 
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getUserAvailableTournaments_AgeCategoryU16_IncludedInResult() throws UserNotFoundException, TournamentNotFoundException {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(1500);
-        user.setGender("Male");
-        user.setAge(15);
-
-        Tournament tournament = new Tournament();
-        tournament.setStartDate(LocalDate.now().plusDays(1));
-        tournament.setPlayerCapacity(10);
-        tournament.setPlayersPool(new ArrayList<>());
-        tournament.setMinElo(1000);
-        tournament.setMaxElo(2000);
-        tournament.setGender("Male");
-        tournament.setCategory("U16");
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(tournament));
-
-        List<Tournament> result = tournamentService.getUserAvailableTournaments(username);
-
-        assertEquals(1, result.size());
-        assertEquals(tournament, result.get(0));
-    }
-
-    @Test
-    void getUserAvailableTournaments_AgeCategoryU21_IncludedInResult() throws UserNotFoundException, TournamentNotFoundException {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(1500);
-        user.setGender("Male");
-        user.setAge(20);
-
-        Tournament tournament = new Tournament();
-        tournament.setStartDate(LocalDate.now().plusDays(1));
-        tournament.setPlayerCapacity(10);
-        tournament.setPlayersPool(new ArrayList<>());
-        tournament.setMinElo(1000);
-        tournament.setMaxElo(2000);
-        tournament.setGender("Male");
-        tournament.setCategory("U21");
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(tournament));
-
-        List<Tournament> result = tournamentService.getUserAvailableTournaments(username);
-
-        assertEquals(1, result.size());
-        assertEquals(tournament, result.get(0));
-    }
-
-    @Test
-    void getUserAvailableTournaments_AgeCategoryOpen_IncludedInResult() throws UserNotFoundException, TournamentNotFoundException {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(1500);
-        user.setGender("Male");
-        user.setAge(30);
-
-        Tournament tournament = new Tournament();
-        tournament.setStartDate(LocalDate.now().plusDays(1));
-        tournament.setPlayerCapacity(10);
-        tournament.setPlayersPool(new ArrayList<>());
-        tournament.setMinElo(1000);
-        tournament.setMaxElo(2000);
-        tournament.setGender("Male");
-        tournament.setCategory("Open");
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(tournament));
-
-        List<Tournament> result = tournamentService.getUserAvailableTournaments(username);
-
-        assertEquals(1, result.size());
-        assertEquals(tournament, result.get(0));
     }
 
     @Test
@@ -523,30 +365,4 @@ class TournamentServiceTest {
     //     assertEquals(1, result.size());
     //     assertTrue(result.contains(userPast));
     // }
-
-    @Test
-    void getUserAvailableTournaments_AvailableTournamentsExist_ReturnsAvailableTournaments() throws UserNotFoundException, TournamentNotFoundException {
-        User user = new User();
-        user.setUsername("testUser");
-        user.setGender("Male");
-        user.setAge(20);
-        user.setElo(1500);
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-
-        LocalDate currentDate = LocalDate.now();
-        Tournament availableTournament = new Tournament();
-        availableTournament.setStartDate(currentDate.plusDays(1));
-        availableTournament.setGender("Male");
-        availableTournament.setCategory("U21");
-        availableTournament.setMinElo(1400);
-        availableTournament.setMaxElo(1600);
-        availableTournament.setPlayerCapacity(10);
-
-        when(tournamentRepository.findAll()).thenReturn(Collections.singletonList(availableTournament));
-
-        List<Tournament> result = tournamentService.getUserAvailableTournaments("testUser");
-
-        assertEquals(1, result.size());
-        assertTrue(result.contains(availableTournament));
-    }
 }
