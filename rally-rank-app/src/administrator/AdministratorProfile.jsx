@@ -121,7 +121,7 @@ function AdministratorProfile() {
     }
 
     return (
-        <div className = "min-h-screen flex flex-col items-center w-full">
+        <div className = "h-main flex flex-col items-center w-full">
             <div className = "container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
                 <button
                     className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-5 mt-5"

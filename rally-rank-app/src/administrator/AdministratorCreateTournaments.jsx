@@ -337,7 +337,7 @@ function AdministratorCreateTournaments() {
 
     return (
         <>
-        <div className="create-tournament-page main-container flex p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
+        <div className="create-tournament-page main-container flex p-9 gap-2 justify-evenly h-main overflow-auto">
             <div className="row-container flex flex-col w-full gap-8">
 
                 <CreateTournamentForm register = {register} handleSubmit = {handleSubmit} errors = {errors} onSubmit = {onSubmit} />

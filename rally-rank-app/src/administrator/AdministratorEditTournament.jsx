@@ -145,7 +145,7 @@ function AdministratorEditTournament() {
   };
 
   return (
-    <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-screen-minus-navbar overflow-auto">
+    <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-main overflow-auto">
       <div className="row-container flex flex-col w-full gap-8">
         <div className="mt-5 edit-tournament-details p-6 card-background rounded-[20px] shadow-md w-3/5 mx-auto">
           <form onSubmit={handleSubmit(onSubmit)}>
