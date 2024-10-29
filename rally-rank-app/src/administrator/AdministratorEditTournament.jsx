@@ -75,7 +75,7 @@ function AdministratorEditTournament() {
   }, []);
 
   // ----------------------- API Call: Update the tournament details in backend -----------------------
-  async function updateTournament(data) {
+  async function updateTournament(data, playersPool) {
     try {
       const adminData = JSON.parse(localStorage.getItem("adminData"));
       if (!adminData || !adminData.jwtToken) {
@@ -85,10 +85,11 @@ function AdministratorEditTournament() {
       const today = new Date();
       const updatedTournamentDetails = {
         ...data,
-        playersPool: tournament.playersPool,
+        playersPool: playersPool, // Use the latest playersPool passed as a parameter
         updatedAt: today,
         createdBy: adminData.adminName,
       };
+      console.log("Sending updatedTournamentDetails to backend:", updatedTournamentDetails);
       const response = await axios.put(
         `http://localhost:8080/admins/tournaments/edit-${tournament.tournamentName}`,
         updatedTournamentDetails,
@@ -99,7 +100,7 @@ function AdministratorEditTournament() {
           },
         }
       );
-      console.log("Tournament updated successfully:", response.data); // test
+      console.log("Backend response for tournament update:", response.data);
       return response.data;
     } catch (error) {
       console.error(
@@ -111,10 +112,14 @@ function AdministratorEditTournament() {
 
   function addPlayerLocally(player) {
     console.log("Adding player to playersPool:", player);
+    
     setTournament((prevTournament) => ({
       ...prevTournament,
       playersPool: [...(prevTournament.playersPool || []), player.username], // Store only the username as a string
+      
     }));
+    console.log("New pp: ", tournament.playersPool);
+
     
     setAvailablePlayers((prevAvailable) =>
       prevAvailable.filter((p) => p.id !== player.id)
@@ -123,8 +128,9 @@ function AdministratorEditTournament() {
   }
 
   const onSubmit = (data) => {
-    updateTournament(data);
-    // Success Message
+    // Call updateTournament with the latest playersPool
+    updateTournament(data, tournament.playersPool);
+    // Navigate to tournament details page
     navigate(`/administrator/tournament-details/${tournamentName}`, {
       state: { tournamentName },
     });
