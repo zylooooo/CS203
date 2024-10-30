@@ -93,8 +93,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
                                         e.stopPropagation();
                                         handleEditClick(tournament.tournamentName);
                                     }}
-                                    className = "font-semibold p-2 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out ml-4 transform hover:scale-110"
-                                    style = {{ color: "#80B577" }}
+                                    className = "font-semibold p-2 rounded-lg shadow-md transition duration-300 ease-in-out ml-4 transform text-custom-green hover:scale-110 hover:shadow-xl hover:text-custom-green-hover"
                                 >
                                     Edit Tournament
                                 </button>

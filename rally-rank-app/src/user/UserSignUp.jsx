@@ -156,7 +156,7 @@ function UserSignUp() {
     return (
         <>
             <div
-                className="bg-cover bg-center min-h-screen w-full flex flex-col justify-center items-center"
+                className="bg-cover bg-center h-main w-full flex flex-col justify-center items-center"
                 style = {{ backgroundImage: `url(${signupPicture})` }}
             >
                 <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />

@@ -102,11 +102,11 @@ function UserLogin() {
     return (
         <>
             <div
-            className="bg-cover bg-center min-h-screen w-full flex flex-col justify-center items-center"
-                style={{ backgroundImage: `url(${loginBackground})` }}
+                className="bg-cover bg-center flex flex-col justify-center items-center h-main w-screen overflow-hidden"
+                style={{ backgroundImage: `url(${loginBackground})`, objectFit: 'cover', backgroundAttachment: 'fixed' }}
             >
                 <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
-                <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
+                <div className="card rounded-[8px] bg-primary-color-white border-none items-center my-8 overflow-hidden">
                     {/* Replace heading with RallyRank logo */}
                     <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
                     <form
