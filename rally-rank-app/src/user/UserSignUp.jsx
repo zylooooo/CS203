@@ -1,9 +1,11 @@
+// API imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router-dom";
-
 
 // Assets and Components Imports
 import signupPicture from "../assets/user-sign-up-picture.jpg";
@@ -91,7 +93,7 @@ function UserSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+                `${API_URL}/auth/check-credentials-availability`,
             {
                 params: {
                 accountName: formData.username,
@@ -128,7 +130,7 @@ function UserSignUp() {
     async function createUser(formData) {
         try {
             const response = await axios.post(
-            "http://localhost:8080/auth/user-signup",
+                `${API_URL}/auth/user-signup`,
             {
                 username: lowercaseUsername(formData.username),
                 email: formData.email,

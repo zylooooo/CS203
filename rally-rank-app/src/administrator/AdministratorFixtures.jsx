@@ -1,6 +1,4 @@
-// Package Imports
-import React from "react";
-import { Bracket, Seed, SeedItem, SeedTeam } from "react-brackets";
+// Package Import
 
 const CustomSeed = ({ seed, breakpoint }) => {
     return (

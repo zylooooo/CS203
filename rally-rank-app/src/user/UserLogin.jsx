@@ -1,3 +1,6 @@
+// API imports
+import { API_URL } from '../../config';
+
 // React imports
 import { useEffect, useState } from "react";
 
@@ -37,7 +40,7 @@ function UserLogin() {
     async function authenticateUser(username, password) {
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/user-login",
+                `${API_URL}/auth/user-login`,
                 { username, password },
                 { withCredentials: true } // Allow credentials (cookies) to be sent with the request
             );
@@ -56,7 +59,7 @@ function UserLogin() {
     async function retrieveUserData(jwtToken) {
         try {
             const response = await axios.get(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     withCredentials: true,
                     headers: {

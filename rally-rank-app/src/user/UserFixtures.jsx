@@ -1,6 +1,5 @@
 // Package Imports
 import React from "react";
-import { Bracket } from "react-brackets";
 
 // Function to calcuate the number of rounds given the number of players
 const calculateRounds = (playerPool) => {
