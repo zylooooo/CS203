@@ -26,7 +26,7 @@ function MainHomePage() {
         <div className="flex flex-col justify-center w-full mt-10">
             <div className='relative'>
                 <img
-                    src="/view-tennis-racket-hitting-ball.jpg"
+                    src="../src/assets/view-tennis-racket-hitting-ball.jpg"
                     alt="Tennis Racket Hitting Ball"
                     className="w-full max-h-[500px] object-cover rounded-xl"
                 />
