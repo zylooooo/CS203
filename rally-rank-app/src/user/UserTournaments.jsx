@@ -20,7 +20,7 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
             {buttons.map((tournamentButtonLabel, index) => (
                 <button
                     key = {index}
-                    className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'text-gray-700 hover:text-blue-500 hover:text-red-500'}`}
+                    className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'hover:text-black-700'}`}
                     onClick = {() => handleTournamentButtonClick(index)}
                 >
                     {tournamentButtonLabel}
@@ -60,11 +60,10 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
             {tournamentType.map((tournament, index) => (
                 <div
                     key = {index}
-                    className = "flex p-4 bg-white shadow-xl cursor-pointer hover:shadow-lg transition w-full rounded-[12px]"
-                    style = {{ backgroundColor: "#fffcf2" }}
+                    className = "flex p-5 card-background border2 shadow-md cursor-pointer hover:shadow-xl transition-all w-full rounded-[12px]"
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
-                    <div className = "flex-1 pr-4">
+                    <div className = "flex-1 pr-4 py-1">
                         <h3 className = "text-xl font-bold mb-2"> {tournament.tournamentName} </h3>
                         <div className = "flex items-center mb-2">
                             <p> Organiser: {tournament.createdBy} </p>
@@ -83,7 +82,7 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
                                 <p className = "mb-2"> {tournament.remarks} </p>
                             </>
                         )}
-                        <div className = "absolute bottom-2 right-2 text-right">
+                        <div className = "absolute bottom-0 right-2 text-right">
                             <p
                                 style = {{
                                     color: tournament.playerCapacity - tournament.playersPool.length <= 10

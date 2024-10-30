@@ -66,7 +66,7 @@ const LeaderboardCard = ({ leaderboardPlayer, rank }) => {
 
     return (
         <div
-            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-105 w-full h-2/5" style = {{ backgroundColor: "white"}}
+            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-[1.02] hover:shadow-xl w-full h-2/5" style = {{ backgroundColor: "white"}}
             onClick = {handleLeaderboardPlayerCardClick}
         >
             <div>
@@ -356,15 +356,15 @@ function UserHome() {
     }, [successMessage]);
 
     return (
-        <div className = {`home-container main-container h-screen-minus-navbar transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
+        <div className = {`home-container main-container h-main transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             {/* ROW CONTAINER: JOIN TOURNAMENT, MY SCHEDULED TOURNAMENTS */}
-            <div className = "row-container flex flex-col w-3/5 gap-8">
+            <div className = "row-container flex flex-col w-3/5 gap-8 p-6">
                 {/* JOIN TOURNAMENT */}
-                <div className = "join-tournament-container bg-white p-6 gap-2 h-1/5">
+                <div className = "join-tournament-container gap-2 h-1/5">
                     <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> Join A Tournament Today! </h2>
                     <button
-                        className = "join-tournament-button bg-green-600 text-xl font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full h-3/5"
+                        className = "join-tournament-button bg-green-600 text-xl font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full h-2/5"
                         onClick = {handleJoinTournament}
                         style = {{ backgroundColor: "white", color: "#343434" }}
                     >
@@ -375,16 +375,16 @@ function UserHome() {
                 {/* MY SCHEDULED TOURNAMENTS */}
                 <div className = "my-scheduled-tournaments-container h-2/3">
                     <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> My Scheduled Tournaments </h2>
-                    <div className = "p-6 bg-blu-500 text-white rounded-[20px] shadow-lg h-5/6 overflow-auto" style = {{ backgroundColor: "white" }}>
+                    <div className = "p-6 text-white rounded-[20px] shadow-lg h-5/6 overflow-auto" style = {{ backgroundColor: "white" }}>
                         <ScheduledTournamentCard scheduledTournaments = {scheduledTournaments} />
                     </div>
                 </div>
             </div>
             {/* COLUMN CONTAINER: LEADERBOARD, AVAILABILITY */}
-            <div className = "column-container gap-2 w-[450px]">
+            <div className = "column-container gap-2 w-[450px] p-6">
                 {/* AVAILABILITY */}
                 <div className = "availability-container gap-2 p-3 mb-10">
-                    <div className = "availability-box bg-gray-100 border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
+                    <div className = "availability-box border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
                         <p className = "text-lg font-bold" style = {{ color: "#343434" }}> Are you available for tournaments? </p>
                         <div className = "mt-2 flex items-center">
                             <label className = "relative inline-flex items-center cursor-pointer">
@@ -411,7 +411,7 @@ function UserHome() {
                         activeButton = {activeButton}
                         setActiveButton = {setActiveButton}
                     />
-                    <div className = " shadow-lg leaderboard-box p-5 gap-5 bg-gray-100 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]" style = {{ backgroundColor: "white" }}>
+                    <div className = " shadow-lg leaderboard-box p-5 gap-5 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]" style = {{ backgroundColor: "white" }}>
                         {view === "Top" && defaultLeaderboardPlayers.length > 0 ? (
                             defaultLeaderboardPlayers.map((leaderboardPlayer, index) => (
                                 <LeaderboardCard key = {index} leaderboardPlayer = {leaderboardPlayer} rank = {index + 1} />
