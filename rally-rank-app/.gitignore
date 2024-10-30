@@ -24,3 +24,8 @@ node_modules/*
 *.sw?
 .env
 
+# Firebase
+.firebase/
+firebase-debug.log
+src/firebase/firebase.js
+.env.local
