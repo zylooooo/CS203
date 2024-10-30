@@ -18,9 +18,11 @@ const AdministratorTournamentDetails = () => {
 
   const [tournamentDetails, setTournamentDetails] = useState(null);
 
-  const [fixtures, setFixtures] = useState(null);
+  const [fixtures, setFixtures] = useState({});
 
   // const [tournamentStatus, setTournamentStatus] = useState("");
+
+
 
   const handleBackButtonClick = () => {
     navigate(fromPage);
@@ -120,8 +122,8 @@ const AdministratorTournamentDetails = () => {
             });
 
             setFixtures(roundsData);
-            console.log(roundsData);
             alert("Brackets generated successfully! View the fixtures below.");
+            return roundsData;
           }
         } else {
           alert(
@@ -138,13 +140,17 @@ const AdministratorTournamentDetails = () => {
     }
   }
 
-  const handleGenerateBracketsClick = () => {
-    generateBrackets();
-  };
+  const handleGenerateBracketsClick = async () => {
+    const fixturesgen = await generateBrackets(); // Wait for generateBrackets to complete
+    console.log("fitures details torn: ", fixturesgen);
+    navigate("/administrator-tournament-fixtures", { state: { fixtures: fixturesgen } });
 
-  const handleShowFixturesClick = () => {
-    navigate("/administrator-tournament-fixtures", { state: fixtures });
-  };
+    
+};
+
+//   const handleShowFixturesClick = () => {
+//     navigate("/administrator-tournament-fixtures", { state: { fixtures } });
+//   };
 
   return (
     <div className="tournament-card-template main-container flex">
@@ -280,7 +286,7 @@ const AdministratorTournamentDetails = () => {
               Generate Brackets
             </button>
 
-            <button
+            {/* <button
               onClick={handleShowFixturesClick}
               style={{
                 backgroundColor: "#56AE57",
@@ -289,7 +295,7 @@ const AdministratorTournamentDetails = () => {
               className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Show Fixtures
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

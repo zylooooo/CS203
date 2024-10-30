@@ -1,18 +1,20 @@
 // Package Imports
-import axios from "axios";
-import React from "react";
+// import axios from "axios";
+import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { Bracket, Seed, SeedItem, SeedTeam } from "react-brackets";
 
+// Create a custom seed bracket
 const CustomSeed = ({ seed, breakpoint }) => {
     return (
-        <Seed mobileBreakpoint = {breakpoint} style = {{ fontSize: 12 }}>
-            <SeedItem style = {{ backgroundColor: "white", padding: "10px", borderRadius: "12px" }}>
+        <Seed mobileBreakpoint = {breakpoint} style = {{ fontSize: "12px" }}>
+            <SeedItem style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px" }}>
                 <div>
-                    <SeedTeam style = {{ color: "black" }}>
+                    <SeedTeam style = {{ color: "#444444", fontWeight: "700", fontSize: "14px"}}>
                         {seed.teams[0]?.name || "TBD"}
                     </SeedTeam>
                     <hr style = {{ margin: "5px 0", border: "1px solid #CCCCCC" }} />
-                    <SeedTeam style = {{ color: "green" }}>
+                    <SeedTeam style = {{ color: "#222222", fontWeight: "700", fontSize: "14px"}}>
                         {seed.teams[1]?.name || "TBD"}
                     </SeedTeam>
                 </div>
@@ -21,145 +23,104 @@ const CustomSeed = ({ seed, breakpoint }) => {
     );
 };
 
-// Function to calculate the number of rounds (given the number of players)
-const calculateRounds = (playerPool) => {
-    return Math.ceil(Math.log2(playerPool.length));
-}
-
-// Function to generate the round data (seeds and teams) for the tournaments
-const generateRounds = (playerPool) => {
-    const numberOfRounds = calculateRounds(playerPool);
+const generateRounds = (currentFixtures) => {
     const rounds = [];
-
-    let matchesPerRound = playerPool.length / 2;
-    for (let roundIndex = 0; roundIndex < numberOfRounds; roundIndex++) {
+    for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
         const seeds = [];
+        const playersInRound = currentFixtures[roundIndex]?.players || [];
+        const matchesPerRound = Math.floor(playersInRound.length / 2);
+        // Determine round title based on the number of players
+        let roundTitle = `Round ${roundIndex + 1}`;
+        if (playersInRound.length === 8) {
+            roundTitle = "Quarter Finals";
+        } else if (playersInRound.length === 4) {
+            roundTitle = "Semi Finals";
+        } else if (playersInRound.length === 2) {
+            roundTitle = "Finals";
+        }
         for (let i = 0; i < matchesPerRound; i++) {
             seeds.push({
                 id: i + 1,
                 date: new Date().toDateString(),
                 teams: [
                     {
-                        name: playerPool[i * 2] || "TBD"
+                        name: playersInRound[i * 2] || "TBD",
                     },
                     {
-                        name: playerPool[i * 2 + 1] || "TBD"
+                        name: playersInRound[i * 2 + 1] || "TBD",
                     },
                 ],
             });
         }
         rounds.push({
-            title: `Round ${roundIndex + 1}`,
+            title: roundTitle,
             seeds: seeds,
         });
-        matchesPerRound = Math.ceil(matchesPerRound / 2);
     }
     return rounds;
 };
 
+const PreliminaryPlayersTable = ({ preliminaryPlayers }) => {
+    return (
+        <div className = "preliminary-matches p-5 h-1/2 overflow-y-auto">
+            <h2 className = "text-2xl font-bold"> Preliminary Matches </h2>
+            <div className = "mt-4 flex flex-col gap-4">
+                {preliminaryPlayers.length > 0 && preliminaryPlayers.map((player, index) => {
+                    if (index % 2 === 0) {
+                        return (
+                            <div key = {index} className = "match-card flex items-center gap-4 mb-4">
+                                <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
+                                    <span className = "font-semibold text-lg"> Player 1: </span>
+                                    <span className = "text-gray-700"> {player} </span>
+                                </div>
+                                <span className = "text-lg font-semibold"> VS </span>
+                                <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
+                                    <span className = "font-semibold text-lg"> Player 2: </span>
+                                    <span className = "block text-gray-700">
+                                        {preliminaryPlayers[index + 1] || "TBD"}
+                                    </span>
+                                </div>
+                                <div className = "winner-card text-sm font-semibold w-1/4 ml-5">
+                                    <span className = "text-gray-600 text-lg font-semibold"> Match Winner: </span>
+                                    <span className = "text-green-600">
+                                        TBD {/* Replace with API Call for match winner */}
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    }
+                    return null; // Skip odd indexes
+                })}
+            </div>
+        </div>
+    );
+};
+
+
 function AdministratorFixtures() {
-    // Replace with API Call for playerPool playing in the tournament
-    const playerPool = [
-        "Player 1",
-        "Player 2",
-        "Player 3",
-        "Player 4",
-        "Player 5",
-        "Player 6",
-        "Player 7",
-        "Player 8",
-        "Player 9",
-        "Player 10",
-        "Player 11",
-        "Player 12",
-        "Player 13",
-        "Player 14",
-        "Player 15",
-        "Player 16",
-    ]
-    
+    const location = useLocation();
+    // To be replaced with API call instead, to get the fixtures directly from the API Call
+    const currentFixtures = location.state?.fixtures;
+    const preliminaryPlayers = currentFixtures?.[0]?.players || [];
+    const mainTournamentRounds = generateRounds(currentFixtures.slice(1));                             // Main tournament rounds start at currentFixtures[1]
+    const [tournamentFixtures, setTournamentFixtures] = useState(currentFixtures || {});
 
-    const rounds = generateRounds(playerPool);
-    const [fixtures, setFixtures] = useState({});
-
-    async function generateBrackets() {
-        try {
-            const adminData = JSON.parse(localStorage.getItem('adminData'));
-            if (!adminData || !adminData.jwtToken) {
-                console.error('No JWT token found');
-                return;
-            }
-    
-            const response = await axios.put(
-                `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
-                {},
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`,
-                    }
-                },
-            );
-    
-            console.log(response.data);
-            if (response.status === 200) {
-    
-                if (response.status === 200) {
-                    if (response.data.error !== undefined) {
-                        alert(response.data.error);
-                    } else {
-                        // Transform the response data into arrays of players by round
-                        const roundsData = response.data.rounds.map(round => {
-                            // Flatten all players from all matches in this round into a single array
-                            const playersInRound = round.matches.reduce((players, match) => {
-                                return [...players, ...match.players];
-                            }, []);
-                            
-                            // console.log("playersInRound", playersInRound);
-                            return {
-                                roundNumber: round.roundnumber,
-                                players: playersInRound
-                            };
-                        });
-        
-                        setFixtures(roundsData);
-                        alert("Brackets generated successfully! View the fixtures below.");
-                    }
-                } else {
-                    alert("There was an error generating the brackets. Please try again.");
-                }
-    
-            } else {
-                alert("There was an error generating the brackets. Please try again.");
-            }
-    
-        } catch (error) {
-            // WIP: EDIT DISPLAY ERROR MESSAGE
-            alert(error.response.data.error);
-            console.error('Error generating brackets:', error.response.data.error);
+    useEffect(() => {
+        if (currentFixtures) {
+            setTournamentFixtures(currentFixtures);
         }
-    }
-
+    }, [currentFixtures]);
 
     return (
-        <div className = "flex flex-col gap-8">
+        <div className = "administrator-fixtures flex flex-col gap-8">
             <h2 className = "text-3xl font-bold mt-10"> Tournament Fixtures </h2>
-
-            <button 
-                className = "fixed top-32 right-10 bg-green-500 text-white font-bold py-2 px-4 rounded shadow"
-            >
-                Generate Bracket
-            </button>
-            
-            <div className= "preliminary-match-table border p-5 h-[300px]">
-                <h2 className = "text-2xl font-bold"> Preliminary Table </h2>
-            </div>
+            <PreliminaryPlayersTable preliminaryPlayers = {preliminaryPlayers} />
             <div className = "main-tournament-brackets mb-20">
-                <h2 className = "text-2xl font-bold mb-6"> Main Tournament </h2>
+                <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
                 <Bracket
-                    rounds = {rounds}
+                    rounds = {mainTournamentRounds}
                     roundTitleComponent = {(title) => (
-                        <div style = {{ textAlign: "center", color: "green", fontWeight: "bold" }}>
+                        <div style = {{ textAlign: "center", color: "green", fontWeight: "600", fontSize: "18px" }}>
                             {title}
                         </div>
                     )}

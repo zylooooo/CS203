@@ -29,6 +29,7 @@ import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdministratorProfile from "./administrator/AdministratorProfile";
+import AdministratorFixtures from "./administrator/AdministratorFixtures";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
 // import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
@@ -36,7 +37,7 @@ import AdministratorTournamentHistory from "./administrator/AdministratorTournam
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
-import AdministratorFixtures from "./administrator/AdministratorFixtures";
+
 
 // Authentication Imports
 import AdminRoute from "./authentication/AdminRoute";
