@@ -101,7 +101,7 @@ function AdminVerify() {
         <>
             {!isModalOpen && (
                 <div
-                    className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
+                    className="bg-cover bg-center h-main w-screen flex flex-col justify-center items-center"
                     style={{ backgroundImage: `url(${background})` }}
                 >
                     <div className="card rounded-none bg-primary-color-white border-none items-center m-8">

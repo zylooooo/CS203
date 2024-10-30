@@ -72,8 +72,8 @@ function AdministratorLogin() {
   return (
     <>
       <div
-        className="bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col justify-center items-center"
-        style={{ backgroundImage: `url(${loginBackground})` }}
+          className="bg-cover bg-center flex flex-col justify-center items-center h-main w-screen overflow-hidden"
+          style={{ backgroundImage: `url(${loginBackground})`, objectFit: 'cover', backgroundAttachment: 'fixed' }}
       >
         {/* TESTING CODE REMOVE LATER
         <button
@@ -87,7 +87,7 @@ function AdministratorLogin() {
           Manual Admin Login
         </button> */}
         <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
-          <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
+          <img className="h-[60px] w-full mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
             <form
               className="card px-2 py-4 border-none shadow-none bg-primary-color-white"
               onSubmit={handleSubmit(onSubmit)}

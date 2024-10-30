@@ -123,7 +123,7 @@ function AdministratorSignUp() {
     return (
         <>
             <div
-                className = "bg-cover bg-center h-screen-minus-navbar w-screen flex flex-col items-center"
+                className = "bg-cover bg-center h-main w-screen flex flex-col items-center"
                 style={{ backgroundImage: `url(${signupPicture})` }}
             >
                 <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
