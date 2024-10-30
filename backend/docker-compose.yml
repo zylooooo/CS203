@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: .
+    image: rally-rank-backend 
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    networks:
+      - rally-rank-network
+
+networks:
+  rally-rank-network:
+    driver: bridge
