@@ -173,7 +173,7 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-3/5 gap-4 shadow-xl p-8 rounded-[12px]" style = {{ backgroundColor: "#fffefa" }}>
+            <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px]" style = {{ backgroundColor: "#fffefa" }}>
 
                 <div className = "flex justify-between items-center mb-4">
                     {/* BACK BUTTON */}

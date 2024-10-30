@@ -109,8 +109,8 @@ function UserProfile() {
     }, []);
 
     return (
-        <div className = "min-h-screen flex flex-col items-center w-full">
-            <div className = "container w-2/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
+        <div className = "h-main flex flex-col items-center w-full">
+            <div className = "container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
                 <button
                     className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-5 mt-5"
                     onClick = {handleEditProfileClick}
@@ -172,7 +172,7 @@ function UserProfile() {
                 )}
             </div>
 
-            <div className = "strike-report container w-2/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
+            <div className = "strike-report container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
                 {strikeReports && strikeReports.length > 0 ? (
                     <div className = "p-4 rounded-lg">
                         <h3 className = "font-semibold"> Strike Report: </h3>
@@ -201,7 +201,7 @@ function UserProfile() {
                     )}
             </div>
 
-            <div className = "participated-tournaments-container w-2/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
+            <div className = "participated-tournaments-container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
                 <>
                     <div className = "p-4 rounded-lg">
                         <h3 className = "font-semibold"> My Participated Tournaments: </h3>

@@ -1,4 +1,5 @@
 // Package Imports
+import axios from "axios";
 import React from "react";
 import { Bracket, Seed, SeedItem, SeedTeam } from "react-brackets";
 
@@ -76,10 +77,69 @@ function AdministratorFixtures() {
         "Player 15",
         "Player 16",
     ]
+    
 
     const rounds = generateRounds(playerPool);
+    const [fixtures, setFixtures] = useState({});
 
-    // Need API Call for players playing in the preliminary matches
+    async function generateBrackets() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            if (!adminData || !adminData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+    
+            const response = await axios.put(
+                `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    }
+                },
+            );
+    
+            console.log(response.data);
+            if (response.status === 200) {
+    
+                if (response.status === 200) {
+                    if (response.data.error !== undefined) {
+                        alert(response.data.error);
+                    } else {
+                        // Transform the response data into arrays of players by round
+                        const roundsData = response.data.rounds.map(round => {
+                            // Flatten all players from all matches in this round into a single array
+                            const playersInRound = round.matches.reduce((players, match) => {
+                                return [...players, ...match.players];
+                            }, []);
+                            
+                            // console.log("playersInRound", playersInRound);
+                            return {
+                                roundNumber: round.roundnumber,
+                                players: playersInRound
+                            };
+                        });
+        
+                        setFixtures(roundsData);
+                        alert("Brackets generated successfully! View the fixtures below.");
+                    }
+                } else {
+                    alert("There was an error generating the brackets. Please try again.");
+                }
+    
+            } else {
+                alert("There was an error generating the brackets. Please try again.");
+            }
+    
+        } catch (error) {
+            // WIP: EDIT DISPLAY ERROR MESSAGE
+            alert(error.response.data.error);
+            console.error('Error generating brackets:', error.response.data.error);
+        }
+    }
+
 
     return (
         <div className = "flex flex-col gap-8">
