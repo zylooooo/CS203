@@ -15,6 +15,10 @@ function UserEditProfile() {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
+    const [isUsernameChanged, setIsUsernameChanged] = useState(false);
+    const [isEmailChanged, setIsEmailChanged] = useState(false);
+    const [originalEmail, setOriginalEmail] = useState("");
+    const [originalUsername, setOriginalUsername] = useState("");
     const { register, handleSubmit, setValue } = useForm();
     const [alertMessage, setAlertMessage] = useState("");
     const [originalUserData, setOriginalUserData] = useState({});
@@ -42,18 +46,22 @@ function UserEditProfile() {
                 withCredentials: true
             });
             
-            if (response.data.accountNameAvailable && response.data.emailAvailable) {
-                setAlertMessage("Both available");
+            if ((response.data.accountNameAvailable && response.data.emailAvailable) ||
+                (!isUsernameChanged && response.data.emailAvailable) ||
+                (!isEmailChanged && response.data.accountNameAvailable) ||
+                (!isUsernameChanged && !isEmailChanged)) {
+                return true;
             } else {
-                if (!response.data.accountNameAvailable && !response.data.emailAvailable) {
+                if (isUsernameChanged && isEmailChanged && !response.data.accountNameAvailable && !response.data.emailAvailable) {
                     setAlertMessage("Both username and email address entered has already been taken.");
                 }
-                else if (!response.data.accountNameAvailablee) {
+                else if (isUsernameChanged && !response.data.accountNameAvailable) {
                     setAlertMessage("Username taken. Enter another one.");
                 }
-                else if (!response.data.emailAvailable) {
+                else if (isEmailChanged && !response.data.emailAvailable) {
                     setAlertMessage("Email address already in use. Please enter another one.");
                 }
+                return false;
             }
         } catch (error) {
             alert("catch error");
@@ -83,6 +91,8 @@ function UserEditProfile() {
             );
             if (response.status === 200) {
                 setOriginalUserData(response.data);
+                setOriginalEmail(response.data.email);
+                setOriginalUsername(response.data.username);
                 for (const key in response.data) {
                     if (key !== "password") {
                         setValue(key, response.data[key]);
@@ -108,6 +118,7 @@ function UserEditProfile() {
                 console.error("No JWT Token found!");
                 return;
             }
+            
             const response = await axios.put(
                 "http://localhost:8080/users/update",
                 formData,
@@ -118,9 +129,17 @@ function UserEditProfile() {
                     },
                 }
             );
-            return response.data;
+
+            if (response.status === 200) {
+                userData.username = formData.username;
+                localStorage.setItem("userData", JSON.stringify(userData));     // Updates the new availability in the userData to be passed around
+                return response.data;
+            }
+
+            // return response.data;
+
         } catch (error) {
-            console.error("Error updating user profile: ", error);
+            console.error("Error updating user profile: ", error.response.data.error);
             const errorMessage = error.response?.data?.error || "An error occurred while updating the profile.";
             setError(errorMessage);
         }
@@ -130,25 +149,41 @@ function UserEditProfile() {
 
     const onSubmit = async (formData) => {
         setAlertMessage("");
-        await checkCredentialsAvailablity(formData);
-        if (alertMessage) {
-            return;
+        const firstResponse = await checkCredentialsAvailablity(formData);
+
+        // if new username and/or new email are available, allow user to update profile
+        if (firstResponse) {
+            const updatedData = {
+                ...formData,
+                password: password || originalUserData.password,
+            };
+            
+            await updateUserProfile(updatedData);
+            setIsEmailChanged(false);
+            setIsUsernameChanged(false);
+            navigate("/user-profile");
+
         }
-        const updatedData = {
-            ...formData,
-            password: password || originalUserData.password,
-        };
-        await updateUserProfile(updatedData);
-        // Success message
-        navigate("/user-profile");
+        
     };
     
     const handleChange = () => {
         setIsChanged(true);
     }
 
+    const handleUsernameChange = () => {
+        setIsChanged(true);
+        // if (originalUsername !== )
+        setIsUsernameChanged(true);
+    }
+
+    const handleEmailChange = () => {
+        setIsChanged(true);
+        setIsEmailChanged(true);
+    }
+
     return (
-        <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-2/5 mx-auto">
+        <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-3/5 mx-auto">
             <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
             <div className="flex items-center gap-4">
                 <FontAwesomeIcon
@@ -188,7 +223,8 @@ function UserEditProfile() {
                             id = "username"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("username", { onChange: handleChange })}
+                            {...register("username", { onChange: handleUsernameChange })}
+                            // {...register("username", { onChange: handleChange })}
                         />
                     </div>
                     {/* PASSWORD*/}
@@ -201,7 +237,8 @@ function UserEditProfile() {
                             id = "password"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) =>{ setPassword(e.target.value); handleChange(); }}
+                            // {...register("password", { onChange: handleChange })}
                         />
                     </div>
                 </div>
@@ -252,7 +289,8 @@ function UserEditProfile() {
                             id = "email"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("email", { onChange: handleChange })}
+                            {...register("email", { onChange: handleEmailChange })}
+                            // {...register("email", { onChange: handleChange })}
                         />
                     </div>
                     {/* PHONE NUMBER */}
