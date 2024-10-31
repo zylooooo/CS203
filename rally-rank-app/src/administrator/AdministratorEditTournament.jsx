@@ -21,7 +21,7 @@ function AdministratorEditTournament() {
       if (!adminData || !adminData.jwtToken) {
         console.error("No JWT token found");
         return;
-      }
+      } 
       console.log("JWT token:", adminData.jwtToken);
       const response = await axios.delete(
         `http://localhost:8080/admins/tournament/${tournamentName}`,
