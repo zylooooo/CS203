@@ -238,7 +238,7 @@ public class UsersTournamentsController {
         }
     }
 
-    @GetMapping("/{tournamentName}/fixture")
+    @GetMapping("/{tournamentName}/bracket")
     public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
         try {
             Map<String, Object> tournamentBracket = bracketService.viewTournamentBracket(tournamentName);

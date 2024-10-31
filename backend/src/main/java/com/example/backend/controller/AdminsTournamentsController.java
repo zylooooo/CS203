@@ -411,7 +411,7 @@ public class AdminsTournamentsController {
     }
 
     // Function to view the bracket of a tournament
-    @GetMapping("/{tournamentName}/fixture")
+    @GetMapping("/{tournamentName}/bracket")
     public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
         try {
             Map<String, Object> tournamentBracket = bracketService.viewTournamentBracket(tournamentName);
