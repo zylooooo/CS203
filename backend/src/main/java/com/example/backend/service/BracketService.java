@@ -59,7 +59,7 @@ public class BracketService {
                 existingTournament.getBracket().setRounds(new ArrayList<>());
             }
 
-            // Check if all of the matches in the previous round are compelted
+            // Check if all of the matches in the previous round are completed
             if (existingTournament.getBracket().getRounds().size() > 0) {
                 Tournament.Round previousRound = existingTournament.getBracket().getRounds().get(existingTournament.getBracket().getRounds().size() - 1);
                 List<Match> previousRoundMatches = matchRepository.findAllById(previousRound.getMatches());
@@ -83,22 +83,11 @@ public class BracketService {
             existingTournament.setUpdatedAt(LocalDateTime.now());
             
             // Save the updated tournament
-            Tournament savedTournament = tournamentRepository.save(existingTournament);
+            tournamentRepository.save(existingTournament);
 
-            // Fetch all of the matches grouped by the round
-            List<Map<String, Object>> roundsWithMatches = new ArrayList<>();
-            for (int i = 0; i < savedTournament.getBracket().getRounds().size(); i++) {
-                Tournament.Round round = savedTournament.getBracket().getRounds().get(i);
-                List<Match> matchesInRound = matchRepository.findAllById(round.getMatches());
-
-                Map<String, Object> roundMap = new HashMap<>();
-                roundMap.put("roundNumber", i);
-                roundMap.put("matches", matchesInRound);
-                roundsWithMatches.add(roundMap);
-            }
-
-            response.put("rounds", roundsWithMatches);
-            return response;
+            // Use viewTournamentBracket to get the formatted response
+            return viewTournamentBracket(tournamentName);
+            
         } catch (UserNotFoundException e) {
             logger.error("User not found: {}", e.getMessage(), e);
             error.put("error", e.getMessage());
@@ -341,5 +330,50 @@ public class BracketService {
 
         tournament.setEndDate(LocalDate.now());
         return tournamentRepository.save(tournament);
+    }
+
+    // Method to view the bracket of a tournament
+    public Map<String, Object> viewTournamentBracket(String tournamentName) {
+        Map<String, Object> response = new HashMap<>();
+        Map<String, String> error = new HashMap<>();
+        try {
+            Tournament tournament = tournamentRepository.findByTournamentName(tournamentName)
+                .orElseThrow(() -> new TournamentNotFoundException(tournamentName));
+            
+            // Get the bracket and rounds of the tournament, handling null values
+            Tournament.Bracket bracket = tournament.getBracket();
+            if (bracket == null) {
+                response.put("error", "Tournament's bracket is not formed yet!");
+                return response;
+            }
+            List<Tournament.Round> rounds = bracket.getRounds();
+            if (rounds == null || rounds.isEmpty()) {
+                response.put("error", "Tournament's bracket is not formed yet!");
+                return response;
+            }
+
+            // For each of the round, fetch all of the matches and add them to the response
+            List<Map<String, Object>> roundsWithMatches = new ArrayList<>();
+            for (int i = 0; i < rounds.size(); i++) {
+                Tournament.Round round = rounds.get(i);
+                List<Match> matches = matchRepository.findAllById(round.getMatches());
+                Map<String, Object> roundMap = new HashMap<>();
+                roundMap.put("roundNumber", i);
+                roundMap.put("matches", matches);
+                roundsWithMatches.add(roundMap);
+            }
+
+            response.put("rounds", roundsWithMatches);
+            return response;
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", e.getMessage(), e);
+            error.put("error", e.getMessage());
+            response.put("error", error);
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while viewing the tournament's bracket: {}", e.getMessage(), e);
+            error.put("error", "An unexpected error occurred while viewing the tournament's bracket!");
+            response.put("error", error);
+        }
+        return response;
     }
 }

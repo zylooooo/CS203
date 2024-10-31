@@ -410,6 +410,23 @@ public class AdminsTournamentsController {
         }
     }
 
+    // Function to view the bracket of a tournament
+    @GetMapping("/{tournamentName}/bracket")
+    public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> tournamentBracket = bracketService.viewTournamentBracket(tournamentName);
+            return ResponseEntity.ok(tournamentBracket);
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while viewing the tournament's bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while viewing the tournament's bracket!"));
+        }
+    }
+
     /**
      * Updates the match results.
      * 
