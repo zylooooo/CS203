@@ -1,0 +1,33 @@
+export declare type UpdatePayload<TFieldValues extends Record<string, any> = Record<string, any>> = {
+    id: string;
+    data: {
+        formValues: TFieldValues;
+        formState: {
+            errors: Record<keyof TFieldValues, {
+                type?: string;
+                message?: string;
+            }>;
+            dirtyFields: Record<keyof TFieldValues, boolean>;
+            touchedFields: Record<keyof TFieldValues, boolean>;
+            nativeFields: Record<keyof TFieldValues, boolean>;
+            submitCount: number;
+            isSubmitted: boolean;
+            isSubmitting: boolean;
+            isSubmitSuccessful: boolean;
+            isValid: boolean;
+            isValidating: boolean;
+            isDirty: boolean;
+        };
+    };
+};
+declare type InitMessageData = {
+    source: string;
+    type: 'INIT' | 'WELCOME';
+};
+declare type UpdateMessageData<TFieldValues extends Record<string, any> = Record<string, any>> = {
+    source: string;
+    type: 'UPDATE';
+    payload: UpdatePayload<TFieldValues>;
+};
+export declare type MessageData<TFieldValues extends Record<string, any> = Record<string, any>> = InitMessageData | UpdateMessageData<TFieldValues>;
+export {};
