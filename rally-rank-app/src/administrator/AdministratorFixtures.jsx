@@ -1,5 +1,5 @@
 // Package Imports
-// import axios from "axios";
+import axios from "axios";
 import { useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Bracket, Seed, SeedItem, SeedTeam } from "react-brackets";
@@ -60,33 +60,38 @@ const generateRounds = (currentFixtures) => {
     return rounds;
 };
 
-const PreliminaryPlayersTable = ({ preliminaryPlayers }) => {
+const PreliminaryPlayersTable = ({ preliminaryMatches, handleMatchClick }) => {
     return (
         <div className = "preliminary-matches p-5 h-1/2 overflow-y-auto">
             <h2 className = "text-2xl font-bold"> Preliminary Matches </h2>
             <div className = "mt-4 flex flex-col gap-4">
-                {preliminaryPlayers.length > 0 && preliminaryPlayers.map((player, index) => {
+                {preliminaryMatches.length > 0 && preliminaryMatches.map((match, index) => {
                     if (index % 2 === 0) {
                         return (
+                            <button
+                            type = "button"
+                            onClick = { handleMatchClick }
+                            >
                             <div key = {index} className = "match-card flex items-center gap-4 mb-4">
                                 <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
                                     <span className = "font-semibold text-lg"> Player 1: </span>
-                                    <span className = "text-gray-700"> {player} </span>
+                                    <span className = "text-gray-700"> {match.players[0]} </span>
                                 </div>
                                 <span className = "text-lg font-semibold"> VS </span>
                                 <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
                                     <span className = "font-semibold text-lg"> Player 2: </span>
                                     <span className = "block text-gray-700">
-                                        {preliminaryPlayers[index + 1] || "TBD"}
+                                        {match.players[1] || "TBD"}
                                     </span>
                                 </div>
                                 <div className = "winner-card text-sm font-semibold w-1/4 ml-5">
                                     <span className = "text-gray-600 text-lg font-semibold"> Match Winner: </span>
                                     <span className = "text-green-600">
-                                        TBD {/* Replace with API Call for match winner */}
+                                        {match.matchWinner || "TBD"} {/* Replace with API Call for match winner */}
                                     </span>
                                 </div>
                             </div>
+                            </button>
                         );
                     }
                     return null; // Skip odd indexes
@@ -100,22 +105,83 @@ const PreliminaryPlayersTable = ({ preliminaryPlayers }) => {
 function AdministratorFixtures() {
     const location = useLocation();
     // To be replaced with API call instead, to get the fixtures directly from the API Call
-    const currentFixtures = location.state?.fixtures;
-    const preliminaryPlayers = currentFixtures?.[0]?.players || [];
-    const mainTournamentRounds = generateRounds(currentFixtures.slice(1));                             // Main tournament rounds start at currentFixtures[1]
-    const [tournamentFixtures, setTournamentFixtures] = useState(currentFixtures || {});
+    // const currentFixtures = location.state?.fixtures;
+    // const preliminaryPlayers = currentFixtures?.[0]?.players || [];
+    // const mainTournamentRounds = generateRounds(currentFixtures.slice(1));                             // Main tournament rounds start at currentFixtures[1]
+    
+    const tournamentName = location.state?.tournamentName;
+    const [tournamentBracket, setTournamentBracket] = useState({});
+
+    // constant to hold preliminary round matches
+    const [preliminaryMatches, setPreliminaryMatches] = useState([]);
+
+    // constant to hold main tournament matches (rounds[1] onwards in Bracket object)
+    const [mainMatches, setMainMatches] = useState([]);
+
+    const handleMatchClick = () => {
+        // edit to render update match timing/results card
+        console.log("Match Clicked!");
+    }
+
+
+
+    // API Call to get all the matches in the tournament
+    async function getTournamentBracket() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
+            if (!adminData || !adminData.jwtToken) {
+                console.error("No JWT token found");
+                return;
+            }
+
+            const response = await axios.get(
+                `http://localhost:8080/admins/tournaments/${tournamentName}/bracket`,
+                {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${adminData.jwtToken}`,
+                },
+                }
+            );
+
+            // make error message an alert
+            if (response.data.error !== undefined) {
+                console.error("error: ", response.data);
+            }
+
+            setTournamentBracket(response.data);
+
+            if (response.data.rounds[0].matches.length > 0) {
+                setPreliminaryMatches(response.data.rounds[0].matches);
+            }
+
+            if (response.data.rounds.length > 1) {
+                setMainMatches(response.data.rounds.slice(1));
+            }
+
+            console.log("Tournament Bracket: ", response.data);
+            console.log("\nPreliminary Matches: ", response.data.rounds[0].matches);
+            console.log("\nMain Matches: ", response.data.rounds.slice(1));
+
+            return response;
+
+        } catch (error) {
+            alert("Error! ", error.response.data.error);
+            console.error("Error fetching tournament bracket: ", error.response.data.error);
+        }
+    }
 
     useEffect(() => {
-        if (currentFixtures) {
-            setTournamentFixtures(currentFixtures);
-        }
-    }, [currentFixtures]);
+        getTournamentBracket();
+    }, []);
 
     return (
         <div className = "administrator-fixtures flex flex-col gap-8">
             <h2 className = "text-3xl font-bold mt-10"> Tournament Fixtures </h2>
-            <PreliminaryPlayersTable preliminaryPlayers = {preliminaryPlayers} />
-            <div className = "main-tournament-brackets mb-20">
+            { preliminaryMatches.length > 0 && 
+                <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} /> 
+            }
+            {/* <div className = "main-tournament-brackets mb-20">
                 <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
                 <Bracket
                     rounds = {mainTournamentRounds}
@@ -126,7 +192,7 @@ function AdministratorFixtures() {
                     )}
                     renderSeedComponent = {CustomSeed}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };

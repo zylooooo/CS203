@@ -20,10 +20,6 @@ const AdministratorTournamentDetails = () => {
 
   const [fixtures, setFixtures] = useState({});
 
-  // const [tournamentStatus, setTournamentStatus] = useState("");
-
-
-
   const handleBackButtonClick = () => {
     navigate(fromPage);
   };
@@ -82,6 +78,64 @@ const AdministratorTournamentDetails = () => {
   }
 
   // API Call: Generate Brackets
+  // async function generateBrackets() {
+  //   try {
+  //     const adminData = JSON.parse(localStorage.getItem("adminData"));
+  //     if (!adminData || !adminData.jwtToken) {
+  //       console.error("No JWT token found");
+  //       return;
+  //     }
+
+  //     const response = await axios.put(
+  //       `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+  //       {},
+  //       {
+  //         withCredentials: true,
+  //         headers: {
+  //           Authorization: `Bearer ${adminData.jwtToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log(response.data);
+  //     if (response.status === 200) {
+  //       if (response.status === 200) {
+  //         if (response.data.error !== undefined) {
+  //           alert(response.data.error);
+  //         } else {
+  //           // Transform the response data into arrays of players by round
+  //           const roundsData = response.data.rounds.map((round) => {
+  //             // Flatten all players from all matches in this round into a single array
+  //             const playersInRound = round.matches.reduce((players, match) => {
+  //               return [...players, ...match.players];
+  //             }, []);
+
+  //             // console.log("playersInRound", playersInRound);
+  //             return {
+  //               roundNumber: round.roundnumber,
+  //               players: playersInRound,
+  //             };
+  //           });
+
+  //           setFixtures(roundsData);
+  //           alert("Brackets generated successfully! View the fixtures below.");
+  //           return roundsData;
+  //         }
+  //       } else {
+  //         alert(
+  //           "There was an error generating the brackets. Please try again."
+  //         );
+  //       }
+  //     } else {
+  //       alert("There was an error generating the brackets. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     // WIP: EDIT DISPLAY ERROR MESSAGE
+  //     alert(error.response.data.error);
+  //     console.error("Error generating brackets:", error.response.data.error);
+  //   }
+  // }
+
   async function generateBrackets() {
     try {
       const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -102,37 +156,16 @@ const AdministratorTournamentDetails = () => {
       );
 
       console.log(response.data);
+
       if (response.status === 200) {
-        if (response.status === 200) {
-          if (response.data.error !== undefined) {
-            alert(response.data.error);
-          } else {
-            // Transform the response data into arrays of players by round
-            const roundsData = response.data.rounds.map((round) => {
-              // Flatten all players from all matches in this round into a single array
-              const playersInRound = round.matches.reduce((players, match) => {
-                return [...players, ...match.players];
-              }, []);
 
-              // console.log("playersInRound", playersInRound);
-              return {
-                roundNumber: round.roundnumber,
-                players: playersInRound,
-              };
-            });
+          return response.data;
 
-            setFixtures(roundsData);
-            alert("Brackets generated successfully! View the fixtures below.");
-            return roundsData;
-          }
-        } else {
-          alert(
-            "There was an error generating the brackets. Please try again."
-          );
-        }
-      } else {
+      } else if (response.error !== undefined) {
+        console.log(response.error);
         alert("There was an error generating the brackets. Please try again.");
       }
+
     } catch (error) {
       // WIP: EDIT DISPLAY ERROR MESSAGE
       alert(error.response.data.error);
@@ -141,16 +174,12 @@ const AdministratorTournamentDetails = () => {
   }
 
   const handleGenerateBracketsClick = async () => {
-    const fixturesgen = await generateBrackets(); // Wait for generateBrackets to complete
-    console.log("fitures details torn: ", fixturesgen);
-    navigate("/administrator-tournament-fixtures", { state: { fixtures: fixturesgen } });
+    await generateBrackets(); // Wait for generateBrackets to complete
+  };
 
-    
-};
-
-//   const handleShowFixturesClick = () => {
-//     navigate("/administrator-tournament-fixtures", { state: { fixtures } });
-//   };
+  const handleShowFixturesClick = () => {
+    navigate("/administrator-tournament-fixtures", { state: { tournamentName } });
+  };
 
   return (
     <div className="tournament-card-template main-container flex">
@@ -286,7 +315,7 @@ const AdministratorTournamentDetails = () => {
               Generate Brackets
             </button>
 
-            {/* <button
+            <button
               onClick={handleShowFixturesClick}
               style={{
                 backgroundColor: "#56AE57",
@@ -295,7 +324,7 @@ const AdministratorTournamentDetails = () => {
               className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Show Fixtures
-            </button> */}
+            </button>
           </div>
         </div>
       </div>
