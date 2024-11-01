@@ -1,8 +1,9 @@
+// Package Imports
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
-// Component: Tournament Buttons - "Available Tournaments", "My Scheduled Tournaments"
+// Component: Tournament Buttons
 const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick }) => {
     const [activeButton, setActiveButton] = useState(0);
 
@@ -46,12 +47,9 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     };
 
@@ -107,17 +105,13 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 };
 
 function UserTournaments() {
-
     // ------------------------------------- Tournament Functions -------------------------------------
-    const [activeButton, setActiveButton] = useState(0);
-    
-    const [displayTournamentType, setDisplayTournamentType] = useState([]);
-
-    const [availableTournaments, setAvailableTournaments] = useState([]);
-
-    const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
-
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [activeButton, setActiveButton] = useState(0);
+    const [availableTournaments, setAvailableTournaments] = useState([]);
+    const [displayTournamentType, setDisplayTournamentType] = useState([]);
+    const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
 
     const handleAvailableTournamentClick = () => {
         setActiveButton(0);
@@ -130,7 +124,14 @@ function UserTournaments() {
         setDisplayTournamentType(myScheduledTournaments)
     }
 
-    // API Call: Retrieiving available tournaments
+    // Function to filter tournaments based on the search term
+    const filteredTournaments = displayTournamentType.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // ------------------------------------- API Call: Retrieiving available tournaments -------------------------------------
     async function getAvailableTournaments() {
         setLoading(true);
         try {
@@ -139,7 +140,6 @@ function UserTournaments() {
                 console.error("No JWT Token found!");
                 return;
             }
-
             const response = await axios.get(
                 "http://localhost:8080/users/tournaments/available-tournaments",
                 {
@@ -149,7 +149,6 @@ function UserTournaments() {
                     }
                 }
             );
-
             setAvailableTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
@@ -158,9 +157,9 @@ function UserTournaments() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    // API Call: Retrieiving user's scheduled tournaments (ongoing and upcoming)
+    // ------------------------------------- API Call: Retrieiving user's scheduled tournaments (ongoing and upcoming) -------------------------------------
     async function getMyScheduledTournaments() {
         setLoading(true);
         try {
@@ -169,7 +168,6 @@ function UserTournaments() {
                 console.error("No JWT Token found!");
                 return;
             }
-
             const response = await axios.get(
                 "http://localhost:8080/users/tournaments/scheduled",
                 {
@@ -179,7 +177,6 @@ function UserTournaments() {
                     }
                 }
             );
-            console.log("scheduled: ", response.data);
             setMyScheduledTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
@@ -189,7 +186,7 @@ function UserTournaments() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     // ------------------------------------- useEffect() -------------------------------------
     useEffect(() => {
@@ -206,28 +203,33 @@ function UserTournaments() {
                 />
                 <div className = "flex gap-3">
                     <input
-                        className = "border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         type = "text"
-                        placeholder = "Search for tournaments..."
+                        placeholder = "Search for Tournaments by Tournament Name or Administrator Name"
+                        value = {searchTerm}
+                        onChange = {(e) => setSearchTerm(e.target.value)}
+                        className = "card-background p-2 border2 border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <button className = "border border-value-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white-transition">
+                    <button
+                        className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition"
+                        onClick = {() => setDisplayTournamentType(filteredTournaments)}
+                    >
                         Search
                     </button>
                 </div>
                 {loading ? (
                     <p> Loading tournaments... </p>
-                    ) : displayTournamentType.length > 0 ? (
-                        <TournamentCard
-                            tournamentType = {displayTournamentType}
-                            isAvailableTournament = {activeButton === 0}
-                            isScheduledTournament = {activeButton === 1}
-                        />
-                    ) : (
-                        <p> No tournaments found. </p>
+                ) : filteredTournaments.length > 0 ? (
+                    <TournamentCard
+                        tournamentType = {filteredTournaments}
+                        isAvailableTournament={activeButton === 0}
+                        isScheduledTournament={activeButton === 1}
+                    />
+                ) : (
+                    <p> No tournaments found. </p>
                 )}
             </div>
         </div>
     );
-}
+};
 
 export default UserTournaments;

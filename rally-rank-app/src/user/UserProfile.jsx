@@ -8,23 +8,9 @@ import { FaPen } from "react-icons/fa";
 
 function UserProfile() {
     const navigate = useNavigate();
-
     const [pastTournaments, setPastTournaments] = useState([]);
-
-    const [userProfileInformation, setUserProfileInformation] = useState({});
-    const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-
-    // Function to calculate the proper age of the user.
-    function calculateAge(dob) {
-        const today = new Date();
-        const dateOfBirth = new Date(dob);
-        let age = today.getFullYear() - dateOfBirth.getFullYear();
-        const monthDifference = today.getMonth() - dateOfBirth.getMonth();
-        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dateOfBirth.getDate())) {
-            age--;
-        }
-        return age;
-    };
+    const [userProfileInformation, setUserProfileInformation] = useState([]);
+    const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric"};
 
     const {
         email,
@@ -40,8 +26,20 @@ function UserProfile() {
         strikeReports,
     } = userProfileInformation;
 
+    // Function to calculate the proper age of the user
+    function calculateAge(dob) {
+        const today = new Date();
+        const dateOfBirth = new Date(dob);
+        let age = today.getFullYear() - dateOfBirth.getFullYear();
+        const monthDifference = today.getMonth() - dateOfBirth.getMonth();
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dateOfBirth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const handleJoinTournamentClick = () => {
-            navigate("/users/Tournaments");
+        navigate("/users/tournaments");
     };
 
     const handleEditProfileClick = () => {
@@ -74,12 +72,12 @@ function UserProfile() {
         }
     }
 
-    // ------------------------------------- useEffect() -------------------------------------
+    // ------------------------------------- useEffect() ------------------------------------- 
     useEffect(() => {
         getPastTournaments();
     }, []);
 
-    // ----------------------- API Call: Retrieving the user's profile data -----------------------
+    // ----------------------- API Call: Retrieving the user's profile information -----------------------
     async function getUserProfile() {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -112,7 +110,7 @@ function UserProfile() {
         <div className = "h-main flex flex-col items-center w-full">
             <div className = "container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
                 <button
-                    className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-5 mt-5"
+                    className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-6 mt-5"
                     onClick = {handleEditProfileClick}
                     aria-label = "Edit Profile"
                 >
@@ -133,14 +131,17 @@ function UserProfile() {
                                 <h2 className = "text-3xl font-bold">
                                     {firstName} {lastName}
                                 </h2>
-                                <p> @{username} </p>
-                                <p className = "mt-2 text-sm">
-                                    {available ? "Available for matches" : "Not available"} {/* chang color */}
+                                <p className = "mt-2 font-semibold"> @{username} </p>
+                                <p className = "mt-3 text-sm">
+                                    <span className = "font-semibold" style = {{ color: "black" }}> Current Availability Status: </span> {" "}
+                                    <span style = {{ color: available ? "green" : "red" }}>
+                                        <strong> {available ? "Available" : "Not available"} </strong>
+                                    </span>
                                 </p>
                             </div>
                         </div>
-
                         <div className = "grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {/* CONTACT INFORMATION */}
                             <div className = "p-4 rounded-lg shadow-sm">
                                 <h3 className = "font-semibold"> Contact Information </h3>
                                 <p className = "mt-4 text-sm">
@@ -150,8 +151,8 @@ function UserProfile() {
                                     <strong> Phone Number: </strong> {phoneNumber}
                                 </p>
                             </div>
-
                             <div className = "p-4 rounded-lg shadow-sm">
+                                {/* CONTACT INFORMATION */}
                                 <h3 className = "font-semibold"> Personal Information </h3>
                                 <p className = "mt-4 text-sm">
                                     <strong> Gender: </strong> {gender}
@@ -165,7 +166,6 @@ function UserProfile() {
                                 <p className = "mt-4 text-sm mb-4">
                                     <strong> Elo Rating: </strong> {elo}
                                 </p>
-                                
                             </div>
                         </div>
                     </>
