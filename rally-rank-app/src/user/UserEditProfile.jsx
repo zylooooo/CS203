@@ -1,35 +1,71 @@
 // Package Imports
 import axios from "axios";
+import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 
-// Icon Imports
+// Icons Imports
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// Assets and Components Imports
-import AlertMessageWarning from "../components/AlertMessageWarning";
+// Authentication Imports
+import { useAuth } from "../authentication/AuthContext";
 
 function UserEditProfile() {
     const navigate = useNavigate();
+    const { logoutUser } = useAuth();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
-    const [isUsernameChanged, setIsUsernameChanged] = useState(false);
-    const [isEmailChanged, setIsEmailChanged] = useState(false);
+    const [password, setPassword] = useState("");
+    const { register, handleSubmit, setValue, getValues } = useForm();
+
+    // Constants to store the value of the original data
     const [originalEmail, setOriginalEmail] = useState("");
     const [originalUsername, setOriginalUsername] = useState("");
-    const { register, handleSubmit, setValue } = useForm();
-    const [alertMessage, setAlertMessage] = useState("");
     const [originalUserData, setOriginalUserData] = useState({});
 
+    // Constants to check or set the boolean value of any changes made to the email or username
+    const [isEmailChanged, setIsEmailChanged] = useState(false);
+    const [isUsernameChanged, setIsUsernameChanged] = useState(false);
+
+    // Constants to store the warning or success alert messages
+    // const [warningAlertMessage, setWarningAlertMessage] = useState("");
+    // const [successAlertMessage, setSuccessAlertMessage] = useState("");
 
     const handleBackButtonClick = () => {
-        navigate("/user-profile");
+        navigate("/user/profile");
+    }
+
+    const handleChange = () => {
+        const formValues = getValues();
+        const hasChanges = Object.keys(formValues).some((key) => {
+            return formValues[key] !== originalUserData[key] && formValues[key] !== "";
+        });
+        setIsChanged(hasChanges);
     };
 
-    //API Call: Checking availibility of username and email address.
-    async function checkCredentialsAvailablity(formData) {
+    const handleUsernameChange = () => {
+        handleChange();
+        setIsUsernameChanged(true);
+        logoutUser();
+        navigate("/auth/user-login");
+    };
+
+    const handleEmailChange = () => {
+        handleChange();
+        setIsEmailChanged(true);
+        logoutUser();
+        navigate("/auth/user-login");
+    };
+
+    const handlePasswordChange = () => {
+        handleChange();
+        logoutUser();
+        navigate("/auth/user-login");
+    };
+
+    // ----------------------- API Call: Checking the availability of username and email address -----------------------
+    async function checkCredentialsAvailability(formData) {
         try {
              const userData = JSON.parse(localStorage.getItem("userData"));
             if (!userData || !userData.jwtToken) {
@@ -95,22 +131,23 @@ function UserEditProfile() {
                 setOriginalUsername(response.data.username);
                 for (const key in response.data) {
                     if (key !== "password") {
-                        setValue(key, response.data[key]);
+                        setValue(key, "");
                     }
                 }
             }
         } catch (error) {
+            alert("Catch error");
             console.error("Error fetching user profile data: ", error);
             setOriginalUserData(null);
         }
     };
 
-    // ------------------------------------- useEffect() -------------------------------------
+    // ----------------------- useEffect() -----------------------
     useEffect(() => {
         fetchUserProfileData();
     }, []);
 
-    // ----------------------- API Call: Updating user's edited data -----------------------
+    // ----------------------- API Call: Updating the user's edited profile information -----------------------
     async function updateUserProfile(formData) {
         try {
             const userData = JSON.parse(localStorage.getItem("userData"));
@@ -118,7 +155,6 @@ function UserEditProfile() {
                 console.error("No JWT Token found!");
                 return;
             }
-            
             const response = await axios.put(
                 "http://localhost:8080/users/update",
                 formData,
@@ -127,65 +163,37 @@ function UserEditProfile() {
                     headers: {
                         Authorization: `Bearer ${userData.jwtToken}`,
                     },
-                }
+                },
             );
-
             if (response.status === 200) {
                 userData.username = formData.username;
-                localStorage.setItem("userData", JSON.stringify(userData));     // Updates the new availability in the userData to be passed around
+                localStorage.setItem("userData", JSON.stringify(userData));
                 return response.data;
             }
-
-            // return response.data;
-
         } catch (error) {
+            alert("Catch error");
             console.error("Error updating user profile: ", error.response.data.error);
-            const errorMessage = error.response?.data?.error || "An error occurred while updating the profile.";
-            setError(errorMessage);
+            setError(error.response?.data?.error || "An error occured while updating profile.");
         }
     };
 
-    const [password, setPassword] = useState("");
-
-    const onSubmit = async (formData) => {
-        setAlertMessage("");
-        const firstResponse = await checkCredentialsAvailablity(formData);
-
-        // if new username and/or new email are available, allow user to update profile
+    const onSubmit = async(formData) => {
+        const firstResponse = await checkCredentialsAvailability(formData);
         if (firstResponse) {
             const updatedData = {
                 ...formData,
                 password: password || originalUserData.password,
             };
-            
             await updateUserProfile(updatedData);
             setIsEmailChanged(false);
             setIsUsernameChanged(false);
-            navigate("/user-profile");
-
+            navigate("/user/profile");
         }
-        
     };
     
-    const handleChange = () => {
-        setIsChanged(true);
-    }
-
-    const handleUsernameChange = () => {
-        setIsChanged(true);
-        // if (originalUsername !== )
-        setIsUsernameChanged(true);
-    }
-
-    const handleEmailChange = () => {
-        setIsChanged(true);
-        setIsEmailChanged(true);
-    }
-
     return (
-        <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-3/5 mx-auto">
-            <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
-            <div className="flex items-center gap-4">
+        <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
+            <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
@@ -208,7 +216,7 @@ function UserEditProfile() {
                         Save Changes
                     </button>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px]">
+                <div className = "p-6 shadow-lg rounded-[12px]" style = {{ backgroundColor: "white" }}>
                     <h2 className = "text-2xl font-bold mt-2 ml-2"> Account Information </h2>
                     {/* USERNAME */}
                     <div className = "mt-2">
@@ -221,10 +229,10 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "username"
+                            placeholder = {originalUsername || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("username", { onChange: handleUsernameChange })}
-                            // {...register("username", { onChange: handleChange })}
                         />
                     </div>
                     {/* PASSWORD*/}
@@ -235,14 +243,34 @@ function UserEditProfile() {
                         <input
                             type = "password"
                             id = "password"
+                            placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            onChange={(e) =>{ setPassword(e.target.value); handleChange(); }}
-                            // {...register("password", { onChange: handleChange })}
+                            onChange = {(e) => {
+                                setPassword(e.target.value); 
+                                handlePasswordChange();
+                            }}
+                        />
+                    </div>
+                    {/* EMAIL ADDRESS */}
+                    <div className = "mt-5 mb-3">
+                        <label
+                            htmlFor = "email"
+                            className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
+                        >
+                            Email Address
+                        </label>
+                        <input
+                            type = "text"
+                            id = "email"
+                            placeholder={originalUserData.email || ""}
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
+                            style = {{ backgroundColor: "#EBEBEB" }}
+                            {...register("email", { onChange: handleEmailChange })}
                         />
                     </div>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6">
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6" style = {{ backgroundColor: "white" }}>
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
@@ -255,6 +283,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "firstName"
+                            placeholder={originalUserData.firstName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("firstName", { onChange: handleChange })}
@@ -271,26 +300,10 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "lastName"
+                            placeholder={originalUserData.lastName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
-                        />
-                    </div>
-                    {/* EMAIL ADDRESS */}
-                    <div className = "mt-5">
-                        <label
-                            htmlFor = "email"
-                            className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
-                        >
-                            Email Address
-                        </label>
-                        <input
-                            type = "text"
-                            id = "email"
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
-                            style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("email", { onChange: handleEmailChange })}
-                            // {...register("email", { onChange: handleChange })}
                         />
                     </div>
                     {/* PHONE NUMBER */}
@@ -304,6 +317,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "phoneNumber"
+                            placeholder={originalUserData.phoneNumber || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("phoneNumber", { onChange: handleChange })}
