@@ -92,7 +92,7 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
               className={`btn transition-colors duration-300 ${
                 activeButton === index
                   ? "active-button underline"
-                  : "text-gray-700 hover:text-blue-500 hover:text-red-500"
+                  : "text-gray-700 hover:text-blue-500"
               }`}
               onClick={() => handleButtonClick(index)}
             >
