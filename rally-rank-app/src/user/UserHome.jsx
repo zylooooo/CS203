@@ -86,7 +86,7 @@ const ScheduledTournamentCard = ({ scheduledTournaments }) => {
     const navigate = useNavigate();
 
     const handleScheduledTournamentCardClick = (scheduledTournament) => {
-        navigate("/tournament-details", { state: { ...scheduledTournament, from: window.location.pathname } });
+        navigate(`/tournament-details/${scheduledTournament.tournamentName}`, { state: { ...scheduledTournament, from: window.location.pathname } });
     }
 
     const formatDate = (dateString) => {

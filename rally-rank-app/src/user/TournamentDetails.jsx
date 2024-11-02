@@ -15,6 +15,8 @@ const TournamentDetails = () => {
     const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
     const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
     const isScheduledTournament = location.state?.isScheduledTournament;
+    const [joinedForScheduled, setJoinedForScheduled] = useState(true);
+
 
     const isTwoWeeks = (startDate) => {
         const currentDate = new Date();
@@ -65,6 +67,7 @@ const TournamentDetails = () => {
 
                 if (response.status == 200) {
                     setHasJoined(true);
+                    setJoinedForScheduled(true);
                     console.log(response.data);
                     // Success Message
                 }
@@ -99,6 +102,7 @@ const TournamentDetails = () => {
 
                 if (response.status == 200) {
                     setHasJoined(false);
+                    setJoinedForScheduled(false);
                     console.log(response.data);
                     // Success Message
                 }
@@ -226,21 +230,21 @@ const TournamentDetails = () => {
                     {/* LEAVE BUTTON FOR SCHEDULED TOURNAMENT */}
                     {isScheduledTournament && !isTwoWeeks(tournamentDetails.startDate) && (
                         <button
-                            onClick={handleLeaveTournamentClick}
-                            className="bg-red-500 border text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
-                            style={{
-                                backgroundColor: "#FF6961",
-                                border: "none",
-                                color: "white",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                transition: "background-color 0.3s ease",
-                            }}
-                        >
-                            Leave Tournament
-                        </button>
+                        onClick={joinedForScheduled ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                        className="bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                        style={{
+                            backgroundColor: joinedForScheduled ? "#FF6961" : "#56AE57",
+                            border: "none",
+                            color: "white",
+                            padding: "8px 16px",
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s ease",
+                        }}
+                    >
+                        {joinedForScheduled ? "Leave Tournament" : "Join Tournament"}
+                    </button>
                     )}
                 </div>
 
