@@ -155,16 +155,13 @@ const AdministratorTournamentDetails = () => {
         }
       );
 
-      console.log(response.data);
-
-      if (response.status === 200) {
-
-          return response.data;
-
-      } else if (response.error !== undefined) {
-        console.log(response.error);
-        alert("There was an error generating the brackets. Please try again.");
+      if (response.data.error) {
+        alert(response.data.error);
+      } else {
+        alert("Brackets generated successfully! View the fixtures below.");
       }
+
+      return response.data;
 
     } catch (error) {
       // WIP: EDIT DISPLAY ERROR MESSAGE
