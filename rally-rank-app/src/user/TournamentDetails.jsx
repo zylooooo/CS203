@@ -16,6 +16,7 @@ const TournamentDetails = () => {
     const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
     const isScheduledTournament = location.state?.isScheduledTournament;
     const [joinedForScheduled, setJoinedForScheduled] = useState(true);
+    
 
 
     const isTwoWeeks = (startDate) => {
