@@ -130,42 +130,42 @@ const CustomSeed = ({ seed, breakpoint }) => {
     );
 };
 
-const generateRounds = (currentFixtures) => {
-    const rounds = [];
-    for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
-        const seeds = [];
-        const playersInRound = currentFixtures[roundIndex]?.players || [];
-        const matchesPerRound = Math.floor(playersInRound.length / 2);
-        // Determine round title based on the number of players
-        let roundTitle = `Round ${roundIndex + 1}`;
-        if (playersInRound.length === 8) {
-            roundTitle = "Quarter Finals";
-        } else if (playersInRound.length === 4) {
-            roundTitle = "Semi Finals";
-        } else if (playersInRound.length === 2) {
-            roundTitle = "Finals";
-        }
-        for (let i = 0; i < matchesPerRound; i++) {
-            seeds.push({
-                id: i + 1,
-                date: new Date().toDateString(),
-                teams: [
-                    {
-                        name: playersInRound[i * 2] || "TBD",
-                    },
-                    {
-                        name: playersInRound[i * 2 + 1] || "TBD",
-                    },
-                ],
-            });
-        }
-        rounds.push({
-            title: roundTitle,
-            seeds: seeds,
-        });
-    }
-    return rounds;
-};
+// const generateRounds = (currentFixtures) => {
+//     const rounds = [];
+//     for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
+//         const seeds = [];
+//         const playersInRound = currentFixtures[roundIndex]?.players || [];
+//         const matchesPerRound = Math.floor(playersInRound.length / 2);
+//         // Determine round title based on the number of players
+//         let roundTitle = `Round ${roundIndex + 1}`;
+//         if (playersInRound.length === 8) {
+//             roundTitle = "Quarter Finals";
+//         } else if (playersInRound.length === 4) {
+//             roundTitle = "Semi Finals";
+//         } else if (playersInRound.length === 2) {
+//             roundTitle = "Finals";
+//         }
+//         for (let i = 0; i < matchesPerRound; i++) {
+//             seeds.push({
+//                 id: i + 1,
+//                 date: new Date().toDateString(),
+//                 teams: [
+//                     {
+//                         name: playersInRound[i * 2] || "TBD",
+//                     },
+//                     {
+//                         name: playersInRound[i * 2 + 1] || "TBD",
+//                     },
+//                 ],
+//             });
+//         }
+//         rounds.push({
+//             title: roundTitle,
+//             seeds: seeds,
+//         });
+//     }
+//     return rounds;
+// };
 
 
 function AdministratorFixtures() {
@@ -174,14 +174,16 @@ function AdministratorFixtures() {
     // To be replaced with API call instead, to get the fixtures directly from the API Call
     // const currentFixtures = location.state?.fixtures;
     // const preliminaryPlayers = currentFixtures?.[0]?.players || [];
-    // const mainTournamentRounds = generateRounds(currentFixtures.slice(1));                             // Main tournament rounds start at currentFixtures[1]
+    // const mainTournamentRounds = generateRounds(mainMatches);                             // Main tournament rounds start at currentFixtures[1]
     
     const tournamentName = location.state?.tournamentName;
-    const [tournamentBracket, setTournamentBracket] = useState({});
+    const [tournamentBracket, setTournamentBracket] = useState(null);
     // constant to hold preliminary round matches
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     // constant to hold main tournament matches (rounds[1] onwards in Bracket object)
     const [mainMatches, setMainMatches] = useState([]);
+    const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
+
 
     const [currentMatch, setCurrentMatch] = useState({});
     const [showResultsCard, setShowResultsCard] = useState(false);
@@ -262,10 +264,12 @@ function AdministratorFixtures() {
 
             // make error message an alert
             if (response.data.error !== undefined) {
-                console.error("error: ", response.data);
+                console.log("error: ", response.data);
             }
 
-            setTournamentBracket(response.data);
+            if (response.data.rounds.length !== 0) {
+                setTournamentBracket(response.data);
+            } 
 
             if (response.data.rounds[0].matches.length > 0) {
                 setPreliminaryMatches(response.data.rounds[0].matches);
@@ -273,6 +277,70 @@ function AdministratorFixtures() {
 
             if (response.data.rounds.length > 1) {
                 setMainMatches(response.data.rounds.slice(1));
+
+                const currentFixtures = response.data.rounds.slice(1);
+
+
+                const roundsArr = [];
+                for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
+                    const seeds = [];
+                    // const playersInRound = currentFixtures[roundIndex]?.players || [];
+                    // const matchesPerRound = Math.floor(playersInRound.length / 2);
+
+                    // Determine round title based on the number of players
+                    // let roundTitle = `Round ${roundIndex + 1}`;
+                    // if (playersInRound.length === 8) {
+                    //     roundTitle = "Quarter Finals";
+                    // } else if (playersInRound.length === 4) {
+                    //     roundTitle = "Semi Finals";
+                    // } else if (playersInRound.length === 2) {
+                    //     roundTitle = "Finals";
+                    // }
+
+
+                    // find number of matches per round
+                    const matchesPerRound = currentFixtures[roundIndex]?.matches;
+                    // Determine round title based on the number of players
+                    let roundTitle = `Round ${roundIndex + 1}`;
+                    if (matchesPerRound.length === 4) {
+                        roundTitle = "Quarter Finals";
+                    } else if (matchesPerRound.length === 2) {
+                        roundTitle = "Semi Finals";
+                    } else if (matchesPerRound.length === 1) {
+                        roundTitle = "Finals";
+                    }
+
+                    for (let i = 0; i < matchesPerRound.length; i++) {
+                        seeds.push({
+                            id: i + 1,
+                            date: new Date().toDateString(),
+                            // teams: [
+                            //     {
+                            //         name: playersInRound[i * 2] || "TBD",
+                            //     },
+                            //     {
+                            //         name: playersInRound[i * 2 + 1] || "TBD",
+                            //     },
+                            // ],
+
+                            teams: [
+                                {
+                                    name: currentFixtures[roundIndex].matches[i].players[0] || "TBD",
+                                },
+                                {
+                                    name: currentFixtures[roundIndex].matches[i].players[1] || "TBD",
+                                },
+                            ],
+                        });
+                    }
+                    roundsArr.push({
+                        title: roundTitle,
+                        seeds: seeds,
+                    });
+                }
+
+                setMainTournamentRounds(roundsArr);
+                console.log("\nMain Tournament Rounds: ", roundsArr);
             }
 
             console.log("Tournament Bracket: ", response.data);
@@ -293,12 +361,17 @@ function AdministratorFixtures() {
 
     return (
         <div className = "administrator-fixtures flex flex-col gap-8 p-9">
-            <h2 className = "text-3xl font-bold mt-10"> Tournament Fixtures </h2>
+            <div className = "flex flex-col items-center gap-4">
+                <h2 className = "text-3xl font-bold mt-10 "> Tournament Fixtures </h2>
+                { tournamentBracket === null && <p>Tournament Bracket has not been generated.</p>}
+            </div>
+
             { preliminaryMatches.length > 0 && 
                 <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} /> 
             }
-            { showMatchTimingsCard && <MatchTimingsCard matchDetails = {currentMatch} setShowMatchTimingsCard = {setShowMatchTimingsCard}/> }
-            {/* <div className = "main-tournament-brackets mb-20">
+
+            { mainMatches.length > 0 &&
+            <div className = "main-tournament-brackets mb-20">
                 <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
                 <Bracket
                     rounds = {mainTournamentRounds}
@@ -308,8 +381,14 @@ function AdministratorFixtures() {
                         </div>
                     )}
                     renderSeedComponent = {CustomSeed}
-                />
-            </div> */}
+                    />
+            </div>
+            }
+
+            {/* Conditionally render Match Timings Card */}
+            { showMatchTimingsCard && <MatchTimingsCard matchDetails = {currentMatch} setShowMatchTimingsCard = {setShowMatchTimingsCard}/> }
+
+
         </div>
     );
 };
