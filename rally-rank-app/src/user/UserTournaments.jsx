@@ -221,8 +221,8 @@ function UserTournaments() {
                 ) : filteredTournaments.length > 0 ? (
                     <TournamentCard
                         tournamentType = {filteredTournaments}
-                        isAvailableTournament={activeButton === 0}
-                        isScheduledTournament={activeButton === 1}
+                        isAvailableTournament = {activeButton === 0}
+                        isScheduledTournament = {activeButton === 1}
                     />
                 ) : (
                     <p> No tournaments found. </p>

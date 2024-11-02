@@ -193,12 +193,12 @@ function UserProfile() {
                             </div>
                         ))}
                     </div>
-                    ) : (
-                        <div className = "p-4 rounded-lg">
-                            <h3 className = "font-semibold"> Strike Report: </h3>
-                            <p> You have no strikes. Keep up the good behavior! </p>
-                        </div>
-                    )}
+                ) : (
+                    <div className = "p-4 rounded-lg">
+                        <h3 className = "font-semibold"> Strike Report: </h3>
+                        <p> You have no strikes. Keep up the good behavior! </p>
+                    </div>
+                )}
             </div>
 
             <div className = "participated-tournaments-container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">

@@ -7,7 +7,6 @@ import React, { useState, useEffect } from "react";
 import { FaCrown, FaMedal } from "react-icons/fa";
 import SportsTennisIcon from '@mui/icons-material/SportsTennis';
 
-
 // Assets and Components Imports
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
@@ -29,10 +28,10 @@ const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGe
             {buttons.map((buttonLabel, index) => (
                 <button
                     key = {index}
-                    className = {`btn transition-colors duration-300 text-sm font-semibold${
+                    className = {`btn transition-colors duration-300 text-sm font-semibold ${
                         activeButton === index
-                        ? "active-button underline text-blue-600"       // Active State
-                        : "text-gray-700 hover:text-blue-500"           // Inactive State
+                        ? "active-button underline text-blue-600"             // Active State
+                        : "text-gray-700 hover:text-blue-500"               // Inactive State
                     }`}
                     onClick = {() => handleButtonClick(index)}
                 >
@@ -82,12 +81,18 @@ const LeaderboardCard = ({ leaderboardPlayer, rank }) => {
 };
 
 // Component: Scheduled Tournament Card
-const ScheduledTournamentCard = ({ scheduledTournaments }) => {
+const ScheduledTournamentCard = ({ scheduledTournaments, isScheduledTournament }) => {
     const navigate = useNavigate();
 
     const handleScheduledTournamentCardClick = (scheduledTournament) => {
-        navigate(`/tournament-details/${scheduledTournament.tournamentName}`, { state: { ...scheduledTournament, from: window.location.pathname } });
-    }
+        navigate(`/tournament-details/${scheduledTournament.tournamentName}`, {
+            state: {
+                ...scheduledTournament,
+                from: window.location.pathname,
+                isScheduledTournament
+            }
+        });
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -122,7 +127,7 @@ const ScheduledTournamentCard = ({ scheduledTournaments }) => {
                     </div>
                 ))
             ) : (
-                <p> You have no scheduled tournaments. Join one today! </p>
+                <p style = {{ color: "#343434"}}> You have no scheduled tournaments. Join one today! </p>
             )}
         </div>
     );
@@ -376,7 +381,7 @@ function UserHome() {
                 <div className = "my-scheduled-tournaments-container h-2/3">
                     <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> My Scheduled Tournaments </h2>
                     <div className = "p-6 text-white rounded-[20px] shadow-lg h-5/6 overflow-auto" style = {{ backgroundColor: "white" }}>
-                        <ScheduledTournamentCard scheduledTournaments = {scheduledTournaments} />
+                        <ScheduledTournamentCard scheduledTournaments = {scheduledTournaments} isScheduledTournament = {true} />
                     </div>
                 </div>
             </div>
