@@ -438,6 +438,16 @@ public class AdminsTournamentsController {
     @PutMapping("/update-match")
     public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
         try {
+
+            // Add these debug logs
+            logger.info("Received match update request with details: {}", newMatchDetails);
+            logger.info("Match ID: {}", newMatchDetails.getId());
+            logger.info("Tournament Name: {}", newMatchDetails.getTournamentName());
+            logger.info("Sets: {}", newMatchDetails.getSets());
+            logger.info("Match Winner: {}", newMatchDetails.getMatchWinner());
+            logger.info("Is Completed: {}", newMatchDetails.isCompleted());
+
+            
             Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
             return ResponseEntity.ok(updatedMatch);
         } catch (IllegalArgumentException e) {
