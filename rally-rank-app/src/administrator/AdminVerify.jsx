@@ -31,7 +31,7 @@ function AdminVerify() {
     async function verifyAdmin(adminName, verificationCode) {
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/admin-verify",
+                "http://localhost:8080/auth/admin-verification",
                 { adminName, verificationCode },
                 { withCredentials: true } // Allow credentials (cookies) to be sent with the request
             );
@@ -64,7 +64,7 @@ function AdminVerify() {
     async function resendVerificationCode(email) {
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/resend-verification",
+                "http://localhost:8080/auth/reverification",
                 { email }
             );
             if (response.status === 200) {

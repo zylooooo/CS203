@@ -247,7 +247,7 @@ function AdministratorCreateTournaments() {
             const trimmedTournamentName = data.tournamentName.trim();
 
             const response = await axios.post(
-                "http://localhost:8080/admins/tournaments/create",
+                "http://localhost:8080/admins/tournaments",
                 {
                     tournamentName: trimmedTournamentName,
                     createdAt: today,
@@ -298,7 +298,7 @@ function AdministratorCreateTournaments() {
             }
 
             const firstResponse = await axios.get(
-                `http://localhost:8080/admins/tournaments/check-name-availability?tournamentName=${tournamentName}`,
+                `http://localhost:8080/admins/tournaments/name-availability?tournamentName=${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {

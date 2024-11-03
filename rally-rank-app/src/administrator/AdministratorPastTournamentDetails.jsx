@@ -21,7 +21,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
             }
 
             const response = await axios.post(
-                "http://localhost:8080/admins/strike",
+                "http://localhost:8080/admins/strikes",
                 {
                     username: strikePlayer,
                     tournamentName: tournamentName,

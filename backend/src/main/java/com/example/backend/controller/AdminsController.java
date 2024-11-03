@@ -72,7 +72,7 @@ public class AdminsController {
      * @return a ResponseEntity containing the updated admin details or error messages if validation fails.
      * @throws Exception if an unexpected error occurs during the update process.
      */
-    @PutMapping("/update")
+    @PutMapping("/profile")
     public ResponseEntity<?> updateAdmin(@RequestBody Admin newAdminDetails) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String adminName = authentication.getName();
@@ -98,7 +98,7 @@ public class AdminsController {
      * @return a ResponseEntity with a success message or error messages if the admin is not found or an exception occurs.
      * @throws Exception if an unexpected error occurs during the deletion process.
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping("/profile")
     public ResponseEntity<?> deleteAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String adminName = authentication.getName();
@@ -127,7 +127,7 @@ public class AdminsController {
      * @throws InvalidStrikeException if the strike request is invalid.
      * @throws Exception if an unexpected error occurs during the strike issuance.
      */
-    @PostMapping("/strike")
+    @PostMapping("/strikes")
     public ResponseEntity<?> strikeUser(@RequestBody Map<String, String> strikeRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String adminName = authentication.getName();

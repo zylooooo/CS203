@@ -37,7 +37,7 @@ function AdministratorEditProfile() {
               return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+            "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
                 accountName: formData.adminName,
@@ -123,7 +123,7 @@ function AdministratorEditProfile() {
             }
             
             const response = await axios.put(
-                "http://localhost:8080/admins/update",
+                "http://localhost:8080/admins/profile",
                 formData,
                 {
                     withCredentials: true,

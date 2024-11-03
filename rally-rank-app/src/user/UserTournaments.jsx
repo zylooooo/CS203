@@ -141,7 +141,7 @@ function UserTournaments() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/available-tournaments",
+                "http://localhost:8080/users/tournaments/available",
                 {
                     withCredentials: true,
                     headers: {
