@@ -31,7 +31,6 @@ public class Match {
 
     private String matchWinner; // player 1 or player 2
 
-    @JsonProperty("isCompleted")
     private boolean isCompleted = false; // default value is false
 
     @Data
