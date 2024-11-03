@@ -160,7 +160,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                     setWinner: score.setWinner,
                 })),
                 matchWinner: winner,
-                isCompleted: true,
+                completed: true,
             };
 
             const response = await axios.put(

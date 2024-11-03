@@ -71,7 +71,7 @@ const ResultsCard = ({ matchDetails, player1, player2}) => {
                 object: setScores,
             },
             matchWinner: winner,
-            isCompleted: true
+            completed: true
         };
 
         console.log(updatedMatchDetails);
@@ -214,7 +214,7 @@ const MatchTimingsCard = ({ matchDetails }) => {
             players: matchDetails.players,
             sets: matchDetails.sets,
             matchWinner: matchDetails.matchWinner,
-            isCompleted: matchDetails.isCompleted
+            completed: matchDetails.completed
         };
 
             const response = await axios.put(
