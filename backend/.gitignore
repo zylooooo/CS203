@@ -38,6 +38,7 @@ build/
 
 *.class
 .env
+.lst
 
 # Explicitly ignore maven-status directory
 **/maven-status/
