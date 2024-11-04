@@ -107,7 +107,6 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 function UserTournaments() {
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
     const [activeButton, setActiveButton] = useState(0);
     const [availableTournaments, setAvailableTournaments] = useState([]);
     const [displayTournamentType, setDisplayTournamentType] = useState([]);
@@ -123,13 +122,6 @@ function UserTournaments() {
         getMyScheduledTournaments();
         setDisplayTournamentType(myScheduledTournaments)
     }
-
-    // Function to filter tournaments based on the search term
-    const filteredTournaments = displayTournamentType.filter(
-        (tournament) =>
-            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     // ------------------------------------- API Call: Retrieiving available tournaments -------------------------------------
     async function getAvailableTournaments() {
@@ -201,26 +193,11 @@ function UserTournaments() {
                     onAvailableTournamentsClick = {handleAvailableTournamentClick}
                     onMyScheduledTournamentsClick = {handleMyScheduledTournamentsClick}
                 />
-                <div className = "flex gap-3">
-                    <input
-                        type = "text"
-                        placeholder = "Search for Tournaments by Tournament Name or Administrator Name"
-                        value = {searchTerm}
-                        onChange = {(e) => setSearchTerm(e.target.value)}
-                        className = "card-background p-2 border2 border-gray-300 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                        className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition"
-                        onClick = {() => setDisplayTournamentType(filteredTournaments)}
-                    >
-                        Search
-                    </button>
-                </div>
                 {loading ? (
                     <p> Loading tournaments... </p>
-                ) : filteredTournaments.length > 0 ? (
+                ) : displayTournamentType.length > 0 ? (
                     <TournamentCard
-                        tournamentType = {filteredTournaments}
+                        tournamentType = {displayTournamentType}
                         isAvailableTournament = {activeButton === 0}
                         isScheduledTournament = {activeButton === 1}
                     />
