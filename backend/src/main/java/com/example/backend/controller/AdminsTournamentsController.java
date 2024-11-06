@@ -435,7 +435,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the match details are invalid.
      * @throws Exception if an unexpected error occurs during the update process.
      */
-    @PutMapping("/match/updates")
+    @PutMapping("/match")
     public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
         try {
 

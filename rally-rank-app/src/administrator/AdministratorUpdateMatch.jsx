@@ -78,7 +78,7 @@ const ResultsCard = ({ matchDetails, player1, player2}) => {
 
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match/updates",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -218,7 +218,7 @@ const MatchTimingsCard = ({ matchDetails }) => {
         };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match/updates",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,
