@@ -6,7 +6,7 @@ import { useLocation, useNavigate} from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Component: Match Timings Card
-const UpdateMatchTimingCard = ({ matchDetails, setShowUpdateMatchTimingsCard }) => {
+const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard }) => {
     const { register, handleSubmit, formState: { errors }} = useForm();
 
     // ----------------------- API Call: Update a specific match timing -----------------------
@@ -145,7 +145,6 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                 setWinner: formData[`set${setNumber}Player1`] > formData[`set${setNumber}Player2`] ? player1 : player2,
             }));
 
-            // Determine match winner (based on the setScores)
             const winner = determineSetWinner(setScores, player1, player2);
             setMatchWinner(winner);
 
@@ -160,7 +159,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                     setWinner: score.setWinner,
                 })),
                 matchWinner: winner,
-                isCompleted: true,
+                completed: true,
             };
 
             const response = await axios.put(
@@ -173,6 +172,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                     },
                 },
             );
+            console.log("API Response:", response.data);
             return response.data;
 
         } catch (error) {
@@ -185,8 +185,8 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const onUpdateMatchDetailsSubmit = async (formData) => {
         const response = await updateMatchResults(formData);
         if (response !== undefined) {
-            // Success Alert Message: Match timings updated successfully
-            alert("Match timings updated successfully");
+            // Success Alert Message: Match details updated successfully
+            alert("Match details updated successfully");
             setShowUpdateResultsCard(false);
         }
     };
@@ -266,6 +266,9 @@ function AdministratorFixtures() {
     
     // Consts to hold data from API Call
     const [mainMatches, setMainMatches] = useState([]);
+    const [semiFinalsWinners, setSemiFinalsWinners] = useState([]);               // Players who won the semi finals (2)
+    const [quarterFinalsWinners, setQuarterFinalsWinners] = useState([]);         // Players who won the quarter finals (4)
+    const [tournamentWinner, setTournamentWinner] = useState("");                // Player who won the finals (the tournament) (1)
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     const [tournamentBracket, setTournamentBracket] = useState(null);
     const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
@@ -274,18 +277,18 @@ function AdministratorFixtures() {
     const [currentMatch, setCurrentMatch] = useState({});
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
-    const [showResultsConfirmationCard, setShowResultsConfirmationCard] = useState(false);
+    // const [showResultsConfirmationCard, setShowResultsConfirmationCard] = useState(false);
 
     // Function: Handle click for each seed
     const handleClick = (id) => {
         for (let i = 0; i < mainMatches.length; i++) {
-            for (let j = 0; j < mainMatches[i].length; j++) {
+            for (let j = 0; j < mainMatches[i].matches.length; j++) {
                 if (mainMatches[i].matches[j].id === id) {
                     handleMatchClick(mainMatches[i].matches[j]);
                 }
             }
         }
-    }
+    };
 
     const handleMatchClick = (match) => {
         setCurrentMatch(match);
@@ -301,6 +304,7 @@ function AdministratorFixtures() {
         if (dateString === null) {
             return;
         }
+        const date = new Date(dateString);
         return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
     };
 
@@ -346,6 +350,69 @@ function AdministratorFixtures() {
         );
     };
 
+// Component: Quarterfinals Winners Table
+const QuarterfinalsWinnersTable = ({ winners }) => {
+    return (
+        <div className="quarterfinals-winners p-5 h-1/2 overflow-y-auto">
+            <h2 className="text-2xl font-bold">Quarterfinals Winners</h2>
+            <div className="mt-4 flex flex-col gap-4">
+                {winners.length > 0 ? (
+                    winners.map((winner, index) => (
+                        <div key={index} className="winner-card flex items-center gap-4 mb-4">
+                            <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
+                                <span className="font-semibold text-lg">Winner {index + 1}:</span>
+                                <span className="text-gray-700">{winner}</span>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>No winners yet</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Component: Semifinals Winners Table
+const SemifinalsWinnersTable = ({ winners }) => {
+    return (
+        <div className="semifinals-winners p-5 h-1/2 overflow-y-auto">
+            <h2 className="text-2xl font-bold">Semifinals Winners</h2>
+            <div className="mt-4 flex flex-col gap-4">
+                {winners.length > 0 ? (
+                    winners.map((winner, index) => (
+                        <div key={index} className="winner-card flex items-center gap-4 mb-4">
+                            <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
+                                <span className="font-semibold text-lg">Winner {index + 1}:</span>
+                                <span className="text-gray-700">{winner}</span>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>No winners yet</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Component: Finals Winner Table
+const FinalsWinnerTable = ({ winner }) => {
+    return (
+        <div className="finals-winner p-5 h-1/2 overflow-y-auto">
+            <h2 className="text-2xl font-bold">Finals Winner</h2>
+            <div className="mt-4 flex flex-col gap-4">
+                <div className="winner-card flex items-center gap-4 mb-4">
+                    <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
+                        <span className="font-semibold text-lg">Winner:</span>
+                        <span className="text-gray-700">{winner || "TBD"}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
         return (
@@ -380,12 +447,14 @@ function AdministratorFixtures() {
             const response = await axios.get(
                 `http://localhost:8080/admins/tournaments/${tournamentName}/bracket`,
                 {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${adminData.jwtToken}`,
-                },
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    },
                 }
             );
+
+            console.log("Response:", response);
 
             // Warning Message Alert
             if (response.data.error !== undefined) {
@@ -410,12 +479,17 @@ function AdministratorFixtures() {
                     let roundTitle = `Round ${roundIndex + 1}`;
                     if (matchesPerRound.length === 4) {
                         roundTitle = "Quarter Finals";
+                        setQuarterFinalsWinners(matchesPerRound.map(match => match.matchWinner));
                     } else if (matchesPerRound.length === 2) {
                         roundTitle = "Semi Finals";
+                            setSemiFinalsWinners(matchesPerRound.map(match => match.matchWinner));
                     } else if (matchesPerRound.length === 1) {
                         roundTitle = "Finals";
                     }
                     for (let i = 0; i < matchesPerRound.length; i++) {
+                        if (matchesPerRound.length === 1) {
+                            setTournamentWinner(currentFixtures[roundIndex].matches[i].matchWinner);
+                        }
                         seeds.push({
                             id: currentFixtures[roundIndex].matches[i].id,
                             date: formatDate(currentFixtures[roundIndex].matches[i].startDate) || "TBD",
@@ -436,6 +510,7 @@ function AdministratorFixtures() {
                 }
                 setMainTournamentRounds(roundsArr);
             }
+            console.log("array of people who won the QF: ", quarterFinalsWinners);
             return response;
 
         } catch (error) {
@@ -462,6 +537,9 @@ function AdministratorFixtures() {
             {preliminaryMatches.length > 0 &&
                 <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
             }
+            <QuarterfinalsWinnersTable winners={quarterFinalsWinners} />
+            <SemifinalsWinnersTable winners={semiFinalsWinners} />
+            <FinalsWinnerTable winner={tournamentWinner} />
             {mainMatches.length > 0 &&
                 <div className = "main-tournament-brackets mb-20">
                     <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
@@ -477,7 +555,7 @@ function AdministratorFixtures() {
                 </div>
             }
             {showUpdateMatchTimingsCard &&
-                <UpdateMatchTimingCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
+                <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
             }
             {showUpdateResultsCard &&
                 <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
