@@ -106,11 +106,11 @@ function UserLogin() {
                 style={{ backgroundImage: `url(${loginBackground})`, objectFit: 'cover', backgroundAttachment: 'fixed' }}
             >
                 <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
-                <div className="card rounded-[8px] bg-primary-color-white border-none items-center my-8 overflow-hidden">
+                <div className="card rounded-[8px] bg-white border-none items-center my-8 overflow-hidden">
                     {/* Replace heading with RallyRank logo */}
                     <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
                     <form
-                        className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
+                        className="card px-0 py-4 border-none shadow-none bg-white"
                         onSubmit={handleSubmit(onSubmit)}
                         noValidate
                     >
@@ -168,17 +168,16 @@ function UserLogin() {
 
                         <button
                             type="submit"
-                            className="button mt-6 font-bold hover:shadow-inner"
-                            style = {{ backgroundColor: "#80b577" }}
+                            className="button mt-6 font-bold hover:bg-primary-color-green bg-primary-color-light-green"
                         >
                             Log In
                         </button>
                         <div className="flex items-center justify-center py-3">
-                            <div className="border-t border-gray-100 flex-grow mr-3 opacity-50"></div>
+                            <div className="border-t border-gray-200 flex-grow mr-3 opacity-50"></div>
                             <span className="text-gray-199 text-xs opacity-50">
                                 OR
                             </span>
-                            <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
+                            <div className="border-t border-gray-00 flex-grow ml-3 opacity-50"></div>
                         </div>
                         <div className="text-xs text-center pt-2">
                             Don't have a RallyRank account?
@@ -193,19 +192,19 @@ function UserLogin() {
                         <div className="text-xs text-center pt-2">
                             <Link
                                 to="/auth/user-verification"
-                                className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
+                                className="hover:text-primary-color-light-green p-2 text-secondary-color-dark-green"
                             >
                                 Looking to verify? Click here
                             </Link>
                         </div>
                     </form>
                 </div>
-                <div className="card p-7 rounded-[8px] bg-primary-color-white border-none items-center">
+                <div className="card p-7 rounded-[8px] bg-white border-none items-center">
                     <div className="text-ms flex flex-row justify-center align-item">
                         RallyRank Administrator?
                         <Link
                             to="/administrator-login"
-                            className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
+                            className="hover:text-primary-color-light-green font-bold underline pl-2 text-secondary-color-dark-green"
                         >
                             Log in here!
                         </Link>

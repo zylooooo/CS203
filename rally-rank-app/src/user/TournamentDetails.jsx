@@ -178,7 +178,7 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px]" style = {{ backgroundColor: "#fffefa" }}>
+            <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px] card-background border">
 
                 <div className = "flex justify-between items-center mb-4">
                     {/* BACK BUTTON */}
@@ -212,7 +212,7 @@ const TournamentDetails = () => {
                     {!isFull && isAvailableTournament && !isScheduledTournament && (
                         <button
                             onClick={hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                            className="bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                            className="border text-white px-4 py-2 rounded font-semibold"
                             style={{
                                 backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
                                 border: "none",
@@ -232,7 +232,7 @@ const TournamentDetails = () => {
                     {isScheduledTournament && !isTwoWeeks(tournamentDetails.startDate) && (
                         <button
                         onClick={joinedForScheduled ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                        className="bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                        className="border text-white px-4 py-2 rounded font-semibold"
                         style={{
                             backgroundColor: joinedForScheduled ? "#FF6961" : "#56AE57",
                             border: "none",
@@ -346,7 +346,7 @@ const TournamentDetails = () => {
                             backgroundColor: "#56AE57",
                             color: "white",
                           }}
-                        className = "border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+                        className = "px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>

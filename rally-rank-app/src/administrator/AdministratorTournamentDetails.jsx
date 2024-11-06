@@ -180,7 +180,7 @@ const AdministratorTournamentDetails = () => {
 
   return (
     <div className="tournament-card-template main-container flex">
-      <div className="flex flex-col w-3/5 gap-4 border2 p-10 rounded-[8px]">
+      <div className="flex flex-col w-3/5 gap-4 border p-10 rounded-[8px]">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -245,12 +245,12 @@ const AdministratorTournamentDetails = () => {
           {" "}
           <strong> Venue: </strong> {tournamentDetails.location}{" "}
         </p>
-        {/* <div className = "map-api-container h-64 border2 rounded-[8px]">
+        {/* <div className = "map-api-container h-64 border rounded-[8px]">
                     <p className = "text-center p-4"> Insert map here. </p>
                 </div> */}
 
         <div className="flex justify-between items-start mt-4">
-          <div className="players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">
+          <div className="players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
             <h2 className="text-xl font-semibold mb-2"> Current Players: </h2>
             <div
               style={{
@@ -307,7 +307,7 @@ const AdministratorTournamentDetails = () => {
                 backgroundColor: "#56AE57",
                 color: "white",
               }}
-              className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Generate Brackets
             </button>
@@ -318,7 +318,7 @@ const AdministratorTournamentDetails = () => {
                 backgroundColor: "#56AE57",
                 color: "white",
               }}
-              className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Show Fixtures
             </button>

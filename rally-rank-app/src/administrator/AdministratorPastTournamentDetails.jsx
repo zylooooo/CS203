@@ -216,7 +216,7 @@ const AdministratorPastTournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex relative">
-            <div className = "flex flex-col w-3/5 gap-4 border2 p-8 rounded-[8px]">
+            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
                         <FontAwesomeIcon
@@ -240,7 +240,7 @@ const AdministratorPastTournamentDetails = () => {
                 <p className = "mb-2 text-lg"> <strong> Venue: </strong> {tournamentDetails.location} </p>
 
                 <div className = "flex justify-between items-start mt-4">
-                    <div className = "players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">
+                    <div className = "players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
                         <h2 className = "text-xl font-semibold mb-2"> Current Players: </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
                         <p className = "text-md text-gray-500 absolute top-4 right-10 font-semibold">
@@ -281,7 +281,7 @@ const AdministratorPastTournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         // onClick = {handleShowFixturesClick}
-                        className = "border2 text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
                     >
                         Show Results
                     </button>

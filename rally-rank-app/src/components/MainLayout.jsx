@@ -13,7 +13,7 @@ function MainLayout({ children }) {
     const { isUserLoggedIn, isAdminLoggedIn } = useAuth();
 
     return (
-        <div className = "flex flex-col h-screen bg-gray-50" style = {{ backgroundColor: "#fffcf2" }}>
+        <div className = "flex flex-col h-screen" style = {{ backgroundColor: "#fcfbf4" }}>
             <header className = "w-full">
                 {isAdminLoggedIn ? (
                     <AdministratorNavBar />

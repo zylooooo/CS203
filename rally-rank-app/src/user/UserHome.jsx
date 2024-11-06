@@ -30,8 +30,8 @@ const LeaderboardButtons = ({ buttons, onTopClick, onOtherGenderClick, onMixedGe
                     key = {index}
                     className = {`btn transition-colors duration-300 text-sm font-semibold ${
                         activeButton === index
-                        ? "active-button underline text-blue-600"             // Active State
-                        : "text-gray-700 hover:text-blue-500"               // Inactive State
+                        ? "active-button underline text-primary-color-green"             // Active State
+                        : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
                     }`}
                     onClick = {() => handleButtonClick(index)}
                 >
@@ -65,13 +65,13 @@ const LeaderboardCard = ({ leaderboardPlayer, rank }) => {
 
     return (
         <div
-            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-[1.02] hover:shadow-xl w-full h-2/5" style = {{ backgroundColor: "white"}}
+            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-[1.02] hover:shadow-xl w-full h-2/5" 
             onClick = {handleLeaderboardPlayerCardClick}
         >
             <div>
-                <h3 className = "text-lg font-bold mb-2" style = {{ color: "#343434" }}> {leaderboardPlayer.firstName} {leaderboardPlayer.lastName} </h3>
-                <h3 className = "text-md mb-2" style = {{ color: "#343434" }}> Username: {leaderboardPlayer.username} </h3>
-                <p className = "text-sm text-gray-600" style = {{ color: "#343434" }}> Elo Rating: {leaderboardPlayer.elo} </p>
+                <h3 className = "text-lg font-bold mb-2"> {leaderboardPlayer.firstName} {leaderboardPlayer.lastName} </h3>
+                <h3 className = "text-md mb-2"> Username: {leaderboardPlayer.username} </h3>
+                <p className = "text-sm text-gray-600"> Elo Rating: {leaderboardPlayer.elo} </p>
             </div>
             <div>
                 {getRankIcon(rank)}
@@ -111,11 +111,10 @@ const ScheduledTournamentCard = ({ scheduledTournaments, isScheduledTournament }
                 scheduledTournaments.map((scheduledTournament, index) => (
                     <div
                         key = {index}
-                        className = "scheduled-tournament-card bg-blue-700 p-4 rounded-[20px] shadow-md cursor-pointer hover:shadow-lg transition"
-                        style = {{ backgroundColor: "white" }}
+                        className = "scheduled-tournament-card p-4 rounded-[20px] shadow-md bg-white cursor-pointer hover:shadow-lg transition text-text-grey"
                         onClick = {() => handleScheduledTournamentCardClick(scheduledTournament)}
                     >
-                        <h3 className = "text-lg font-semibold mt-3" style = {{ color: "#343434"}}> {index + 1}. {scheduledTournament.tournamentName} </h3>
+                        <h3 className = "text-lg font-semibold mt-3"> {index + 1}. {scheduledTournament.tournamentName} </h3>
                         <p className = "text-sm mt-3">
                             <span className = "font-semibold"> Date: </span>
                             {formatDate(scheduledTournament.startDate)}
@@ -127,7 +126,7 @@ const ScheduledTournamentCard = ({ scheduledTournaments, isScheduledTournament }
                     </div>
                 ))
             ) : (
-                <p style = {{ color: "#343434"}}> You have no scheduled tournaments. Join one today! </p>
+                <p> You have no scheduled tournaments. Join one today! </p>
             )}
         </div>
     );
@@ -367,20 +366,20 @@ function UserHome() {
             <div className = "row-container flex flex-col w-3/5 gap-8 p-6">
                 {/* JOIN TOURNAMENT */}
                 <div className = "join-tournament-container gap-2 h-1/5">
-                    <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> Join A Tournament Today! </h2>
+                    <h2 className = "text-xl font-bold mb-4"> Join A Tournament Today! </h2>
                     <button
                         className = "join-tournament-button bg-green-600 text-xl font-bold py-3 px-6 rounded-[8px] shadow-md hover:bg-green-700 transition duration-200 w-full h-2/5"
                         onClick = {handleJoinTournament}
-                        style = {{ backgroundColor: "white", color: "#343434" }}
+                        style = {{ backgroundColor: "white" }}
                     >
-                        <SportsTennisIcon className = "text-xl" style = {{ marginRight: '8px', verticalAlign: 'middle', color: "#343434" }} />
+                        <SportsTennisIcon className = "text-xl" style = {{ marginRight: '8px', verticalAlign: 'middle' }} />
                         Let's Go!
                     </button>
                 </div>
                 {/* MY SCHEDULED TOURNAMENTS */}
                 <div className = "my-scheduled-tournaments-container h-2/3">
-                    <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> My Scheduled Tournaments </h2>
-                    <div className = "p-6 text-white rounded-[20px] shadow-lg h-5/6 overflow-auto" style = {{ backgroundColor: "white" }}>
+                    <h2 className = "text-xl font-bold mb-4"> My Scheduled Tournaments </h2>
+                    <div className = "p-6 text-white rounded-[20px] shadow-lg h-5/6 overflow-auto bg-white">
                         <ScheduledTournamentCard scheduledTournaments = {scheduledTournaments} isScheduledTournament = {true} />
                     </div>
                 </div>
@@ -390,7 +389,7 @@ function UserHome() {
                 {/* AVAILABILITY */}
                 <div className = "availability-container gap-2 p-3 mb-10">
                     <div className = "availability-box border-gray-300 text-sm h-1/2 w-full min-w-72 flex flex-col p-2">
-                        <p className = "text-lg font-bold" style = {{ color: "#343434" }}> Are you available for tournaments? </p>
+                        <p className = "text-lg font-bold"> Are you available for tournaments? </p>
                         <div className = "mt-2 flex items-center">
                             <label className = "relative inline-flex items-center cursor-pointer">
                                 <input
@@ -407,7 +406,7 @@ function UserHome() {
                 </div>
                 {/* LEADERBOARD */}
                 <div className = "leaderboard-container h-3/4 gap-8 p-3 w-full">
-                    <h2 className = "text-xl font-bold mb-4" style = {{ color: "#343434" }}> RallyRank's Leaderboard </h2>
+                    <h2 className = "text-xl font-bold mb-4"> RallyRank's Leaderboard </h2>
                     <LeaderboardButtons
                         buttons = {["Top", otherGenderButtonLabel, "Mixed Leaderboard"]}
                         onTopClick = {handleTopClick}
@@ -416,7 +415,7 @@ function UserHome() {
                         activeButton = {activeButton}
                         setActiveButton = {setActiveButton}
                     />
-                    <div className = " shadow-lg leaderboard-box p-5 gap-5 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]" style = {{ backgroundColor: "white" }}>
+                    <div className = "bg-white shadow-lg leaderboard-box p-5 gap-5 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]">
                         {view === "Top" && defaultLeaderboardPlayers.length > 0 ? (
                             defaultLeaderboardPlayers.map((leaderboardPlayer, index) => (
                                 <LeaderboardCard key = {index} leaderboardPlayer = {leaderboardPlayer} rank = {index + 1} />
