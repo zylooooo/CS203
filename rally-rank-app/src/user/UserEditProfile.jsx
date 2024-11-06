@@ -27,6 +27,7 @@ function UserEditProfile() {
     // Constants to check or set the boolean value of any changes made to the email or username
     const [isEmailChanged, setIsEmailChanged] = useState(false);
     const [isUsernameChanged, setIsUsernameChanged] = useState(false);
+    const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
     // Constants to store the warning or success alert messages
     // const [warningAlertMessage, setWarningAlertMessage] = useState("");
@@ -47,21 +48,16 @@ function UserEditProfile() {
     const handleUsernameChange = () => {
         handleChange();
         setIsUsernameChanged(true);
-        logoutUser();
-        navigate("/auth/user-login");
     };
 
     const handleEmailChange = () => {
         handleChange();
         setIsEmailChanged(true);
-        logoutUser();
-        navigate("/auth/user-login");
     };
 
     const handlePasswordChange = () => {
         handleChange();
-        logoutUser();
-        navigate("/auth/user-login");
+        setIsPasswordChanged(true);
     };
 
     // ----------------------- API Call: Checking the availability of username and email address -----------------------
@@ -76,8 +72,8 @@ function UserEditProfile() {
             "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
-                accountName: formData.username,
-                email: formData.email,
+                accountName: formData.username || originalUserData.username,
+                email: formData.email || originalUserData.email,
                 },
                 withCredentials: true
             });
@@ -157,7 +153,16 @@ function UserEditProfile() {
             }
             const response = await axios.put(
                 "http://localhost:8080/users/profile",
-                formData,
+                {
+                    username: formData.username || originalUserData.username,
+                    email: formData.email || originalUserData.email,
+                    firstName: formData.firstName || originalUserData.firstName,
+                    lastName: formData.lastName || originalUserData.lastName,
+                    phoneNumber: formData.phoneNumber || originalUserData.phoneNumber,
+                    dateOfBirth: formData.dateOfBirth || originalUserData.dateOfBirth,
+                    gender: formData.gender || originalUserData.gender,
+                    password: formData.password || originalUserData.password,
+                },
                 {
                     withCredentials: true,
                     headers: {
@@ -181,12 +186,22 @@ function UserEditProfile() {
         const firstResponse = await checkCredentialsAvailability(formData);
         if (firstResponse) {
             const updatedData = {
-                ...formData,
-                password: password || originalUserData.password,
+                username: formData.username || originalUserData.username,
+                email: formData.email || originalUserData.email,
+                firstName: formData.firstName || originalUserData.firstName,
+                lastName: formData.lastName || originalUserData.lastName,
+                phoneNumber: formData.phoneNumber || originalUserData.phoneNumber,
+                dateOfBirth: formData.dateOfBirth || originalUserData.dateOfBirth,
+                gender: formData.gender || originalUserData.gender,
+                password: formData.password || originalUserData.password,
             };
             await updateUserProfile(updatedData);
-            setIsEmailChanged(false);
-            setIsUsernameChanged(false);
+            if (isUsernameChanged || isPasswordChanged || isEmailChanged) {
+                setIsEmailChanged(false);
+                setIsUsernameChanged(false);
+                setIsPasswordChanged(false);
+                navigate("/auth/user-login");
+            }
             navigate("/user/profile");
         }
     };
@@ -246,10 +261,7 @@ function UserEditProfile() {
                             placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            onChange = {(e) => {
-                                setPassword(e.target.value); 
-                                handlePasswordChange();
-                            }}
+                            {...register("password", { onChange: handlePasswordChange })}
                         />
                     </div>
                     {/* EMAIL ADDRESS */}
