@@ -198,7 +198,7 @@ function AdministratorEditTournament() {
                   Tournament Name
                 </label>
                 <input
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   type="text"
                   id="tournamentName"
                   {...register("tournamentName", { onChange: handleChange })}
@@ -213,7 +213,7 @@ function AdministratorEditTournament() {
                   Start Date
                 </label>
                 <input
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   type="date"
                   id="startDate"
                   {...register("startDate", { onChange: handleChange })}
@@ -228,7 +228,7 @@ function AdministratorEditTournament() {
                   Venue
                 </label>
                 <input
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   type="text"
                   id="venue"
                   {...register("location", { onChange: handleChange })}
@@ -243,7 +243,7 @@ function AdministratorEditTournament() {
                   Gender Specification
                 </label>
                 <select
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   id="gender"
                   {...register("gender", { onChange: handleChange })}
                 >
@@ -261,7 +261,7 @@ function AdministratorEditTournament() {
                   Age Category
                 </label>
                 <select
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   id="category"
                   {...register("category", { onChange: handleChange })}
                 >
@@ -281,14 +281,14 @@ function AdministratorEditTournament() {
                 </label>
                 <div className="flex gap-2">
                   <input
-                    className="border2 p-2 w-full"
+                    className="border p-2 w-full"
                     type="number"
                     id="minElo"
                     {...register("minElo", { onChange: handleChange })}
                   />
                   <span> to </span>
                   <input
-                    className="border2 p-2 w-full"
+                    className="border p-2 w-full"
                     type="number"
                     id="maxElo"
                     {...register("maxElo", { onChange: handleChange })}
@@ -304,7 +304,7 @@ function AdministratorEditTournament() {
                   Max Players
                 </label>
                 <input
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   type="number"
                   id="maxPlayers"
                   {...register("playerCapacity", { onChange: handleChange })}
@@ -372,7 +372,7 @@ function AdministratorEditTournament() {
                   Remarks
                 </label>
                 <textarea
-                  className="border2 p-2 w-full"
+                  className="border p-2 w-full"
                   id="remarks"
                   {...register("remarks", { onChange: handleChange })}
                 />
