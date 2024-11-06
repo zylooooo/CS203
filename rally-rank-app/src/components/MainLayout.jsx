@@ -25,7 +25,7 @@ function MainLayout({ children }) {
             </header>
             <main className = "flex-1 overflow-auto flex flex-col justify-start items-center w-full md:px-0 lg:px-0">
                 {/* replace 'flex-1 overflow-auto' with 'flex-grow' if you don't want the footer to constantly show */}
-                <div className = "w-full max-w-7xl mx-auto">
+                <div className = "w-full h-main">
                     {children}
                 </div>
             </main>

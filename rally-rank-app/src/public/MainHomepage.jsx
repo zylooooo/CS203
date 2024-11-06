@@ -23,7 +23,7 @@ function MainHomePage() {
 
 
     return (
-        <div className="flex flex-col justify-center w-full mt-10">
+        <div className="flex flex-col justify-center w-full mt-10 p-12">
             <div className='relative'>
                 <img
                     src="../src/assets/view-tennis-racket-hitting-ball.jpg"
