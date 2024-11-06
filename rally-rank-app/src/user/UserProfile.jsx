@@ -108,14 +108,14 @@ function UserProfile() {
 
     return (
         <div className = "h-main flex flex-col items-center w-full">
-            <div className = "container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
+            <div className = "container w-3/5 mx-auto my-10 p-6 card-background shadow-md rounded-[8px] relative">
                 <button
                     className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-6 mt-5"
                     onClick = {handleEditProfileClick}
                     aria-label = "Edit Profile"
                 >
                     <div className = "flex gap-3">
-                        <FaPen className = "text-sm mt-1 ml-1" style = {{ color: "#222222" }}/>
+                        <FaPen className = "text-sm mt-1 ml-1" style = {{ color: "#242424" }}/>
                         <p className = "text-sm font-semibold"> Edit Profile </p>
                     </div>
                 </button>
@@ -133,7 +133,7 @@ function UserProfile() {
                                 </h2>
                                 <p className = "mt-2 font-semibold"> @{username} </p>
                                 <p className = "mt-3 text-sm">
-                                    <span className = "font-semibold" style = {{ color: "black" }}> Current Availability Status: </span> {" "}
+                                    <span className = "font-semibold"> Current Availability Status: </span> {" "}
                                     <span style = {{ color: available ? "green" : "red" }}>
                                         <strong> {available ? "Available" : "Not available"} </strong>
                                     </span>
@@ -172,7 +172,7 @@ function UserProfile() {
                 )}
             </div>
 
-            <div className = "strike-report container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
+            <div className = "strike-report container w-3/5 mx-auto my-10 p-6 card-background shadow-md rounded-[8px] mt-0">
                 {strikeReports && strikeReports.length > 0 ? (
                     <div className = "p-4 rounded-lg">
                         <h3 className = "font-semibold"> Strike Report: </h3>
@@ -201,7 +201,7 @@ function UserProfile() {
                 )}
             </div>
 
-            <div className = "participated-tournaments-container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] mt-0">
+            <div className = "participated-tournaments-container w-3/5 mx-auto my-10 p-6 card-background shadow-md rounded-[8px] mt-0">
                 <>
                     <div className = "p-4 rounded-lg">
                         <h3 className = "font-semibold"> My Participated Tournaments: </h3>
@@ -218,7 +218,7 @@ function UserProfile() {
                                 <p className = "text-sm text-gray-500"> You have no participated tournaments. Join one today! </p>
                                 <div className = "mt-6 flex justify-center items-center">
                                     <button
-                                        className = "px-4 py-2 bg-green-500 text-sm font-semibold text-white rounded-[12px] hover:cursor-pointer shadow-sm w-3/4"
+                                        className = "px-4 py-2 bg-primary-color-green text-sm font-semibold text-white rounded-[12px] hover:cursor-pointer shadow-sm w-3/4"
                                         onClick = {() => { handleJoinTournamentClick() }}
                                     >
                                         Join Tournament

@@ -68,7 +68,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                         {/* UPDATE MATCH DATE AND TIME */}
                         <div>
                             <input
-                                className = "border2 p-2 m-3"
+                                className = "border p-2 m-3"
                                 type = "datetime-local"
                                 id = "startDate"
                                 {...register("startDate", {required: "Match date and time is required"})}

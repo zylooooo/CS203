@@ -262,7 +262,7 @@ const MatchTimingsCard = ({ matchDetails }) => {
 
                         <div>
                         <input
-                            className="border2 p-2"
+                            className="border p-2"
                             type="datetime-local"
                             id="startDate"
                             {...register("startDate", {

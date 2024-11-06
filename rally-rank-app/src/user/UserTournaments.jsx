@@ -21,7 +21,11 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
             {buttons.map((tournamentButtonLabel, index) => (
                 <button
                     key = {index}
-                    className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'hover:text-black-700'}`}
+                    className = {`btn transition-colors duration-300 font-semibold ${
+                        activeButton === index
+                        ? "active-button underline text-primary-color-green"             // Active State
+                        : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
+                    }`}
                     onClick = {() => handleTournamentButtonClick(index)}
                 >
                     {tournamentButtonLabel}
@@ -58,7 +62,7 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
             {tournamentType.map((tournament, index) => (
                 <div
                     key = {index}
-                    className = "flex p-5 card-background border2 shadow-md cursor-pointer hover:shadow-xl transition-all w-full rounded-[12px]"
+                    className = "flex p-5 card-background border shadow-md cursor-pointer hover:shadow-xl transition-all w-full rounded-[12px]"
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
                     <div className = "flex-1 pr-4 py-1">
@@ -85,7 +89,7 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
                                 style = {{
                                     color: tournament.playerCapacity - tournament.playersPool.length <= 10
                                     ? "red"
-                                    : "black",
+                                    : "text-grey",
                                     fontWeight: tournament.playerCapacity - tournament.playersPool.length <= 10
                                     ? 700
                                     : "normal"
@@ -185,9 +189,26 @@ function UserTournaments() {
         getAvailableTournaments();
     }, []);
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = displayTournamentType.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
     return (
         <div className = "flex flex-col p-10 items-center justify-center w-4/5">
             <div className = "flex flex-col w-4/5 gap-8">
+                <input
+                    type = "text"
+                    placeholder = "Search for tournaments..."
+                    value = { searchTerm }
+                    onChange = { (e) => setSearchTerm(e.target.value) }
+                    className = "border rounded-xl mt-5 p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
                 <TournamentButtons
                     buttons = {["Available Tournaments", "My Scheduled Tournaments"]}
                     onAvailableTournamentsClick = {handleAvailableTournamentClick}
@@ -197,7 +218,7 @@ function UserTournaments() {
                     <p> Loading tournaments... </p>
                 ) : displayTournamentType.length > 0 ? (
                     <TournamentCard
-                        tournamentType = {displayTournamentType}
+                        tournamentType = {filteredTournaments}
                         isAvailableTournament = {activeButton === 0}
                         isScheduledTournament = {activeButton === 1}
                     />

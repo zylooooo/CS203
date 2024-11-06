@@ -31,7 +31,7 @@ function PublicNavBar() {
                     <div className="hidden sm:ml-6 sm:flex sm:items-center" >
                     <button 
                         onClick = {handleLoginClick} 
-                        className = "ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-custom-green bg-custom-green-hover transition-colors duration-200"
+                        className = "ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-primary-color-light-green hover:bg-primary-color-green transition-colors duration-200"
                         style = {{ color: "white" }}
                     >
                         Login
@@ -39,7 +39,7 @@ function PublicNavBar() {
 
                     <button 
                         onClick={handleSignUpClick} 
-                        className = "ml-4 px-4 py-2 rounded-xl text-sm font-bold text-white bg-custom-green bg-custom-green-hover transition-colors duration-200"
+                        className = "ml-4 px-4 py-2 rounded-xl text-sm font-bold text-white bg-primary-color-light-green hover:bg-primary-color-green transition-colors duration-200"
                         style = {{ color: "white" }}
                     >
                         Sign Up

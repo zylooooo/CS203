@@ -221,17 +221,14 @@ function UserEditProfile() {
                 <div className = "flex justify-end mt-4 mb-3">
                     <button
                         type = "submit"
-                        style = {{
-                            backgroundColor: isChanged ? "green" : "lightgray",
-                            color: "white",
-                        }}
-                        className = "rounded-lg border w-1/3 py-2 px-4 text-md font-semibold"
+                        className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
+                                    ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
                         Save Changes
                     </button>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px]" style = {{ backgroundColor: "white" }}>
+                <div className = "p-6 shadow-lg rounded-[12px] card-background">
                     <h2 className = "text-2xl font-bold mt-2 ml-2"> Account Information </h2>
                     {/* USERNAME */}
                     <div className = "mt-2">
@@ -282,7 +279,7 @@ function UserEditProfile() {
                         />
                     </div>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6" style = {{ backgroundColor: "white" }}>
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
