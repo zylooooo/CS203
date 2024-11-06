@@ -127,6 +127,10 @@ public class AdminService {
      */
     public void deleteAdmin(@NotNull String adminName) throws AdminNotFoundException, RuntimeException {
 
+        if (adminName == null) {
+            throw new IllegalArgumentException("Admin name cannot be null");
+        }
+
         try {
             Admin admin = adminRepository.findByAdminName(adminName)
                     .orElseThrow(() -> new AdminNotFoundException(adminName));
@@ -215,37 +219,23 @@ public class AdminService {
         // Get the user's strikeReports
         List<User.StrikeReport> strikeReports = user.getStrikeReports();
 
-        // If user has no strikes, add a new strike report
-        if (strikeReports.isEmpty()) {
-
-            logger.info("Admin {} issued a strike to user {} for tournament {}", adminName, username, tournamentName);
-            strikeReports.add(new User.StrikeReport(reportDetails, LocalDateTime.now(), adminName));
-
-            // Set the user's strikeReports
-            user.setStrikeReports(strikeReports);
-
-            // Save the user
-            userRepository.save(user);
-            return;
-        }
-
         // Check if the user has already been struck 3 times
         if (strikeReports.size() >= 3) {
             throw new InvalidStrikeException("User has already been struck 3 times.");
         }
 
-        
+        if (!strikeReports.isEmpty()) {
+            // If user has 1 or 2 strikes, check if the strike is being issued within a week of the most recent strike by this admin
+            LocalDateTime mostRecentStrikeDate = strikeReports.stream()
+            .filter(strike -> strike.getIssuedBy().equals(adminName))
+            .map(User.StrikeReport::getDateCreated)
+            .max(LocalDateTime::compareTo)
+            .orElse(null);
 
-        // If user has 1 or 2 strikes, check if the strike is being issued within a week of the most recent strike by this admin
-        LocalDateTime mostRecentStrikeDate = strikeReports.stream()
-                .filter(strike -> strike.getIssuedBy().equals(adminName))
-                .map(User.StrikeReport::getDateCreated)
-                .max(LocalDateTime::compareTo)
-                .orElse(null);
-
-        // Admin cannot issue a strike more than once a week on the same user
-        if (mostRecentStrikeDate != null && mostRecentStrikeDate.plusDays(7).isAfter(LocalDateTime.now())) {
-            throw new InvalidStrikeException("Admin cannot issue a strike more than once a week on the same user.");
+            // Admin cannot issue a strike more than once a week on the same user
+            if (mostRecentStrikeDate != null && mostRecentStrikeDate.plusDays(7).isAfter(LocalDateTime.now())) {
+                throw new InvalidStrikeException("Admin cannot issue a strike more than once a week on the same user.");
+            }
         }
 
         // Add the new strike report
