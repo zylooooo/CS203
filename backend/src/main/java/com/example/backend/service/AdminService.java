@@ -247,7 +247,8 @@ public class AdminService {
         // Save the user
         userRepository.save(user);
 
-        logger.info("Admin {} issued a strike to user {} for tournament {}. Current strike count: {}", adminName, username, tournamentName, strikeReports.size());
+        logger.info("Admin {} issued a strike to user {} for tournament {}. Current strike count: {}", 
+                                                    adminName, username, tournamentName, strikeReports.size());
 
     }    
 }
