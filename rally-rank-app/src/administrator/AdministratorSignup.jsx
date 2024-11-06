@@ -50,7 +50,7 @@ function AdministratorSignUp() {
                 const response = await createAdmin(formData);
                 if (response !== undefined) {
                     alert("Successfully registered! Please move on to verification!");
-                    navigate("/auth/admin-verify");
+                    navigate("/auth/admin-verification");
                 }
             }
         }
@@ -69,7 +69,7 @@ function AdministratorSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+            "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
                 accountName: formData.adminName,

@@ -159,7 +159,7 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournaments are found for the specified user.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-    @GetMapping("/available-tournaments")
+    @GetMapping("/available")
     public ResponseEntity<?> getUserAvailableTournaments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -189,7 +189,7 @@ public class UsersTournamentsController {
      * @throws InvalidJoinException if the join attempt is invalid.
      * @throws RuntimeException for any unexpected errors during the join process.
      */
-    @PostMapping("/join-{tournamentName}")
+    @PostMapping("/{tournamentName}/join")
     public ResponseEntity<?> joinTournament(@PathVariable String tournamentName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

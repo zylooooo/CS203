@@ -56,7 +56,7 @@ function AdministratorProfile() {
             }
 
             const response = await axios.delete(
-                "http://localhost:8080/admins/delete",
+                "http://localhost:8080/admins/profile",
                 {
                     withCredentials: true,
                     headers: {

@@ -105,7 +105,7 @@ function App() {
 
                     {/* USER VERIFY PAGE */}
                     <Route
-                        path = "/auth/user-verify"
+                        path = "/auth/user-verification"
                         element = {
                             <MainLayout>
                                 <UserVerify />
@@ -125,7 +125,7 @@ function App() {
 
                     {/* ADMINISTRATOR VERIFY PAGE */}
                     <Route
-                        path = "/auth/admin-verify"
+                        path = "/auth/admin-verification"
                         element = {
                             <MainLayout>
                                 <AdminVerify />

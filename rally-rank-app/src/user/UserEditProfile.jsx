@@ -73,7 +73,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+            "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
                 accountName: formData.username,
@@ -156,7 +156,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.put(
-                "http://localhost:8080/users/update",
+                "http://localhost:8080/users/profile",
                 formData,
                 {
                     withCredentials: true,

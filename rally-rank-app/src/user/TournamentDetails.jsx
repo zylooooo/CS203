@@ -56,7 +56,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/users/tournaments/join-${tournamentName}`,
+                    `http://localhost:8080/users/tournaments/${tournamentName}/join`,
                     {},
                     {
                         withCredentials: true,
