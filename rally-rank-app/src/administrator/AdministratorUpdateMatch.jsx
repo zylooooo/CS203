@@ -71,14 +71,14 @@ const ResultsCard = ({ matchDetails, player1, player2}) => {
                 object: setScores,
             },
             matchWinner: winner,
-            isCompleted: true
+            completed: true
         };
 
         console.log(updatedMatchDetails);
 
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -214,11 +214,11 @@ const MatchTimingsCard = ({ matchDetails }) => {
             players: matchDetails.players,
             sets: matchDetails.sets,
             matchWinner: matchDetails.matchWinner,
-            isCompleted: matchDetails.isCompleted
+            completed: matchDetails.completed
         };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,

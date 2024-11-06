@@ -31,7 +31,7 @@ import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdministratorProfile from "./administrator/AdministratorProfile";
 import AdministratorFixtures from "./administrator/AdministratorFixtures";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
-// import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
+import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
@@ -105,7 +105,7 @@ function App() {
 
                     {/* USER VERIFY PAGE */}
                     <Route
-                        path = "/auth/user-verify"
+                        path = "/auth/user-verification"
                         element = {
                             <MainLayout>
                                 <UserVerify />
@@ -125,7 +125,7 @@ function App() {
 
                     {/* ADMINISTRATOR VERIFY PAGE */}
                     <Route
-                        path = "/auth/admin-verify"
+                        path = "/auth/admin-verification"
                         element = {
                             <MainLayout>
                                 <AdminVerify />
@@ -325,7 +325,7 @@ function App() {
                     />
 
                     {/* ADMINISTRATOR'S EDIT PROFILE/ACCOUNT PAGE */}
-                    {/* <Route
+                    <Route
                         path = "/administrator-account/edit" 
                         element = {
                             <AdminRoute>
@@ -334,7 +334,7 @@ function App() {
                                 </MainLayout>
                             </AdminRoute>
                         }
-                    /> */}
+                    />
 
                     {/* FALLBACK ROUTE */}
                     <Route

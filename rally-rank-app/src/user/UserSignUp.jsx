@@ -81,7 +81,7 @@ function UserSignUp() {
                 const response = await createUser(formData);
                 if (response !== undefined) {
                 setSuccessMessage("You have successfully verified an account! Login to enter RallyRank!"); // may need to let state enter to authverify
-                navigate("/auth/user-verify");
+                navigate("/auth/user-verification");
                 }
             }
         }
@@ -91,7 +91,7 @@ function UserSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+            "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
                 accountName: formData.username,

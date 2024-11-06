@@ -76,7 +76,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the update process.
      */
-    @PutMapping("/update")
+    @PutMapping("/profile")
     public ResponseEntity<?> updateUser(@RequestBody User newUserDetails) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -103,7 +103,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the update process.
      */
-    @PutMapping("/update-availability")
+    @PutMapping("/availability")
     public ResponseEntity<?> updateUserAvailability(@RequestParam Boolean availability) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -129,7 +129,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the deletion process.
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping("/profile")
     public ResponseEntity<?> deleteUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

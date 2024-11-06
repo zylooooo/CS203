@@ -25,7 +25,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
             };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchStartDate,
                 {
                     withCredentials: true,
@@ -163,7 +163,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
             };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,

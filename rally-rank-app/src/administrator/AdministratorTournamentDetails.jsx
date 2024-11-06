@@ -87,7 +87,7 @@ const AdministratorTournamentDetails = () => {
   //     }
 
   //     const response = await axios.put(
-  //       `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+  //       `http://localhost:8080/admins/tournaments/bracket/${tournamentName}`,
   //       {},
   //       {
   //         withCredentials: true,
@@ -145,7 +145,7 @@ const AdministratorTournamentDetails = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+        `http://localhost:8080/admins/tournaments/bracket/${tournamentName}`,
         {},
         {
           withCredentials: true,

@@ -179,7 +179,7 @@ function UserHome() {
             const newAvailability = !userData.available;
 
             const response = await axios.put(
-                `http://localhost:8080/users/update-availability?availability=${newAvailability}`,
+                `http://localhost:8080/users/availability?availability=${newAvailability}`,
                 {},
                 {
                     withCredentials: true,

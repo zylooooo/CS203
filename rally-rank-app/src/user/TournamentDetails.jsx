@@ -56,7 +56,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/users/tournaments/join-${tournamentName}`,
+                    `http://localhost:8080/users/tournaments/${tournamentName}/join`,
                     {},
                     {
                         withCredentials: true,
@@ -342,7 +342,11 @@ const TournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         onClick = {handleShowFixturesButtonClick}
-                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                        style={{
+                            backgroundColor: "#56AE57",
+                            color: "white",
+                          }}
+                        className = "border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>

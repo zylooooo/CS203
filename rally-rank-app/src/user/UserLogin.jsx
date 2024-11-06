@@ -192,7 +192,7 @@ function UserLogin() {
                         </div>
                         <div className="text-xs text-center pt-2">
                             <Link
-                                to="/auth/user-verify"
+                                to="/auth/user-verification"
                                 className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
                             >
                                 Looking to verify? Click here

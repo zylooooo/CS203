@@ -119,7 +119,7 @@ function AdministratorEditTournament() {
       };
       console.log("Sending updatedTournamentDetails to backend:", updatedTournamentDetails);
       const response = await axios.put(
-        `http://localhost:8080/admins/tournaments/edit-${tournament.tournamentName}`,
+        `http://localhost:8080/admins/tournaments/${tournament.tournamentName}`,
         updatedTournamentDetails,
         {
           withCredentials: true,

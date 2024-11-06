@@ -87,7 +87,7 @@ public class AdminsTournamentsController {
      * @return a ResponseEntity with the created tournament or error messages if validation fails.
      * @throws RuntimeException if there's an unexpected error during the creation process.
      */
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> createTournament(@RequestBody Tournament tournament) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String adminName = authentication.getName();
@@ -116,7 +116,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the tournament name is null or empty.
      * @throws RuntimeException for any unexpected errors during the availability check.
      */
-    @GetMapping("/check-name-availability")
+    @GetMapping("/name-availability")
     public ResponseEntity<?> checkTournamentNameAvailability(@RequestParam String tournamentName) {
         logger.info("Received request to check availability for tournament name: {}", tournamentName);
         try {
@@ -226,7 +226,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the new tournament details are invalid.
      * @throws RuntimeException if there is an unexpected error during the update.
      */
-    @PutMapping("/edit-{tournamentName}")
+    @PutMapping("/{tournamentName}")
     public ResponseEntity<?> updateTournament(@PathVariable String tournamentName, @RequestBody Tournament newTournamentDetails) {
 
         logger.info("Received request to update tournament: {}", tournamentName);
@@ -389,7 +389,7 @@ public class AdminsTournamentsController {
      * @throws MatchNotFoundException if no match is found.
      * @throws Exception if an unexpected error occurs during the bracket generation process.
      */
-    @PutMapping("/generate-bracket/{tournamentName}")
+    @PutMapping("/bracket/{tournamentName}")
     public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
         try {
             Map<String, Object> response = bracketService.generateBracket(tournamentName);
@@ -435,7 +435,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the match details are invalid.
      * @throws Exception if an unexpected error occurs during the update process.
      */
-    @PutMapping("/update-match")
+    @PutMapping("/match")
     public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
         try {
 

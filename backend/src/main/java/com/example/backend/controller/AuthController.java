@@ -170,7 +170,7 @@ public class AuthController {
      * @param verifyDto the data transfer object containing user verification details.
      * @return a ResponseEntity with a success message or error messages if verification fails.
      */
-    @PostMapping("/user-verify")
+    @PostMapping("/user-verification")
     public ResponseEntity<?> userVerify(@RequestBody UserVerifyDto verifyDto) {
 
         try {
@@ -205,7 +205,7 @@ public class AuthController {
      * @param verifyDto the data transfer object containing admin verification details.
      * @return a ResponseEntity with a success message or error messages if verification fails.
      */
-    @PostMapping("/admin-verify")
+    @PostMapping("/admin-verification")
     public ResponseEntity<?> adminVerify(@RequestBody AdminVerifyDto verifyDto) {
         try {
             authenticationService.verifyAdmin(verifyDto);
@@ -242,7 +242,7 @@ public class AuthController {
      * @param payload a map containing the email address for which to resend the verification code.
      * @return a ResponseEntity with a success message or error messages if validation fails.
      */
-    @PostMapping("/resend-verification")
+    @PostMapping("/reverification")
     public ResponseEntity<?> resendVerificationCode(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
         if (email == null || email.trim().isEmpty()) {
@@ -279,7 +279,7 @@ public class AuthController {
      * @param email the email address to check for availability.
      * @return a ResponseEntity with the availability status or error messages if validation fails.
      */
-    @GetMapping("/check-credentials-availability")
+    @GetMapping("/credentials-availability")
     public ResponseEntity<?> checkCredentialsAvailability(@RequestParam(required = false) String accountName, @RequestParam(required = false) String email) {
         Map<String, Object> response = new HashMap<>();
 
