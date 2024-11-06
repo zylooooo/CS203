@@ -19,13 +19,25 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private static final int STRIKE_LIMIT = 3;
+
+    /**
+     * Enum representing different types of leaderboards available in the system.
+     * SAME_GENDER: Leaderboard filtered by the user's gender
+     * OPPOSITE_GENDER: Leaderboard filtered by the opposite gender
+     * MIXED: Leaderboard including all genders
+     */
+    private enum LeaderboardType {
+        SAME_GENDER,
+        OPPOSITE_GENDER,
+        MIXED
+    }
 
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
@@ -248,7 +260,7 @@ public class UserService {
     }
 
 
-    /*
+    /**
      * Helper method used by updateUser to update the matches for a tournament.
      * 
      * @param tournamentName the name of the tournament.
@@ -256,7 +268,6 @@ public class UserService {
      * @param newUsername the new username to replace the old username.
      * @throws MatchNotFoundException if no matches are found for the tournament.
      */
-    
     private void updateMatchesForTournament(String tournamentName, String oldUsername, String newUsername) throws MatchNotFoundException {
         List<Match> matches = matchRepository.findByTournamentName(tournamentName)
             .orElseThrow(() -> new MatchNotFoundException(tournamentName));
@@ -362,19 +373,13 @@ public class UserService {
     }
 
     /**
-     * Private method only used in deleteUser. Updates the tournaments by removing the specified user from the players pool
+     * Private helper method to update tournaments when a user is deleted.
+     * Updates the tournaments by removing the specified user from the players pool
      * and handling any incomplete matches they are part of.
      *
-     * This method checks each tournament for the specified user and performs the
-     * following actions:
-     * 1. Removes the user from the players pool if they are present.
-     * 2. For each match in the tournament, if the match is incomplete and the user
-     *    is a participant, removes the user and determines the match winner if
-     *    applicable.
-     * 3. Saves any modified tournaments back to the database.
-     *
-     * @param tournaments the list of tournaments to update.
-     * @param username    the username of the user to be removed from the tournaments.
+     * @param tournaments the list of tournaments to update
+     * @param username the username of the user to be removed
+     * @throws MatchNotFoundException if matches for a tournament cannot be found
      */
     private void updateTournamentsWhenUserIsDeleted(List<Tournament> tournaments, String username) {
 
@@ -428,20 +433,22 @@ public class UserService {
     }
 
     /**
-     * Function to show top 10 players in the database based on their elo rating and the gender of the user.
+     * Private helper method to handle all leaderboard requests.
+     * This method filters and sorts users based on the specified leaderboard type.
      *
-     * @param username the username of the user requesting the leaderboard.
-     * @return a list of top 10 users based on elo rating and matching gender.
-     * @throws IllegalArgumentException if the username is null or empty.
-     * @throws UserNotFoundException if the user is not found in the database.
-     * @throws RuntimeException if there is an unexpected error during the process.
+     * @param username the username of the user requesting the leaderboard
+     * @param type the type of leaderboard to generate (SAME_GENDER, OPPOSITE_GENDER, or MIXED)
+     * @return a list of up to 10 users sorted by ELO rating
+     * @throws IllegalArgumentException if the username is null or empty
+     * @throws UserNotFoundException if the requesting user is not found
+     * @throws RuntimeException if there is an unexpected error during processing
      */
-    public List<User> getDefaultLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
-        try {
-            if (username == null || username.isEmpty()) {
-                throw new IllegalArgumentException("Username must be provided!");
-            }
+    private List<User> getLeaderboard(String username, LeaderboardType type) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username must be provided!");
+        }
 
+        try {
             User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
@@ -450,23 +457,50 @@ public class UserService {
                 throw new UserNotFoundException("No users found in the database");
             }
 
-            List<User> leaderboard = allUsers.stream()
-                .filter(u -> u.getGender().equals(user.getGender()))
+            Stream<User> filteredUsers = allUsers.stream();
+            
+            // Apply gender filter based on type
+            if (type == LeaderboardType.SAME_GENDER) {
+                filteredUsers = filteredUsers.filter(u -> u.getGender().equals(user.getGender()));
+            } else if (type == LeaderboardType.OPPOSITE_GENDER) {
+                filteredUsers = filteredUsers.filter(u -> !u.getGender().equals(user.getGender()));
+            }
+
+            List<User> leaderboard = filteredUsers
                 .sorted(Comparator.comparingInt(User::getElo).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
 
+            // For mixed leaderboard, ensure user is included if they qualify
+            if (type == LeaderboardType.MIXED && !leaderboard.contains(user)) {
+                leaderboard.add(user);
+                leaderboard.sort(Comparator.comparingInt(User::getElo).reversed());
+                if (leaderboard.size() > 10) {
+                    leaderboard = leaderboard.subList(0, 10);
+                }
+            }
+
             return leaderboard;
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid username: {}", e.getMessage());
-            throw e;
-        } catch (UserNotFoundException e) {
-            logger.error("Unable to find user: {}", e.getMessage());
+        } catch (IllegalArgumentException | UserNotFoundException e) {
+            logger.error("{}: {}", e.getClass().getSimpleName(), e.getMessage());
             throw e;
         } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Function to show top 10 players in the database based on their elo rating and the gender of the user.
+     *
+     * @param username the username of the user requesting the leaderboard.
+     * @return a list of top 10 users based on elo rating and matching gender.
+     * @throws IllegalArgumentException if the username is null or empty.
+     * @throws UserNotFoundException if the user is not found in the database.
+     * @throws RuntimeException if there is an unexpected error during the process.
+     */
+    public List<User> getDefaultLeaderboard(String username) {
+        return getLeaderboard(username, LeaderboardType.SAME_GENDER);
     }
 
     /**
@@ -478,37 +512,8 @@ public class UserService {
      * @throws UserNotFoundException if the user is not found in the database.
      * @throws RuntimeException if there is an unexpected error during the process.
      */
-    public List<User> getOppositeGenderLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
-        try {
-            if (username == null || username.isEmpty()) {
-                throw new IllegalArgumentException("Username must be provided!");
-            }
-
-            User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-            List<User> allUsers = userRepository.findAll();
-            if (allUsers.isEmpty()) {
-                throw new UserNotFoundException("No users found in the database");
-            }
-
-            List<User> oppositeGenderLeaderboard = allUsers.stream()
-                .filter(u -> !u.getGender().equals(user.getGender()))
-                .sorted(Comparator.comparingInt(User::getElo).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
-
-            return oppositeGenderLeaderboard;
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid username: {}", e.getMessage());
-            throw e;
-        } catch (UserNotFoundException e) {
-            logger.error("Unable to find user: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
+    public List<User> getOppositeGenderLeaderboard(String username) {
+        return getLeaderboard(username, LeaderboardType.OPPOSITE_GENDER);
     }
 
     /**
@@ -520,44 +525,8 @@ public class UserService {
      * @throws UserNotFoundException if the user is not found in the database.
      * @throws RuntimeException if there is an unexpected error during the process.
      */
-    public List<User> getMixedGenderLeaderboard(String username) throws IllegalArgumentException, UserNotFoundException, RuntimeException {
-        try {
-            if (username == null || username.isEmpty()) {
-                throw new IllegalArgumentException("Username must be provided!");
-            }
-
-            User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-            List<User> allUsers = userRepository.findAll();
-            if (allUsers.isEmpty()) {
-                throw new UserNotFoundException();
-            }
-
-            List<User> mixedGenderLeaderboard = allUsers.stream()
-                .sorted(Comparator.comparingInt(User::getElo).reversed())
-                .limit(10)
-                .collect(Collectors.toList());
-
-            if (!mixedGenderLeaderboard.contains(user)) {
-                mixedGenderLeaderboard.add(user);
-                mixedGenderLeaderboard.sort(Comparator.comparingInt(User::getElo).reversed());
-                if (mixedGenderLeaderboard.size() > 10) {
-                    mixedGenderLeaderboard = mixedGenderLeaderboard.subList(0, 10);
-                }
-            }
-
-            return mixedGenderLeaderboard;
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid username: {}", e.getMessage());
-            throw e;
-        } catch (UserNotFoundException e) {
-            logger.error("Unable to find user: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
-        }
+    public List<User> getMixedGenderLeaderboard(String username) {
+        return getLeaderboard(username, LeaderboardType.MIXED);
     }
 
     /**
