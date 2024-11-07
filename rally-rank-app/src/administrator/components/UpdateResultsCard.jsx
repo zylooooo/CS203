@@ -100,7 +100,12 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     };
 
     const handleAddSetsClick = () => {
-        setSets(prevSets => [...prevSets, prevSets.length + 1]);
+        if (sets.length < 5) {
+            setSets(prevSets => [...prevSets, prevSets.length + 1]);
+        } else {
+            alert("You can't add more than 5 sets.");
+            return;
+        }
     };
 
     const handleDeleteSetClick = (setNumber) => {
