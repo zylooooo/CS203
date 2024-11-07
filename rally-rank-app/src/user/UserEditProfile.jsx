@@ -16,7 +16,6 @@ function UserEditProfile() {
     const { logoutUser } = useAuth();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
-    const [password, setPassword] = useState("");
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
     // Constants to store the value of the original data
@@ -75,7 +74,7 @@ function UserEditProfile() {
                 accountName: formData.username || originalUserData.username,
                 email: formData.email || originalUserData.email,
                 },
-                withCredentials: true
+                withCredentials: true,
             });
             
             if ((response.data.accountNameAvailable && response.data.emailAvailable) ||
@@ -200,6 +199,7 @@ function UserEditProfile() {
                 setIsEmailChanged(false);
                 setIsUsernameChanged(false);
                 setIsPasswordChanged(false);
+                logoutUser();
                 navigate("/auth/user-login");
             }
             navigate("/user/profile");
@@ -275,18 +275,9 @@ function UserEditProfile() {
                         <label
                             htmlFor = "email"
                             className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
-                            {...register("email", {
-                                onChange: handleEmailChange,
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                    message: "Please enter a valid email address."
-                                }
-                            })}
                         >
                             Email Address
-                        {errors.email && (
-                            <p className = "text-red-600 text-sm mt-2"> {errors.email.message} </p>
-                        )}
+                        
                         </label>
                         <input
                             type = "text"
@@ -294,8 +285,17 @@ function UserEditProfile() {
                             placeholder = {originalUserData.email || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("email", { onChange: handleEmailChange })}
+                            {...register("email", {
+                                onChange: handleEmailChange,
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Please enter a valid email address."
+                                }
+                            })}
                         />
+                        {errors.email && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.email.message} </p>
+                        )}
                     </div>
                 </div>
                 <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
