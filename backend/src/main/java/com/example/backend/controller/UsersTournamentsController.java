@@ -7,6 +7,7 @@ import com.example.backend.exception.InvalidJoinException;
 import com.example.backend.exception.TournamentNotFoundException;
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.service.UserService;
+import com.example.backend.service.BracketService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ public class UsersTournamentsController {
 
     private final TournamentService tournamentService;
     private final UserService userService;
+    private final BracketService bracketService;
 
     private static final Logger logger = LoggerFactory.getLogger(UsersTournamentsController.class);
 
@@ -157,7 +159,7 @@ public class UsersTournamentsController {
      * @throws TournamentNotFoundException if no tournaments are found for the specified user.
      * @throws RuntimeException for any unexpected errors during the retrieval process.
      */
-    @GetMapping("/available-tournaments")
+    @GetMapping("/available")
     public ResponseEntity<?> getUserAvailableTournaments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -187,7 +189,7 @@ public class UsersTournamentsController {
      * @throws InvalidJoinException if the join attempt is invalid.
      * @throws RuntimeException for any unexpected errors during the join process.
      */
-    @PostMapping("/join-{tournamentName}")
+    @PostMapping("/{tournamentName}/join")
     public ResponseEntity<?> joinTournament(@PathVariable String tournamentName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -235,4 +237,20 @@ public class UsersTournamentsController {
                 .body(new ErrorResponse("Tournament not found: " + tournamentName));
         }
     }
+
+    @GetMapping("/{tournamentName}/bracket")
+    public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> tournamentBracket = bracketService.viewTournamentBracket(tournamentName);
+            return ResponseEntity.ok(tournamentBracket);
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while viewing the tournament's bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while viewing the tournament's bracket!"));
+        }
+    } 
 }

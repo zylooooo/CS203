@@ -16,8 +16,8 @@ function UserNavBar() {
         navigate("/auth/user-login");
     };
 
-    const navLinkClasses = "text-secondary-color-dark-green hover:text-primary-color-green transition-colors duration-200";
-    const activeNavLinkClasses = "font-bold text-primary-color-green";
+    const navLinkClasses = "text-secondary-color-dark-green font-semibold hover:text-primary-color-light-green transition-colors duration-200";
+    const activeNavLinkClasses = "text-primary-color-light-green font-semibold";
 
     return (
         <nav className="bg-white shadow-md">
@@ -35,11 +35,11 @@ function UserNavBar() {
                         </NavLink>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                        <NavLink to="/users/home" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Home</NavLink>
-                        <NavLink to="/users/Tournaments" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Tournaments</NavLink>
-                        <NavLink to="/past-tournaments" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}> My Past Tournaments</NavLink>
-                        <NavLink to="/user-profile" className={({ isActive }) => `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} px-3 py-2 rounded-md text-sm font-medium`}>Your Profile</NavLink>
-                        <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-custom-green bg-custom-green-hover transition-colors duration-200" style = {{ color: "white" }}>Logout</button>
+                        <NavLink to="/users/home" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Home</NavLink>
+                        <NavLink to="/users/Tournaments" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournaments</NavLink>
+                        <NavLink to="/past-tournaments" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}> My Past Tournaments</NavLink>
+                        <NavLink to="/user/profile" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Your Profile</NavLink>
+                        <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-primary-color-light-green hover:bg-primary-color-green transition-colors duration-200" style = {{ color: "white" }}>Logout</button>
                     </div>
                 </div>
             </div>

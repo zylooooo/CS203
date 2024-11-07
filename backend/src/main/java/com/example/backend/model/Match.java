@@ -31,7 +31,7 @@ public class Match {
 
     private String matchWinner; // player 1 or player 2
 
-    private boolean isCompleted = false; // default value is false
+    private boolean completed; // default value is false
 
     @Data
     @NoArgsConstructor

@@ -4,13 +4,14 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary-color-green": "#54C761",
+                "primary-color-green": "#2C742C",
+                "primary-color-light-green": "#41A250",
                 "primary-color-white": "#FFFFFF",
                 "primary-color-black": "#262626",
-                "secondary-color-dark-green": "#10574E",
+                "secondary-color-dark-green": "#2D5A35",
                 "secondary-color-light-gray": "#525252",
-                "secondary-color-light-green": "#CDF731",
-                "red-color": "#FF0000",
+                "secondary-color-red": "#FF6961",
+                "text-grey": "#242424",
             },
         },
     },

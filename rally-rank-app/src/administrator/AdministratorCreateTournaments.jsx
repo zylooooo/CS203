@@ -20,13 +20,13 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
         <div className = "edit-tournament-details p-6 rounded-lg shadow-lg w-5/12 mx-auto">
             <div className = "flex flex-row gap-8 justify-between">
                 <h2 className = "text-xl font-extrabold">Create Tournament</h2>
-                <div className = "mt-2">
-                    <FontAwesomeIcon
-                            icon = {faX}
-                            onClick = {handleCloseButtonClick}
-                            className = "back-icon cursor-pointer text-xl"
-                    />
-                </div>
+                    <button
+                    onClick={handleCloseButtonClick}
+                    className="text-3xl font-bold text-gray-400 hover:text-text-grey"
+                    type="button"
+                >
+                    &times;
+                </button>
             </div>
 
             <form onSubmit = { handleSubmit(onSubmit) }>
@@ -196,7 +196,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
 
                 <div className = "flex justify-evenly gap-5 p-4">
                     <button
-                        className = "font-bold border px-14 py-2 bg-custom-green text-primary-color-white hover:bg-secondary-color-dark-green"
+                        className = "font-bold border px-14 py-2 bg-primary-color--light-green text-primary-color-white hover:bg-primary-color-green"
                         type = "submit"
                     >
                         Create Tournament
@@ -247,7 +247,7 @@ function AdministratorCreateTournaments() {
             const trimmedTournamentName = data.tournamentName.trim();
 
             const response = await axios.post(
-                "http://localhost:8080/admins/tournaments/create",
+                "http://localhost:8080/admins/tournaments",
                 {
                     tournamentName: trimmedTournamentName,
                     createdAt: today,
@@ -298,7 +298,7 @@ function AdministratorCreateTournaments() {
             }
 
             const firstResponse = await axios.get(
-                `http://localhost:8080/admins/tournaments/check-name-availability?tournamentName=${tournamentName}`,
+                `http://localhost:8080/admins/tournaments/name-availability?tournamentName=${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {

@@ -71,14 +71,14 @@ const ResultsCard = ({ matchDetails, player1, player2}) => {
                 object: setScores,
             },
             matchWinner: winner,
-            isCompleted: true
+            completed: true
         };
 
         console.log(updatedMatchDetails);
 
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -190,13 +190,14 @@ const ResultsConfirmationCard = (setResultsConfirmationCardOpen) => {
     );
 }
 
-const MatchTimingsCard = ({ matchDetails, player1, player2}) => {
+const MatchTimingsCard = ({ matchDetails }) => {
     // change this const to be passed into MatchTimingsCard
-    const [matchTimingsCardOpen, setMatchTimingsCardOpen] = useState(true);
+    // const [matchTimingsCardOpen, setMatchTimingsCardOpen] = useState(true);
 
     const { register, handleSubmit, formState: { errors }} = useForm();
 
     const [sets, setSets] = useState([1]);
+    console.log("timings card: " , matchDetails);
 
     // API Call: Update one specific match's timings
     async function updateMatchTimings(formData) {
@@ -213,11 +214,11 @@ const MatchTimingsCard = ({ matchDetails, player1, player2}) => {
             players: matchDetails.players,
             sets: matchDetails.sets,
             matchWinner: matchDetails.matchWinner,
-            isCompleted: matchDetails.isCompleted
+            completed: matchDetails.completed
         };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/update-match",
+                "http://localhost:8080/admins/tournaments/match",
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -248,19 +249,20 @@ const MatchTimingsCard = ({ matchDetails, player1, player2}) => {
         }
     }
 
-    return (
+    return  (
+        matchTimingsCardOpen && (
         <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
             <div className = "update-match-results-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[550px] bg-primary-color-white">
                 <form onSubmit = {handleSubmit(onSubmit)}>
                     <div className = "flex flex-col gap-6"> 
                         <div>
                             <h1 className = "text-2xl font-semibold">Match Timings</h1>
-                            <p><strong>{player1} vs {player2}</strong></p>
+                            <p><strong>{matchDetails.players[0]} vs {matchDetails.players[1]}</strong></p>
                         </div>
 
                         <div>
                         <input
-                            className="border2 p-2"
+                            className="border p-2"
                             type="datetime-local"
                             id="startDate"
                             {...register("startDate", {
@@ -274,7 +276,7 @@ const MatchTimingsCard = ({ matchDetails, player1, player2}) => {
                             {/* CANCEL */}
                             <button
                                 type = "button"
-                                onClick = {() => setResultsCardOpen(false)}
+                                onClick = {() => setMatchTimingsCardOpen(false)}
                                 className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
                             >
                                 Cancel
@@ -294,13 +296,7 @@ const MatchTimingsCard = ({ matchDetails, player1, player2}) => {
                 </form>
             </div>
         </div>
-    );
+    ));
 };
 
-function ResultsTest() {
-    return (
-        <MatchTimingsCard />
-    );
-}
-
-export default ResultsTest;
+export { ResultsCard, ResultsConfirmationCard, MatchTimingsCard };

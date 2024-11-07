@@ -29,14 +29,15 @@ import AdminVerify from "./administrator/AdminVerify";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdministratorProfile from "./administrator/AdministratorProfile";
+import AdministratorFixtures from "./administrator/AdministratorFixtures";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
-// import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
+import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
-import AdministratorFixtures from "./administrator/AdministratorFixtures";
+
 
 // Authentication Imports
 import AdminRoute from "./authentication/AdminRoute";
@@ -104,7 +105,7 @@ function App() {
 
                     {/* USER VERIFY PAGE */}
                     <Route
-                        path = "/auth/user-verify"
+                        path = "/auth/user-verification"
                         element = {
                             <MainLayout>
                                 <UserVerify />
@@ -124,7 +125,7 @@ function App() {
 
                     {/* ADMINISTRATOR VERIFY PAGE */}
                     <Route
-                        path = "/auth/admin-verify"
+                        path = "/auth/admin-verification"
                         element = {
                             <MainLayout>
                                 <AdminVerify />
@@ -192,7 +193,7 @@ function App() {
 
                     {/* USER'S PROFILE PAGE */}
                     <Route
-                        path = "/user-profile"
+                        path = "/user/profile"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>
@@ -324,7 +325,7 @@ function App() {
                     />
 
                     {/* ADMINISTRATOR'S EDIT PROFILE/ACCOUNT PAGE */}
-                    {/* <Route
+                    <Route
                         path = "/administrator-account/edit" 
                         element = {
                             <AdminRoute>
@@ -333,7 +334,7 @@ function App() {
                                 </MainLayout>
                             </AdminRoute>
                         }
-                    /> */}
+                    />
 
                     {/* FALLBACK ROUTE */}
                     <Route

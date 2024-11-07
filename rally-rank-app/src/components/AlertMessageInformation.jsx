@@ -30,8 +30,8 @@ const AlertMessageInformation = ({ message, onClose, duration = 3000 }) => {
     return (
         <div
             role = "alert"
-            className = {`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 alert alert-info flex items-center text-white p-4 rounded-lg shadow-md transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            style = {{ backgroundColor: "#5bc0de", height: "50px" }}
+            className = {`bg-primary-color-light-green fixed top-4 left-1/2 transform -translate-x-1/2 z-50 alert alert-info flex items-center text-white p-4 rounded-lg shadow-md transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+            style = {{ height: "50px" }}
         >
             <svg
                 xmlns = "http://www.w3.org/2000/svg"

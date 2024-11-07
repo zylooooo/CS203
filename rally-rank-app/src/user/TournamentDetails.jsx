@@ -15,6 +15,9 @@ const TournamentDetails = () => {
     const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
     const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
     const isScheduledTournament = location.state?.isScheduledTournament;
+    const [joinedForScheduled, setJoinedForScheduled] = useState(true);
+    
+
 
     const isTwoWeeks = (startDate) => {
         const currentDate = new Date();
@@ -53,7 +56,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/users/tournaments/join-${tournamentName}`,
+                    `http://localhost:8080/users/tournaments/${tournamentName}/join`,
                     {},
                     {
                         withCredentials: true,
@@ -65,6 +68,7 @@ const TournamentDetails = () => {
 
                 if (response.status == 200) {
                     setHasJoined(true);
+                    setJoinedForScheduled(true);
                     console.log(response.data);
                     // Success Message
                 }
@@ -99,6 +103,7 @@ const TournamentDetails = () => {
 
                 if (response.status == 200) {
                     setHasJoined(false);
+                    setJoinedForScheduled(false);
                     console.log(response.data);
                     // Success Message
                 }
@@ -173,7 +178,7 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
-            <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px]" style = {{ backgroundColor: "#fffefa" }}>
+            <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px] card-background border">
 
                 <div className = "flex justify-between items-center mb-4">
                     {/* BACK BUTTON */}
@@ -207,7 +212,7 @@ const TournamentDetails = () => {
                     {!isFull && isAvailableTournament && !isScheduledTournament && (
                         <button
                             onClick={hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                            className="bg-blue-500 border text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                            className="border text-white px-4 py-2 rounded font-semibold"
                             style={{
                                 backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
                                 border: "none",
@@ -226,21 +231,21 @@ const TournamentDetails = () => {
                     {/* LEAVE BUTTON FOR SCHEDULED TOURNAMENT */}
                     {isScheduledTournament && !isTwoWeeks(tournamentDetails.startDate) && (
                         <button
-                            onClick={handleLeaveTournamentClick}
-                            className="bg-red-500 border text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
-                            style={{
-                                backgroundColor: "#FF6961",
-                                border: "none",
-                                color: "white",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                transition: "background-color 0.3s ease",
-                            }}
-                        >
-                            Leave Tournament
-                        </button>
+                        onClick={joinedForScheduled ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                        className="border text-white px-4 py-2 rounded font-semibold"
+                        style={{
+                            backgroundColor: joinedForScheduled ? "#FF6961" : "#56AE57",
+                            border: "none",
+                            color: "white",
+                            padding: "8px 16px",
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s ease",
+                        }}
+                    >
+                        {joinedForScheduled ? "Leave Tournament" : "Join Tournament"}
+                    </button>
                     )}
                 </div>
 
@@ -337,7 +342,11 @@ const TournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         onClick = {handleShowFixturesButtonClick}
-                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                        style={{
+                            backgroundColor: "#56AE57",
+                            color: "white",
+                          }}
+                        className = "px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>

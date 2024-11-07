@@ -26,6 +26,18 @@ public class UsersController {
     private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     /**
+     * Enum representing different types of leaderboards available in the system.
+     * DEFAULT: Same gender leaderboard
+     * OPPOSITE_GENDER: Opposite gender leaderboard
+     * MIXED_GENDER: Mixed gender leaderboard
+     */
+    private enum LeaderboardType {
+        DEFAULT,
+        OPPOSITE_GENDER,
+        MIXED_GENDER
+    }
+
+    /**
      * Retrieves all users from the database.
      * 
      * @return a ResponseEntity containing a list of all users or an error message if an exception occurs.
@@ -76,7 +88,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the update process.
      */
-    @PutMapping("/update")
+    @PutMapping("/profile")
     public ResponseEntity<?> updateUser(@RequestBody User newUserDetails) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -103,7 +115,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the update process.
      */
-    @PutMapping("/update-availability")
+    @PutMapping("/availability")
     public ResponseEntity<?> updateUserAvailability(@RequestParam Boolean availability) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -129,7 +141,7 @@ public class UsersController {
      * @throws UserNotFoundException if no user with the username is found in the database.
      * @throws RuntimeException if there is an unexpected error during the deletion process.
      */
-    @DeleteMapping("/delete")
+    @DeleteMapping("/profile")
     public ResponseEntity<?> deleteUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -149,19 +161,36 @@ public class UsersController {
     }
 
     /**
-     * Retrieves the default leaderboard for the authenticated user.
-     * 
-     * @return a ResponseEntity containing the default leaderboard or error messages if an exception occurs.
-     * @throws UserNotFoundException if no user with the username is found in the database.
-     * @throws RuntimeException if there is an unexpected error during the retrieval process.
+     * Private helper method to handle all leaderboard requests.
+     * Centralizes the logic for fetching different types of leaderboards and error handling.
+     *
+     * @param type the type of leaderboard to retrieve (DEFAULT, OPPOSITE_GENDER, or MIXED_GENDER)
+     * @return a ResponseEntity containing either the requested leaderboard or error details
+     * @throws IllegalArgumentException if the username is invalid
+     * @throws UserNotFoundException if the user is not found in the database
+     * @throws RuntimeException if there is an unexpected error during the retrieval process
      */
-    @GetMapping("/leaderboard")
-    public ResponseEntity<?> getDefaultLeaderBoard() {
+    private ResponseEntity<?> getLeaderboard(LeaderboardType type) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+
         try {
-            List<User> leaderboard = userService.getDefaultLeaderboard(username);
-            logger.info("Default leaderboard retrieved successfully for user: {}", username);
+            List<User> leaderboard;
+            switch(type) {
+                case DEFAULT:
+                    leaderboard = userService.getDefaultLeaderboard(username);
+                    break;
+                case OPPOSITE_GENDER:
+                    leaderboard = userService.getOppositeGenderLeaderboard(username);
+                    break;
+                case MIXED_GENDER:
+                    leaderboard = userService.getMixedGenderLeaderboard(username);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid leaderboard type: " + type);
+            }
+            logger.info("Leaderboard retrieved successfully for user: {}", 
+                type.name().toLowerCase().replace('_', ' '), username);
             return ResponseEntity.ok(leaderboard);
         } catch (IllegalArgumentException e) {
             logger.error("Invalid username: {}", e.getMessage());
@@ -171,11 +200,23 @@ public class UsersController {
             logger.error("Unable to find user: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", e.getMessage()));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while retrieving the default leaderboard!"));
+                .body(Map.of("error", "An unexpected error occurred while retrieving the leaderboard!"));
         }
+    }
+
+    /**
+     * Retrieves the default leaderboard for the authenticated user.
+     * 
+     * @return a ResponseEntity containing the default leaderboard or error messages if an exception occurs.
+     * @throws UserNotFoundException if no user with the username is found in the database.
+     * @throws RuntimeException if there is an unexpected error during the retrieval process.
+     */
+    @GetMapping("/leaderboard")
+    public ResponseEntity<?> getDefaultLeaderBoard() {
+        return getLeaderboard(LeaderboardType.DEFAULT);
     }
 
     /**
@@ -187,25 +228,7 @@ public class UsersController {
      */
     @GetMapping("/leaderboard/opposite-gender")
     public ResponseEntity<?> getOppositeGenderLeaderboard() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        try {
-            List<User> oppositeGenderLeaderboard = userService.getOppositeGenderLeaderboard(username);
-            logger.info("Opposite gender leaderboard retrieved successfully for user: {}", username);
-            return ResponseEntity.ok(oppositeGenderLeaderboard);
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid username: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", e.getMessage()));
-        } catch (UserNotFoundException e) {
-            logger.error("Unable to find user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
-        } catch (RuntimeException e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while retrieving the opposite gender leaderboard!"));
-        }
+        return getLeaderboard(LeaderboardType.OPPOSITE_GENDER);
     }
     
     /**
@@ -217,24 +240,6 @@ public class UsersController {
      */
     @GetMapping("/leaderboard/mixed-gender")
     public ResponseEntity<?> getMixedGenderLeaderboard() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        try {
-            List<User> mixedGenderLeaderboard = userService.getMixedGenderLeaderboard(username);
-            logger.info("Mixed gender leaderboard retrieved successfully for user: {}", username);
-            return ResponseEntity.ok(mixedGenderLeaderboard);
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid username: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", e.getMessage()));
-        } catch (UserNotFoundException e) {
-            logger.error("Unable to find user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", e.getMessage()));
-        } catch (RuntimeException e) {
-            logger.error("Unexpected error: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred while retrieving the mixed gender leaderboard!"));
-        }
+        return getLeaderboard(LeaderboardType.MIXED_GENDER);
     }
 }

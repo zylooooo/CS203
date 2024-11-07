@@ -1,8 +1,9 @@
+// Package Imports
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
-// Component: Tournament Buttons - "Available Tournaments", "My Scheduled Tournaments"
+// Component: Tournament Buttons
 const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick }) => {
     const [activeButton, setActiveButton] = useState(0);
 
@@ -20,7 +21,11 @@ const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduled
             {buttons.map((tournamentButtonLabel, index) => (
                 <button
                     key = {index}
-                    className = {`btn transition-colors duration-300 ${activeButton === index ? 'active-button underline' : 'hover:text-black-700'}`}
+                    className = {`btn transition-colors duration-300 font-semibold ${
+                        activeButton === index
+                        ? "active-button underline text-primary-color-green"             // Active State
+                        : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
+                    }`}
                     onClick = {() => handleTournamentButtonClick(index)}
                 >
                     {tournamentButtonLabel}
@@ -46,12 +51,9 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     };
 
@@ -60,7 +62,7 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
             {tournamentType.map((tournament, index) => (
                 <div
                     key = {index}
-                    className = "flex p-5 card-background border2 shadow-md cursor-pointer hover:shadow-xl transition-all w-full rounded-[12px]"
+                    className = "flex p-5 card-background border shadow-md cursor-pointer hover:shadow-xl transition-all w-full rounded-[12px]"
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
                     <div className = "flex-1 pr-4 py-1">
@@ -87,7 +89,7 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
                                 style = {{
                                     color: tournament.playerCapacity - tournament.playersPool.length <= 10
                                     ? "red"
-                                    : "black",
+                                    : "text-grey",
                                     fontWeight: tournament.playerCapacity - tournament.playersPool.length <= 10
                                     ? 700
                                     : "normal"
@@ -107,17 +109,12 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 };
 
 function UserTournaments() {
-
     // ------------------------------------- Tournament Functions -------------------------------------
-    const [activeButton, setActiveButton] = useState(0);
-    
-    const [displayTournamentType, setDisplayTournamentType] = useState([]);
-
-    const [availableTournaments, setAvailableTournaments] = useState([]);
-
-    const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
-
     const [loading, setLoading] = useState(true);
+    const [activeButton, setActiveButton] = useState(0);
+    const [availableTournaments, setAvailableTournaments] = useState([]);
+    const [displayTournamentType, setDisplayTournamentType] = useState([]);
+    const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
 
     const handleAvailableTournamentClick = () => {
         setActiveButton(0);
@@ -130,7 +127,7 @@ function UserTournaments() {
         setDisplayTournamentType(myScheduledTournaments)
     }
 
-    // API Call: Retrieiving available tournaments
+    // ------------------------------------- API Call: Retrieiving available tournaments -------------------------------------
     async function getAvailableTournaments() {
         setLoading(true);
         try {
@@ -139,9 +136,8 @@ function UserTournaments() {
                 console.error("No JWT Token found!");
                 return;
             }
-
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/available-tournaments",
+                "http://localhost:8080/users/tournaments/available",
                 {
                     withCredentials: true,
                     headers: {
@@ -149,7 +145,6 @@ function UserTournaments() {
                     }
                 }
             );
-
             setAvailableTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
@@ -158,9 +153,9 @@ function UserTournaments() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    // API Call: Retrieiving user's scheduled tournaments (ongoing and upcoming)
+    // ------------------------------------- API Call: Retrieiving user's scheduled tournaments (ongoing and upcoming) -------------------------------------
     async function getMyScheduledTournaments() {
         setLoading(true);
         try {
@@ -169,7 +164,6 @@ function UserTournaments() {
                 console.error("No JWT Token found!");
                 return;
             }
-
             const response = await axios.get(
                 "http://localhost:8080/users/tournaments/scheduled",
                 {
@@ -179,7 +173,6 @@ function UserTournaments() {
                     }
                 }
             );
-            console.log("scheduled: ", response.data);
             setMyScheduledTournaments(response.data);
             setDisplayTournamentType(response.data);
         } catch (error) {
@@ -189,45 +182,53 @@ function UserTournaments() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     // ------------------------------------- useEffect() -------------------------------------
     useEffect(() => {
         getAvailableTournaments();
     }, []);
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = displayTournamentType.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
     return (
         <div className = "flex flex-col p-10 items-center justify-center w-4/5">
             <div className = "flex flex-col w-4/5 gap-8">
+                {/* SEARCH BAR */}
+                <input
+                    type = "text"
+                    placeholder = "Search for tournaments..."
+                    value = { searchTerm }
+                    onChange = { (e) => setSearchTerm(e.target.value) }
+                    className = "border rounded-xl mt-5 p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
                 <TournamentButtons
                     buttons = {["Available Tournaments", "My Scheduled Tournaments"]}
                     onAvailableTournamentsClick = {handleAvailableTournamentClick}
                     onMyScheduledTournamentsClick = {handleMyScheduledTournamentsClick}
                 />
-                <div className = "flex gap-3">
-                    <input
-                        className = "border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        type = "text"
-                        placeholder = "Search for tournaments..."
-                    />
-                    <button className = "border border-value-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white-transition">
-                        Search
-                    </button>
-                </div>
                 {loading ? (
                     <p> Loading tournaments... </p>
-                    ) : displayTournamentType.length > 0 ? (
-                        <TournamentCard
-                            tournamentType = {displayTournamentType}
-                            isAvailableTournament = {activeButton === 0}
-                            isScheduledTournament = {activeButton === 1}
-                        />
-                    ) : (
-                        <p> No tournaments found. </p>
+                ) : displayTournamentType.length > 0 ? (
+                    <TournamentCard
+                        tournamentType = {filteredTournaments}
+                        isAvailableTournament = {activeButton === 0}
+                        isScheduledTournament = {activeButton === 1}
+                    />
+                ) : (
+                    <p> No tournaments found. </p>
                 )}
             </div>
         </div>
     );
-}
+};
 
 export default UserTournaments;

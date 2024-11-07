@@ -50,7 +50,7 @@ function AdministratorSignUp() {
                 const response = await createAdmin(formData);
                 if (response !== undefined) {
                     alert("Successfully registered! Please move on to verification!");
-                    navigate("/auth/admin-verify");
+                    navigate("/auth/admin-verification");
                 }
             }
         }
@@ -69,7 +69,7 @@ function AdministratorSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/check-credentials-availability",
+            "http://localhost:8080/auth/credentials-availability",
             {
                 params: {
                 accountName: formData.adminName,
@@ -156,7 +156,7 @@ function AdministratorSignUp() {
                     <div className = "flex justify-evenly gap-5 pt-10">
                         <button
                             type = "submit"
-                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
+                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-light-green text-primary-color-white hover:bg-primary-color-green transition duration-300 ease-in-out"
                         >
                             {step === 2 ? "Submit" : "Continue"}
                         </button>

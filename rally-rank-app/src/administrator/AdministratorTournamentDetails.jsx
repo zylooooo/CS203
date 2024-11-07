@@ -18,9 +18,7 @@ const AdministratorTournamentDetails = () => {
 
   const [tournamentDetails, setTournamentDetails] = useState(null);
 
-  const [fixtures, setFixtures] = useState(null);
-
-  // const [tournamentStatus, setTournamentStatus] = useState("");
+  const [fixtures, setFixtures] = useState({});
 
   const handleBackButtonClick = () => {
     navigate(fromPage);
@@ -89,7 +87,7 @@ const AdministratorTournamentDetails = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:8080/admins/tournaments/generate-bracket/${tournamentName}`,
+        `http://localhost:8080/admins/tournaments/bracket/${tournamentName}`,
         {},
         {
           withCredentials: true,
@@ -98,57 +96,33 @@ const AdministratorTournamentDetails = () => {
           },
         }
       );
-
       console.log(response.data);
-      if (response.status === 200) {
-        if (response.status === 200) {
-          if (response.data.error !== undefined) {
-            alert(response.data.error);
-          } else {
-            // Transform the response data into arrays of players by round
-            const roundsData = response.data.rounds.map((round) => {
-              // Flatten all players from all matches in this round into a single array
-              const playersInRound = round.matches.reduce((players, match) => {
-                return [...players, ...match.players];
-              }, []);
-
-              // console.log("playersInRound", playersInRound);
-              return {
-                roundNumber: round.roundnumber,
-                players: playersInRound,
-              };
-            });
-
-            setFixtures(roundsData);
-            console.log(roundsData);
-            alert("Brackets generated successfully! View the fixtures below.");
-          }
-        } else {
-          alert(
-            "There was an error generating the brackets. Please try again."
-          );
-        }
+      if (response.data.error) {
+        alert(response.data.error);
       } else {
-        alert("There was an error generating the brackets. Please try again.");
+        alert("Brackets generated successfully! View the fixtures below.");
       }
+      console.log("WORKS");
+      return response.data;
+
     } catch (error) {
       // WIP: EDIT DISPLAY ERROR MESSAGE
-      alert(error.response.data.error);
+      console.log("NO");
       console.error("Error generating brackets:", error.response.data.error);
     }
   }
 
-  const handleGenerateBracketsClick = () => {
-    generateBrackets();
+  const handleGenerateBracketsClick = async () => {
+    await generateBrackets(); // Wait for generateBrackets to complete
   };
 
   const handleShowFixturesClick = () => {
-    navigate("/administrator-tournament-fixtures", { state: fixtures });
+    navigate("/administrator-tournament-fixtures", { state: { tournamentName } });
   };
 
   return (
     <div className="tournament-card-template main-container flex">
-      <div className="flex flex-col w-3/5 gap-4 border2 p-10 rounded-[8px]">
+      <div className="flex flex-col w-3/5 gap-4 border p-10 rounded-[8px] card-background shadow-md">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -213,12 +187,12 @@ const AdministratorTournamentDetails = () => {
           {" "}
           <strong> Venue: </strong> {tournamentDetails.location}{" "}
         </p>
-        {/* <div className = "map-api-container h-64 border2 rounded-[8px]">
+        {/* <div className = "map-api-container h-64 border rounded-[8px]">
                     <p className = "text-center p-4"> Insert map here. </p>
                 </div> */}
 
         <div className="flex justify-between items-start mt-4">
-          <div className="players-list mt-4 p-4 border2 rounded-[8px] w-2/3 relative">
+          <div className="players-list mt-4 p-4 border rounded-[8px] w-2/3 relative">
             <h2 className="text-xl font-semibold mb-2"> Current Players: </h2>
             <div
               style={{
@@ -271,22 +245,14 @@ const AdministratorTournamentDetails = () => {
           <div className="flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
             <button
               onClick={handleGenerateBracketsClick}
-              style={{
-                backgroundColor: "#56AE57",
-                color: "white",
-              }}
-              className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Generate Brackets
             </button>
 
             <button
               onClick={handleShowFixturesClick}
-              style={{
-                backgroundColor: "#56AE57",
-                color: "white",
-              }}
-              className="border2 px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Show Fixtures
             </button>

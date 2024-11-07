@@ -165,7 +165,7 @@ function AdministratorLogin() {
               </div>
               <div className="text-xs text-center">
                   <Link
-                      to="/auth/admin-verify"
+                      to="/auth/admin-verification"
                       className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
                   >
                       Looking to verify? Click here

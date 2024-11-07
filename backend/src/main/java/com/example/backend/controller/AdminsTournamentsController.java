@@ -87,7 +87,7 @@ public class AdminsTournamentsController {
      * @return a ResponseEntity with the created tournament or error messages if validation fails.
      * @throws RuntimeException if there's an unexpected error during the creation process.
      */
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> createTournament(@RequestBody Tournament tournament) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String adminName = authentication.getName();
@@ -116,7 +116,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the tournament name is null or empty.
      * @throws RuntimeException for any unexpected errors during the availability check.
      */
-    @GetMapping("/check-name-availability")
+    @GetMapping("/name-availability")
     public ResponseEntity<?> checkTournamentNameAvailability(@RequestParam String tournamentName) {
         logger.info("Received request to check availability for tournament name: {}", tournamentName);
         try {
@@ -226,7 +226,7 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the new tournament details are invalid.
      * @throws RuntimeException if there is an unexpected error during the update.
      */
-    @PutMapping("/edit-{tournamentName}")
+    @PutMapping("/{tournamentName}")
     public ResponseEntity<?> updateTournament(@PathVariable String tournamentName, @RequestBody Tournament newTournamentDetails) {
 
         logger.info("Received request to update tournament: {}", tournamentName);
@@ -389,7 +389,7 @@ public class AdminsTournamentsController {
      * @throws MatchNotFoundException if no match is found.
      * @throws Exception if an unexpected error occurs during the bracket generation process.
      */
-    @PutMapping("/generate-bracket/{tournamentName}")
+    @PutMapping("/bracket/{tournamentName}")
     public ResponseEntity<?> generateBracket(@PathVariable String tournamentName) {
         try {
             Map<String, Object> response = bracketService.generateBracket(tournamentName);
@@ -410,6 +410,23 @@ public class AdminsTournamentsController {
         }
     }
 
+    // Function to view the bracket of a tournament
+    @GetMapping("/{tournamentName}/bracket")
+    public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
+        try {
+            Map<String, Object> tournamentBracket = bracketService.viewTournamentBracket(tournamentName);
+            return ResponseEntity.ok(tournamentBracket);
+        } catch (TournamentNotFoundException e) {
+            logger.error("Tournament not found: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred while viewing the tournament's bracket: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "An unexpected error occurred while viewing the tournament's bracket!"));
+        }
+    }
+
     /**
      * Updates the match results.
      * 
@@ -418,9 +435,19 @@ public class AdminsTournamentsController {
      * @throws IllegalArgumentException if the match details are invalid.
      * @throws Exception if an unexpected error occurs during the update process.
      */
-    @PutMapping("/update-match")
+    @PutMapping("/match")
     public ResponseEntity<?> updateMatchResults(@RequestBody Match newMatchDetails) {
         try {
+
+            // Add these debug logs
+            logger.info("Received match update request with details: {}", newMatchDetails);
+            logger.info("Match ID: {}", newMatchDetails.getId());
+            logger.info("Tournament Name: {}", newMatchDetails.getTournamentName());
+            logger.info("Sets: {}", newMatchDetails.getSets());
+            logger.info("Match Winner: {}", newMatchDetails.getMatchWinner());
+            logger.info("Is Completed: {}", newMatchDetails.isCompleted());
+
+            
             Match updatedMatch = bracketService.updateMatchResults(newMatchDetails);
             return ResponseEntity.ok(updatedMatch);
         } catch (IllegalArgumentException e) {

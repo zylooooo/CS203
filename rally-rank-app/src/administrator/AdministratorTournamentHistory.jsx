@@ -27,7 +27,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border2 rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -89,11 +89,11 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
         {buttons.map((buttonLabel, index) => (
             <button
               key = {index}
-              className={`btn transition-colors duration-300 ${
+              className = {`btn transition-colors duration-300 font-semibold ${
                 activeButton === index
-                  ? "active-button underline"
-                  : "text-gray-700 hover:text-blue-500 hover:text-red-500"
-              }`}
+                ? "active-button underline text-primary-color-green"             // Active State
+                : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
+            }`}
               onClick={() => handleButtonClick(index)}
             >
               { buttonLabel }
@@ -220,21 +220,16 @@ function AdministratorTournamentHistory() {
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-5">
 
                     {/* SEARCH BAR */}
-                    <div className = "tournaments-search-bar flex mb-5 gap-3">
-                        <input
-                            type = "text"
-                            placeholder = "Search by Tournament Name or Admin Name"
-                            value = { searchTerm }
-                            onChange = { (e) => setSearchTerm(e.target.value) }
-                            className = "p-2 border2 border-gray-300 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
-                            Search
-                        </button>
-                    </div>
+                    <input
+                        type = "text"
+                        placeholder = "Search by Tournament Name or Admin Name"
+                        value = { searchTerm }
+                        onChange = { (e) => setSearchTerm(e.target.value) }
+                        className = "p-2 border rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
 
                     {/* TOURNAMENT LISTS */}
                     <Tournaments tournaments = { filteredTournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />

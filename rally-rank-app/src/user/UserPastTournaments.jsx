@@ -31,7 +31,7 @@ const TournamentCard = ({ userPastTournaments }) => {
             {userPastTournaments.map((tournament, index) => (
                 <div
                     key = {index}
-                    className = "flex border rounded-xl p-4 bg-white shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                    className = "flex border rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
                     <div className = "flex-1 pr-4">
@@ -107,23 +107,31 @@ function UserPastTournaments() {
         getPastTournaments();
     }, []);
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = pastTournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
     return (
         <div className = "flex flex-col p-10 items-center justify-center w-4/5">
             <div className = "flex flex-col w-4/5 gap-8">
-                <div className = "flex gap-3">
-                    <input
-                        className = "border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        type = "text"
-                        placeholder = "Search for tournaments..."
-                    />
-                    <button className = "border border-value-500 text-blue-500 rounded-xl px-4 py-2 hover:bg-blue-500 hover:text-white-transition">
-                        Search
-                    </button>
-                </div>
+                {/* SEARCH BAR */}
+                <input
+                    type = "text"
+                    placeholder = "Search for tournaments..."
+                    value = { searchTerm }
+                    onChange = { (e) => setSearchTerm(e.target.value) }
+                    className = "border rounded-xl mt-5 p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
                 {loading ? (
                     <p> Loading tournaments... </p>
                     ) : pastTournaments.length > 0 ? (
-                    <TournamentCard userPastTournaments = {pastTournaments} />
+                    <TournamentCard userPastTournaments = {filteredTournaments} />
                     ) : (
                     <p> No tournaments found. </p>
                 )}
