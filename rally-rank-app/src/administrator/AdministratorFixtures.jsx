@@ -15,8 +15,8 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 // Icons Imports
-import { faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 function AdministratorFixtures() {
     const location = useLocation();
