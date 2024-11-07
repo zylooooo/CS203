@@ -17,7 +17,7 @@ function UserEditProfile() {
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const [password, setPassword] = useState("");
-    const { register, handleSubmit, setValue, getValues } = useForm();
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
     // Constants to store the value of the original data
     const [originalEmail, setOriginalEmail] = useState("");
@@ -244,8 +244,17 @@ function UserEditProfile() {
                             placeholder = {originalUsername || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("username", { onChange: handleUsernameChange })}
+                            {...register("username", { 
+                                onChange: handleUsernameChange,
+                                pattern: {
+                                    value: /^[a-zA-Z0-9_]*$/,
+                                    message: "Username can only contain letters, numbers, and underscores."
+                                }
+                            })}
                         />
+                        {errors.username && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.username.message} </p>
+                        )}
                     </div>
                     {/* PASSWORD*/}
                     <div className = "mt-5">
@@ -266,13 +275,23 @@ function UserEditProfile() {
                         <label
                             htmlFor = "email"
                             className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
+                            {...register("email", {
+                                onChange: handleEmailChange,
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Please enter a valid email address."
+                                }
+                            })}
                         >
                             Email Address
+                        {errors.email && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.email.message} </p>
+                        )}
                         </label>
                         <input
                             type = "text"
                             id = "email"
-                            placeholder={originalUserData.email || ""}
+                            placeholder = {originalUserData.email || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("email", { onChange: handleEmailChange })}
@@ -292,7 +311,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "firstName"
-                            placeholder={originalUserData.firstName || ""}
+                            placeholder = {originalUserData.firstName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("firstName", { onChange: handleChange })}
@@ -309,7 +328,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "lastName"
-                            placeholder={originalUserData.lastName || ""}
+                            placeholder = {originalUserData.lastName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
@@ -326,11 +345,20 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "phoneNumber"
-                            placeholder={originalUserData.phoneNumber || ""}
+                            placeholder = {originalUserData.phoneNumber || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("phoneNumber", { onChange: handleChange })}
+                            {...register("phoneNumber", { 
+                                onChange: handleChange,
+                                pattern: {
+                                    value: /^[896]\d{7}$/,
+                                    message: "Please enter a valid phone number."
+                                }
+                            })}
                         />
+                        {errors.phoneNumber && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.phoneNumber.message} </p>
+                        )}
                     </div>
                     {/* DATE OF BIRTH */}
                     <div className = "mt-5">
@@ -345,8 +373,22 @@ function UserEditProfile() {
                             id = "dateOfBirth"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("dateOfBirth", { onChange: handleChange })}
+                            {...register("dateOfBirth", {
+                                onChange: handleChange,
+                                validate: (value) => {
+                                    const today = new Date();
+                                    const inputDate = new Date(value);
+                                    if (inputDate >= today) {
+                                        return "Please enter a valid date of birth.";
+                                    }
+                                    return true;
+                                }
+                            })}
+                            max={new Date().toISOString().split("T")[0]}
                         />
+                        {errors.dateOfBirth && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.dateOfBirth.message} </p>
+                        )}
                     </div>
                     {/* GENDER */}
                     <div className = "mt-5">

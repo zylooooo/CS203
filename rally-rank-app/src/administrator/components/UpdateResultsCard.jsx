@@ -104,6 +104,10 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     };
 
     const handleDeleteSetClick = (setNumber) => {
+        if (setNumber === 1) {
+            alert("The first set cannot be deleted.");
+            return;
+        }
         setSets(prevSets => prevSets.filter(set => set !== setNumber));
     };
 
