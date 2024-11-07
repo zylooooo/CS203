@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate  } from "react-router-dom";
-import loginBackground from "../assets/login-picture.jpg";
+// import loginBackground from "../assets/view-tennis-racket-hitting-ball.jpg";
+import loginBackground from "../assets/admin-login.jpg";
 import axios from "axios";
 
 // Form imports
@@ -73,7 +74,7 @@ function AdministratorLogin() {
     <>
       <div
           className="bg-cover bg-center flex flex-col justify-center items-center h-main w-screen overflow-hidden"
-          style={{ backgroundImage: `url(${loginBackground})`, objectFit: 'cover', backgroundAttachment: 'fixed' }}
+          style={{ backgroundImage: `url(${loginBackground})`, objectFit: 'cover', backgroundAttachment: 'fixed'}}
       >
         {/* TESTING CODE REMOVE LATER
         <button
@@ -86,10 +87,10 @@ function AdministratorLogin() {
         >
           Manual Admin Login
         </button> */}
-        <div className="card rounded-[8px] bg-primary-color-white border-none items-center m-8">
+        <div className="card rounded-[8px] bg-white border-none items-center m-8">
           <img className="h-[60px] w-full mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
             <form
-              className="card px-2 py-4 border-none shadow-none bg-primary-color-white"
+              className="card px-2 py-4 border-none shadow-none bg-white"
               onSubmit={handleSubmit(onSubmit)}
               noValidate
             >
@@ -145,20 +146,19 @@ function AdministratorLogin() {
 
               <button
                 type="submit"
-                className="button mt-6 font-bold hover:shadow-inner"
-                style = {{ backgroundColor: "#80b577" }}
+                className="button mt-6 font-bold hover:shadow-inner bg-primary-color-light-green hover:bg-primary-color-green"
               >
                 Log In
               </button>
               <div className="flex items-center justify-center py-3">
-                <div className="border-t border-gray-100 flex-grow mr-3 opacity-50"></div>
+                <div className="border-t border-gray-300 flex-grow mr-3 opacity-50"></div>
                 <span className="text-gray-199 text-xs opacity-50">OR</span>
-                <div className="border-t border-gray-100 flex-grow ml-3 opacity-50"></div>
+                <div className="border-t border-gray-300 flex-grow ml-3 opacity-50"></div>
               </div>
               <div className="text-xs text-center p-2">
                 <Link
                   to="/administrator-sign-up"
-                  className="hover:text-primary-color-green font-bold underline p-2 text-secondary-color-dark-green"
+                  className="hover:text-primary-color-light-green font-bold underline p-2 text-secondary-color-dark-green"
                 >
                   Sign up as a new administrator!
                 </Link>
@@ -166,7 +166,7 @@ function AdministratorLogin() {
               <div className="text-xs text-center">
                   <Link
                       to="/auth/admin-verification"
-                      className="hover:text-primary-color-green p-2 text-secondary-color-dark-green"
+                      className="hover:text-primary-color-light-green p-2 text-secondary-color-dark-green"
                   >
                       Looking to verify? Click here
                   </Link>
@@ -180,7 +180,7 @@ function AdministratorLogin() {
             RallyRank Player?
             <Link
               to="/auth/user-login"
-              className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
+              className="hover:text-primary-color-light-green font-bold underline pl-2 text-secondary-color-dark-green"
             >
               Log in here!
             </Link>
