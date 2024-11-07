@@ -160,12 +160,12 @@ const AdministratorTournamentDetails = () => {
       } else {
         alert("Brackets generated successfully! View the fixtures below.");
       }
-
+      console.log("WORKS");
       return response.data;
 
     } catch (error) {
       // WIP: EDIT DISPLAY ERROR MESSAGE
-      alert(error.response.data.error);
+      console.log("NO");
       console.error("Error generating brackets:", error.response.data.error);
     }
   }
