@@ -156,7 +156,7 @@ function AdministratorSignUp() {
                     <div className = "flex justify-evenly gap-5 pt-10">
                         <button
                             type = "submit"
-                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
+                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-light-green text-primary-color-white hover:bg-primary-color-green transition duration-300 ease-in-out"
                         >
                             {step === 2 ? "Submit" : "Continue"}
                         </button>
