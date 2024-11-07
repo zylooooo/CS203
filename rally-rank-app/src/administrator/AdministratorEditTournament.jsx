@@ -175,14 +175,14 @@ function AdministratorEditTournament() {
   return (
     <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-main overflow-auto">
       <div className="row-container flex flex-col w-full gap-8">
-        <div className="mt-5 edit-tournament-details p-6 card-background rounded-[20px] shadow-md w-3/5 mx-auto">
+        <div className="mt-5 edit-tournament-details p-6 card-background rounded-[20px] shadow-md w-3/5 mx-auto border">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-xl font-extrabold"> Edit Tournament </h2>
               {/* CLOSE BUTTON */}
               <button
                 onClick={handleCloseButton}
-                className="text-3xl font-bold text-gray-500 hover:text-gray-800"
+                className="text-3xl font-bold text-gray-400 hover:text-text-grey"
                 type="button"
               >
                 &times;

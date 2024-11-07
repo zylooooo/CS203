@@ -10,7 +10,7 @@ export default {
                 "primary-color-black": "#262626",
                 "secondary-color-dark-green": "#2D5A35",
                 "secondary-color-light-gray": "#525252",
-                "red-color": "#FF0000",
+                "secondary-color-red": "#FF6961",
                 "text-grey": "#242424",
             },
         },

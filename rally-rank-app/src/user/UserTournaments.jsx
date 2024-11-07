@@ -202,6 +202,7 @@ function UserTournaments() {
     return (
         <div className = "flex flex-col p-10 items-center justify-center w-4/5">
             <div className = "flex flex-col w-4/5 gap-8">
+                {/* SEARCH BAR */}
                 <input
                     type = "text"
                     placeholder = "Search for tournaments..."

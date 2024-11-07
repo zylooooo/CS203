@@ -47,9 +47,28 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
         }, 200);
     }
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
+
     return (
         <div className = "flex flex-col gap-5 w-full">
-            {tournaments.map((tournament, index) => (
+            {/* SEARCH BAR */}
+            <input
+                type = "text"
+                placeholder = "Search by Tournament Name or Admin Name"
+                value = { searchTerm }
+                onChange = { (e) => setSearchTerm(e.target.value) }
+                className = "p-2 border rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {filteredTournaments.map((tournament, index) => (
                 <div key = {index} className = "flex border card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
@@ -93,7 +112,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
                                         e.stopPropagation();
                                         handleEditClick(tournament.tournamentName);
                                     }}
-                                    className = "font-semibold p-2 rounded-lg shadow-md transition duration-300 ease-in-out ml-4 transform text-custom-green hover:scale-110 hover:shadow-xl hover:text-custom-green-hover"
+                                    className = "font-semibold p-2 rounded-lg shadow-md transition duration-300 ease-in-out ml-4 transform text-primary-color-green hover:shadow-xl hover:text-primary-color-light-green"
                                 >
                                     Edit Tournament
                                 </button>
@@ -126,11 +145,11 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
         {buttons.map((buttonLabel, index) => (
             <button
               key = {index}
-              className={`btn transition-colors duration-300 ${
+              className = {`btn transition-colors duration-300 font-semibold ${
                 activeButton === index
-                  ? "active-button underline"
-                  : "text-gray-700 hover:text-blue-500 hover:text-red-500"
-              }`}
+                ? "active-button underline text-primary-color-green"             // Active State
+                : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
+            }`}
               onClick={() => handleButtonClick(index)}
             >
               { buttonLabel }
@@ -271,8 +290,7 @@ function AdministratorTournaments() {
                 <div className = "tournament-actions flex fixed right-14 bottom-8 justify-end cursor-zoom-in ">
                     <button
                     onClick = { handleCreateClick }
-                    className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-custom-green text-primary-color-white hover:shadow-md transition duration-300 ease-in-out"
-                    // style = {{ backgroundColor: "#56AE57" }}
+                    className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-primary-color-light-green text-white hover:shadow-md hover:bg-primary-color-green transition duration-300 ease-in-out"
                     >
                         Create Tournament
                     </button>

@@ -78,64 +78,6 @@ const AdministratorTournamentDetails = () => {
   }
 
   // API Call: Generate Brackets
-  // async function generateBrackets() {
-  //   try {
-  //     const adminData = JSON.parse(localStorage.getItem("adminData"));
-  //     if (!adminData || !adminData.jwtToken) {
-  //       console.error("No JWT token found");
-  //       return;
-  //     }
-
-  //     const response = await axios.put(
-  //       `http://localhost:8080/admins/tournaments/bracket/${tournamentName}`,
-  //       {},
-  //       {
-  //         withCredentials: true,
-  //         headers: {
-  //           Authorization: `Bearer ${adminData.jwtToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log(response.data);
-  //     if (response.status === 200) {
-  //       if (response.status === 200) {
-  //         if (response.data.error !== undefined) {
-  //           alert(response.data.error);
-  //         } else {
-  //           // Transform the response data into arrays of players by round
-  //           const roundsData = response.data.rounds.map((round) => {
-  //             // Flatten all players from all matches in this round into a single array
-  //             const playersInRound = round.matches.reduce((players, match) => {
-  //               return [...players, ...match.players];
-  //             }, []);
-
-  //             // console.log("playersInRound", playersInRound);
-  //             return {
-  //               roundNumber: round.roundnumber,
-  //               players: playersInRound,
-  //             };
-  //           });
-
-  //           setFixtures(roundsData);
-  //           alert("Brackets generated successfully! View the fixtures below.");
-  //           return roundsData;
-  //         }
-  //       } else {
-  //         alert(
-  //           "There was an error generating the brackets. Please try again."
-  //         );
-  //       }
-  //     } else {
-  //       alert("There was an error generating the brackets. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     // WIP: EDIT DISPLAY ERROR MESSAGE
-  //     alert(error.response.data.error);
-  //     console.error("Error generating brackets:", error.response.data.error);
-  //   }
-  // }
-
   async function generateBrackets() {
     try {
       const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -154,7 +96,7 @@ const AdministratorTournamentDetails = () => {
           },
         }
       );
-
+      console.log(response.data);
       if (response.data.error) {
         alert(response.data.error);
       } else {
@@ -180,7 +122,7 @@ const AdministratorTournamentDetails = () => {
 
   return (
     <div className="tournament-card-template main-container flex">
-      <div className="flex flex-col w-3/5 gap-4 border p-10 rounded-[8px]">
+      <div className="flex flex-col w-3/5 gap-4 border p-10 rounded-[8px] card-background shadow-md">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -303,22 +245,14 @@ const AdministratorTournamentDetails = () => {
           <div className="flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
             <button
               onClick={handleGenerateBracketsClick}
-              style={{
-                backgroundColor: "#56AE57",
-                color: "white",
-              }}
-              className="border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Generate Brackets
             </button>
 
             <button
               onClick={handleShowFixturesClick}
-              style={{
-                backgroundColor: "#56AE57",
-                color: "white",
-              }}
-              className="border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+              className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Show Fixtures
             </button>

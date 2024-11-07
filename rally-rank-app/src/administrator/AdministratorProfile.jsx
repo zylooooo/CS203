@@ -80,15 +80,15 @@ function AdministratorProfile() {
     const ConfirmDeleteCard = () => {
         return (
             <div className = "fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-                <div className = "flex flex-col gap-5 bg-primary-color-white p-8 rounded-lg shadow-lg">
+                <div className = "flex flex-col gap-5 bg-white p-8 rounded-lg shadow-lg">
                     <h2 className = "text-xl font-bold">Are you sure you want to delete your account?</h2>
-                    <p className = "text-md text-red-color"><strong>This action is irreversible.</strong></p>
+                    <p className = "text-md text-secondary-color-red"><strong>This action is irreversible.</strong></p>
                     <div className = "flex justify-between">
                         {/* CANCEL */}
                     <button
                         type = "button"
                         onClick = {() => setIsConfirmDeleteOpen(false)}
-                        className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
+                        className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-300 transition"
                     >
                         Cancel
                     </button>
@@ -97,7 +97,7 @@ function AdministratorProfile() {
                     <button
                         type = "submit"
                         onClick = {handleConfirmDeleteClick}
-                        className = "shadow-md px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                        className = "shadow-md px-4 py-2 rounded-lg hover:bg-secondary-color-red transition"
                     >
                         Confirm
                     </button>
@@ -122,14 +122,14 @@ function AdministratorProfile() {
 
     return (
         <div className = "h-main flex flex-col items-center w-full">
-            <div className = "container w-3/5 mx-auto my-10 p-6 bg-white shadow-md rounded-[8px] relative">
+            <div className = "container w-3/5 mx-auto my-10 p-6 card-background shadow-md rounded-[8px] relative">
                 <button
                     className = "absolute top-4 right-4 p-2 bg-gray-200 rounded-[20px] hover:bg-gray-300 border mr-5 mt-5"
                     onClick = {handleEditProfileClick}
                     aria-label = "Edit Profile"
                 >
                     <div className = "flex gap-3">
-                        <FaPen className = "text-sm mt-1 ml-1" style = {{ color: "#222222" }}/>
+                        <FaPen className = "text-sm mt-1 ml-1" style = {{ color: "#242424" }}/>
                         <p className = "text-sm font-semibold"> Edit Profile </p>
                     </div>
                 </button>
@@ -167,8 +167,7 @@ function AdministratorProfile() {
             <div className = "w-3/5 mx-auto flex justify-end">
                 <button
                 onClick = { handleDeleteClick }
-                className = "font-semibold py-2 px-4 rounded-lg shadow-md text-sm text-primary-color-white hover:shadow-md transition duration-300 ease-in-out"
-                style = {{ backgroundColor: "#FF6961"}}
+                className = " bg-secondary-color-red font-semibold py-2 px-4 rounded-lg shadow-md text-sm text-white hover:shadow-md transition duration-300 ease-in-out"
                 >
                     Delete Account
                 </button>

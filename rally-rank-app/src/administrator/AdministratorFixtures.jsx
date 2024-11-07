@@ -87,7 +87,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                             {/* SUBMIT BUTTON */}
                             <button
                                 type = "submit"
-                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-custom-green transition"
+                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-primary-color-green transition"
                             >
                                 Confirm
                             </button>
