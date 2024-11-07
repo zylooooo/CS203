@@ -1,6 +1,5 @@
 // Package Imports
 import axios from "axios";
-import { useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate} from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
