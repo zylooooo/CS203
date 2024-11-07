@@ -29,3 +29,10 @@ node_modules/*
 firebase-debug.log
 src/firebase/firebase.js
 .env.local
+
+# MacOS
+.DS_Store
+**/.DS_Store
+
+# Vite
+.vite
