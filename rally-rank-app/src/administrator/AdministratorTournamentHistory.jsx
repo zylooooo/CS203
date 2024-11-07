@@ -27,7 +27,7 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
     return (
         <div className = "flex flex-col gap-5 w-full">
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border2 rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex border rounded-xl p-4 card-background shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -229,9 +229,9 @@ function AdministratorTournamentHistory() {
                             placeholder = "Search by Tournament Name or Admin Name"
                             value = { searchTerm }
                             onChange = { (e) => setSearchTerm(e.target.value) }
-                            className = "p-2 border2 border-gray-300 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className = "p-2 border border-gray-300 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <button className = "border2 border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
+                        <button className = "border border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
                             Search
                         </button>
                     </div>

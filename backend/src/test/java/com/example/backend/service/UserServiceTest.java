@@ -2,9 +2,11 @@ package com.example.backend.service;
 
 import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.model.User;
+import com.example.backend.model.Match;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.TournamentRepository;
+import com.example.backend.repository.MatchRepository;
 import com.example.backend.model.Tournament;
 import org.springframework.validation.Errors;
 
@@ -23,6 +25,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,6 +35,8 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private MatchRepository matchRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -64,7 +69,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers_UsersExist_ReturnsListOfUsers() {
+    void getAllUsers_DatabaseHasUsers_ReturnsUsersList() {
         // Arrange
         User user1 = new User();
         user1.setUsername("user1");
@@ -84,7 +89,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers_ErrorOccurs_ThrowsRuntimeException() {
+    void getAllUsers_DatabaseError_ThrowsRuntimeException() {
         // Arrange
         when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
@@ -95,7 +100,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers_RepositoryThrowsException_ThrowsRuntimeException() {
+    void getAllUsers_RepositoryError_ThrowsRuntimeException() {
         when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
         assertThrows(RuntimeException.class, () -> userService.getAllUsers());
     }
@@ -125,7 +130,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_ValidUser_CreatesAndReturnsUser() {
+    void createUser_ValidUserDetails_CreatesAndReturnsUser() {
         User user = new User();
         user.setUsername("newUser");
         user.setEmail("new@example.com");
@@ -144,7 +149,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_DuplicateEmail_ThrowsIllegalArgumentException() {
+    void createUser_EmailAlreadyExists_ThrowsIllegalArgumentException() {
         User user = new User();
         user.setEmail("existing@example.com");
 
@@ -154,7 +159,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_DuplicateUsername_ThrowsIllegalArgumentException() {
+    void createUser_UsernameAlreadyExists_ThrowsIllegalArgumentException() {
         User user = new User();
         user.setUsername("existingUser");
 
@@ -164,7 +169,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_RepositoryThrowsException_ThrowsRuntimeException() {
+    void createUser_DatabaseError_ThrowsRuntimeException() {
         User user = new User();
         user.setUsername("newUser");
         user.setEmail("new@example.com");
@@ -174,7 +179,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_ValidUpdates_UpdatesAndReturnsUser() {
+    void updateUser_ValidUserDetails_UpdatesAndReturnsUser() {
         String username = "existingUser";
         User existingUser = new User();
         existingUser.setUsername(username);
@@ -189,7 +194,6 @@ class UserServiceTest {
         updatedUser.setElo(1500);
         updatedUser.setGender("Female");
         updatedUser.setDateOfBirth(LocalDate.of(1990, 1, 1));
-        // updatedUser.setProfilePic("newpic.jpg");
         updatedUser.setFirstName("Jane");
         updatedUser.setLastName("Doe");
         updatedUser.setAvailable(true);
@@ -215,14 +219,13 @@ class UserServiceTest {
         assertEquals(1500, resultUser.getElo());
         assertEquals("Female", resultUser.getGender());
         assertEquals(LocalDate.of(1990, 1, 1), resultUser.getDateOfBirth());
-        // assertEquals("newpic.jpg", resultUser.getProfilePic());
         assertEquals("Jane", resultUser.getFirstName());
         assertEquals("Doe", resultUser.getLastName());
         assertTrue(resultUser.isAvailable());
     }
 
     @Test
-    void updateUser_ValidationErrors_ReturnsErrorMap() {
+    void updateUser_ValidationFails_ReturnsErrorMap() {
         String username = "existingUser";
         User existingUser = new User();
         existingUser.setUsername(username);
@@ -253,7 +256,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_DuplicateEmail_ReturnsErrorMap() {
+    void updateUser_EmailAlreadyExists_ReturnsErrorMap() {
         String username = "existingUser";
         User existingUser = new User();
         existingUser.setUsername(username);
@@ -276,7 +279,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_DuplicateUsername_ReturnsErrorMap() {
+    void updateUser_UsernameAlreadyExists_ReturnsErrorMap() {
         String username = "existingUser";
         User existingUser = new User();
         existingUser.setUsername(username);
@@ -297,7 +300,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUser_ExistingUser_DeletesUser() {
+    void deleteUser_ValidUser_DeletesUserSuccessfully() {
         String username = "existingUser";
         User existingUser = new User();
         existingUser.setUsername(username);
@@ -310,38 +313,6 @@ class UserServiceTest {
         verify(userRepository).delete(existingUser);
     }
 
-    // @Test
-    // void deleteUser_UserInOngoingTournament_DeletesUserAndUpdatesTournament() {
-    //     String username = "existingUser";
-    //     User existingUser = new User();
-    //     existingUser.setUsername(username);
-
-    //     Tournament tournament = new Tournament();
-    //     tournament.setTournamentName("OngoingTournament");
-    //     tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
-    //     Tournament.Match match = new Tournament.Match();
-    //     match.setPlayers(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
-    //     match.setCompleted(false);
-    //     tournament.setMatches(new ArrayList<>(Collections.singletonList(match)));
-
-    //     when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
-    //     when(tournamentService.getOngoingTournaments()).thenReturn(Collections.singletonList(tournament));
-    //     when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
-
-    //     userService.deleteUser(username);
-
-    //     verify(userRepository).delete(existingUser);
-    //     verify(tournamentRepository).save(tournament);
-
-    //     ArgumentCaptor<Tournament> tournamentCaptor = ArgumentCaptor.forClass(Tournament.class);
-    //     verify(tournamentRepository).save(tournamentCaptor.capture());
-    //     Tournament updatedTournament = tournamentCaptor.getValue();
-
-    //     assertFalse(updatedTournament.getPlayersPool().contains(username));
-    //     assertTrue(updatedTournament.getMatches().get(0).isCompleted());
-    //     assertEquals("otherPlayer", updatedTournament.getMatches().get(0).getMatchWinner());
-    // }
-
     @Test
     void deleteUser_UserNotFound_ThrowsUserNotFoundException() {
         String username = "nonExistingUser";
@@ -350,56 +321,8 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.deleteUser(username));
     }
 
-    // @Test
-    // void deleteUser_UserInOngoingTournament_UpdatesTournamentAndDeletesUser() {
-    //     String username = "testUser";
-    //     User user = new User();
-    //     user.setUsername(username);
-
-    //     Tournament tournament = new Tournament();
-    //     tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherUser")));
-    //     Tournament.Match match = new Tournament.Match();
-    //     match.setPlayers(new ArrayList<>(Arrays.asList(username, "otherUser")));
-    //     match.setCompleted(false);
-    //     tournament.setMatches(new ArrayList<>(Arrays.asList(match)));
-
-    //     when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-    //     when(tournamentService.getOngoingTournaments()).thenReturn(Arrays.asList(tournament));
-    //     when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
-
-    //     userService.deleteUser(username);
-
-    //     verify(userRepository).delete(user);
-    //     verify(tournamentRepository).save(tournament);
-    //     assertFalse(tournament.getPlayersPool().contains(username));
-    //     assertEquals("otherUser", tournament.getMatches().get(0).getMatchWinner());
-    // }
-
-    // @Test
-    // void deleteUser_UserInTournamentWithNoMatches_UpdatesTournament() {
-    //     String username = "testUser";
-    //     User user = new User();
-    //     user.setUsername(username);
-
-    //     Tournament tournament = new Tournament();
-    //     tournament.setTournamentName("TournamentWithNoMatches");
-    //     tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
-    //     tournament.setMatches(new ArrayList<>());
-
-    //     when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-    //     when(tournamentService.getOngoingTournaments()).thenReturn(Collections.singletonList(tournament));
-    //     when(tournamentRepository.save(any(Tournament.class))).thenReturn(tournament);
-
-    //     userService.deleteUser(username);
-
-    //     verify(userRepository).delete(user);
-    //     verify(tournamentRepository).save(tournament);
-
-    //     assertFalse(tournament.getPlayersPool().contains(username));
-    // }
-
     @Test
-    void deleteUser_NoOngoingTournaments_DeletesUser() {
+    void deleteUser_NoOngoingTournaments_DeletesUserSuccessfully() {
         String username = "testUser";
         User user = new User();
         user.setUsername(username);
@@ -414,7 +337,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getDefaultLeaderboard_LessThanTenUsersOfSameGender_ReturnsAllUsers() {
+    void getDefaultLeaderboard_LessThanTenSameGenderUsers_ReturnsAllUsers() {
         String username = "testUser";
         User user = createUser(username, "Male", 950);
 
@@ -433,7 +356,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getDefaultLeaderboard_MoreThanTenUsersOfSameGender_ReturnsTopTen() {
+    void getDefaultLeaderboard_MoreThanTenSameGenderUsers_ReturnsTopTenUsers() {
         String username = "testUser";
         User user = createUser(username, "Male", 900);
 
@@ -452,7 +375,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getDefaultLeaderboard_UserInTopTen_ReturnsTopTenIncludingUser() {
+    void getDefaultLeaderboard_UserInTopTen_ReturnsTopTenWithUser() {
         String username = "testUser";
         User user = createUser(username, "Male", 980);
 
@@ -471,7 +394,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getDefaultLeaderboard_NoUsersOfSameGender_ReturnsEmptyList() {
+    void getDefaultLeaderboard_NoSameGenderUsers_ReturnsEmptyList() {
         String username = "testUser";
         User user = createUser(username, "Male", 1000);
 
@@ -490,204 +413,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getOppositeGenderLeaderboard_LessThanTenUsersOfOppositeGender_ReturnsAllUsers() {
-        String username = "testUser";
-        User user = createUser(username, "Male", 1000);
-
-        List<User> allUsers = IntStream.range(0, 5)
-                .mapToObj(i -> createUser("user" + i, "Female", 1000 - i * 10))
-                .collect(Collectors.toList());
-        allUsers.add(user);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getOppositeGenderLeaderboard(username);
-
-        assertEquals(5, leaderboard.size());
-        assertFalse(leaderboard.contains(user));
-        assertEquals("user0", leaderboard.get(0).getUsername()); // Highest ELO
-        assertEquals("user4", leaderboard.get(4).getUsername()); // Lowest ELO
-    }
-
-    @Test
-    void getOppositeGenderLeaderboard_MoreThanTenUsersOfOppositeGender_ReturnsTopTen() {
-        String username = "testUser";
-        User user = createUser(username, "Male", 1000);
-
-        List<User> allUsers = IntStream.range(0, 15)
-                .mapToObj(i -> createUser("user" + i, "Female", 1000 - i * 10))
-                .collect(Collectors.toList());
-        allUsers.add(user);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getOppositeGenderLeaderboard(username);
-
-        assertEquals(10, leaderboard.size());
-        assertFalse(leaderboard.contains(user));
-        assertEquals("user0", leaderboard.get(0).getUsername()); // Highest ELO
-        assertEquals("user9", leaderboard.get(9).getUsername()); // 10th highest ELO
-    }
-
-    @Test
-    void getOppositeGenderLeaderboard_NoUsersOfOppositeGender_ReturnsEmptyList() {
-        String username = "testUser";
-        User user = createUser(username, "Male", 1000);
-
-        List<User> allUsers = IntStream.range(0, 5)
-                .mapToObj(i -> createUser("user" + i, "Male", 1000 - i * 10))
-                .collect(Collectors.toList());
-        allUsers.add(user);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getOppositeGenderLeaderboard(username);
-
-        assertTrue(leaderboard.isEmpty());
-    }
-
-    @Test
-    void getOppositeGenderLeaderboard_UserNotFound_ThrowsUserNotFoundException() {
-        String username = "nonexistentUser";
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userService.getOppositeGenderLeaderboard(username));
-    }
-
-    @Test
-    void getMixedGenderLeaderboard_UserExists_ReturnsTopTenUsersRegardlessOfGender() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(500);
-
-        List<User> allUsers = Arrays.asList(
-                createUser("user1", "Male", 1000),
-                createUser("user2", "Female", 900),
-                createUser("user3", "Male", 800));
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getMixedGenderLeaderboard(username);
-
-        assertEquals(4, leaderboard.size());
-        assertEquals("user1", leaderboard.get(0).getUsername());
-        assertEquals("user2", leaderboard.get(1).getUsername());
-        assertEquals("user3", leaderboard.get(2).getUsername());
-        assertEquals("testUser", leaderboard.get(3).getUsername());
-    }
-
-    @Test
-    void getMixedGenderLeaderboard_UserNotInTopTen_ReturnsTopTenWithoutUser() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(500);
-
-        List<User> allUsers = IntStream.range(0, 10)
-                .mapToObj(i -> createUser("user" + i, i % 2 == 0 ? "Male" : "Female", 1000 - i * 10))
-                .collect(Collectors.toList());
-        allUsers.add(user);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getMixedGenderLeaderboard(username);
-
-        assertEquals(10, leaderboard.size());
-        assertFalse(leaderboard.contains(user));
-        assertNotEquals(user, leaderboard.get(9));
-    }
-
-    @Test
-    void getMixedGenderLeaderboard_FewerThanTenUsers_ReturnsAllUsers() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(500);
-
-        List<User> allUsers = IntStream.range(0, 5)
-                .mapToObj(i -> createUser("user" + i, i % 2 == 0 ? "Male" : "Female", 1000 - i * 100))
-                .collect(Collectors.toList());
-        allUsers.add(user);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getMixedGenderLeaderboard(username);
-
-        assertEquals(6, leaderboard.size());
-        assertTrue(leaderboard.contains(user));
-    }
-
-    @Test
-    void getMixedGenderLeaderboard_AllUsersSameElo_IncludesRequestingUser() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setElo(1000);
-
-        List<User> allUsers = IntStream.range(0, 10)
-            .mapToObj(i -> {
-                User u = new User();
-                u.setUsername("user" + i);
-                u.setElo(1000);
-                return u;
-            })
-            .collect(Collectors.toList());
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.findAll()).thenReturn(allUsers);
-
-        List<User> leaderboard = userService.getMixedGenderLeaderboard(username);
-
-        assertEquals(10, leaderboard.size());
-        assertFalse(leaderboard.contains(user));
-    }
-
-    @Test
-    void updateUserAvailability_ValidUpdate_UpdatesAvailability() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setAvailable(false);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        User updatedUser = userService.updateUserAvailability(username, true);
-
-        assertTrue(updatedUser.isAvailable());
-        verify(userRepository).save(user);
-    }
-
-    @Test
-    void updateUserAvailability_UserNotFound_ThrowsUserNotFoundException() {
-        String username = "nonExistingUser";
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userService.updateUserAvailability(username, true));
-    }
-
-    @Test
-    void updateUserAvailability_UnexpectedError_ThrowsRuntimeException() {
-        String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Unexpected error"));
-
-        assertThrows(RuntimeException.class, () -> userService.updateUserAvailability(username, true));
-    }
-
-    @Test
-    void checkIfUsernameExists_ExistingUsername_ReturnsTrue() {
+    void checkIfUsernameExists_UsernameExists_ReturnsTrue() {
         String username = "existingUser";
 
         when(userRepository.existsByUsername(username)).thenReturn(true);
@@ -697,7 +423,7 @@ class UserServiceTest {
     }
 
     @Test
-    void checkIfUsernameExists_NonExistingUsername_ReturnsFalse() {
+    void checkIfUsernameExists_UsernameDoesNotExist_ReturnsFalse() {
         String username = "nonExistentUser";
 
         when(userRepository.existsByUsername(username)).thenReturn(false);
@@ -707,12 +433,12 @@ class UserServiceTest {
     }
 
     @Test
-    void checkIfUsernameExists_EmptyUsername_ThrowsIllegalArgumentException() {
+    void checkIfUsernameExists_NullUsername_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> userService.checkIfUsernameExists(null));
     }
 
     @Test
-    void checkIfEmailExists_ExistingEmail_ReturnsTrue() {
+    void checkIfEmailExists_EmailExists_ReturnsTrue() {
         String email = "existing@example.com";
 
         when(userRepository.existsByEmail(email)).thenReturn(true);
@@ -722,7 +448,7 @@ class UserServiceTest {
     }
 
     @Test
-    void checkIfEmailExists_NonExistingEmail_ReturnsFalse() {
+    void checkIfEmailExists_EmailDoesNotExist_ReturnsFalse() {
         String email = "nonexistent@example.com";
 
         when(userRepository.existsByEmail(email)).thenReturn(false);
@@ -732,7 +458,200 @@ class UserServiceTest {
     }
 
     @Test
-    void checkIfEmailExists_EmptyEmail_ThrowsIllegalArgumentException() {
+    void checkIfEmailExists_NullEmail_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> userService.checkIfEmailExists(null));
+    }
+
+    @Test
+    void hasExceededStrikeLimit_UserNotFound_ThrowsUserNotFoundException() {
+        String username = "nonExistentUser";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        
+        assertThrows(UserNotFoundException.class, () -> userService.hasExceededStrikeLimit(username));
+    }
+
+    @Test
+    void hasExceededStrikeLimit_NoStrikes_ReturnsFalse() {
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+        user.setStrikeReports(new ArrayList<>());
+        
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        
+        assertFalse(userService.hasExceededStrikeLimit(username));
+    }
+
+    @Test
+    void deleteUser_UserInOngoingTournaments_UpdatesTournaments() {
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName("testTournament");
+        tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
+
+        Match match = new Match();
+        match.setTournamentName("testTournament");
+        match.setPlayers(new ArrayList<>());
+        
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(tournamentService.getCurrentAndFutureTournaments())
+            .thenReturn(Collections.singletonList(tournament));
+        when(matchRepository.findByTournamentName("testTournament"))
+            .thenReturn(Optional.of(Collections.singletonList(match)));
+
+        userService.deleteUser(username);
+
+        verify(tournamentRepository).save(tournament);
+        assertFalse(tournament.getPlayersPool().contains(username));
+    }
+
+    @Test
+    void deleteUser_UserHasMatches_UpdatesMatches() {
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName("testTournament");
+        tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
+        
+        Match match = new Match();
+        match.setTournamentName("testTournament");
+        match.setPlayers(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
+        match.setCompleted(false);
+        match.setSets(new ArrayList<>());
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(tournamentService.getCurrentAndFutureTournaments())
+            .thenReturn(Collections.singletonList(tournament));
+        when(matchRepository.findByTournamentName("testTournament"))
+            .thenReturn(Optional.of(Collections.singletonList(match)));
+
+        userService.deleteUser(username);
+
+        verify(matchRepository).save(match);
+        assertFalse(match.getPlayers().contains(username));
+    }
+
+    @Test
+    void deleteUser_DatabaseError_ThrowsRuntimeException() {
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(tournamentService.getCurrentAndFutureTournaments()).thenReturn(Collections.emptyList());
+        doThrow(new RuntimeException("Database error")).when(userRepository).delete(user);
+
+        assertThrows(RuntimeException.class, () -> userService.deleteUser(username));
+    }
+
+    @Test
+    void createUser_WithStrikeReports_CreatesUserWithStrikeHistory() {
+        User user = new User();
+        user.setUsername("newUser");
+        user.setEmail("new@example.com");
+        user.setPassword("password");
+        
+        User.StrikeReport strikeReport = new User.StrikeReport();
+        strikeReport.setReportDetails("Test report");
+        strikeReport.setDateCreated(LocalDateTime.now());
+        strikeReport.setIssuedBy("admin");
+        
+        user.setStrikeReports(Collections.singletonList(strikeReport));
+
+        when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
+        when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User createdUser = userService.createUser(user);
+
+        assertNotNull(createdUser.getStrikeReports());
+        assertEquals(1, createdUser.getStrikeReports().size());
+        assertEquals("Test report", createdUser.getStrikeReports().get(0).getReportDetails());
+    }
+
+    @Test
+    void updateUser_WithStrikeReports_UpdatesStrikeHistory() {
+        String username = "existingUser";
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        existingUser.setStrikeReports(new ArrayList<>());
+        
+        User updatedUser = new User();
+        updatedUser.setUsername(username);
+        List<User.StrikeReport> strikeReports = new ArrayList<>();
+        User.StrikeReport newStrike = new User.StrikeReport();
+        newStrike.setReportDetails("New violation");
+        newStrike.setDateCreated(LocalDateTime.now());
+        newStrike.setIssuedBy("admin");
+        strikeReports.add(newStrike);
+        updatedUser.setStrikeReports(strikeReports);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
+
+        Map<String, Object> result = userService.updateUser(username, updatedUser);
+        User resultUser = (User) result.get("user");
+
+        assertNotNull(resultUser.getStrikeReports());
+        assertEquals(1, resultUser.getStrikeReports().size());
+        assertEquals("New violation", resultUser.getStrikeReports().get(0).getReportDetails());
+    }
+
+    @Test
+    void leaveTournament_DatabaseError_ThrowsRuntimeException() {
+        String username = "testUser";
+        String tournamentName = "testTournament";
+        
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName(tournamentName);
+        tournament.setPlayersPool(new ArrayList<>(Arrays.asList(username, "otherPlayer")));
+        
+        when(tournamentService.getTournamentByName(tournamentName)).thenReturn(tournament);
+        
+        when(tournamentRepository.save(any(Tournament.class)))
+            .thenThrow(new RuntimeException("Database error"));
+        
+        assertThrows(RuntimeException.class, 
+            () -> userService.leaveTournament(tournamentName, username));
+    }
+
+    @Test
+    void updateUser_NullUsername_ThrowsUserNotFoundException() {
+        User updatedUser = new User();
+        updatedUser.setUsername("testUser");
+        
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUser(null, updatedUser);
+        });
+    }
+
+    @Test
+    void updateUser_NullUserDetails_ThrowsUserNotFoundException() {
+        String username = "testUser";
+        
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUser(username, null);
+        });
+    }
+
+    @Test
+    void updateUser_DatabaseError_ThrowsRuntimeException() {
+        String username = "testUser";
+        User existingUser = new User();
+        existingUser.setUsername(username);
+        User updatedUser = new User();
+        updatedUser.setUsername(username);
+        
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Database error"));
+        
+        assertThrows(RuntimeException.class, 
+            () -> userService.updateUser(username, updatedUser));
     }
 }

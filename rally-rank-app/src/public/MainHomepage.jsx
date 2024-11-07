@@ -23,7 +23,7 @@ function MainHomePage() {
 
 
     return (
-        <div className="flex flex-col justify-center w-full mt-10">
+        <div className="flex flex-col justify-center w-full mt-10 p-12">
             <div className='relative'>
                 <img
                     src="../src/assets/view-tennis-racket-hitting-ball.jpg"
@@ -31,7 +31,7 @@ function MainHomePage() {
                     className="w-full max-h-[500px] object-cover rounded-xl"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 rounded-xl"></div>
-                <div className="absolute inset-0 flex items-center justify-center flex flex-col text-white ">
+                <div className="absolute inset-0 items-center justify-center flex flex-col text-white ">
                     <h1 className="text-6xl font-bold text-center px-4 shadow-text">
                         The best Tennis Matchmaking App
                     </h1>
