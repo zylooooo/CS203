@@ -14,6 +14,10 @@ import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
+// Icons Imports
+import { faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 function AdministratorFixtures() {
     const location = useLocation();
     const navigate = useNavigate();
