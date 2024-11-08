@@ -80,7 +80,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Set the allowed origins, methods, and headers
-        configuration.setAllowedOrigins(List.of("https://backend.com", "http://localhost:8080", "http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of( "http://localhost:8080", "http://localhost:5173", "https://rally-rank-frontend.web.app/", "https://rally-rank-frontend.firebaseapp.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
