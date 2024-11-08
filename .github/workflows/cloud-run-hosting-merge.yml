@@ -25,16 +25,16 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x mvnw
         
-      # - name: Clean and Install
-      #   run: ./mvnw clean install -DskipTests
+      - name: Clean and Install
+        run: ./mvnw clean install -DskipTests
 
-      # - name: Run Tests
-      #   env: 
-      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      #     SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
-      #     SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
-      #     JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-      #   run: ./mvnw test
+      - name: Run Tests
+        env: 
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
+          SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: ./mvnw test
       
       - name: Auth with Google Cloud
         uses: google-github-actions/auth@v2
