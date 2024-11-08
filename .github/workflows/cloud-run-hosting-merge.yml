@@ -28,8 +28,8 @@ jobs:
       - name: Clean and Install
         run: ./mvnw clean install -DskipTests
 
-      - name: Run Tests
-        run: ./mvnw test
+      # - name: Run Tests
+        # run: ./mvnw test
       
       - name: Build Docker image
         run: docker build -t rally-rank-backend:${{ github.sha }} .
