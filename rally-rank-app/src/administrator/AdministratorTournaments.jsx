@@ -2,10 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// WIP: Tournaments under 'All Tournaments' doesn't allow Admin to edit tournament details, even if created by Admin
-
 // Component: Tournament Card (for AdministratorTournaments)
-const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdministrator }) => {
+const Tournaments = ({ tournaments, setIsTransitioning, thisAdministrator }) => {
 
     const isBeforeStartDate = (startDate) => {
         const currentDate = new Date();
@@ -174,13 +172,10 @@ function AdministratorTournaments() {
 
     const [myTournaments, setMyTournaments] = useState([]);
 
-    const [isMyTournaments, setIsMyTournaments] = useState(false);
-
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(allTournaments);
-            setIsMyTournaments(false);
         }, 300);
         setIsTransitioning(false);
     }
@@ -189,7 +184,6 @@ function AdministratorTournaments() {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(myTournaments);
-            setIsMyTournaments(true);
         }, 300);
         setIsTransitioning(false);
     }
@@ -282,12 +276,16 @@ function AdministratorTournaments() {
 
 
                     {/* TOURNAMENT LISTS */}
-                    <Tournaments tournaments = {tournaments} isMyTournaments = {isMyTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator} />
+                    {tournaments.length > 0 ? (
+                        <Tournaments tournaments = {tournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator}/>
+                    ) : (
+                        <p> No tournaments found. Create a new tournament today! </p>
+                    )}
 
                 </div>
 
                  {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-14 bottom-8 justify-end cursor-zoom-in ">
+                <div className = "tournament-actions flex fixed right-14 bottom-16 justify-end cursor-zoom-in ">
                     <button
                     onClick = { handleCreateClick }
                     className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-primary-color-light-green text-white hover:shadow-md hover:bg-primary-color-green transition duration-300 ease-in-out"

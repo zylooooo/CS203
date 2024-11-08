@@ -67,6 +67,7 @@ function AdministratorSignUp() {
 
     // API Call: Checking availibility of adminName and email address.
     async function checkCredentialsAvailablity(formData) {
+        console.log(formData.adminName, " " , formData.email);
         try {
             const response = await axios.get(
             "http://localhost:8080/auth/credentials-availability",
@@ -85,7 +86,7 @@ function AdministratorSignUp() {
             if (!response.data.accountNameAvailable && !response.data.emailAvailable) {
                 setAlertMessage("Both username and email address entered has already been taken.");
             }
-            else if (!response.data.accountNameAvailablee) {
+            else if (!response.data.accountNameAvailable) {
                 setAlertMessage("Administrator username taken. Enter another one.");
             }
             else if (!response.data.emailAvailable) {
@@ -134,7 +135,7 @@ function AdministratorSignUp() {
                         className = {`font-bold text-xl flex justify-center items-center rounded-full w-10 h-10 p-6 
                             ${
                             completedSteps.includes(num)
-                            ? "bg-primary-color-green border-opacity-50"
+                            ? "bg-primary-color-light-green border-opacity-50"
                             : "bg-primary-color-white"
                             } 
                             ${step === num ? "scale-125" : ""} 

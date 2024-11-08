@@ -223,48 +223,58 @@ function AdministratorFixtures() {
             {preliminaryMatches.length > 0 && (
                 <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
             )}
-            <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
-                View Quarter Finals
-                <span className = "text-lg ml-2">
-                    <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
-                </span>
-            </button>
-            {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
-                <div className = "flex-1 shadow-xl rounded-[12px]">
-                    <WinnersTable winners = {quarterFinalsWinners} matches = {quarterFinalMatches} />
-                </div>
-            )}
-            <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
-                View Semi Finals
-                <span className = "text-lg ml-2">
-                    <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
-                </span>
-            </button>
-            {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
-                <div className="flex-1 shadow-xl rounded-[12px]">
-                    <WinnersTable winners = {semiFinalsWinners} matches = {semiFinalMatches} />
-                </div>
-            )}
 
-            <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
-                View Finals
-                <span className="text-lg ml-2">
-                    <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
-                </span>
-            </button>
-            {showFinals && (
-                <>
-                    {finalsMatch && finalsMatch.length > 0 ? (
-                        <div className = "flex-1">
-                            <WinnersTable winners = {tournamentWinner} matches = {finalsMatch} />
-                        </div>
-                    ) : (
-                        <div className = "flex-1 p-4 text-center text-lg font-semibold text-gray-500">
-                            No Finals matches available.
-                        </div>
-                    )}
-                </>
-            )}
+            {/* VIEW QUARTER FINALS / SEMI FINALS / FINALS */}
+            <div className = "flex flex-row w-full justify-around">
+            <div className = "flex flex-col w-1/3">
+                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
+                    View Quarter Finals
+                    <span className = "text-lg ml-2">
+                        <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
+                    </span>
+                </button>
+                {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
+                    <div className = "flex-1 shadow-xl rounded-[12px]">
+                        <WinnersTable winners = {quarterFinalsWinners} matches = {quarterFinalMatches} />
+                    </div>
+                )}
+            </div>
+            <div className = "flex flex-col w-1/3">
+                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
+                    View Semi Finals
+                    <span className = "text-lg ml-2">
+                        <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
+                    </span>
+                </button>
+                {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
+                    <div className="flex-1 shadow-xl rounded-[12px]">
+                        <WinnersTable winners = {semiFinalsWinners} matches = {semiFinalMatches} />
+                    </div>
+                )}
+            </div>
+            <div className = "flex flex-col w-1/3">
+                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
+                    View Finals
+                    <span className="text-lg ml-2">
+                        <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
+                    </span>
+                </button>
+                {showFinals && (
+                    <>
+                        {finalsMatch && finalsMatch.length > 0 ? (
+                            <div className = "flex-1">
+                                <WinnersTable winners = {tournamentWinner} matches = {finalsMatch} />
+                            </div>
+                        ) : (
+                            <div className = "flex-1 p-4 text-center text-lg font-semibold text-gray-500">
+                                No Finals matches available.
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+            </div>
+
             {mainMatches.length > 0 && tournamentBracket !== null && (
                 <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
                     <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
