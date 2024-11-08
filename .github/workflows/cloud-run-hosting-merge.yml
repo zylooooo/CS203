@@ -28,8 +28,26 @@ jobs:
       - name: Clean and Install
         run: ./mvnw clean install -DskipTests
 
-      # - name: Run Tests
-        # run: ./mvnw test
+      - name: Run Tests
+        env: 
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
+          SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: ./mvnw test
       
-      - name: Build Docker image
-        run: docker build -t rally-rank-backend:${{ github.sha }} .
+      - name: Auth with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for GCP
+        run: gcloud auth configure-docker
+      
+      - name: Build and Push Docker image
+        run: |
+          docker build -t gcr.io/rally-rank-backend/rally-rank-backend:${{ github.sha }} .
+          docker push gcr.io/rally-rank-backend/rally-rank-backend:${{ github.sha }}
