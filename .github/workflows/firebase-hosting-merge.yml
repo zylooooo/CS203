@@ -24,3 +24,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_RALLY_RANK_FRONTEND }}
           channelId: live
           projectId: rally-rank-frontend
+          entryPoint: ./rally-rank-app
