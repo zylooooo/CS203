@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,12 +31,17 @@ import com.example.backend.exception.UserNotFoundException;
 import com.example.backend.model.User;
 import com.example.backend.model.Admin;
 import com.example.backend.model.Tournament;
+import com.example.backend.model.Match;
 import com.example.backend.repository.AdminRepository;
 import com.example.backend.repository.TournamentRepository;
 import com.example.backend.repository.UserRepository;
-
+import com.example.backend.repository.MatchRepository;
 @ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
+
+    @Mock
+    private MatchRepository matchRepository;
+
     @Mock
     private AdminRepository adminRepository;
     
@@ -643,6 +650,138 @@ class AdminServiceTest {
         assertEquals(adminName, user.getStrikeReports().get(1).getIssuedBy());
         verify(userRepository).save(user);
     }
+
+    @Test
+    void deleteAdmin_WithActiveTournaments_ShouldDeleteAllAssociatedData() {
+        // Arrange
+        String adminName = "admin1";
+        Admin admin = new Admin();
+        admin.setAdminName(adminName);
+
+        Tournament tournament1 = new Tournament();
+        tournament1.setTournamentName("Tournament1");
+        tournament1.setEndDate(null);  // Active tournament
+
+        Tournament tournament2 = new Tournament();
+        tournament2.setTournamentName("Tournament2");
+        tournament2.setEndDate(LocalDate.now());  // Completed tournament
+
+        List<Tournament> adminTournaments = Arrays.asList(tournament1, tournament2);
+        
+        Match match1 = new Match();
+        match1.setTournamentName("Tournament1");
+        List<Match> tournamentMatches = Arrays.asList(match1);
+
+        when(adminRepository.findByAdminName(adminName)).thenReturn(Optional.of(admin));
+        when(tournamentRepository.findAllByCreatedBy(adminName)).thenReturn(adminTournaments);
+        when(matchRepository.findByTournamentName("Tournament1")).thenReturn(Optional.of(tournamentMatches));
+
+        // Act
+        adminService.deleteAdmin(adminName);
+
+        // Assert
+        verify(matchRepository).deleteAll(tournamentMatches);
+        verify(tournamentRepository).deleteAll(Arrays.asList(tournament1));  // Only active tournament
+        verify(adminRepository).delete(admin);
+    }
+
+    @Test
+    void deleteAdmin_WithNoTournaments_ShouldOnlyDeleteAdmin() {
+        // Arrange
+        String adminName = "admin1";
+        Admin admin = new Admin();
+        admin.setAdminName(adminName);
+
+        when(adminRepository.findByAdminName(adminName)).thenReturn(Optional.of(admin));
+        when(tournamentRepository.findAllByCreatedBy(adminName)).thenReturn(Collections.emptyList());
+
+        // Act
+        adminService.deleteAdmin(adminName);
+
+        // Assert
+        verify(matchRepository, never()).deleteAll(anyList());
+        verify(tournamentRepository, never()).deleteAll(anyList());
+        verify(adminRepository).delete(admin);
+    }
+
+    @Test
+    void deleteAdmin_WithTournamentsButNoMatches_ShouldDeleteTournamentsAndAdmin() {
+        // Arrange
+        String adminName = "admin1";
+        Admin admin = new Admin();
+        admin.setAdminName(adminName);
+
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName("Tournament1");
+        tournament.setEndDate(null);
+        List<Tournament> adminTournaments = Arrays.asList(tournament);
+
+        when(adminRepository.findByAdminName(adminName)).thenReturn(Optional.of(admin));
+        when(tournamentRepository.findAllByCreatedBy(adminName)).thenReturn(adminTournaments);
+        when(matchRepository.findByTournamentName("Tournament1")).thenReturn(Optional.empty());
+
+        // Act
+        adminService.deleteAdmin(adminName);
+
+        // Assert
+        verify(matchRepository, never()).deleteAll(anyList());
+        verify(tournamentRepository).deleteAll(adminTournaments);
+        verify(adminRepository).delete(admin);
+    }
+
+    @Test
+    void deleteAdmin_WithMatchDeletionError_ShouldPropagateException() {
+        // Arrange
+        String adminName = "admin1";
+        Admin admin = new Admin();
+        admin.setAdminName(adminName);
+
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName("Tournament1");
+        tournament.setEndDate(null);
+        List<Tournament> adminTournaments = Arrays.asList(tournament);
+
+        Match match = new Match();
+        match.setTournamentName("Tournament1");
+        List<Match> tournamentMatches = Arrays.asList(match);
+
+        when(adminRepository.findByAdminName(adminName)).thenReturn(Optional.of(admin));
+        when(tournamentRepository.findAllByCreatedBy(adminName)).thenReturn(adminTournaments);
+        when(matchRepository.findByTournamentName("Tournament1")).thenReturn(Optional.of(tournamentMatches));
+        doThrow(new RuntimeException("Match deletion error")).when(matchRepository).deleteAll(anyList());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
+            adminService.deleteAdmin(adminName)
+        );
+        assertEquals("Match deletion error", exception.getMessage());
+    }
+
+    @Test
+    void deleteAdmin_WithTournamentDeletionError_ShouldPropagateException() {
+        // Arrange
+        String adminName = "admin1";
+        Admin admin = new Admin();
+        admin.setAdminName(adminName);
+
+        Tournament tournament = new Tournament();
+        tournament.setTournamentName("Tournament1");
+        tournament.setEndDate(null);
+        List<Tournament> adminTournaments = Arrays.asList(tournament);
+
+        when(adminRepository.findByAdminName(adminName)).thenReturn(Optional.of(admin));
+        when(tournamentRepository.findAllByCreatedBy(adminName)).thenReturn(adminTournaments);
+        when(matchRepository.findByTournamentName("Tournament1")).thenReturn(Optional.empty());
+        doThrow(new RuntimeException("Tournament deletion error")).when(tournamentRepository).deleteAll(anyList());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> 
+            adminService.deleteAdmin(adminName)
+        );
+        assertEquals("Tournament deletion error", exception.getMessage());
+    }
+
+
 
     
     
