@@ -24,6 +24,9 @@ jobs:
 
       - name: Make mvnw executable
         run: chmod +x mvnw
+        
+      - name: Clean and Install
+        run: ./mvnw clean install -DskipTests
 
       - name: Run Tests
         run: ./mvnw test
