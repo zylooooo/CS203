@@ -123,8 +123,10 @@ const TournamentDetails = () => {
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
     const handleShowFixturesButtonClick = () => {
-        navigate("/user-fixtures")
-    }
+        navigate("/user-fixtures", {
+            state: { tournamentName }
+        });
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
