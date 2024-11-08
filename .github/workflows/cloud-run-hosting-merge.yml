@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Deploy to Cloud Run on merge
 on:
   push:
     branches:
@@ -15,6 +15,18 @@ jobs:
         
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Run Tests
+        run: ./mvnw test
       
       - name: Build Docker image
         run: docker build -t rally-rank-backend:${{ github.sha }} .
