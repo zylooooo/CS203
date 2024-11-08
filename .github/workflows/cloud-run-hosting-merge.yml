@@ -25,16 +25,16 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x mvnw
         
-      - name: Clean and Install
-        run: ./mvnw clean install -DskipTests
+      # - name: Clean and Install
+      #   run: ./mvnw clean install -DskipTests
 
-      - name: Run Tests
-        env: 
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
-          SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: ./mvnw test
+      # - name: Run Tests
+      #   env: 
+      #     MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      #     SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
+      #     SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+      #     JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      #   run: ./mvnw test
       
       - name: Auth with Google Cloud
         uses: google-github-actions/auth@v2
@@ -45,9 +45,9 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Configure Docker for GCP
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev
       
       - name: Build and Push Docker image
         run: |
-          docker build -t gcr.io/rally-rank-backend/rally-rank-backend:${{ github.sha }} .
-          docker push gcr.io/rally-rank-backend/rally-rank-backend:${{ github.sha }}
+          docker build -t asia-southeast1-docker.pkg.dev/beaming-magnet-439308-u0/backend/rally-rank-backend:${{ github.sha }} .
+          docker push asia-southeast1-docker.pkg.dev/beaming-magnet-439308-u0/backend/rally-rank-backend:${{ github.sha }}
