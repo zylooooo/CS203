@@ -104,12 +104,12 @@ function AdminVerify() {
                     className="bg-cover bg-center h-main w-screen flex flex-col justify-center items-center"
                     style={{ backgroundImage: `url(${background})` }}
                 >
-                    <div className="card rounded-none bg-primary-color-white border-none items-center m-8">
+                    <div className="card rounded-none bg-white border-none items-center m-8">
                         <h1 className="font-bold text-2xl bg-special-blue">
                             Admin Verification
                         </h1>
                         <form
-                            className="card px-0 py-4 border-none shadow-none bg-primary-color-white"
+                            className="card px-0 py-4 border-none shadow-none bg-white"
                             onSubmit={handleSubmit(onVerifyAdminSubmit)}
                             noValidate
                         >
@@ -170,18 +170,18 @@ function AdminVerify() {
                             </button>
                         </form>
                         <button
-                            className="text-xs underline text-secondary-color-dark-green text-center pt-5 hover:text-primary-color-green"
+                            className="text-xs underline text-secondary-color-dark-green text-center pt-5 hover:text-primary-color-light-green"
                             onClick={() => setModalOpen(true)}
                         >
                             Resend verification code
                         </button>
                     </div>
-                    <div className="card p-7 rounded-none bg-primary-color-white border-none items-center">
+                    <div className="card p-7 rounded-none bg-white border-none items-center">
                         <div className="text-ms flex flex-row justify-center align-item">
                             Already verified?
                             <Link
                                 to="/auth/administrator-login"
-                                className="hover:text-primary-color-green font-bold underline pl-2 text-secondary-color-dark-green"
+                                className="hover:text-primary-color-light-green font-bold underline pl-2 text-secondary-color-dark-green"
                             >
                                 Log in here!
                             </Link>

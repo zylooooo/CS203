@@ -130,8 +130,6 @@ const AdministratorPastTournamentDetails = () => {
 
     const tournamentName = location.state.tournamentName;
 
-    const createdBy = location.state.createdBy;
-
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
     const handleBackButtonClick = () => {

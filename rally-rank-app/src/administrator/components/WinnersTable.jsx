@@ -14,14 +14,14 @@ const WinnersTable = ({ winners, matches }) => {
     };
 
     return (
-        <div className = "winners p-5 h-fit overflow-y-auto">
+        <div className = "winners p-5 h-fit overflow-y-auto w-full">
             <div className = "mt-4 flex flex-col gap-4">
                 {matches.length > 0 ? (
                     matches.map((match, index) => (
                         <div key = {index} className = "winner-card border border-gray-300 rounded-lg p-4 shadow-md">
                             <div className = "flex flex-col items-start gap-2">
                                 <div className = "flex justify-between w-full">
-                                    <span className="text-sm text-gray-500 "> Date: {formatDate(match.startDate) || "TBD"}</span>
+                                    <span className="text-sm text-gray-500 "> Date: {formatDate(match.startDate) || "TBD"} </span>
                                 </div>
                                 <div className = "flex flex-col items-center justify-center gap-2 w-full">
                                     <div className = "text-gray-700">
@@ -41,7 +41,7 @@ const WinnersTable = ({ winners, matches }) => {
                         </div>
                     ))
                 ) : (
-                    <p>No matches available</p>
+                    <p> No matches available </p>
                 )}
             </div>
         </div>

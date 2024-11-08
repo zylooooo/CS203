@@ -342,11 +342,7 @@ const TournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         onClick = {handleShowFixturesButtonClick}
-                        style={{
-                            backgroundColor: "#56AE57",
-                            color: "white",
-                          }}
-                        className = "px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>

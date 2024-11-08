@@ -48,7 +48,7 @@
     }
 
     .button {
-        @apply bg-primary-color-green text-primary-color-white shadow-md hover:bg-secondary-color-dark-green;
+        @apply bg-primary-color-light-green text-white shadow-md hover:bg-primary-color-green;
         display: flex;
         justify-content: center;
         flex-direction: center;
