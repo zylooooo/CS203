@@ -14,6 +14,7 @@ import { faTrashAlt, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid
 const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const [sets, setSets] = useState([1]);
     const [matchWinner, setMatchWinner] = useState("");
+    const [storedFormData, setStoredFormData] = useState(null);
     const { register, handleSubmit, formState: { errors }} = useForm();
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
 
@@ -87,16 +88,19 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     };
 
     const onUpdateMatchDetailsSubmit = async (formData) => {
+        setStoredFormData(formData);
         setShowConfirmationPopup(true);
     };
 
-    const handleFinalConfirmation = async (formData) => {
-        const response = await updateMatchResults(formData);
-        if (response !== undefined) {
-            alert("Match details updated successfully");
-            setShowUpdateResultsCard(false);
+    const handleFinalConfirmation = async () => {
+        if (storedFormData) {
+            const response = await updateMatchResults(storedFormData);
+            if (response !== undefined) {
+                alert("Match details updated successfully");
+                setShowUpdateResultsCard(false);
+            }
+            setShowConfirmationPopup(false);
         }
-        setShowConfirmationPopup(false);
     };
 
     const handleAddSetsClick = () => {
@@ -137,7 +141,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                             </p>
                         </div>
                         {sets.map((setNumber) => (
-                            <div key={setNumber} className="flex flex-col items-center gap-4">
+                            <div key = {setNumber} className="flex flex-col items-center gap-4">
                                 <div className = "flex items-center gap-4 mb-5">
                                     <p className = " font-semibold"> Set {setNumber} </p>
                                     <input

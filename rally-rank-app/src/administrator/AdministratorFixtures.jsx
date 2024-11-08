@@ -6,6 +6,7 @@ import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Administrator Components Imports
 import WinnersTable from "./components/WinnersTable";
+import MatchResultsCard from "./components/MatchResultsCard";
 import UpdateResultsCard from "./components/UpdateResultsCard";
 import UpdateMatchTimingsCard from "./components/UpdateMatchTimingsCard";
 import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
@@ -17,6 +18,9 @@ import AlertMessageSuccess from "../components/AlertMessageSuccess";
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+
+import React from 'react';
+
 
 function AdministratorFixtures() {
     const location = useLocation();
@@ -54,6 +58,7 @@ function AdministratorFixtures() {
 
     // Consts to hold updating match-related data
     const [currentMatch, setCurrentMatch] = useState({});
+    const [showMatchResultsCard, setShowMatchResultsCard] = useState(false);
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
 
@@ -83,6 +88,8 @@ function AdministratorFixtures() {
             setShowUpdateMatchTimingsCard(true);
         } else if (match.matchWinner === null) {
             setShowUpdateResultsCard(true);
+        } else if (match.startDate !== null && match.matchWinner !== null) {
+            setShowMatchResultsCard(true);
         }
     };
 
@@ -137,15 +144,12 @@ function AdministratorFixtures() {
             if (response.data.error !== undefined) {
                 console.log("error: ", response.data);
             }
-
             if (response.data.rounds.length !== 0) {
                 setTournamentBracket(response.data);
             } 
-
             if (response.data.rounds[0].matches.length > 0) {
                 setPreliminaryMatches(response.data.rounds[0].matches);
             }
-
             if (response.data.rounds.length > 1) {
                 setMainMatches(response.data.rounds.slice(1));
                 const roundsArr = [];
@@ -206,96 +210,102 @@ function AdministratorFixtures() {
     }, []);
 
     return (
-        <div className = "administrator-fixtures flex flex-col gap-8 p-9">
-            <button
-                onClick = {scrollToMainFixtures}
-                className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-4 ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
-                style = {{ backgroundColor: !tournamentBracket ? 'gray' : 'grey' }}
-                disabled = {!tournamentBracket}
-            >
-                Go to Main Tournament Fixtures
-            </button>
-            <div className = "flex flex-col items-center gap-4">
-                {tournamentBracket === null && (
-                    <p className = "font-bold text-xl"> Preliminary Rounds and Main Tournament Fixtures has not been generated yet. </p>
-                )}
-            </div>
-            {preliminaryMatches.length > 0 && (
-                <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
-            )}
-
-            {/* VIEW QUARTER FINALS / SEMI FINALS / FINALS */}
-            <div className = "flex flex-row w-full justify-around">
-            <div className = "flex flex-col w-1/3">
-                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
-                    View Quarter Finals
-                    <span className = "text-lg ml-2">
-                        <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
-                    </span>
-                </button>
-                {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
-                    <div className = "flex-1 shadow-xl rounded-[12px]">
-                        <WinnersTable winners = {quarterFinalsWinners} matches = {quarterFinalMatches} />
-                    </div>
-                )}
-            </div>
-            <div className = "flex flex-col w-1/3">
-                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
-                    View Semi Finals
-                    <span className = "text-lg ml-2">
-                        <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
-                    </span>
-                </button>
-                {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
-                    <div className="flex-1 shadow-xl rounded-[12px]">
-                        <WinnersTable winners = {semiFinalsWinners} matches = {semiFinalMatches} />
-                    </div>
-                )}
-            </div>
-            <div className = "flex flex-col w-1/3">
-                <button className = "text-2xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
-                    View Finals
-                    <span className="text-lg ml-2">
-                        <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
-                    </span>
-                </button>
-                {showFinals && (
-                    <>
-                        {finalsMatch && finalsMatch.length > 0 ? (
-                            <div className = "flex-1">
-                                <WinnersTable winners = {tournamentWinner} matches = {finalsMatch} />
-                            </div>
-                        ) : (
-                            <div className = "flex-1 p-4 text-center text-lg font-semibold text-gray-500">
-                                No Finals matches available.
-                            </div>
+        <>
+            <div className = "administrator-fixtures flex flex-row gap-8 p-9">
+                <div className = "w-full">
+                    <button
+                        onClick = {scrollToMainFixtures}
+                        className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-6 w-full font-semibold ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
+                        style = {{ backgroundColor: !tournamentBracket ? 'gray' : 'grey' }}
+                        disabled = {!tournamentBracket}
+                    >
+                        Go to Main Tournament Fixtures
+                    </button>
+                    <div className = "flex flex-col items-center gap-4">
+                        {tournamentBracket === null && (
+                            <p className = "font-bold text-xl"> Preliminary Rounds and Main Tournament Fixtures has not been generated yet. </p>
                         )}
-                    </>
-                )}
-            </div>
-            </div>
-
-            {mainMatches.length > 0 && tournamentBracket !== null && (
-                <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
-                    <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
-                    <Bracket
-                        rounds = {mainTournamentRounds}
-                        roundTitleComponent = {(title) => (
-                            <div style = {{ textAlign: "center", color: "green", fontWeight: "600", fontSize: "18px" }}>
-                                {title}
-                            </div>
+                    </div>
+                    <div className = "mb-12">
+                        {preliminaryMatches.length > 0 && (
+                            <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
                         )}
-                        renderSeedComponent = {CustomSeed}
-                    />
+                    </div>
+                    {mainMatches.length > 0 && tournamentBracket !== null && (
+                        <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
+                            <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
+                            <Bracket
+                                rounds = {mainTournamentRounds}
+                                roundTitleComponent = {(title) => (
+                                    <div style = {{ textAlign: "center", color: "green", fontWeight: "600", fontSize: "18px" }}>
+                                        {title}
+                                    </div>
+                                )}
+                                renderSeedComponent = {CustomSeed}
+                            />
+                        </div>
+                    )}
+                    {showUpdateMatchTimingsCard && (
+                        <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
+                    )}
+                    {showUpdateResultsCard && (
+                        <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
+                    )}
+                    {showMatchResultsCard && (
+                        <MatchResultsCard matchDetails = {currentMatch} setShowMatchResultsCard = {setShowMatchResultsCard}/>
+                    )}
                 </div>
-            )}
-            {showUpdateMatchTimingsCard && (
-                <UpdateMatchTimingsCard matchDetails={currentMatch} setShowUpdateMatchTimingsCard={setShowUpdateMatchTimingsCard} />
-            )}
-            {showUpdateResultsCard && (
-                <UpdateResultsCard matchDetails={currentMatch} setShowUpdateResultsCard={setShowUpdateResultsCard} />
-            )}
-        </div>
+                <div className = "flex flex-col w-1/3 gap-5 mt-12">
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
+                            View Quarter Finals
+                            <span className = "text-lg ml-2">
+                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
+                            <div className = "flex-1 shadow-xl rounded-[12px]">
+                                <WinnersTable winners = {quarterFinalsWinners} matches = {quarterFinalMatches} />
+                            </div>
+                    )}
+                    </div>
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
+                            View Semi Finals
+                            <span className = "text-xl ml-2">
+                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
+                            <div className="flex-1 shadow-xl rounded-[12px]">
+                                <WinnersTable winners = {semiFinalsWinners} matches = {semiFinalMatches} />
+                            </div>
+                        )}
+                    </div>
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
+                            View Finals
+                            <span className="text-lg ml-2">
+                                <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showFinals && (
+                            <>
+                                {finalsMatch && finalsMatch.length > 0 ? (
+                                    <div className = "flex-1">
+                                        <WinnersTable winners = {tournamentWinner} matches = {finalsMatch} />
+                                    </div>
+                                ) : (
+                                    <div className = "flex-1 p-4 text-center text-lg font-semibold text-gray-500">
+                                        No Finals matches available.
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </>
     );
 };
 
