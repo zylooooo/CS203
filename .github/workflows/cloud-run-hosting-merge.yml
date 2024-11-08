@@ -51,3 +51,12 @@ jobs:
         run: |
           docker build -t asia-southeast1-docker.pkg.dev/beaming-magnet-439308-u0/backend/rally-rank-backend:${{ github.sha }} .
           docker push asia-southeast1-docker.pkg.dev/beaming-magnet-439308-u0/backend/rally-rank-backend:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy rally-rank-backend \
+            --image asia-southeast1-docker.pkg.dev/beaming-magnet-439308-u0/backend/rally-rank-backend:${{ github.sha }} \
+            --region asia-southeast1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --project beaming-magnet-439308
