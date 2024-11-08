@@ -46,80 +46,6 @@ function AdministratorProfile() {
         getAdminProfile();
     }, []);
 
-    // -------------------------- API Call: Delete Admin's Account ---------------------------
-    async function deleteAdminProfile() {
-        try {
-            const adminData = JSON.parse(localStorage.getItem('adminData'));
-            if (!adminData || !adminData.jwtToken) {
-                console.error('No JWT token found');
-                return;
-            }
-
-            const response = await axios.delete(
-                "http://localhost:8080/admins/profile",
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`,
-                    },
-                }
-            );
-
-            console.log(response.data);
-
-            // WIP: DOUBLE CHECK BACKEND RESPONSE
-            return response.data;
-
-        } catch (error) {
-            console.error("Error deleting admin profile: ", error);
-        }
-    }
-
-    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-
-    const ConfirmDeleteCard = () => {
-        return (
-            <div className = "fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-                <div className = "flex flex-col gap-5 bg-white p-8 rounded-lg shadow-lg">
-                    <h2 className = "text-xl font-bold">Are you sure you want to delete your account?</h2>
-                    <p className = "text-md text-secondary-color-red"><strong>This action is irreversible.</strong></p>
-                    <div className = "flex justify-between">
-                        {/* CANCEL */}
-                    <button
-                        type = "button"
-                        onClick = {() => setIsConfirmDeleteOpen(false)}
-                        className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-300 transition"
-                    >
-                        Cancel
-                    </button>
-
-                    {/* SUBMIT */}
-                    <button
-                        type = "submit"
-                        onClick = {handleConfirmDeleteClick}
-                        className = "shadow-md px-4 py-2 rounded-lg hover:bg-secondary-color-red transition"
-                    >
-                        Confirm
-                    </button>
-                </div>
-                </div>
-            </div>
-        );
-    }
-
-    const handleDeleteClick = () => {
-        setIsConfirmDeleteOpen(true);
-    }
-
-    const handleConfirmDeleteClick = async () => {
-        const response = await deleteAdminProfile();
-        if (response.status === 200) {
-            localStorage.removeItem('adminData');
-            alert(response.message);
-            setIsConfirmDeleteOpen(false);
-        }
-    }
-
     return (
         <div className = "h-main flex flex-col items-center w-full">
             <div className = "container w-3/5 mx-auto my-10 p-6 card-background shadow-md rounded-[8px] relative">
@@ -162,19 +88,6 @@ function AdministratorProfile() {
                 )}
 
             </div>
-
-            {/* DELETE ACCOUNT BUTTON */}
-            <div className = "w-3/5 mx-auto flex justify-end">
-                <button
-                onClick = { handleDeleteClick }
-                className = " bg-secondary-color-red font-semibold py-2 px-4 rounded-lg shadow-md text-sm text-white hover:shadow-md transition duration-300 ease-in-out"
-                >
-                    Delete Account
-                </button>
-            </div>
-
-            {isConfirmDeleteOpen && <ConfirmDeleteCard />}
-
         </div>
     );
 };

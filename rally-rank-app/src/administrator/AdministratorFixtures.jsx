@@ -23,7 +23,7 @@ function AdministratorFixtures() {
     const navigate = useNavigate();
     const tournamentName = location.state?.tournamentName;
 
-    // Const: Hold referance for scrolling
+    // Const: Hold reference for scrolling
     const mainFixturesRef = useRef(null);
 
     // Consts: For determining the dropdown for the important rounds (QF, SF, F)
