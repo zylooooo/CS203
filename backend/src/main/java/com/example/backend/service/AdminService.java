@@ -9,9 +9,11 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.example.backend.exception.*;
 import com.example.backend.model.Admin;
+import com.example.backend.model.Match;
 import com.example.backend.model.Tournament;
 import com.example.backend.model.User;
 import com.example.backend.repository.AdminRepository;
+import com.example.backend.repository.MatchRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.TournamentRepository;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class AdminService {
     private final TournamentRepository tournamentRepository;
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
+    private final MatchRepository matchRepository;
 
     private final LocalValidatorFactoryBean validator;
     private final PasswordEncoder passwordEncoder;
@@ -119,14 +123,13 @@ public class AdminService {
     }
 
     /**
-     * Deletes an admin by their username.
+     * Deletes an admin and their associated active tournaments and matches.
      * 
      * @param adminName the username of the admin to be deleted.
      * @throws AdminNotFoundException if the admin does not exist.
      * @throws RuntimeException for any unexpected errors during the deletion process.
      */
     public void deleteAdmin(@NotNull String adminName) throws AdminNotFoundException, RuntimeException {
-
         if (adminName == null) {
             throw new IllegalArgumentException("Admin name cannot be null");
         }
@@ -135,10 +138,40 @@ public class AdminService {
             Admin admin = adminRepository.findByAdminName(adminName)
                     .orElseThrow(() -> new AdminNotFoundException(adminName));
 
+            // Find all tournaments created by this admin
+            List<Tournament> adminTournaments = tournamentRepository.findAllByCreatedBy(adminName)
+                    .stream()
+                    .filter(tournament -> tournament.getEndDate() == null)
+                    .collect(Collectors.toList());
+            
+            // Delete all matches associated with these tournaments
+            for (Tournament tournament : adminTournaments) {
+                // Get matches from tournament name
+                Optional<List<Match>> tournamentMatches = matchRepository.findByTournamentName(tournament.getTournamentName());
+                
+                if (tournamentMatches.isPresent() && !tournamentMatches.get().isEmpty()) {
+                    matchRepository.deleteAll(tournamentMatches.get());
+                    logger.info("Deleted {} matches for tournament: {}", 
+                        tournamentMatches.get().size(), tournament.getTournamentName());
+                }
+            }
+
+            // Delete the tournaments
+            if (!adminTournaments.isEmpty()) {
+                tournamentRepository.deleteAll(adminTournaments);
+                logger.info("Deleted {} active tournaments created by admin: {}", 
+                    adminTournaments.size(), adminName);
+            }
+
+            // Finally delete the admin
             adminRepository.delete(admin);
             logger.info("Admin deleted successfully: {}", adminName);
+
         } catch (AdminNotFoundException e) {
             logger.warn("Attempt to delete non-existent admin: {}", adminName);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error while deleting admin {}: {}", adminName, e.getMessage());
             throw e;
         }
     }
