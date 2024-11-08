@@ -1,3 +1,5 @@
+// Used In: AdministratorFixtures.jsx
+
 // Package Imports
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -11,12 +13,16 @@ import AlertMessageWarning from '../../components/AlertMessageWarning';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
+// Administrator Components Imports
+import ConfirmationPopUp from './ConfirmationPopUp';
+
+// Main UpdateResultsCard Component
 const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const [sets, setSets] = useState([1]);
     const [matchWinner, setMatchWinner] = useState("");
     const [storedFormData, setStoredFormData] = useState(null);
     const { register, handleSubmit, formState: { errors }} = useForm();
-    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
 
     const player1 = matchDetails.players[0];
     const player2 = matchDetails.players[1];
@@ -36,7 +42,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
         return player1Sets > player2Sets ? player1 : player2;
     };
 
-    // ----------------------- API Call: Update a specific match result -----------------------
+    // ----------------------- API Call: Update a specific match result information -----------------------
     async function updateMatchResults(formData) {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -89,7 +95,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
 
     const onUpdateMatchDetailsSubmit = async (formData) => {
         setStoredFormData(formData);
-        setShowConfirmationPopup(true);
+        setShowConfirmationPopUp(true);
     };
 
     const handleFinalConfirmation = async () => {
@@ -99,7 +105,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                 alert("Match details updated successfully");
                 setShowUpdateResultsCard(false);
             }
-            setShowConfirmationPopup(false);
+            setShowConfirmationPopUp(false);
         }
     };
 
@@ -137,16 +143,16 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                     <div className = "flex flex-col gap-6">
                         <div className = "flex justify-center mt-2">
                             <p className = "text-center font-semibold text-lg">
-                                <strong> {matchDetails.players[0]} </strong> VS <strong> {matchDetails.players[1]} </strong>
+                                <strong> {player1} </strong> VS <strong> {player2} </strong>
                             </p>
                         </div>
                         {sets.map((setNumber) => (
-                            <div key = {setNumber} className="flex flex-col items-center gap-4">
+                            <div key = {setNumber} className = "flex flex-col items-center gap-4">
                                 <div className = "flex items-center gap-4 mb-5">
-                                    <p className = " font-semibold"> Set {setNumber} </p>
+                                    <p className = "font-semibold"> Set {setNumber} </p>
                                     <input
                                         type = "number"
-                                        placeholder = {`${matchDetails.players[0]}'s Score`}
+                                        placeholder = {`${player1}'s Score`}
                                         className = "p-2 border-0 border-b focus:border-blue-500 border-gray-300 focus:outline-none w-full"
                                         style = {{
                                             borderBottomColor: "#555555",
@@ -156,7 +162,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                                     />
                                     <input
                                         type = "number"
-                                        placeholder = {`${matchDetails.players[1]}'s Score`}
+                                        placeholder = {`${player2}'s Score`}
                                         className = "p-2 border-0 border-b focus:border-blue-500 border-gray-300 focus:outline-none w-full"
                                         style = {{
                                             borderBottomColor: "#555555",
@@ -169,19 +175,21 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                                         className = "ml-2 text-red-500 hover:text-red-700"
                                         onClick = {() => handleDeleteSetClick(setNumber)}
                                     >
-                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                        <FontAwesomeIcon icon = {faTrashAlt} />
                                     </button>
                                 </div>
                             </div>
                         ))}
-                        <div className = "flex justify-center ">
+                        <div className = "flex justify-center">
                             <button
                                 type = "button"
                                 className = "px-4 py-2 rounded-lg"
                                 onClick = {handleAddSetsClick}
                             >
-                                <span style = {{ color: "#222222" }} className = "text-sm"> <FontAwesomeIcon icon = {faPlusCircle} /> </span>
-                                <span className = "ml-2" > New Set </span>
+                                <span style = {{ color: "#222222" }} className = "text-sm">
+                                    <FontAwesomeIcon icon = {faPlusCircle} />
+                                </span>
+                                <span className = "ml-2"> New Set </span>
                             </button>
                         </div>
                         <div className = "flex justify-end mt-4">
@@ -194,27 +202,12 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
                         </div>
                     </div>
                 </form>
-                {showConfirmationPopup && (
-                    <div className = "confirmation-popup fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className = "bg-white p-8 rounded-lg shadow-lg w-1/3 text-center ">
-                            <h2 className = "text-xl font-semibold mb-4"> Are you sure? </h2>
-                            <p className = "mb-6 font-semibold"> Do you want to submit the match details? </p>
-                            <div className = "flex justify-between">
-                                <button
-                                    onClick = {() => setShowConfirmationPopup(false)}
-                                    className = "px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick = {handleFinalConfirmation}
-                                    className = "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                        onConfirm = {handleFinalConfirmation}
+                        message = {"Do you want to submit match details?"}
+                    />
                 )}
             </div>
         </div>
