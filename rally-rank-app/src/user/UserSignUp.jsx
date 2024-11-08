@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useState } from "react";
@@ -91,7 +94,7 @@ function UserSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.username,
@@ -128,7 +131,7 @@ function UserSignUp() {
     async function createUser(formData) {
         try {
             const response = await axios.post(
-            "http://localhost:8080/auth/user-signup",
+            `${API_URL}/auth/user-signup`,
             {
                 username: lowercaseUsername(formData.username),
                 email: formData.email,
