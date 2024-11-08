@@ -5,27 +5,20 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
+// Administrator Components Imports
+import ConfirmationPopUp from "./ConfirmationPopUp";
+
 // Components and Assets Imports
 import AlertMessageSuccess from "../../components/AlertMessageSuccess";
 import AlertMessageWarning from "../../components/AlertMessageWarning";
 
 const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard }) => {
-    const { handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
-    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
+    const { handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
 
-    const onDateChange = (e) => {
-        setDate(e.target.value);
-        clearErrors("startDate");
-    };
-    
-    const onTimeChange = (e) => {
-        setTime(e.target.value);
-        clearErrors("startDate");
-    };
-
-    // ----------------------- API Call: Update a specific match timing -----------------------
+    // ----------------------- API Call: Update a specific match timing information -----------------------
     async function updateMatchTimings(formData) {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -49,16 +42,24 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
             );
             return response.data;
         } catch (error) {
-            // Warning Alert Message: Unable to update the match timings
             alert("Unable to update match timings.");
             console.error("Error updating match timings: ", error.response);
         }
+    }
+
+    const onDateChange = (e) => {
+        setDate(e.target.value);
+        clearErrors("startDate");
+    };
+    
+    const onTimeChange = (e) => {
+        setTime(e.target.value);
+        clearErrors("startDate");
     };
 
     const onUpdateMatchTimingsSubmit = async (formData) => {
         const startDate = new Date(`${date}T${time}`);
         const now = new Date();
-        // Check if startDate input is in the future
         if (startDate > now) {
             setError("startDate", {
                 type: "manual",
@@ -66,7 +67,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
             });
             return;
         }
-        setShowConfirmationPopup(true);
+        setShowConfirmationPopUp(true);
     };
 
     const handleFinalConfirmation = async () => {
@@ -91,7 +92,6 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                                 <strong> {matchDetails.players[0]} </strong> VS <strong> {matchDetails.players[1]} </strong>
                             </p>
                         </div>
-                        {/* UPDATE MATCH DATE AND TIME */}
                         <div>
                             <label className = "font-semibold"> Date: </label>
                             <input
@@ -108,7 +108,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                             <label className = "font-semibold"> Time: </label>
                             <input
                                 className = "p-2 m-3 border-0 border-b focus:border-blue-500 border-gray-300 focus:outline-none"
-                                style ={{
+                                style = {{
                                     borderBottomColor: "#555555",
                                     borderBottomWidth: "1.5px",
                                 }}
@@ -117,10 +117,9 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                                 onChange = {onTimeChange}
                                 required
                             />
-                            {errors.startDate && <p className = "error"> {errors.startDate.message} </p>}
+                            {errors.startDate && <p className="error"> {errors.startDate.message} </p>}
                         </div>
                         <div className = "flex justify-between">
-                            {/* CANCEL BUTTON */}
                             <button
                                 type = "button"
                                 onClick = {() => setShowUpdateMatchTimingsCard(false)}
@@ -128,7 +127,6 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                             >
                                 Cancel
                             </button>
-                            {/* SUBMIT BUTTON */}
                             <button
                                 type = "submit"
                                 className = "shadow-md px-4 py-2 rounded-lg hover:bg-custom-green transition"
@@ -138,27 +136,12 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                         </div>
                     </div>
                 </form>
-                {showConfirmationPopup && (
-                    <div className = "confirmation-popup fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className = "bg-white p-8 rounded-lg shadow-lg w-1/3 text-center ">
-                            <h2 className = "text-xl font-semibold mb-4"> Are you sure? </h2>
-                            <p className = "mb-6 font-semibold"> Do you want to confirm the match date? </p>
-                            <div className = "flex justify-between">
-                                <button
-                                    onClick = {() => setShowConfirmationPopup(false)}
-                                    className = "px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick = {handleFinalConfirmation}
-                                    className = "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        message = "Do you want to confirm the match date and time?"
+                        onConfirm = {handleFinalConfirmation}
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                    />
                 )}
             </div>
         </div>

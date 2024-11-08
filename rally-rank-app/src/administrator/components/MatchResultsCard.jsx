@@ -40,7 +40,7 @@ const MatchResultsCard = ({ matchDetails, setShowMatchResultsCard }) => {
         <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
             <div className = "match-results-card-template flex flex-col gap-4 p-8 rounded-lg w-3/5 bg-white max-h-[80vh] overflow-y-auto shadow-lg">
                 <div className = "flex justify-between items-center mb-8">
-                    <h2 className = "text-2xl font-bold">Match Results</h2>
+                    <h2 className = "text-2xl font-bold"> Match Results </h2>
                     <button
                         type = "button"
                         onClick = {() => setShowMatchResultsCard(false)}

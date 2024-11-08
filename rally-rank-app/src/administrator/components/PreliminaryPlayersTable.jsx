@@ -2,7 +2,7 @@
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrophy, faEye } from '@fortawesome/free-solid-svg-icons';
 
 const PreliminaryPlayersTable = ({ preliminaryMatches, handleMatchClick }) => {
     return (
@@ -15,7 +15,7 @@ const PreliminaryPlayersTable = ({ preliminaryMatches, handleMatchClick }) => {
                             <th className = "py-3 px-6 text-left font-bold text-xl"> Player 1 </th>
                             <th className = "py-3 px-6 text-left font-bold text-xl"> Player 2 </th>
                             <th className = "py-3 px-6 text-left font-bold text-xl"> Match Winner </th>
-                            <th className = "py-3 px-6 text-left font-bold text-xl"> Edit </th>
+                            <th className = "py-3 px-6 text-left font-bold text-xl"> Actions </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,7 +41,7 @@ const PreliminaryPlayersTable = ({ preliminaryMatches, handleMatchClick }) => {
                                             onClick = {() => handleMatchClick(match)}
                                             className = "text-blue-500 hover:text-blue-700"
                                         >
-                                            <FontAwesomeIcon icon = {faPen} />
+                                            <FontAwesomeIcon icon = {match.matchWinner ? faEye : faPen} />
                                         </button>
                                     </td>
                                 </tr>
