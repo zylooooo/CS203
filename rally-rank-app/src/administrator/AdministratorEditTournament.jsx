@@ -104,7 +104,7 @@ function AdministratorEditTournament() {
   }, []);
 
   // ----------------------- API Call: Update the tournament details in backend -----------------------
-  async function updateTournament(data, playersPool) {
+  async function updateTournament(data) {
     try {
       const adminData = JSON.parse(localStorage.getItem("adminData"));
       if (!adminData || !adminData.jwtToken) {
@@ -114,7 +114,7 @@ function AdministratorEditTournament() {
       const today = new Date();
       const updatedTournamentDetails = {
         ...data,
-        playersPool: playersPool, // Use the latest playersPool passed as a parameter
+        playersPool: tournament.playersPool, // Use the current players pool from state
         updatedAt: today,
         createdBy: adminData.adminName,
       };
@@ -139,30 +139,53 @@ function AdministratorEditTournament() {
     }
   }
 
+  // ----------------------- API Call: Add a player to the tournament -----------------------
+  async function addPlayerToTournament(player) {
+    try {
+      const adminData = JSON.parse(localStorage.getItem("adminData"));
+      if (!adminData || !adminData.jwtToken) {
+        console.error("No JWT token found");
+        return;
+      }
+
+      const response = await axios.put(
+        `http://localhost:8080/admins/tournaments/${tournamentName}/add-players`,
+        { players: [player.username] }, // Send an array with the player's username
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${adminData.jwtToken}`,
+          },
+        }
+      );
+      
+      if (response.status === 200) {
+        console.log("Player added successfully to tournament:", player.username);
+        
+        // Update the local state after successful addition
+        setTournament((prevTournament) => ({
+          ...prevTournament,
+          playersPool: [...(prevTournament.playersPool || []), player.username],
+        }));
+        setAvailablePlayers((prevAvailable) =>
+          prevAvailable.filter((p) => p.id !== player.id)
+        );
+      }
+    } catch (error) {
+      console.error("Error adding player to tournament:", error.response?.data?.error || error.message);
+    }
+  }
+
   function addPlayerLocally(player) {
     console.log("Adding player to playersPool:", player);
-    
-    setTournament((prevTournament) => ({
-      ...prevTournament,
-      playersPool: [...(prevTournament.playersPool || []), player.username], // Store only the username as a string
-      
-    }));
-    console.log("New pp: ", tournament.playersPool);
-
-    
-    setAvailablePlayers((prevAvailable) =>
-      prevAvailable.filter((p) => p.id !== player.id)
-    );
+    addPlayerToTournament(player);
     setIsChanged(true); // Enable the Update button to reflect changes
   }
 
   const onSubmit = (data) => {
-    // Call updateTournament with the latest playersPool
-    updateTournament(data, tournament.playersPool);
-    // Navigate to tournament details page
-    navigate(`/administrator/tournament-details/${tournamentName}`, {
-      state: { tournamentName },
-    });
+    // Call updateTournament without modifying the playersPool
+    updateTournament(data);
+    // Do not navigate away, allow the admin to keep editing
   };
 
   const handleCloseButton = () => {
