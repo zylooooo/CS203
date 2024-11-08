@@ -121,7 +121,9 @@ const AdministratorTournamentDetails = () => {
   };
 
   const handleShowFixturesClick = () => {
-    navigate("/administrator-tournament-fixtures", { state: { tournamentName } });
+    navigate(`/administrator/tournament-fixtures/${tournamentName}`, {
+        state: { tournamentName }
+    });
   };
 
   return (
