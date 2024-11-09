@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -27,7 +30,7 @@ function AdministratorEditTournaments() {
                 return;
             }
             const response = await axios.get(
-                `http://localhost:8080/admins/tournaments/${tournamentName}`,
+                `${API_URL}/admins/tournaments/${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {
@@ -58,7 +61,7 @@ function AdministratorEditTournaments() {
             }
 
             const response = await axios.delete(
-                `http://localhost:8080/admins/tournaments/${tournamentName}`,
+                `${API_URL}/admins/tournaments/${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {
@@ -88,7 +91,7 @@ function AdministratorEditTournaments() {
             }
     
             const response = await axios.get(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/available-users`,
+                `${API_URL}/admins/tournaments/${tournamentName}/available-users`,
                 {
                     withCredentials: true,
                     headers: {
@@ -116,7 +119,7 @@ function AdministratorEditTournaments() {
             }
             
             const response = await axios.put(
-                `http://localhost:8080/admins/tournaments/${tournamentName}`,
+                `${API_URL}/admins/tournaments/${tournamentName}`,
                 {
                     ...originalTournamentInformation,
                     tournamentName: formData.tournamentName || originalTournamentInformation.tournamentName,
@@ -159,7 +162,7 @@ function AdministratorEditTournaments() {
             }
 
             const response = await axios.put(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/add-players`,
+                `${API_URL}/admins/tournaments/${tournamentName}/add-players`,
                 updatedPlayers,
                 {
                     withCredentials: true,
