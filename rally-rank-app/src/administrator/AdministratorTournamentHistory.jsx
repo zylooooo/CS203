@@ -177,6 +177,7 @@ function AdministratorTournamentHistory() {
 
             const response = await axios.get(
                 `${API_URL}/admins/tournaments/my-history`,
+                
                 {
                     withCredentials: true,
                     headers: {

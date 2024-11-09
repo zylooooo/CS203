@@ -276,7 +276,7 @@ function AdministratorCreateTournaments() {
             console.log(newTournament);
 
             const response = await axios.post(
-                "http://localhost:8080/admins/tournaments",
+                `${API_URL}/admins/tournaments`,
                 newTournament, 
                 {
                     withCredentials: true,
@@ -311,7 +311,7 @@ function AdministratorCreateTournaments() {
             }
 
             const firstResponse = await axios.get(
-                `http://localhost:8080/admins/tournaments/name-availability?tournamentName=${tournamentName}`,
+                `${API_URL}/admins/tournaments/name-availability?tournamentName=${tournamentName}`,  
                 {
                     withCredentials: true,
                     headers: {

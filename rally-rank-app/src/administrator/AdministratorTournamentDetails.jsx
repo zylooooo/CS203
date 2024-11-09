@@ -1,6 +1,3 @@
-// Component imports
-import { ResultsCard, ResultsConfirmationCard, MatchTimingsCard } from "./AdministratorUpdateMatch";
-
 // Config imports
 import { API_URL } from '../../config';
 
