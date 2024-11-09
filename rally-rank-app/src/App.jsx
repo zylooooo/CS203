@@ -32,7 +32,7 @@ import AdministratorProfile from "./administrator/AdministratorProfile";
 import AdministratorFixtures from "./administrator/AdministratorFixtures";
 import AdministratorTournaments from "./administrator/AdministratorTournaments";
 import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
-import AdministratorEditTournament from "./administrator/AdministratorEditTournament";
+import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
@@ -294,7 +294,7 @@ function App() {
                         element = {
                             <AdminRoute>
                                 <MainLayout>
-                                    <AdministratorEditTournament />
+                                    <AdministratorEditTournaments />
                                 </MainLayout>
                             </AdminRoute>
                         }

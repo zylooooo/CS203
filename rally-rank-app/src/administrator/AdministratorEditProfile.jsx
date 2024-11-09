@@ -224,7 +224,7 @@ function AdministratorEditProfile() {
     return (
         <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-3/5 mx-auto">
             <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
-            <div className="flex items-center gap-4">
+            <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
