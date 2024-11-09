@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+// Assets and Components Imports
+import ConfirmationPopUp from "./components/ConfirmationPopUp";
+
 // Icons Imports
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faListCheck, faMinusCircle, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +19,7 @@ function AdministratorEditTournaments() {
     const [newPlayersPool, setNewPlayersPool] = useState([]);
     const [availablePlayers, setAvailablePlayers] = useState([]);
     const [isPlayerRemoved, setIsPlayerRemoved] = useState(false);
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const [originalTournamentInformation, setOriginalTournamentInformation] = useState({});
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
@@ -43,6 +47,7 @@ function AdministratorEditTournaments() {
                     setValue(key, "");
                 }
             }
+
         } catch (error) {
             console.error("Error fetching tournament:", error.response.data.error);
             setOriginalTournamentInformation(null);
@@ -245,6 +250,15 @@ function AdministratorEditTournaments() {
         navigate("/administrator-tournaments")
     };
 
+    const handleDeleteTournament = () => {
+        setShowConfirmationPopUp(true);
+    }
+
+    const handleDeleteTournamentConfirmation = async () => {
+        await deleteTournament();
+        setShowConfirmationPopUp(false);
+    };
+
     const handleChange = () => {
         const formValues = getValues();
         const hasChanges = Object.keys(formValues).some((key) => {
@@ -258,14 +272,6 @@ function AdministratorEditTournaments() {
         getTournamentByName(tournamentName);
         getAvailablePlayers();
     }, []);
-
-    // Log the data once it’s available
-    useEffect(() => {
-        if (originalTournamentInformation) {
-            console.log("A: ", availablePlayers);
-            console.log("B: ", originalTournamentInformation.playersPool);
-        }
-    }, [originalTournamentInformation]); 
 
     return (
         <div className = "mt-5 edit-profile-information p-6 shadow-xl rounded-lg w-3/5 mx-auto mb-10">
@@ -538,6 +544,22 @@ function AdministratorEditTournaments() {
                             )}
                         </div>
                     </div>
+                </div>
+                {/* DELETE TOURNAMENT BUTTON */}
+                <div className = "mt-10 flex justify-center">
+                    <button
+                        className = "bg-red-600 hover:bg-red-800 text-white py-2 px-4 rounded-lg text-md font-semibold transition-colors duration-300"
+                        onClick = {handleDeleteTournament}
+                    >
+                        Delete Tournament
+                    </button>
+                    {showConfirmationPopUp && (
+                        <ConfirmationPopUp
+                            message = "Do you want to delete this tournament? This action is irreversible!"
+                            onConfirm = {handleDeleteTournamentConfirmation}
+                            onCancel = {() => setShowConfirmationPopUp(false)}
+                        />
+                    )}
                 </div>
             </div>
         </div>

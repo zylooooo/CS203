@@ -60,6 +60,7 @@ function AdministratorFixtures() {
     // Consts to hold updating match-related data
     const [currentMatch, setCurrentMatch] = useState({});
     const [showMatchResultsCard, setShowMatchResultsCard] = useState(false);
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
 
@@ -99,6 +100,14 @@ function AdministratorFixtures() {
             mainFixturesRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
+
+    const handleEndTournament = () => {
+        setShowConfirmationPopUp(true);
+    }
+
+    const handleFinalConfirmation = async () => {
+        await updateTournamentEndDate();
+    }
 
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
@@ -209,16 +218,6 @@ function AdministratorFixtures() {
     useEffect(() => {
         getTournamentBracket();
     }, []);
-
-
-    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
-    const handleEndTournament = () => {
-        setShowConfirmationPopUp(true);
-    }
-
-    const handleFinalConfirmation = async () => {
-        await updateTournamentEndDate();
-    }
 
     // ----------------------- API Call: Update Tournament End Date -----------------------
     async function updateTournamentEndDate() {
@@ -366,7 +365,6 @@ function AdministratorFixtures() {
                         Stop Tournament
                     </button>
                 )}
-
                 {showConfirmationPopUp && (
                     <ConfirmationPopUp
                         message = "Do you want to confirm the end of the tournament?"
