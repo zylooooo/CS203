@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";

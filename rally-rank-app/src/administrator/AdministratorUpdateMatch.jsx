@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -78,7 +81,7 @@ const ResultsCard = ({ matchDetails, player1, player2}) => {
 
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
+                `${API_URL}/admins/tournaments/match`,
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -218,7 +221,7 @@ const MatchTimingsCard = ({ matchDetails }) => {
         };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
+                `${API_URL}/admins/tournaments/match`,
                 updatedMatchDetails,
                 {
                     withCredentials: true,

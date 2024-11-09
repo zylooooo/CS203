@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
@@ -142,7 +145,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/all-history",
+                `${API_URL}/admins/tournaments/all-history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -173,7 +176,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/my-history",
+                `${API_URL}/admins/tournaments/my-history`,
                 {
                     withCredentials: true,
                     headers: {

@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
@@ -141,7 +144,7 @@ function AdministratorFixtures() {
             }
 
             const response = await axios.get(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/bracket`,
+                `${API_URL}/admins/tournaments/${tournamentName}/bracket`,
                 {
                     withCredentials: true,
                     headers: {
@@ -229,7 +232,7 @@ function AdministratorFixtures() {
             }
 
             const response = await axios.put(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/end`,
+                `${API_URL}/admins/tournaments/${tournamentName}/end`,
                 {},
                 {
                     withCredentials: true,
