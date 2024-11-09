@@ -294,7 +294,7 @@ function AdministratorEditProfile() {
                 <div className = "flex justify-end mt-4 mb-3">
                     <button
                         type = "submit"
-                        className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
+                        className = {`rounded-lg border w-1/4 py-2 px-4 text-md font-semibold text-white
                                     ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
