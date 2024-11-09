@@ -25,7 +25,7 @@ import UserPastTournaments from "./user/UserPastTournaments";
 import UserFixtures from "./user/UserFixtures";
 
 // Administrator Imports
-import AdminVerify from "./administrator/AdminVerify";
+import AdministratorVerification from "./administrator/AdministratorVerification";
 import AdministratorLogin from "./administrator/AdministratorLogin";
 import AdministratorSignup from "./administrator/AdministratorSignup";
 import AdministratorProfile from "./administrator/AdministratorProfile";
@@ -128,7 +128,7 @@ function App() {
                         path = "/auth/admin-verification"
                         element = {
                             <MainLayout>
-                                <AdminVerify />
+                                <AdministratorVerification />
                             </MainLayout>
                         }
                     />

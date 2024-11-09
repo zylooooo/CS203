@@ -111,7 +111,7 @@ function UserLogin() {
                 <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
                 <div className="card rounded-[8px] bg-white border-none items-center my-8 overflow-hidden">
                     {/* Replace heading with RallyRank logo */}
-                    <img className="h-[60px] w-auto mb-1" src={rallyRankLogo} alt="RallyRank Logo" />
+                    
                     <form
                         className="card px-0 py-4 border-none shadow-none bg-white"
                         onSubmit={handleSubmit(onSubmit)}

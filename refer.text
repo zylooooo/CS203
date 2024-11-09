@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../authentication/AuthContext"; // Import the AuthContext
 
 
-function AdminVerify() {
+function AdministratorVerification() {
     const form = useForm();
     const modalForm = useForm();
 
@@ -249,4 +249,4 @@ function AdminVerify() {
     );
 }
 
-export default AdminVerify;
+export default AdministratorVerification;
