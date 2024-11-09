@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +59,7 @@ function UserProfile() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/history",
+                `${API_URL}/users/tournaments/history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -86,7 +89,7 @@ function UserProfile() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     withCredentials: true,
                     headers: {
