@@ -14,6 +14,7 @@ import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
 // Assets and Components Imports
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import ConfirmationPopUp from "./components/ConfirmationPopUp";
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,7 +28,7 @@ function AdministratorFixtures() {
     const navigate = useNavigate();
     const tournamentName = location.state?.tournamentName;
 
-    // Const: Hold referance for scrolling
+    // Const: Hold reference for scrolling
     const mainFixturesRef = useRef(null);
 
     // Consts: For determining the dropdown for the important rounds (QF, SF, F)
@@ -209,6 +210,49 @@ function AdministratorFixtures() {
         getTournamentBracket();
     }, []);
 
+
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
+    const handleEndTournament = () => {
+        setShowConfirmationPopUp(true);
+    }
+
+    const handleFinalConfirmation = async () => {
+        await updateTournamentEndDate();
+    }
+
+    // ----------------------- API Call: Update Tournament End Date -----------------------
+    async function updateTournamentEndDate() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
+            if (!adminData || !adminData.jwtToken) {
+                console.error("No JWT token found");
+                return;
+            }
+
+            const response = await axios.put(
+                `http://localhost:8080/admins/tournaments/${tournamentName}/end`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                alert("Tournament has been ended successfully!");
+            } else {
+                alert("An error occurred while ending the tournament.");
+            }
+
+        } catch (error) {
+            // Warning Message Alert: Error Updating Tournament End Date
+            const errorMessage = error.response?.data?.error || 'An unknown error occurred';
+            console.error('Error updating tournament end date:', errorMessage);
+        }
+    }
+
     return (
         <>
             <div className = "administrator-fixtures flex flex-row gap-8 p-9">
@@ -305,6 +349,34 @@ function AdministratorFixtures() {
                     </div>
                 </div>
             </div>
+
+            <div className = "fixed bottom-20 right-12">
+                { mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
+                    <button
+                        className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
+                        onClick = { handleEndTournament }
+                    >
+                        Complete Tournament
+                    </button>
+                ) : (
+                    <button
+                        className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
+                        onClick = { handleEndTournament }
+                    >
+                        Stop Tournament
+                    </button>
+                )}
+
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        message = "Do you want to confirm the end of the tournament?"
+                        onConfirm = {handleFinalConfirmation}
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                    />
+                )}
+                
+            </div>
+
         </>
     );
 };

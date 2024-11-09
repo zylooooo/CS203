@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate  } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 // import loginBackground from "../assets/view-tennis-racket-hitting-ball.jpg";
-import loginBackground from "../assets/admin-login.jpg";
+import loginBackground from "../assets/login-picture.jpg";
 import axios from "axios";
 
 // Form imports
@@ -15,14 +15,27 @@ import rallyRankLogo from "../assets/Rally-Rank-Logo.svg"; // Import the RallyRa
 
 function AdministratorLogin() {
   const form = useForm();
+  const navigate = useNavigate(); // For navigation after login
+  const location = useLocation(); // For storing the last URL
+  const { loginAdmin, isAdminLoggedIn } = useAuth(); // Destructure loginAdmin from AuthContext
+  const [loginError, setLoginError] = useState(""); // State for handling login errors
+
   const { register, control, handleSubmit, formState } = form;
   const { errors } = formState;
-  const { loginAdmin, isAdminLoggedIn } = useAuth(); // Destructure loginAdmin from AuthContext
-  const navigate = useNavigate(); // For navigation after login
-  const [loginError, setLoginError] = useState(""); // State for handling login errors
+
+  // useEffect(() => {
+  //   // Store the current URL in local storage
+  //   localStorage.setItem('lastUrl', location.pathname);
+  // }, [location]);
 
   useEffect(() => {
     if (isAdminLoggedIn) {
+      // const lastUrl = localStorage.getItem('lastUrl');
+      // if (lastUrl) {
+      //   navigate(localStorage.getItem('lastUrl'));
+      // } else {
+      //   navigate("/administrator-tournaments");
+      // }
       navigate("/administrator-tournaments");
     }
   }, [navigate, isAdminLoggedIn])

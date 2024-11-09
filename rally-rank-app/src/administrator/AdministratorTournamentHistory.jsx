@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 // Component: Tournament Card (for AdministratorTournamentHistory)
@@ -13,7 +13,11 @@ const Tournaments = ({ tournaments, setIsTransitioning }) => {
         return `${day} ${month} ${year}`;
     }
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    // const location = useLocation();
+    // useEffect(() => {
+    //   localStorage.setItem('lastUrl', location.pathname);
+    // }, [location]);
 
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
@@ -179,7 +183,6 @@ function AdministratorTournamentHistory() {
             );
 
             setMyPastTournaments(response.data);
-            setTournaments(response.data); 
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE

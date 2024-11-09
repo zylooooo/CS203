@@ -125,6 +125,7 @@ const AdministratorTournamentDetails = () => {
         state: { tournamentName }
     });
   };
+  
 
   return (
     <div className="tournament-card-template main-container flex">
