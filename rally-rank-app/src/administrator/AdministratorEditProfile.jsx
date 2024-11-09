@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -67,7 +70,7 @@ function AdministratorEditProfile() {
               return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.adminName || originalAdminData.adminName,
@@ -112,7 +115,7 @@ function AdministratorEditProfile() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/profile",
+                `${API_URL}/admins/profile`,
                 {
                     withCredentials: true,
                     headers: {
@@ -155,7 +158,7 @@ function AdministratorEditProfile() {
             }
             
             const response = await axios.put(
-                "http://localhost:8080/admins/profile",
+                `${API_URL}/admins/profile`,
                 {
                     ...originalAdminData,
                     adminName: formData.adminName || originalAdminData.adminName,
