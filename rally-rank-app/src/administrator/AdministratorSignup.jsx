@@ -6,7 +6,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Step1, Step2, Step3 } from "./admin-sign-up-components/SignUpSteps";
+import { Step1, Step2 } from "./administrator-sign-up-components/SignUpSteps";
 
 // Assets and Components Imports
 import signupPicture from "../assets/admin-sign-up-picture.jpg";
@@ -20,9 +20,9 @@ function AdministratorSignUp() {
 
     const steps = [1, 2];
     const [step, setStep] = useState(1);
-    const [clickableSteps, setClickableSteps] = useState([]); // Clickable steps, including the current step.
-    const [completedSteps, setCompletedSteps] = useState([]); // Completed steps, displayed as green in color.
-    const [submitDisabled, setSubmitDisabled] = useState(false); // Disable submit after first press
+    const [clickableSteps, setClickableSteps] = useState([]);
+    const [completedSteps, setCompletedSteps] = useState([]);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
 
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");
@@ -141,7 +141,7 @@ function AdministratorSignUp() {
                         </div>
                     ))}
                 </div>
-                <div className = "card rounded-[12px] bg-primary-color-white flex justify-center border p-10 mb-10">
+                <div className = "card rounded-[12px] bg-primary-color-white flex justify-center border p-10 mb-10 m-8">
                     <form onSubmit = {handleSubmit(onSubmit)}>
                         {step === 1 && <Step1 register = {register} errors = {errors} />}
                         {step === 2 && <Step2 register = {register} errors = {errors} watch = {watch} />}
