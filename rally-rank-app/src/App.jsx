@@ -57,9 +57,7 @@ function App() {
                     <Route
                         path = "/"
                         element = {
-                            <MainLayout>
-                                <MainHomepage />
-                            </MainLayout>
+                            <MainHomepage />
                         }
                     />
 
