@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -10,6 +13,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Authentication Imports
 import { useAuth } from "../authentication/AuthContext";
+
+import DeleteAccountCard from "./DeleteAccountCard";
 
 function UserEditProfile() {
     const navigate = useNavigate();
@@ -31,6 +36,12 @@ function UserEditProfile() {
     // Constants to store the warning or success alert messages
     // const [warningAlertMessage, setWarningAlertMessage] = useState("");
     // const [successAlertMessage, setSuccessAlertMessage] = useState("");
+
+    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+
+    const handleDeleteButtonClick = () => {
+        setShowDeleteAccountCard(true);
+    }
 
     const handleBackButtonClick = () => {
         navigate("/user/profile");
@@ -68,7 +79,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.username || originalUserData.username,
@@ -112,7 +123,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     withCredentials: true,
                     headers: {
@@ -151,7 +162,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.put(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     username: formData.username || originalUserData.username,
                     email: formData.email || originalUserData.email,
@@ -205,9 +216,9 @@ function UserEditProfile() {
             navigate("/user/profile");
         }
     };
-    
+
     return (
-        <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
+        <div className = "edit-profile-information p-6 rounded-lg w-3/5 mx-auto my-5 ">
             <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
@@ -222,7 +233,7 @@ function UserEditProfile() {
                     <button
                         type = "submit"
                         className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
-                                    ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
+                                    ${isChanged ? "bg-primary-color-light-green hover:bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
                         Save Changes
@@ -398,27 +409,37 @@ function UserEditProfile() {
                         >
                             Gender:
                         </label>
+                        <div className = "rounded-[12px]" style = {{ backgroundColor: "#EBEBEB" }}>
                         <select
                             id = "gender"
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
-                            style = {{ backgroundColor: "#EBEBEB", paddingRight: "2rem" }}
+                            className = "block w-full rounded-[12px] p-3 mr-6 text-md font-semibold mt-3 mb-4"
+                            style = {{ backgroundColor: "#EBEBEB", width: 'calc(100% - 12px)', paddingRight: "2rem" }}
                             {...register("gender", { onChange: handleChange })}
                         >
                             <option value = ""> Select your gender </option>
                             <option value = "Male"> Male </option>
                             <option value = "Female"> Female </option>
                         </select> 
+                        </div>
                     </div>
                 </div>
             </form>
             {/* BACK TO PROFILE */}
-            <div className = "flex justify-center mt-4">
+            <div className = "flex justify-between mt-4">
                 <button
                     onClick = {handleBackButtonClick}
                     className = "py-2 px-4 rounded-lg border w-1/3"
                 >
                     Back to Profile
                 </button>
+                <button
+                    onClick = {handleDeleteButtonClick}
+                    className = "py-2 px-4 rounded-lg border w-1/3 bg-secondary-color-red hover:bg-red-500 text-white"
+                >
+                    Delete Account
+                </button>
+
+                {showDeleteAccountCard && <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard} />}
             </div>
         </div>
     );

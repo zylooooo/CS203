@@ -1,3 +1,7 @@
+// Config imports
+import { API_URL } from '../../config';
+
+// Library imports
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -56,7 +60,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/users/tournaments/${tournamentName}/join`,
+                    `${API_URL}/users/tournaments/${tournamentName}/join`,
                     {},
                     {
                         withCredentials: true,
@@ -92,7 +96,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.delete(
-                    `http://localhost:8080/users/tournaments/leave-${tournamentName}`,
+                    `${API_URL}/users/tournaments/leave-${tournamentName}`,
                     {
                         withCredentials: true,
                         headers: {
@@ -123,8 +127,10 @@ const TournamentDetails = () => {
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
     const handleShowFixturesButtonClick = () => {
-        navigate("/user-fixtures")
-    }
+        navigate("/user-fixtures", {
+            state: { tournamentName }
+        });
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -147,7 +153,7 @@ const TournamentDetails = () => {
             }
             
             const response = await axios.get(
-                `http://localhost:8080/users/tournaments/${tournamentName}`,
+                `${API_URL}/users/tournaments/${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {
@@ -342,11 +348,7 @@ const TournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         onClick = {handleShowFixturesButtonClick}
-                        style={{
-                            backgroundColor: "#56AE57",
-                            color: "white",
-                          }}
-                        className = "px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
                         {isPastTournament ? "Show Results" : "Show Fixtures"}
                     </button>

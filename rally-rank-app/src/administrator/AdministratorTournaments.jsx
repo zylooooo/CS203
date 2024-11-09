@@ -1,11 +1,14 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// WIP: Tournaments under 'All Tournaments' doesn't allow Admin to edit tournament details, even if created by Admin
-
 // Component: Tournament Card (for AdministratorTournaments)
-const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdministrator }) => {
+const Tournaments = ({ tournaments, setIsTransitioning, thisAdministrator }) => {
+
+    // const location = useLocation();
+    // useEffect(() => {
+    //   localStorage.setItem('lastUrl', location.pathname);
+    // }, [location]);
 
     const isBeforeStartDate = (startDate) => {
         const currentDate = new Date();
@@ -47,29 +50,11 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
         }, 200);
     }
 
-    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const filteredTournaments = tournaments.filter(
-        (tournament) =>
-            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    //------------------------------------------------------------------------------------
-
     return (
         <div className = "flex flex-col gap-5 w-full">
-            {/* SEARCH BAR */}
-            <input
-                type = "text"
-                placeholder = "Search by Tournament Name or Admin Name"
-                value = { searchTerm }
-                onChange = { (e) => setSearchTerm(e.target.value) }
-                className = "p-2 border rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
 
-            {filteredTournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
+            {tournaments.map((tournament, index) => (
+                <div key = {index} className = "flex card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
@@ -92,7 +77,7 @@ const Tournaments = ({ tournaments, isMyTournaments, setIsTransitioning, thisAdm
                         </strong></p>
                     </div>
 
-                    <div className = "card-section-two border-l pl-4 flex-none w-1/3 flex flex-col">
+                    <div className = "card-section-two border-l pl-4 flex-none w-1/3 flex flex-col text-text-grey">
                         <div>
                         <p className = "font-semibold"> Venue: </p>
                         <p> {tournament.location} </p>
@@ -174,13 +159,10 @@ function AdministratorTournaments() {
 
     const [myTournaments, setMyTournaments] = useState([]);
 
-    const [isMyTournaments, setIsMyTournaments] = useState(false);
-
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(allTournaments);
-            setIsMyTournaments(false);
         }, 300);
         setIsTransitioning(false);
     }
@@ -189,7 +171,6 @@ function AdministratorTournaments() {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(myTournaments);
-            setIsMyTournaments(true);
         }, 300);
         setIsTransitioning(false);
     }
@@ -251,7 +232,6 @@ function AdministratorTournaments() {
             );
 
             setMyTournaments(response.data);
-            setTournaments(response.data); 
 
             setThisAdministrator(adminData.adminName);
 
@@ -270,6 +250,15 @@ function AdministratorTournaments() {
         getMyTournaments();
     }, []);
 
+    //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredTournaments = tournaments.filter(
+        (tournament) =>
+            tournament.tournamentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    //------------------------------------------------------------------------------------
 
     return (
         <div className = {`tournaments-page main-container flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
@@ -280,14 +269,26 @@ function AdministratorTournaments() {
 
                 <div className="flex flex-col">
 
+                    {/* SEARCH BAR */}
+                    <input
+                        type = "text"
+                        placeholder = "Search by Tournament Name or Admin Name"
+                        value = { searchTerm }
+                        onChange = { (e) => setSearchTerm(e.target.value) }
+                        className = "p-2 border mb-5 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
 
                     {/* TOURNAMENT LISTS */}
-                    <Tournaments tournaments = {tournaments} isMyTournaments = {isMyTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator} />
+                    {tournaments.length > 0 ? (
+                        <Tournaments tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator}/>
+                    ) : (
+                        <p> No tournaments found. Create a new tournament today! </p>
+                    )}
 
                 </div>
 
                  {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-14 bottom-8 justify-end cursor-zoom-in ">
+                <div className = "tournament-actions flex fixed right-14 bottom-16 justify-end cursor-zoom-in ">
                     <button
                     onClick = { handleCreateClick }
                     className = "font-semibold py-2 px-4 rounded-lg shadow-md bg-primary-color-light-green text-white hover:shadow-md hover:bg-primary-color-green transition duration-300 ease-in-out"

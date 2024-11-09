@@ -1,11 +1,12 @@
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// WIP: Tournaments under 'All Past Tournaments' doesn't allow Admin to Strike players, even if created by Admin
-
 // Component: Tournament Card (for AdministratorTournamentHistory)
-const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
+const Tournaments = ({ tournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -15,12 +16,16 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
         return `${day} ${month} ${year}`;
     }
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    // const location = useLocation();
+    // useEffect(() => {
+    //   localStorage.setItem('lastUrl', location.pathname);
+    // }, [location]);
 
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments, } });
+            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName } });
         }, 200);
     }
 
@@ -114,13 +119,10 @@ function AdministratorTournamentHistory() {
 
     const [myPastTournaments, setMyPastTournaments] = useState([]);
 
-    const [isMyPastTournaments, setIsMyPastTournaments] = useState(false);
-
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(allPastTournaments);
-            setIsMyPastTournaments(false);
         }, 300);
         setIsTransitioning(false);
     }
@@ -129,7 +131,6 @@ function AdministratorTournamentHistory() {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(myPastTournaments);
-            setIsMyPastTournaments(true);
         }, 300);
         setIsTransitioning(false);
     }
@@ -144,7 +145,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/all-history",
+                `${API_URL}/admins/tournaments/all-history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -175,7 +176,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/my-history",
+                `${API_URL}/admins/tournaments/my-history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -185,7 +186,6 @@ function AdministratorTournamentHistory() {
             );
 
             setMyPastTournaments(response.data);
-            setTournaments(response.data); 
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
@@ -232,7 +232,11 @@ function AdministratorTournamentHistory() {
                     />
 
                     {/* TOURNAMENT LISTS */}
-                    <Tournaments tournaments = { filteredTournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+                    {tournaments.length > 0 ? (
+                        <Tournaments tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning}/>
+                    ) : (
+                        <p> No tournaments found.</p>
+                    )}
 
                 </div>
 

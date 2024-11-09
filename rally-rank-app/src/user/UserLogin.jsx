@@ -1,4 +1,4 @@
-// API imports
+// Config imports
 import { API_URL } from '../../config';
 
 // React imports

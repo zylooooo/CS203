@@ -1,3 +1,9 @@
+// Component imports
+import { ResultsCard, ResultsConfirmationCard, MatchTimingsCard } from "./AdministratorUpdateMatch";
+
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -12,13 +18,9 @@ const AdministratorTournamentDetails = () => {
 
   const fromPage = location.state?.from || "/administrator-tournaments"; // to retrieve page where admins clicked for tournament details
 
-  //const tournamentName = location.state;
-
   const { tournamentName } = useParams();
 
   const [tournamentDetails, setTournamentDetails] = useState(null);
-
-  const [fixtures, setFixtures] = useState({});
 
   const handleBackButtonClick = () => {
     navigate(fromPage);
@@ -34,6 +36,12 @@ const AdministratorTournamentDetails = () => {
     return `${day} ${month} ${year}`;
   };
 
+  const checkThisAdmin = (adminName) => {
+    return adminName === thisAdministrator;
+  };
+
+  const [thisAdministrator, setThisAdministrator] = useState("");
+
   // API Call: Retrieve tournament details by tournament name
   async function getTournamentByName() {
     try {
@@ -44,7 +52,7 @@ const AdministratorTournamentDetails = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:8080/admins/tournaments/${tournamentName}`,
+        `${API_URL}/admins/tournaments/${tournamentName}`,
         {
           withCredentials: true,
           headers: {
@@ -52,6 +60,8 @@ const AdministratorTournamentDetails = () => {
           },
         }
       );
+
+      setThisAdministrator(adminData.adminName);
 
       if (response.status === 200) {
         setTournamentDetails(response.data);
@@ -87,7 +97,7 @@ const AdministratorTournamentDetails = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:8080/admins/tournaments/bracket/${tournamentName}`,
+        `${API_URL}/admins/tournaments/bracket/${tournamentName}`,
         {},
         {
           withCredentials: true,
@@ -117,8 +127,11 @@ const AdministratorTournamentDetails = () => {
   };
 
   const handleShowFixturesClick = () => {
-    navigate("/administrator-tournament-fixtures", { state: { tournamentName } });
+    navigate(`/administrator/tournament-fixtures/${tournamentName}`, {
+        state: { tournamentName }
+    });
   };
+  
 
   return (
     <div className="tournament-card-template main-container flex">
@@ -243,13 +256,14 @@ const AdministratorTournamentDetails = () => {
           </div>
 
           <div className="flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
+            {checkThisAdmin(tournamentDetails.createdBy) && (
             <button
               onClick={handleGenerateBracketsClick}
               className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
             >
               Generate Brackets
             </button>
-
+            )}
             <button
               onClick={handleShowFixturesClick}
               className="bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"

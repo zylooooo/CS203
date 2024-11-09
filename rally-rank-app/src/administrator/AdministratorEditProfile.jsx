@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -10,13 +13,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Assets and Components Imports
 import AlertMessageWarning from "../components/AlertMessageWarning";
+import DeleteAccountCard from "./components/DeleteAccountCard";
 
 // Authentication Imports
 import { useAuth } from "../authentication/AuthContext";
 
 function AdministratorEditProfile() {
     const navigate = useNavigate();
-    const { logoutUser } = useAuth();
+    const { logoutAdmin } = useAuth();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
@@ -30,6 +34,12 @@ function AdministratorEditProfile() {
     const [isAdminNameChanged, setIsAdminNameChanged] = useState(false);
 
     const [alertMessage, setAlertMessage] = useState("");
+
+    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+
+    const handleDeleteClick = () => {
+        setShowDeleteAccountCard(true);
+    };
     
     const handleBackButtonClick = () => {
         navigate("/administrator-account");
@@ -44,12 +54,12 @@ function AdministratorEditProfile() {
     };
 
     const handleAdminNameChange = () => {
-        setIsChanged(true);
+        handleChange();
         setIsAdminNameChanged(true);
     }
 
     const handleEmailChange = () => {
-        setIsChanged(true);
+        handleChange();
         setIsEmailChanged(true);
     }
 
@@ -67,7 +77,7 @@ function AdministratorEditProfile() {
               return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.adminName || originalAdminData.adminName,
@@ -112,7 +122,7 @@ function AdministratorEditProfile() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/profile",
+                `${API_URL}/admins/profile`,
                 {
                     withCredentials: true,
                     headers: {
@@ -155,7 +165,7 @@ function AdministratorEditProfile() {
             }
             
             const response = await axios.put(
-                "http://localhost:8080/admins/profile",
+                `${API_URL}/admins/profile`,
                 {
                     ...originalAdminData,
                     adminName: formData.adminName || originalAdminData.adminName,
@@ -205,26 +215,25 @@ function AdministratorEditProfile() {
             };
             
             await updateAdminProfile(updatedData);
-            if (isAdminNameChanged || setIsPasswordChanged || isEmailChanged) {
+            if (isAdminNameChanged || isPasswordChanged || isEmailChanged) {
                 setIsPasswordChanged(false);
                 setIsEmailChanged(false);
                 setIsAdminNameChanged(false);
-                logoutUser();
-                navigate("/auth/administrator-login")
-
+                logoutAdmin();
+                navigate("/administrator-login");
+            } else {
+                navigate("/administrator-account");
             }
             
-            navigate("/administrator-account");
 
         }
         
     };
-    
-    
+
     return (
-        <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-3/5 mx-auto">
+        <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
             <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
-            <div className="flex items-center gap-4">
+            <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
@@ -244,7 +253,7 @@ function AdministratorEditProfile() {
                         Save Changes
                     </button>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px]">
+                <div className = "p-6 shadow-lg rounded-[12px] card-background">
                     <h2 className = "text-2xl font-bold mt-2 ml-2"> Account Information </h2>
                     {/* ADMINNAME */}
                     <div className = "mt-2">
@@ -313,7 +322,7 @@ function AdministratorEditProfile() {
                         />
                     </div>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6">
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
@@ -352,14 +361,26 @@ function AdministratorEditProfile() {
                     
                 </div>
             </form>
-            {/* BACK TO PROFILE */}
-            <div className = "flex justify-center mt-4">
+            <div className = "flex justify-between mt-4">
+                {/* BACK TO PROFILE */}
                 <button
                     onClick = {handleBackButtonClick}
                     className = "py-2 px-4 rounded-lg border w-1/3"
                 >
                     Back to Profile
                 </button>
+
+                {/* DELETE ACCOUNT BUTTON */}
+                <button
+                onClick = { handleDeleteClick }
+                className = " bg-secondary-color-red hover:bg-red-600 font-semibold py-2 px-4 rounded-lg shadow-md w-1/3 text-white hover:shadow-md transition duration-300 ease-in-out"
+                >
+                    Delete Account
+                </button>
+
+                {showDeleteAccountCard && (
+                    <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard}/>
+                )}
             </div>
         </div>
     );
