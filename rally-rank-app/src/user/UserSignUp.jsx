@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// API imports
-=======
 // Config imports
->>>>>>> devMain
 import { API_URL } from '../../config';
 
 // Package Imports
@@ -134,11 +130,7 @@ function UserSignUp() {
     async function createUser(formData) {
         try {
             const response = await axios.post(
-<<<<<<< HEAD
-                `${API_URL}/auth/user-signup`,
-=======
             `${API_URL}/auth/user-signup`,
->>>>>>> devMain
             {
                 username: lowercaseUsername(formData.username),
                 email: formData.email,
