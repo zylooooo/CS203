@@ -54,7 +54,7 @@ const Tournaments = ({ tournaments, setIsTransitioning, thisAdministrator }) => 
         <div className = "flex flex-col gap-5 w-full">
 
             {tournaments.map((tournament, index) => (
-                <div key = {index} className = "flex border card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
+                <div key = {index} className = "flex card-background rounded-xl p-4 shadow-md cursor-pointer hover:shadow-lg transition w-full"
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
 
