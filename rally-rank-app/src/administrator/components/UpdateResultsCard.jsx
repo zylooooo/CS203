@@ -16,7 +16,6 @@ import { faTrashAlt, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid
 // Administrator Components Imports
 import ConfirmationPopUp from './ConfirmationPopUp';
 
-// Main UpdateResultsCard Component
 const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const [sets, setSets] = useState([1]);
     const [matchWinner, setMatchWinner] = useState("");
