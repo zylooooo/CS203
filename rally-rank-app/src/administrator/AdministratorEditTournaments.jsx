@@ -200,7 +200,7 @@ function AdministratorEditTournaments() {
             }
 
             const response = await axios.delete(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/${playerUsername}`,
+                `${API_URL}/admins/tournaments/${tournamentName}/${playerUsername}`, 
                 {
                     withCredentials: true,
                     headers: {
