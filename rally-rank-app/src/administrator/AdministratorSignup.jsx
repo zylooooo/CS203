@@ -113,7 +113,7 @@ function AdministratorSignUp() {
                 setSubmitDisabled(true);
                 const response = await createAdmin(formData);
                 if (response !== undefined) {
-                    setSuccessMessage("Successfully registered! Redirecting you to verification page...");
+                    setSuccessMessage("Successfully registered! Redirecting you to the verification page...");
                     setTimeout(() => {
                         navigate("/auth/admin-verification");
                     }, 2000);
