@@ -8,26 +8,22 @@ const AlertMessageSuccess = ({ message, onClose, duration = 3000 }) => {
     useEffect(() => {
         if (!message) {
             setIsVisible(false);
-            // Delay the removal of `hasMessage` to allow the fade-out transition to complete.
             const hideTimer = setTimeout(() => setHasMessage(false), 300);
             return () => clearTimeout(hideTimer);
         }
-    
-        // Display the message and set up the fade-out timer.
         setHasMessage(true);
         setIsVisible(true);
-        
         const timer = setTimeout(() => {
             setIsVisible(false);
-            setTimeout(onClose, 300); // Use 300ms here to match fade-out duration
+            setTimeout(onClose, 300);
         }, duration);
-    
         return () => clearTimeout(timer);
     }, [message, onClose, duration]);
 
     if (!hasMessage) {
         return null;
-    }
+    };
+
 
     return (
         <div

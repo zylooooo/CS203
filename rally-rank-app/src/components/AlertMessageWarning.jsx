@@ -8,24 +8,21 @@ const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
     useEffect(() => {
         if (!message) {
             setIsVisible(false);
-            setTimeout(() => setHasMessage(false), 300);
-            return;
+            const hideTimer = setTimeout(() => setHasMessage(false), 300);
+            return () => clearTimeout(hideTimer);
         }
-
         setHasMessage(true);
         setIsVisible(true);
-        
         const timer = setTimeout(() => {
             setIsVisible(false);
-            setTimeout(onClose, 3000);
+            setTimeout(onClose, 300);
         }, duration);
-
         return () => clearTimeout(timer);
     }, [message, onClose, duration]);
 
     if (!hasMessage) {
         return null;
-    }
+    };
 
     return (
         <div

@@ -1,4 +1,4 @@
-// Config imports
+// Configuration Imports
 import { API_URL } from '../../config';
 
 // Package Imports
@@ -8,7 +8,9 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // Assets and Components Imports
-import ConfirmationPopUp from "./components/ConfirmationPopUp";
+import ConfirmationPopUp from "../components/ConfirmationPopUp";
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import AlertMessageWarning from "../components/AlertMessageWarning";
 
 // Icons Imports
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,6 +27,10 @@ function AdministratorEditTournaments() {
     const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const [originalTournamentInformation, setOriginalTournamentInformation] = useState({});
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
+
+    // For Alert Messages
+    const [warningMessage, setWarningMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     // ----------------------- API Call: Retrieving the tournament details by the tournament name -----------------------
     async function getTournamentByName() {
@@ -57,7 +63,7 @@ function AdministratorEditTournaments() {
         }
     };
 
-    // ----------------------- API Call: Deleting the tournament by the tourmanent name -----------------------
+    // ----------------------- API Call: Deleting the tournament by the tournament name -----------------------
     async function deleteTournament() {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -78,16 +84,15 @@ function AdministratorEditTournaments() {
 
             console.log(response.data);
             if (response.status === 200) {
-                alert("Tournament deleted successfully");
-                navigate("/administrator-tournaments");
+                return true;
             }
 
         } catch (error) {
-            console.error("Error deleting tournament:", error.response.data.error);
+            setWarningMessage("Unable to delete the tournament. Please reload the page and try again.");
         }
     };
 
-    // ----------------------- API Call: Retrieving the players who fit the criteria to join a tournament by the tourmanent name -----------------------
+    // ----------------------- API Call: Retrieving the players who fit the criteria to join a tournament by the tournament name -----------------------
     async function getAvailablePlayers() {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -148,10 +153,12 @@ function AdministratorEditTournaments() {
             );
 
             if (response.status === 200) {
+                setSuccessMessage("Tournament updated successfully!");
                 return response.data;
             }
 
         } catch (error) {
+            setWarningMessage("Unable to update the tournament. Please reload the page and try again.");
             console.error("Error updating tournament: ", error.response.data.error);
         }
     };
@@ -180,10 +187,11 @@ function AdministratorEditTournaments() {
             );
     
             if (response.status === 200) {
-                alert("Added player successfully");
+                setSuccessMessage("Player has been added to the tournament!");
             }
     
         } catch (error) {
+            setWarningMessage("Unable to add player. Please reload the page and try again.");
             if (error.response) {
                 console.error("Error adding player:", error.response.data.error);
             } else {
@@ -215,7 +223,7 @@ function AdministratorEditTournaments() {
             );
     
             if (response.status === 200) {
-                alert("Removed player successfully");
+                setSuccessMessage("Player removed successfully!");
                 setIsPlayerRemoved(prevState => ({
                     ...prevState,
                     [playerUsername]: true,
@@ -223,6 +231,7 @@ function AdministratorEditTournaments() {
             }
     
         } catch (error) {
+            setWarningMessage("Unable to remove the player. Please reload the page and try again");
             if (error.response) {
                 console.error("Error removing player:", error.response.data.error);
             } else {
@@ -245,8 +254,13 @@ function AdministratorEditTournaments() {
                 category: formData.category || originalTournamentInformation.category,
                 playerCapacity: formData.playerCapacity || originalTournamentInformation.playerCapacity,
         };
-        await updateTournament(updatedTournamentData);
-        navigate("/administrator-tournaments")
+        const result = await updateTournament(updatedTournamentData);
+        if (result) {
+            setSuccessMessage("Tournament updated successfully!");
+            setTimeout(() => {
+                navigate("/administrator-tournaments");
+            }, 3000);
+        }
     };
 
     const handleBackButtonClick = () => {
@@ -255,10 +269,16 @@ function AdministratorEditTournaments() {
 
     const handleDeleteTournament = () => {
         setShowConfirmationPopUp(true);
-    }
+    };
 
     const handleDeleteTournamentConfirmation = async () => {
-        await deleteTournament();
+        const result = await deleteTournament();
+        if (result) {
+            setSuccessMessage("Tournament deleted successfully!");
+            setTimeout(() => {
+                navigate("/administrator-tournaments");
+            }, 2000);
+        }
         setShowConfirmationPopUp(false);
     };
 
@@ -278,6 +298,8 @@ function AdministratorEditTournaments() {
 
     return (
         <div className = "mt-5 edit-profile-information p-6 shadow-xl rounded-lg w-3/5 mx-auto mb-10">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
