@@ -85,6 +85,9 @@ function AdministratorEditProfile() {
         setIsPasswordChanged(true);
     };
 
+    // Function to capitalize the first letter (for first name or last name)
+    const capitalizeFirstLetter = (name) => name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : "";
+
     // -------------------------- API Call: Delete administrator's account ---------------------------
     async function deleteAdminProfile() {
         try {
@@ -214,8 +217,8 @@ function AdministratorEditProfile() {
                     ...originalAdminData,
                     adminName: formData.adminName || originalAdminData.adminName,
                     email: formData.email || originalAdminData.email,
-                    firstName : formData.firstName || originalAdminData.firstName,
-                    lastName: formData.lastName || originalAdminData.lastName,
+                    firstName : capitalizeFirstLetter(formData.firstName) || originalAdminData.firstName,
+                    lastName: capitalizeFirstLetter(formData.lastName) || originalAdminData.lastName,
                     password: formData.password || originalAdminData.password,
 
                 },
@@ -248,8 +251,8 @@ function AdministratorEditProfile() {
                 ...originalAdminData,
                 adminName: formData.adminName || originalAdminData.adminName,
                 email: formData.email || originalAdminData.email,
-                firstName: formData.firstName || originalAdminData.firstName,
-                lastName: formData.lastName || originalAdminData.lastName,
+                firstName: capitalizeFirstLetter(formData.firstName) || originalAdminData.firstName,
+                lastName: capitalizeFirstLetter(formData.lastName) || originalAdminData.lastName,
                 password: formData.password || originalAdminData.password,
             };
             await updateAdminProfile(updatedData);
@@ -285,9 +288,9 @@ function AdministratorEditProfile() {
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
-                    className = "back-icon cursor-pointer text-xl"
+                    className = "back-icon cursor-pointer text-2xl"
                 />
-                <h2 className = "text-xl font-bold mb-4 mt-3"> Edit Profile </h2>
+                <h2 className = "text-2xl font-bold mb-4 mt-3"> Edit Profile </h2>
             </div>
             <form onSubmit = {handleSubmit(onSubmit)} className = "grid grid-cols-1 gap-4">
                 {/* SAVE CHANGES BUTTON */}
@@ -367,12 +370,33 @@ function AdministratorEditProfile() {
                             placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("password", { onChange: handlePasswordChange })}
+                            {...register("password", {
+                                onChange: handlePasswordChange,
+                                ...(isPasswordChanged && {
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
+                                    },
+                                    validate: {
+                                        alphanumeric: (value) =>
+                                            /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                                        uppercase: (value) =>
+                                            /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                                        lowercase: (value) =>
+                                            /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                                        symbol: (value) =>
+                                            /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                                    },
+                                }),
+                            })}
                         />
+                        {errors.password && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.password.message} </p>
+                        )}
                     </div>
                 </div>
                 {/* PERSONAL INFORMATION */}
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background mb-5">
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
@@ -403,7 +427,7 @@ function AdministratorEditProfile() {
                             type = "text"
                             id = "lastName"
                             placeholder = {originalAdminData.lastName || ""}
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-5"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
                         />
