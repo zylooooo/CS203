@@ -1,11 +1,12 @@
+// Config imports
+import { API_URL } from '../../config';
+
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
-// WIP: Tournaments under 'All Past Tournaments' doesn't allow Admin to Strike players, even if created by Admin
-
 // Component: Tournament Card (for AdministratorTournamentHistory)
-const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) => {
+const Tournaments = ({ tournaments, setIsTransitioning }) => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -15,12 +16,16 @@ const Tournaments = ({ tournaments, isMyPastTournaments, setIsTransitioning }) =
         return `${day} ${month} ${year}`;
     }
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
+    // const location = useLocation();
+    // useEffect(() => {
+    //   localStorage.setItem('lastUrl', location.pathname);
+    // }, [location]);
 
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName, isMyPastTournaments:  isMyPastTournaments, } });
+            navigate("/administrator-past-tournament-details", { state: { tournamentName: tournamentName } });
         }, 200);
     }
 
@@ -89,11 +94,11 @@ const TournamentsButtons = ({ buttons, onAllClick, onMyClick }) => {
         {buttons.map((buttonLabel, index) => (
             <button
               key = {index}
-              className={`btn transition-colors duration-300 ${
+              className = {`btn transition-colors duration-300 font-semibold ${
                 activeButton === index
-                  ? "active-button underline"
-                  : "text-gray-700 hover:text-blue-500"
-              }`}
+                ? "active-button underline text-primary-color-green"             // Active State
+                : "text-gray-700 hover:text-primary-color-light-green"               // Inactive State
+            }`}
               onClick={() => handleButtonClick(index)}
             >
               { buttonLabel }
@@ -114,13 +119,10 @@ function AdministratorTournamentHistory() {
 
     const [myPastTournaments, setMyPastTournaments] = useState([]);
 
-    const [isMyPastTournaments, setIsMyPastTournaments] = useState(false);
-
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(allPastTournaments);
-            setIsMyPastTournaments(false);
         }, 300);
         setIsTransitioning(false);
     }
@@ -129,7 +131,6 @@ function AdministratorTournamentHistory() {
         setIsTransitioning(true);
         setTimeout(() => {
             setTournaments(myPastTournaments);
-            setIsMyPastTournaments(true);
         }, 300);
         setIsTransitioning(false);
     }
@@ -144,7 +145,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/all-history",
+                `${API_URL}/admins/tournaments/all-history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -175,7 +176,7 @@ function AdministratorTournamentHistory() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/tournaments/my-history",
+                `${API_URL}/admins/tournaments/my-history`,
                 {
                     withCredentials: true,
                     headers: {
@@ -185,7 +186,6 @@ function AdministratorTournamentHistory() {
             );
 
             setMyPastTournaments(response.data);
-            setTournaments(response.data); 
 
         } catch (error) {
             // WIP: EDIT DISPLAY ERROR MESSAGE
@@ -220,24 +220,23 @@ function AdministratorTournamentHistory() {
                 {/* LABELS */}
                 <TournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = { handleAllClick } onMyClick = { handleMyClick } />
 
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-5">
 
                     {/* SEARCH BAR */}
-                    <div className = "tournaments-search-bar flex mb-5 gap-3">
-                        <input
-                            type = "text"
-                            placeholder = "Search by Tournament Name or Admin Name"
-                            value = { searchTerm }
-                            onChange = { (e) => setSearchTerm(e.target.value) }
-                            className = "p-2 border border-gray-300 rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button className = "border border-blue-500 rounded-xl px-4 py-2 card-background hover:bg-blue-500 hover:text-white transition">
-                            Search
-                        </button>
-                    </div>
+                    <input
+                        type = "text"
+                        placeholder = "Search by Tournament Name or Admin Name"
+                        value = { searchTerm }
+                        onChange = { (e) => setSearchTerm(e.target.value) }
+                        className = "p-2 border rounded-lg w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
 
                     {/* TOURNAMENT LISTS */}
-                    <Tournaments tournaments = { filteredTournaments } isMyPastTournaments = { isMyPastTournaments } setIsTransitioning = { setIsTransitioning } />
+                    {tournaments.length > 0 ? (
+                        <Tournaments tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning}/>
+                    ) : (
+                        <p> No tournaments found.</p>
+                    )}
 
                 </div>
 

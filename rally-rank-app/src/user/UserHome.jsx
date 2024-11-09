@@ -363,7 +363,7 @@ function UserHome() {
         <div className = {`home-container main-container h-main transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             {/* ROW CONTAINER: JOIN TOURNAMENT, MY SCHEDULED TOURNAMENTS */}
-            <div className = "row-container flex flex-col w-3/5 gap-8 p-6">
+            <div className = "row-container flex flex-col w-3/5 gap-8 p-6 mb-">
                 {/* JOIN TOURNAMENT */}
                 <div className = "join-tournament-container gap-2 h-1/5">
                     <h2 className = "text-xl font-bold mb-4"> Join A Tournament Today! </h2>
@@ -415,7 +415,7 @@ function UserHome() {
                         activeButton = {activeButton}
                         setActiveButton = {setActiveButton}
                     />
-                    <div className = "bg-white shadow-lg leaderboard-box p-5 gap-5 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]">
+                    <div className = "bg-white shadow-lg leaderboard-box p-8 gap-5 text-sm h-5/6 w-full min-w-72 flex flex-col overflow-auto rounded-[20px]">
                         {view === "Top" && defaultLeaderboardPlayers.length > 0 ? (
                             defaultLeaderboardPlayers.map((leaderboardPlayer, index) => (
                                 <LeaderboardCard key = {index} leaderboardPlayer = {leaderboardPlayer} rank = {index + 1} />

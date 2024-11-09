@@ -1,283 +1,79 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { set, useForm } from "react-hook-form";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate} from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
-// Component: Match Timings Card
-const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard }) => {
-    const { register, handleSubmit, formState: { errors }} = useForm();
+// Administrator Components Imports
+import WinnersTable from "./components/WinnersTable";
+import MatchResultsCard from "./components/MatchResultsCard";
+import UpdateResultsCard from "./components/UpdateResultsCard";
+import UpdateMatchTimingsCard from "./components/UpdateMatchTimingsCard";
+import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
 
-    // ----------------------- API Call: Update a specific match timing -----------------------
-    async function updateMatchTimings(formData) {
-        try {
-            const adminData = JSON.parse(localStorage.getItem("adminData"));
-            if (!adminData || !adminData.jwtToken) {
-                console.error("No JWT Token found!");
-                return;
-            }
+// Assets and Components Imports
+import AlertMessageWarning from "../components/AlertMessageWarning";
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import ConfirmationPopUp from "./components/ConfirmationPopUp";
 
-            // Updated Match startDate in matchDetails
-            const updatedMatchStartDate = {
-                ...matchDetails,
-                startDate: formData.startDate,
-            };
+// Icons Imports
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-            const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
-                updatedMatchStartDate,
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`,
-                    },
-                },
-            );
-            return response.data;
+import React from 'react';
 
-        } catch (error) {
-            // Warning Alert Message: Unable to update the match timings
-            alert("Unable to update match timings.");
-            console.error("Error updating match timings: ", error.response.data.error);
-        }
-    };
-
-    const onUpdateMatchTimingsSubmit = async (formData) => {
-        const response = await updateMatchTimings(formData);
-        if (response !== undefined) {
-            // Success Alert Message: Match timings updated successfully
-            alert("Match timings updated successfully");
-            setShowUpdateMatchTimingsCard(false);
-        }
-    };
-
-    return  (
-        <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
-            <div className = "update-match-results-card-template flex flex-col gap-4 p-9 rounded-[8px] max-w-[550px] bg-primary-color-white">
-                <form onSubmit = {handleSubmit(onUpdateMatchTimingsSubmit)}>
-                    <div className = "flex flex-col gap-6">
-                        <div>
-                            <h1 className = "text-2xl font-semibold"> Match Timing </h1>
-                        </div>
-                        <div className = "flex justify-center mt-2">
-                            <p className = "text-center font-bold">
-                                {matchDetails.players[0]} vs {matchDetails.players[1]}
-                            </p>
-                        </div>
-                        {/* UPDATE MATCH DATE AND TIME */}
-                        <div>
-                            <input
-                                className = "border p-2 m-3"
-                                type = "datetime-local"
-                                id = "startDate"
-                                {...register("startDate", {required: "Match date and time is required"})}
-                            />
-                            <p className = "error"> {errors.startDate?.message} </p>
-                        </div>
-                        <div className = "flex justify-between">
-                            {/* CANCEL BUTTON */}
-                            <button
-                                type = "button"
-                                onClick = {() => setShowUpdateMatchTimingsCard(false)}
-                                className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
-                            >
-                                Cancel
-                            </button>
-                            {/* SUBMIT BUTTON */}
-                            <button
-                                type = "submit"
-                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-custom-green transition"
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-// Component: Results Card
-const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
-    const [sets, setSets] = useState([1]);
-    const [matchWinner, setMatchWinner] = useState("");
-    const { register, handleSubmit, formState: { errors }} = useForm();
-    
-    // Const: Store each player in the match respectively
-    const player1 = matchDetails.players[0];
-    const player2 = matchDetails.players[1];
-
-    // Function: Determine match winner based on the number of sets won
-    // Assumptions:
-    //      1. Never more than 5 sets
-    //      2. Only 1 winner (Best of 3)
-    function determineSetWinner(setScores, player1, player2) {
-        let player1Sets = 0;
-        let player2Sets = 0;
-        setScores.forEach(set => {
-            if (set.result[0] > set.result[1]) {
-                player1Sets++;
-            }
-            if (set.result[1] > set.result[0]) {
-                player2Sets++;
-            }
-        });
-        return player1Sets > player2Sets ? player1 : player2;
-    };
-
-    // ----------------------- API Call: Update a specific match's results -----------------------
-    async function updateMatchResults(formData) {
-        try {
-            const adminData = JSON.parse(localStorage.getItem("adminData"));
-            if (!adminData || !adminData.jwtToken) {
-                console.error("No JWT Token found!");
-                return;
-            }
-
-            // Convert form data into the expected sets format
-            const setScores = sets.map((setNumber) => ({
-                result: [
-                    parseInt(formData[`set${setNumber}Player1`]),
-                    parseInt(formData[`set${setNumber}Player2`]),
-                ],
-                setWinner: formData[`set${setNumber}Player1`] > formData[`set${setNumber}Player2`] ? player1 : player2,
-            }));
-
-            const winner = determineSetWinner(setScores, player1, player2);
-            setMatchWinner(winner);
-
-            // Updated match results and details
-            const updatedMatchDetails = {
-                id: matchDetails.id,
-                tournamentName: matchDetails.tournamentName,
-                startDate: matchDetails.startDate,
-                players: matchDetails.players,
-                sets: setScores.map(score => ({
-                    result: score.result,
-                    setWinner: score.setWinner,
-                })),
-                matchWinner: winner,
-                completed: true,
-            };
-
-            const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
-                updatedMatchDetails,
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`,
-                    },
-                },
-            );
-            console.log("API Response:", response.data);
-            return response.data;
-
-        } catch (error) {
-            // Warning Alert Message: Unable to update the match results
-            alert("Unable to update match results.");
-            console.error("Error updating match results: ", error.response.data.error);
-        }
-    }
-
-    const onUpdateMatchDetailsSubmit = async (formData) => {
-        const response = await updateMatchResults(formData);
-        if (response !== undefined) {
-            // Success Alert Message: Match details updated successfully
-            alert("Match details updated successfully");
-            setShowUpdateResultsCard(false);
-        }
-    };
-
-    const handleAddSetsClick = () => {
-        setSets(prevSets => [...prevSets, prevSets.length + 1]);
-    }
-        
-    return (
-        <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
-            <div className = "update-match-results-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[550px] bg-primary-color-white">
-                <form onSubmit = {handleSubmit(onUpdateMatchDetailsSubmit)}>
-                    <div className = "flex flex-col gap-6"> 
-                        <div>
-                            <h1 className = "text-2xl font-semibold"> Match Results </h1>
-                        </div>
-                        <div className = "flex justify-center mt-2">
-                            <p className = "text-center font-bold">
-                                {matchDetails.players[0]} vs {matchDetails.players[1]}
-                            </p>
-                        </div>
-                        {sets.map((setNumber) => (
-                            <div key = {setNumber} className = "flex gap-4 items-center">
-                                <p> Set {setNumber} </p>
-                                <input
-                                    type = "number"
-                                    placeholder = {`${matchDetails.players[0]}'s Score`}
-                                    className = "border p-2 rounded"
-                                    {...register(`set${setNumber}Player1`)}
-                                />
-                                <input
-                                    type = "number"
-                                    placeholder = {`${matchDetails.players[1]}'s Score`}
-                                    className = "border p-2 rounded"
-                                    {...register(`set${setNumber}Player2`)}
-                                />
-                            </div>
-                        ))}
-                        <div>
-                            {/* ADD NEW SET OPTION */}
-                            <button
-                                type = "button"
-                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-gray-400 transition"
-                                onClick = {handleAddSetsClick}
-                            >
-                                Add New Set
-                            </button>
-                        </div>
-                        <div className = "flex justify-between">
-                            {/* CANCEL BUTTON */}
-                            <button
-                                type = "button"
-                                onClick = {() => setShowUpdateResultsCard(false)}
-                                className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
-                            >
-                                Cancel
-                            </button>
-                            {/* SUBMIT BUTTON */}
-                            <button
-                                type = "submit"
-                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-};
 
 function AdministratorFixtures() {
     const location = useLocation();
     const navigate = useNavigate();
     const tournamentName = location.state?.tournamentName;
+
+    // Const: Hold reference for scrolling
+    const mainFixturesRef = useRef(null);
+
+    // Consts: For determining the dropdown for the important rounds (QF, SF, F)
+    const [showFinals, setShowFinals] = useState(false);
+    const [showSemiFinals, setShowSemiFinals] = useState(false);
+    const [showQuarterFinals, setShowQuarterFinals] = useState(false);
+
+    // Consts: For toggling the dropdown for important rounds (QF, SF, F)
+    const toggleQuarterFinals = () => setShowQuarterFinals(!showQuarterFinals);
+    const toggleSemiFinals = () => setShowSemiFinals(!showSemiFinals);
+    const toggleFinals = () => setShowFinals(!showFinals);
     
-    // Consts to hold data from API Call
+    // Consts: Hold data from API Call
     const [mainMatches, setMainMatches] = useState([]);
-    const [semiFinalsWinners, setSemiFinalsWinners] = useState([]);               // Players who won the semi finals (2)
-    const [quarterFinalsWinners, setQuarterFinalsWinners] = useState([]);         // Players who won the quarter finals (4)
-    const [tournamentWinner, setTournamentWinner] = useState("");                // Player who won the finals (the tournament) (1)
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     const [tournamentBracket, setTournamentBracket] = useState(null);
     const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
 
+    // Consts: Hold winners of each important round (QF, SF and F)
+    const [tournamentWinner, setTournamentWinner] = useState("");
+    const [semiFinalsWinners, setSemiFinalsWinners] = useState([]);
+    const [quarterFinalsWinners, setQuarterFinalsWinners] = useState([]);
+
+    // Consts: Hold the matches of each important round (QF, SF and F)
+    const [finalsMatch, setFinalsMatch] = useState([]);
+    const [semiFinalMatches, setSemiFinalMatches] = useState([]);
+    const [quarterFinalMatches, setQuarterFinalsMatches] = useState([]);
+
     // Consts to hold updating match-related data
     const [currentMatch, setCurrentMatch] = useState({});
+    const [showMatchResultsCard, setShowMatchResultsCard] = useState(false);
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
-    // const [showResultsConfirmationCard, setShowResultsConfirmationCard] = useState(false);
+
+    // Function: Format Date for easy readability
+    const formatDate = (dateString) => {
+        if (dateString === null) {
+            return;
+        }
+        const date = new Date(dateString);
+        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
+    };
 
     // Function: Handle click for each seed
     const handleClick = (id) => {
@@ -296,122 +92,16 @@ function AdministratorFixtures() {
             setShowUpdateMatchTimingsCard(true);
         } else if (match.matchWinner === null) {
             setShowUpdateResultsCard(true);
+        } else if (match.startDate !== null && match.matchWinner !== null) {
+            setShowMatchResultsCard(true);
         }
     };
 
-    // Function: Format Date for easy readability
-    const formatDate = (dateString) => {
-        if (dateString === null) {
-            return;
+    const scrollToMainFixtures = () => {
+        if (mainFixturesRef.current) {
+            mainFixturesRef.current.scrollIntoView({ behavior: "smooth" });
         }
-        const date = new Date(dateString);
-        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
     };
-
-    // Component: Preliminary Matches
-    const PreliminaryPlayersTable = ({ preliminaryMatches }) => {
-        return (
-            <div className = "preliminary-matches p-5 h-1/2 overflow-y-auto">
-                <h2 className = "text-2xl font-bold"> Preliminary Matches </h2>
-                <div className = "mt-4 flex flex-col gap-4">
-                    {preliminaryMatches.length > 0 && preliminaryMatches.map((match, index) => {
-                        if (index % 2 === 0) {
-                            return (
-                                <button
-                                type = "button"
-                                onClick = {() => handleMatchClick(match) }
-                                >
-                                <div key = {index} className = "match-card flex items-center gap-4 mb-4">
-                                    <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
-                                        <span className = "font-semibold text-lg"> Player 1: </span>
-                                        <span className = "text-gray-700"> {match.players[0]} </span>
-                                    </div>
-                                    <span className = "text-lg font-semibold"> VS </span>
-                                    <div className = "player-card border border-gray-300 rounded-lg p-4 shadow-md w-1/4 inline-flex items-center gap-2">
-                                        <span className = "font-semibold text-lg"> Player 2: </span>
-                                        <span className = "block text-gray-700">
-                                            {match.players[1] || "TBD"}
-                                        </span>
-                                    </div>
-                                    <div className = "winner-card text-sm font-semibold w-1/4 ml-5">
-                                        <span className = "text-gray-600 text-lg font-semibold"> Match Winner: </span>
-                                        <span className = "text-green-600">
-                                            {match.matchWinner || "TBD"}
-                                        </span>
-                                    </div>
-                                </div>
-                                </button>
-                            );
-                        }
-                        return null;
-                    })}
-                </div>
-            </div>
-        );
-    };
-
-// Component: Quarterfinals Winners Table
-const QuarterfinalsWinnersTable = ({ winners }) => {
-    return (
-        <div className="quarterfinals-winners p-5 h-1/2 overflow-y-auto">
-            <h2 className="text-2xl font-bold">Quarterfinals Winners</h2>
-            <div className="mt-4 flex flex-col gap-4">
-                {winners.length > 0 ? (
-                    winners.map((winner, index) => (
-                        <div key={index} className="winner-card flex items-center gap-4 mb-4">
-                            <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
-                                <span className="font-semibold text-lg">Winner {index + 1}:</span>
-                                <span className="text-gray-700">{winner}</span>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No winners yet</p>
-                )}
-            </div>
-        </div>
-    );
-};
-
-// Component: Semifinals Winners Table
-const SemifinalsWinnersTable = ({ winners }) => {
-    return (
-        <div className="semifinals-winners p-5 h-1/2 overflow-y-auto">
-            <h2 className="text-2xl font-bold">Semifinals Winners</h2>
-            <div className="mt-4 flex flex-col gap-4">
-                {winners.length > 0 ? (
-                    winners.map((winner, index) => (
-                        <div key={index} className="winner-card flex items-center gap-4 mb-4">
-                            <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
-                                <span className="font-semibold text-lg">Winner {index + 1}:</span>
-                                <span className="text-gray-700">{winner}</span>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No winners yet</p>
-                )}
-            </div>
-        </div>
-    );
-};
-
-// Component: Finals Winner Table
-const FinalsWinnerTable = ({ winner }) => {
-    return (
-        <div className="finals-winner p-5 h-1/2 overflow-y-auto">
-            <h2 className="text-2xl font-bold">Finals Winner</h2>
-            <div className="mt-4 flex flex-col gap-4">
-                <div className="winner-card flex items-center gap-4 mb-4">
-                    <div className="border border-gray-300 rounded-lg p-4 shadow-md w-full inline-flex items-center gap-2">
-                        <span className="font-semibold text-lg">Winner:</span>
-                        <span className="text-gray-700">{winner || "TBD"}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
@@ -428,9 +118,9 @@ const FinalsWinnerTable = ({ winner }) => {
                         </SeedTeam>
                     </div>
                 </SeedItem>
-                        <SeedTime style = {{ marginBottom: "20px", color: "#222222", fontWeight: "700", fontSize: "14px"}}>
-                            {seed.date}
-                        </SeedTime>
+                <SeedTime style = {{ marginBottom: "20px", color: "#222222", fontWeight: "700", fontSize: "14px"}}>
+                    {seed.date}
+                </SeedTime>
             </Seed>
         );
     };
@@ -445,7 +135,7 @@ const FinalsWinnerTable = ({ winner }) => {
             }
 
             const response = await axios.get(
-                `http://localhost:8080/admins/tournaments/${tournamentName}/bracket`,
+                `${API_URL}/admins/tournaments/${tournamentName}/bracket`,
                 {
                     withCredentials: true,
                     headers: {
@@ -454,25 +144,20 @@ const FinalsWinnerTable = ({ winner }) => {
                 }
             );
 
-            console.log("Response:", response);
-
-            // Warning Message Alert
+            // Warning Message Alerts
             if (response.data.error !== undefined) {
                 console.log("error: ", response.data);
             }
-
             if (response.data.rounds.length !== 0) {
                 setTournamentBracket(response.data);
             } 
-
             if (response.data.rounds[0].matches.length > 0) {
                 setPreliminaryMatches(response.data.rounds[0].matches);
             }
-
             if (response.data.rounds.length > 1) {
                 setMainMatches(response.data.rounds.slice(1));
                 const roundsArr = [];
-                const currentFixtures = response.data.rounds.slice(1);
+                const currentFixtures = response.data.rounds.slice(1);  // starts from the index 1 - main match
                 for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
                     const seeds = [];
                     const matchesPerRound = currentFixtures[roundIndex]?.matches;
@@ -480,11 +165,15 @@ const FinalsWinnerTable = ({ winner }) => {
                     if (matchesPerRound.length === 4) {
                         roundTitle = "Quarter Finals";
                         setQuarterFinalsWinners(matchesPerRound.map(match => match.matchWinner));
+                        setQuarterFinalsMatches(currentFixtures[roundIndex].matches);
+                        console.log("q finals: ", currentFixtures[roundIndex]);
                     } else if (matchesPerRound.length === 2) {
                         roundTitle = "Semi Finals";
                             setSemiFinalsWinners(matchesPerRound.map(match => match.matchWinner));
-                    } else if (matchesPerRound.length === 1) {
+                            setSemiFinalMatches(currentFixtures[roundIndex].matches);
+                    } else if (matchesPerRound.length === 1 && roundIndex != 0) {
                         roundTitle = "Finals";
+                        setFinalsMatch(currentFixtures[roundIndex].matches);
                     }
                     for (let i = 0; i < matchesPerRound.length; i++) {
                         if (matchesPerRound.length === 1) {
@@ -510,13 +199,11 @@ const FinalsWinnerTable = ({ winner }) => {
                 }
                 setMainTournamentRounds(roundsArr);
             }
-            console.log("array of people who won the QF: ", quarterFinalsWinners);
             return response;
 
         } catch (error) {
             // Warning Message Alert: Error fetching tournament brackets data
             const errorMessage = error.response?.data?.error || 'An unknown error occurred';
-            alert(errorMessage);
             console.error('Error updating match results:', errorMessage);
         }
     };
@@ -526,41 +213,174 @@ const FinalsWinnerTable = ({ winner }) => {
         getTournamentBracket();
     }, []);
 
-    return (
-        <div className = "administrator-fixtures flex flex-col gap-8 p-9">
-            <div className = "flex flex-col items-center gap-4">
-                <h2 className = "text-3xl font-bold mt-10"> Tournament Fixtures </h2>
-                {tournamentBracket === null &&
-                    <p> Tournament Fixtures Brackets has not been generated. </p>
-                }
-            </div>
-            {preliminaryMatches.length > 0 &&
-                <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
+
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
+    const handleEndTournament = () => {
+        setShowConfirmationPopUp(true);
+    }
+
+    const handleFinalConfirmation = async () => {
+        await updateTournamentEndDate();
+    }
+
+    // ----------------------- API Call: Update Tournament End Date -----------------------
+    async function updateTournamentEndDate() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
+            if (!adminData || !adminData.jwtToken) {
+                console.error("No JWT token found");
+                return;
             }
-            <QuarterfinalsWinnersTable winners={quarterFinalsWinners} />
-            <SemifinalsWinnersTable winners={semiFinalsWinners} />
-            <FinalsWinnerTable winner={tournamentWinner} />
-            {mainMatches.length > 0 &&
-                <div className = "main-tournament-brackets mb-20">
-                    <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
-                    <Bracket
-                        rounds = {mainTournamentRounds}
-                        roundTitleComponent = {(title) => (
-                            <div style = {{ textAlign: "center", color: "green", fontWeight: "600", fontSize: "18px" }}>
-                                {title}
+
+            const response = await axios.put(
+                `${API_URL}/admins/tournaments/${tournamentName}/end`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                alert("Tournament has been ended successfully!");
+            } else {
+                alert("An error occurred while ending the tournament.");
+            }
+
+        } catch (error) {
+            // Warning Message Alert: Error Updating Tournament End Date
+            const errorMessage = error.response?.data?.error || 'An unknown error occurred';
+            console.error('Error updating tournament end date:', errorMessage);
+        }
+    }
+
+    return (
+        <>
+            <div className = "administrator-fixtures flex flex-row gap-8 p-9">
+                <div className = "w-full">
+                    <button
+                        onClick = {scrollToMainFixtures}
+                        className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-6 w-full font-semibold ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
+                        style = {{ backgroundColor: !tournamentBracket ? 'gray' : 'grey' }}
+                        disabled = {!tournamentBracket}
+                    >
+                        Go to Main Tournament Fixtures
+                    </button>
+                    <div className = "flex flex-col items-center gap-4">
+                        {tournamentBracket === null && (
+                            <p className = "font-bold text-xl"> Preliminary Rounds and Main Tournament Fixtures has not been generated yet. </p>
+                        )}
+                    </div>
+                    <div className = "mb-12">
+                        {preliminaryMatches.length > 0 && (
+                            <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
+                        )}
+                    </div>
+                    {mainMatches.length > 0 && tournamentBracket !== null && (
+                        <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
+                            <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
+                            <Bracket
+                                rounds = {mainTournamentRounds}
+                                roundTitleComponent = {(title) => (
+                                    <div style = {{ textAlign: "center", color: "green", fontWeight: "600", fontSize: "18px" }}>
+                                        {title}
+                                    </div>
+                                )}
+                                renderSeedComponent = {CustomSeed}
+                            />
+                        </div>
+                    )}
+                    {showUpdateMatchTimingsCard && (
+                        <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
+                    )}
+                    {showUpdateResultsCard && (
+                        <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
+                    )}
+                    {showMatchResultsCard && (
+                        <MatchResultsCard matchDetails = {currentMatch} setShowMatchResultsCard = {setShowMatchResultsCard}/>
+                    )}
+                </div>
+                <div className = "flex flex-col w-1/3 gap-5 mt-12">
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
+                            View Quarter Finals
+                            <span className = "text-lg ml-2">
+                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
+                            <div className = "flex-1 shadow-xl rounded-[12px]">
+                                <WinnersTable winners = {quarterFinalsWinners} matches = {quarterFinalMatches} />
+                            </div>
+                    )}
+                    </div>
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
+                            View Semi Finals
+                            <span className = "text-xl ml-2">
+                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
+                            <div className="flex-1 shadow-xl rounded-[12px]">
+                                <WinnersTable winners = {semiFinalsWinners} matches = {semiFinalMatches} />
                             </div>
                         )}
-                        renderSeedComponent = {CustomSeed}
-                    />
+                    </div>
+                    <div className = "flex flex-col">
+                        <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
+                            View Finals
+                            <span className="text-lg ml-2">
+                                <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
+                            </span>
+                        </button>
+                        {showFinals && (
+                            <>
+                                {finalsMatch && finalsMatch.length > 0 ? (
+                                    <div className = "flex-1">
+                                        <WinnersTable winners = {tournamentWinner} matches = {finalsMatch} />
+                                    </div>
+                                ) : (
+                                    <div className = "flex-1 p-4 text-center text-lg font-semibold text-gray-500">
+                                        No Finals matches available.
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
-            }
-            {showUpdateMatchTimingsCard &&
-                <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
-            }
-            {showUpdateResultsCard &&
-                <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
-            }
-        </div>
+            </div>
+
+            <div className = "fixed bottom-20 right-12">
+                { mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
+                    <button
+                        className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
+                        onClick = { handleEndTournament }
+                    >
+                        Complete Tournament
+                    </button>
+                ) : (
+                    <button
+                        className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
+                        onClick = { handleEndTournament }
+                    >
+                        Stop Tournament
+                    </button>
+                )}
+
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        message = "Do you want to confirm the end of the tournament?"
+                        onConfirm = {handleFinalConfirmation}
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                    />
+                )}
+                
+            </div>
+
+        </>
     );
 };
 

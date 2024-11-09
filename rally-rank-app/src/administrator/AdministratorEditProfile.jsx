@@ -1,8 +1,11 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
+import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 
 // Icon Imports
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -10,25 +13,62 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Assets and Components Imports
 import AlertMessageWarning from "../components/AlertMessageWarning";
+import DeleteAccountCard from "./components/DeleteAccountCard";
+
+// Authentication Imports
+import { useAuth } from "../authentication/AuthContext";
 
 function AdministratorEditProfile() {
     const navigate = useNavigate();
+    const { logoutAdmin } = useAuth();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
-    const [isAdminNameChanged, setIsAdminNameChanged] = useState(false);
-    const [isEmailChanged, setIsEmailChanged] = useState(false);
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
+
     const [originalEmail, setOriginalEmail] = useState("");
     const [originalAdminName, setOriginalAdminName] = useState("");
-    const { register, handleSubmit, setValue } = useForm();
-    const [alertMessage, setAlertMessage] = useState("");
     const [originalAdminData, setOriginalAdminData] = useState({});
 
+    const [isEmailChanged, setIsEmailChanged] = useState(false);
+    const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+    const [isAdminNameChanged, setIsAdminNameChanged] = useState(false);
 
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+
+    const handleDeleteClick = () => {
+        setShowDeleteAccountCard(true);
+    };
+    
     const handleBackButtonClick = () => {
         navigate("/administrator-account");
     };
 
-    //API Call: Checking availibility of username and email address.
+    const handleChange = () => {
+        const formValues = getValues();
+        const hasChanges = Object.keys(formValues).some((key) => {
+            return formValues[key] !== originalAdminData[key] && formValues[key] !== "";
+        });
+        setIsChanged(hasChanges);
+    };
+
+    const handleAdminNameChange = () => {
+        handleChange();
+        setIsAdminNameChanged(true);
+    }
+
+    const handleEmailChange = () => {
+        handleChange();
+        setIsEmailChanged(true);
+    }
+
+    const handlePasswordChange = () => {
+        handleChange();
+        setIsPasswordChanged(true);
+    };
+
+    // ----------------------- API Call: Checking the availability of username and email address -----------------------
     async function checkCredentialsAvailablity(formData) {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -37,13 +77,13 @@ function AdministratorEditProfile() {
               return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
-                accountName: formData.adminName,
-                email: formData.email,
+                accountName: formData.adminName || originalAdminData.adminName,
+                email: formData.email || originalAdminData.email,
                 },
-                withCredentials: true
+                withCredentials: true,
             });
             
             if ((response.data.accountNameAvailable && response.data.emailAvailable) ||
@@ -72,7 +112,7 @@ function AdministratorEditProfile() {
         }
     }
 
-    // ----------------------- API Call: Retrieving the user's profile data -----------------------
+    // ----------------------- API Call: Retrieving the administrator's profile data -----------------------
     const fetchAdminProfile = async () => {
         try {
             const adminData = JSON.parse(localStorage.getItem('adminData'));
@@ -82,7 +122,7 @@ function AdministratorEditProfile() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/admins/profile",
+                `${API_URL}/admins/profile`,
                 {
                     withCredentials: true,
                     headers: {
@@ -95,9 +135,11 @@ function AdministratorEditProfile() {
                 setOriginalAdminData(response.data);
                 setOriginalEmail(response.data.email);
                 setOriginalAdminName(response.data.adminName);
+                console.log("admin profile: ", response.data);
+
                 for (const key in response.data) {
                     if (key !== "password") {
-                        setValue(key, response.data[key]);
+                        setValue(key, "");
                     }
                 }
             }
@@ -123,8 +165,16 @@ function AdministratorEditProfile() {
             }
             
             const response = await axios.put(
-                "http://localhost:8080/admins/profile",
-                formData,
+                `${API_URL}/admins/profile`,
+                {
+                    ...originalAdminData,
+                    adminName: formData.adminName || originalAdminData.adminName,
+                    email: formData.email || originalAdminData.email,
+                    firstName : formData.firstName || originalAdminData.firstName,
+                    lastName: formData.lastName || originalAdminData.lastName,
+                    password: formData.password || originalAdminData.password,
+
+                },
                 {
                     withCredentials: true,
                     headers: {
@@ -138,6 +188,7 @@ function AdministratorEditProfile() {
                 localStorage.setItem("adminData", JSON.stringify(adminData));     // Updates the new availability in the userData to be passed around
                 return response.data;
             }
+            
 
             // return response.data;
 
@@ -148,8 +199,6 @@ function AdministratorEditProfile() {
         }
     };
 
-    const [password, setPassword] = useState("");
-
     const onSubmit = async (formData) => {
         setAlertMessage("");
         const firstResponse = await checkCredentialsAvailablity(formData);
@@ -157,37 +206,34 @@ function AdministratorEditProfile() {
         // if new username and/or new email are available, allow admin to update profile
         if (firstResponse) {
             const updatedData = {
-                ...formData,
-                password: password || originalAdminData.password,
+                    ...originalAdminData,
+                    adminName: formData.adminName || originalAdminData.adminName,
+                    email: formData.email || originalAdminData.email,
+                    firstName : formData.firstName || originalAdminData.firstName,
+                    lastName: formData.lastName || originalAdminData.lastName,
+                    password: formData.password || originalAdminData.password,
             };
             
             await updateAdminProfile(updatedData);
-            setIsEmailChanged(false);
-            setIsAdminNameChanged(false);
-            navigate("/administrator-account");
+            if (isAdminNameChanged || isPasswordChanged || isEmailChanged) {
+                setIsPasswordChanged(false);
+                setIsEmailChanged(false);
+                setIsAdminNameChanged(false);
+                logoutAdmin();
+                navigate("/administrator-login");
+            } else {
+                navigate("/administrator-account");
+            }
+            
 
         }
         
     };
-    
-    const handleChange = () => {
-        setIsChanged(true);
-    }
-
-    const handleAdminNameChange = () => {
-        setIsChanged(true);
-        setIsAdminNameChanged(true);
-    }
-
-    const handleEmailChange = () => {
-        setIsChanged(true);
-        setIsEmailChanged(true);
-    }
 
     return (
-        <div className = "mt-5 edit-profile-information p-6 bg-white rounded-lg w-3/5 mx-auto">
+        <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
             <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
-            <div className="flex items-center gap-4">
+            <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
@@ -200,17 +246,14 @@ function AdministratorEditProfile() {
                 <div className = "flex justify-end mt-4 mb-3">
                     <button
                         type = "submit"
-                        style = {{
-                            backgroundColor: isChanged ? "green" : "lightgray",
-                            color: "white",
-                        }}
-                        className = "rounded-lg border w-1/3 py-2 px-4 text-md font-semibold"
+                        className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
+                                    ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
                         Save Changes
                     </button>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px]">
+                <div className = "p-6 shadow-lg rounded-[12px] card-background">
                     <h2 className = "text-2xl font-bold mt-2 ml-2"> Account Information </h2>
                     {/* ADMINNAME */}
                     <div className = "mt-2">
@@ -223,10 +266,46 @@ function AdministratorEditProfile() {
                         <input
                             type = "text"
                             id = "adminName"
+                            placeholder = {originalAdminName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("adminName", { onChange: handleAdminNameChange })}
+                            {...register("adminName", { 
+                                onChange: handleAdminNameChange,
+                                pattern: {
+                                    value: /^[a-zA-Z0-9_]*$/,
+                                    message: "Admin username can only contain letters, numbers, and underscores."
+                                }
+                            })}
                         />
+                        {errors.adminName && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.adminName.message} </p>
+                        )}
+                    </div>
+                    {/* EMAIL ADDRESS */}
+                    <div className = "mt-5">
+                        <label
+                            htmlFor = "email"
+                            className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
+                        >
+                            Email Address
+                        </label>
+                        <input
+                            type = "text"
+                            id = "email"
+                            placeholder = {originalEmail || ""}
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
+                            style = {{ backgroundColor: "#EBEBEB" }}
+                            {...register("email", {
+                                onChange: handleEmailChange,
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Please enter a valid email address."
+                                }
+                            })}
+                        />
+                        {errors.email && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.email.message} </p>
+                        )}
                     </div>
                     {/* PASSWORD*/}
                     <div className = "mt-5">
@@ -236,14 +315,14 @@ function AdministratorEditProfile() {
                         <input
                             type = "password"
                             id = "password"
+                            placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            onChange={(e) =>{ setPassword(e.target.value); handleChange(); }}
-                            // {...register("password", { onChange: handleChange })}
+                            {...register("password", { onChange: handlePasswordChange })}
                         />
                     </div>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6">
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
@@ -256,6 +335,7 @@ function AdministratorEditProfile() {
                         <input
                             type = "text"
                             id = "firstName"
+                            placeholder = {originalAdminData.firstName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("firstName", { onChange: handleChange })}
@@ -272,38 +352,35 @@ function AdministratorEditProfile() {
                         <input
                             type = "text"
                             id = "lastName"
+                            placeholder = {originalAdminData.lastName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
                         />
                     </div>
-                    {/* EMAIL ADDRESS */}
-                    <div className = "mt-5">
-                        <label
-                            htmlFor = "email"
-                            className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
-                        >
-                            Email Address
-                        </label>
-                        <input
-                            type = "text"
-                            id = "email"
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
-                            style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("email", { onChange: handleEmailChange })}
-                            // {...register("email", { onChange: handleChange })}
-                        />
-                    </div>
+                    
                 </div>
             </form>
-            {/* BACK TO PROFILE */}
-            <div className = "flex justify-center mt-4">
+            <div className = "flex justify-between mt-4">
+                {/* BACK TO PROFILE */}
                 <button
                     onClick = {handleBackButtonClick}
                     className = "py-2 px-4 rounded-lg border w-1/3"
                 >
                     Back to Profile
                 </button>
+
+                {/* DELETE ACCOUNT BUTTON */}
+                <button
+                onClick = { handleDeleteClick }
+                className = " bg-secondary-color-red hover:bg-red-600 font-semibold py-2 px-4 rounded-lg shadow-md w-1/3 text-white hover:shadow-md transition duration-300 ease-in-out"
+                >
+                    Delete Account
+                </button>
+
+                {showDeleteAccountCard && (
+                    <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard}/>
+                )}
             </div>
         </div>
     );

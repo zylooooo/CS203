@@ -67,7 +67,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                             <p className = "text-sm font-medium">
                                 Strikes are issued to players who have displayed unsportsmanlike conduct during tournaments.
                             </p>
-                            <p className = "text-sm font-medium" style={{ color: '#FF6961' }}>
+                            <p className = "text-sm font-medium text-secondary-color-red">
                                 Issuing a strike to this player will temporarily ban them from joining your future tournaments.
                             </p>
                         </div>
@@ -80,7 +80,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                                 Please state your reason for issuing this strike to <strong> {strikePlayer}</strong>.
                             </label>
                             <input
-                                className = "border-b shadow-sm p-2"
+                                className = "border-b p-2"
                                 type = "text"
                                 id = "reason"
                                 placeholder = "Reason"
@@ -96,7 +96,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                             <button
                                 type = "button"
                                 onClick = {() => setStrikeOpen(false)}
-                                className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-400 transition"
+                                className = "shadow-md px-4 py-2 rounded-lg mr-2 hover:bg-gray-300 transition"
                             >
                                 Cancel
                             </button>
@@ -104,7 +104,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
                             {/* SUBMIT */}
                             <button
                                 type = "submit"
-                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                                className = "shadow-md px-4 py-2 rounded-lg hover:bg-secondary-color-red hover:text-white transition"
                             >
                                 Submit
                             </button>
@@ -129,8 +129,6 @@ const AdministratorPastTournamentDetails = () => {
     const fromPage = location.state?.from || "/administrator-tournament-history";      // to retrieve page where admins clicked for tournament details
 
     const tournamentName = location.state.tournamentName;
-
-    const createdBy = location.state.createdBy;
 
     const [tournamentDetails, setTournamentDetails] = useState(null);
 
@@ -216,7 +214,7 @@ const AdministratorPastTournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex relative">
-            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px]">
+            <div className = "flex flex-col w-3/5 gap-4 border p-8 rounded-[8px card-background shadow-md">
                 <div className = "flex justify-between items-center mb-4">
                     <div className = "flex items-center gap-4">
                         <FontAwesomeIcon
@@ -248,7 +246,7 @@ const AdministratorPastTournamentDetails = () => {
                         </p>
                         { isThisAdministrator && !isWithinOneWeek(tournamentDetails.endDate) &&  (
                             <div className = "flex justify-center items-center">
-                                <p className = "text-md text-red-color font-semibold">
+                                <p className = "text-md text-secondary-color-red font-semibold">
                                     Unable to issue strikes to players at this time as your tournament has ended more than a week ago.
                                 </p>
                         </div>
@@ -262,8 +260,7 @@ const AdministratorPastTournamentDetails = () => {
                                         {/* ISSUE STRIKE BUTTON */}
                                         { isThisAdministrator && isWithinOneWeek(tournamentDetails.endDate) && (
                                           <button 
-                                          className = "px-4 py-2 mr-6 rounded-[8px] shadow-md hover:bg-red-600 font-semibold self-end text-primary-color-white"
-                                          style = {{ backgroundColor: "#FF6961"}}
+                                          className = "px-4 py-2 mr-6 rounded-[8px] shadow-md bg-secondary-color-red hover:shadow-inner font-semibold self-end text-primary-color-white"
                                           onClick = {() => handleIssueStrikeClick(player) }
                                           >
                                               Issue Strike
@@ -281,7 +278,7 @@ const AdministratorPastTournamentDetails = () => {
                     <button
                         // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         // onClick = {handleShowFixturesClick}
-                        className = "border text-white px-4 py-2 rounded-[8px] hover:bg-blue-600 font-semibold ml-2 self-start mt-4 mr-6"
+                        className = "border text-white bg-primary-color-light-green hover:bg-primary-color-green px-4 py-2 rounded-[8px] font-semibold ml-2 self-start mt-4 mr-6"
                     >
                         Show Results
                     </button>

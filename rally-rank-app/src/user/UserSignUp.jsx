@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useState } from "react";
@@ -91,7 +94,7 @@ function UserSignUp() {
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.username,
@@ -103,7 +106,7 @@ function UserSignUp() {
                 setCompletedSteps([...completedSteps, step]);
                 setClickableSteps([...clickableSteps, step]);
                 setStep(step + 1);
-                setAlertMessage("Both username and email address are available");
+                // setAlertMessage("Both username and email address are available");
             } else {
                 if (!response.data.accountNameAvailable && !response.data.emailAvailable) {
                     setAlertMessage("Both username and email address entered has already been taken.");
@@ -128,7 +131,7 @@ function UserSignUp() {
     async function createUser(formData) {
         try {
             const response = await axios.post(
-            "http://localhost:8080/auth/user-signup",
+            `${API_URL}/auth/user-signup`,
             {
                 username: lowercaseUsername(formData.username),
                 email: formData.email,
@@ -156,7 +159,7 @@ function UserSignUp() {
     return (
         <>
             <div
-                className="bg-cover bg-center h-main w-full flex flex-col justify-center items-center"
+                className="bg-cover bg-center h-main w-full flex flex-col items-center"
                 style = {{ backgroundImage: `url(${signupPicture})` }}
             >
                 <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
@@ -168,8 +171,8 @@ function UserSignUp() {
                             className = {`font-bold text-xl flex justify-center items-center rounded-full w-10 h-10 p-6 
                                 ${
                                 completedSteps.includes(num)
-                                    ? "bg-primary-color-green border-opacity-50"
-                                    : "bg-primary-color-white"
+                                    ? "bg-primary-color-light-green hover:bg-primary-color-green border-opacity-50"
+                                    : "bg-white"
                                 } 
                                 ${step === num ? "scale-110" : ""} 
                                 ${
@@ -184,7 +187,7 @@ function UserSignUp() {
                     ))}
                 </div>
 
-                <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
+                <div className = "card rounded-none bg-white flex justify-center border p-10">
                     <form onSubmit = {handleSubmit(onSubmit)}>
                         {step === 1 && (
                             <Step1 register = {register} errors = {errors} email = {email || ""} />
@@ -199,7 +202,7 @@ function UserSignUp() {
                         <div className = "flex justify-evenly gap-5 pt-10">
                         <button
                             type = "submit"
-                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-green text-primary-color-white hover:bg-secondary-color-dark-green transition duration-300 ease-in-out"
+                            className = "font-bold border px-14 py-2 w-3/4 bg-primary-color-light-green text-white hover:bg-primary-color-green transition duration-300 ease-in-out"
                         >
                             {step === 3 ? "Submit" : "Continue"}
                         </button>

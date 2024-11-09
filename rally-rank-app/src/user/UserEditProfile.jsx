@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -11,13 +14,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // Authentication Imports
 import { useAuth } from "../authentication/AuthContext";
 
+import DeleteAccountCard from "./DeleteAccountCard";
+
 function UserEditProfile() {
     const navigate = useNavigate();
     const { logoutUser } = useAuth();
     const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
-    const [password, setPassword] = useState("");
-    const { register, handleSubmit, setValue, getValues } = useForm();
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
     // Constants to store the value of the original data
     const [originalEmail, setOriginalEmail] = useState("");
@@ -32,6 +36,12 @@ function UserEditProfile() {
     // Constants to store the warning or success alert messages
     // const [warningAlertMessage, setWarningAlertMessage] = useState("");
     // const [successAlertMessage, setSuccessAlertMessage] = useState("");
+
+    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+
+    const handleDeleteButtonClick = () => {
+        setShowDeleteAccountCard(true);
+    }
 
     const handleBackButtonClick = () => {
         navigate("/user/profile");
@@ -69,13 +79,13 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.get(
-            "http://localhost:8080/auth/credentials-availability",
+            `${API_URL}/auth/credentials-availability`,
             {
                 params: {
                 accountName: formData.username || originalUserData.username,
                 email: formData.email || originalUserData.email,
                 },
-                withCredentials: true
+                withCredentials: true,
             });
             
             if ((response.data.accountNameAvailable && response.data.emailAvailable) ||
@@ -113,7 +123,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     withCredentials: true,
                     headers: {
@@ -152,7 +162,7 @@ function UserEditProfile() {
                 return;
             }
             const response = await axios.put(
-                "http://localhost:8080/users/profile",
+                `${API_URL}/users/profile`,
                 {
                     username: formData.username || originalUserData.username,
                     email: formData.email || originalUserData.email,
@@ -200,14 +210,15 @@ function UserEditProfile() {
                 setIsEmailChanged(false);
                 setIsUsernameChanged(false);
                 setIsPasswordChanged(false);
+                logoutUser();
                 navigate("/auth/user-login");
             }
             navigate("/user/profile");
         }
     };
-    
+
     return (
-        <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
+        <div className = "edit-profile-information p-6 rounded-lg w-3/5 mx-auto my-5 ">
             <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
@@ -222,7 +233,7 @@ function UserEditProfile() {
                     <button
                         type = "submit"
                         className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
-                                    ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
+                                    ${isChanged ? "bg-primary-color-light-green hover:bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
                         Save Changes
@@ -244,8 +255,17 @@ function UserEditProfile() {
                             placeholder = {originalUsername || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("username", { onChange: handleUsernameChange })}
+                            {...register("username", { 
+                                onChange: handleUsernameChange,
+                                pattern: {
+                                    value: /^[a-zA-Z0-9_]*$/,
+                                    message: "Username can only contain letters, numbers, and underscores."
+                                }
+                            })}
                         />
+                        {errors.username && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.username.message} </p>
+                        )}
                     </div>
                     {/* PASSWORD*/}
                     <div className = "mt-5">
@@ -268,15 +288,25 @@ function UserEditProfile() {
                             className = "block text-lg font-medium text-gray-700 ml-1 mt-10"
                         >
                             Email Address
+                        
                         </label>
                         <input
                             type = "text"
                             id = "email"
-                            placeholder={originalUserData.email || ""}
+                            placeholder = {originalUserData.email || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("email", { onChange: handleEmailChange })}
+                            {...register("email", {
+                                onChange: handleEmailChange,
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Please enter a valid email address."
+                                }
+                            })}
                         />
+                        {errors.email && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.email.message} </p>
+                        )}
                     </div>
                 </div>
                 <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
@@ -292,7 +322,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "firstName"
-                            placeholder={originalUserData.firstName || ""}
+                            placeholder = {originalUserData.firstName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("firstName", { onChange: handleChange })}
@@ -309,7 +339,7 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "lastName"
-                            placeholder={originalUserData.lastName || ""}
+                            placeholder = {originalUserData.lastName || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
@@ -326,11 +356,20 @@ function UserEditProfile() {
                         <input
                             type = "text"
                             id = "phoneNumber"
-                            placeholder={originalUserData.phoneNumber || ""}
+                            placeholder = {originalUserData.phoneNumber || ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("phoneNumber", { onChange: handleChange })}
+                            {...register("phoneNumber", { 
+                                onChange: handleChange,
+                                pattern: {
+                                    value: /^[896]\d{7}$/,
+                                    message: "Please enter a valid phone number."
+                                }
+                            })}
                         />
+                        {errors.phoneNumber && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.phoneNumber.message} </p>
+                        )}
                     </div>
                     {/* DATE OF BIRTH */}
                     <div className = "mt-5">
@@ -345,8 +384,22 @@ function UserEditProfile() {
                             id = "dateOfBirth"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("dateOfBirth", { onChange: handleChange })}
+                            {...register("dateOfBirth", {
+                                onChange: handleChange,
+                                validate: (value) => {
+                                    const today = new Date();
+                                    const inputDate = new Date(value);
+                                    if (inputDate >= today) {
+                                        return "Please enter a valid date of birth.";
+                                    }
+                                    return true;
+                                }
+                            })}
+                            max={new Date().toISOString().split("T")[0]}
                         />
+                        {errors.dateOfBirth && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.dateOfBirth.message} </p>
+                        )}
                     </div>
                     {/* GENDER */}
                     <div className = "mt-5">
@@ -356,27 +409,37 @@ function UserEditProfile() {
                         >
                             Gender:
                         </label>
+                        <div className = "rounded-[12px]" style = {{ backgroundColor: "#EBEBEB" }}>
                         <select
                             id = "gender"
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
-                            style = {{ backgroundColor: "#EBEBEB", paddingRight: "2rem" }}
+                            className = "block w-full rounded-[12px] p-3 mr-6 text-md font-semibold mt-3 mb-4"
+                            style = {{ backgroundColor: "#EBEBEB", width: 'calc(100% - 12px)', paddingRight: "2rem" }}
                             {...register("gender", { onChange: handleChange })}
                         >
                             <option value = ""> Select your gender </option>
                             <option value = "Male"> Male </option>
                             <option value = "Female"> Female </option>
                         </select> 
+                        </div>
                     </div>
                 </div>
             </form>
             {/* BACK TO PROFILE */}
-            <div className = "flex justify-center mt-4">
+            <div className = "flex justify-between mt-4">
                 <button
                     onClick = {handleBackButtonClick}
                     className = "py-2 px-4 rounded-lg border w-1/3"
                 >
                     Back to Profile
                 </button>
+                <button
+                    onClick = {handleDeleteButtonClick}
+                    className = "py-2 px-4 rounded-lg border w-1/3 bg-secondary-color-red hover:bg-red-500 text-white"
+                >
+                    Delete Account
+                </button>
+
+                {showDeleteAccountCard && <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard} />}
             </div>
         </div>
     );

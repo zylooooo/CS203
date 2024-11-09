@@ -201,18 +201,19 @@ function UserTournaments() {
 
     return (
         <div className = "flex flex-col p-10 items-center justify-center w-4/5">
-            <div className = "flex flex-col w-4/5 gap-8">
+            <div className = "flex flex-col w-4/5 gap-8 mt-5">
+                <TournamentButtons
+                    buttons = {["Available Tournaments", "My Scheduled Tournaments"]}
+                    onAvailableTournamentsClick = {handleAvailableTournamentClick}
+                    onMyScheduledTournamentsClick = {handleMyScheduledTournamentsClick}
+                />
+                {/* SEARCH BAR */}
                 <input
                     type = "text"
                     placeholder = "Search for tournaments..."
                     value = { searchTerm }
                     onChange = { (e) => setSearchTerm(e.target.value) }
-                    className = "border rounded-xl mt-5 p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <TournamentButtons
-                    buttons = {["Available Tournaments", "My Scheduled Tournaments"]}
-                    onAvailableTournamentsClick = {handleAvailableTournamentClick}
-                    onMyScheduledTournamentsClick = {handleMyScheduledTournamentsClick}
+                    className = "border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {loading ? (
                     <p> Loading tournaments... </p>
