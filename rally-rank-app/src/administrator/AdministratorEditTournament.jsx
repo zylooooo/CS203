@@ -13,6 +13,8 @@ function AdministratorEditTournament() {
   const { register, handleSubmit, setValue } = useForm();
   const [availablePlayers, setAvailablePlayers] = useState([]);
 
+  const [deleteTournamentOpen, setDeleteTournamentOpen] = useState(false);
+
   // ----------------------- API Call: Deleting the tournament by the tournament name -----------------------
   async function deleteTournament() {
     try {
@@ -194,8 +196,12 @@ function AdministratorEditTournament() {
     setIsChanged(true);
   };
 
+  const handleDeleteClick = () => { 
+    setDeleteTournamentOpen(true);
+  };
+
   return (
-    <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-main overflow-auto">
+    <div className="tournaments-page main-container flex w-full p-9 gap-2 justify-evenly h-main overflow-auto mx-5">
       <div className="row-container flex flex-col w-full gap-8">
         <div className="mt-5 edit-tournament-details p-6 card-background rounded-[20px] shadow-md w-3/5 mx-auto border">
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -215,7 +221,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="tournamentName"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Tournament Name
                 </label>
@@ -230,7 +236,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="startDate"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Start Date
                 </label>
@@ -245,7 +251,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="venue"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Venue
                 </label>
@@ -260,7 +266,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="gender"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Gender Specification
                 </label>
@@ -278,7 +284,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="category"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Age Category
                 </label>
@@ -297,7 +303,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="minElo"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Elo Rating Range
                 </label>
@@ -321,7 +327,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="maxPlayers"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Max Players
                 </label>
@@ -337,7 +343,7 @@ function AdministratorEditTournament() {
               tournament.playersPool &&
               tournament.playersPool.length > 0 ? (
                 <div className="flex flex-col gap-1 mt-5">
-                  <h3 className="block text-sm font-medium text-gray-700">
+                  <h3 className="block text-sm font-medium">
                     Players in Tournament
                   </h3>
                   <ol className="list-decimal pl-5">
@@ -356,7 +362,7 @@ function AdministratorEditTournament() {
   
               {/* ADD PLAYERS TO TOURNAMENT */}
               <div className="flex flex-col gap-1 mt-5">
-                <h3 className="block text-sm font-medium text-gray-700">
+                <h3 className="block text-sm font-medium">
                   Add Players to Tournament
                 </h3>
                 {availablePlayers.length > 0 ? (
@@ -389,7 +395,7 @@ function AdministratorEditTournament() {
               <div className="flex flex-col gap-1">
                 <label
                   htmlFor="remarks"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium"
                 >
                   Remarks
                 </label>
@@ -400,43 +406,23 @@ function AdministratorEditTournament() {
                 />
               </div>
               
-              {/* UPDATE TOURNAMENT BUTTON */}
-              <button
-                type="submit"
-                style={{
-                  marginTop: "1.25rem",
-                  padding: "0.5rem",
-                  color: "white",
-                  backgroundColor: isChanged ? "green" : "grey",
-                  opacity: isChanged ? 1 : 0.5,
-                  cursor: isChanged ? "pointer" : "not-allowed",
-                  display: "block",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-                className="w-1/4 rounded-[20px]"
-                disabled={!isChanged}
-              >
-                Update Tournament
-              </button>
-  
-              {/* DELETE TOURNAMENT BUTTON */}
-              <button
-                onClick={deleteTournament}
-                style={{
-                  marginTop: "1.25rem",
-                  padding: "0.5rem",
-                  color: "white",
-                  backgroundColor: "red",
-                  cursor: "pointer",
-                  display: "block",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                }}
-                className="w-1/4 rounded-[20px]"
-              >
-                Delete Tournament
-              </button>
+            </div>
+            {/* BACK TO PROFILE */}
+            <div className = "flex flex-col items-center justify-around mt-4 gap-8">
+                <button
+                    type = "submit"
+                    className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
+                                ${isChanged ? "bg-primary-color-light-green hover:bg-primary-color-green" : "bg-gray-300"}`}
+                    disabled = {!isChanged}
+                >
+                    Save Changes
+                </button>
+                <button
+                    onClick = {handleDeleteClick}
+                    className = "py-2 px-4 rounded-lg border font-semibold w-1/3 bg-secondary-color-red hover:bg-red-600 text-white"
+                >
+                    Delete Tournament
+                </button>
             </div>
           </form>
         </div>

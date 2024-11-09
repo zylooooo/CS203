@@ -17,7 +17,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
 
     return (
         <>
-        <div className = "edit-tournament-details p-6 rounded-lg shadow-lg w-5/12 mx-auto">
+        <div className = "create-tournament-card p-6 rounded-lg shadow-lg w-3/5 mx-auto">
             <div className = "flex flex-row gap-8 justify-between">
                 <h2 className = "text-xl font-extrabold">Create Tournament</h2>
                     <button
@@ -33,7 +33,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                 <div className="flex flex-col gap-5 mt-8">
 
                 <div className = "flex flex-col gap-1">
-                    <label htmlFor = "tournamentName" className = "block text-sm font-medium text-gray-700">
+                    <label htmlFor = "tournamentName" className = "block text-sm font-medium">
                         Tournament Name 
                     </label>
                     <input
@@ -44,7 +44,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                         {...register("tournamentName", {
                             required: "Tournament name is required",
                             pattern: {
-                                value: /^[^@#$%^&*()_+=[\]{};'"\\|,.<>?`~]*$/,
+                                value: /^[^/@#$%^&*()_+=[\]{};'"\\|,.<>?`~]*$/,
                                 message: "Special characters and whitespace are not allowed"
                             }
                         })}
@@ -55,7 +55,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
 
 
                 <div className = "flex flex-col gap-1">
-                    <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="startDate" className="block text-sm font-medium">
                         Start Date
                     </label>
                     <div className = "flex gap-2">
@@ -71,7 +71,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                 </div>
 
                 <div className = "flex flex-col gap-1">
-                    <label htmlFor = "venue" className = "block text-sm font-medium text-gray-700">
+                    <label htmlFor = "venue" className = "block text-sm font-medium">
                         Venue
                     </label>
                     <input
@@ -85,11 +85,13 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                 </div>
 
                 <div className = "flex flex-col gap-1">
-                    <label htmlFor = "gender" className = "block text-sm font-medium text-gray-700">
+                    <label htmlFor = "gender" className = "block text-sm font-medium">
                         Gender Specification
                     </label>
+                    <div className = "shadow-md rounded-xl bg-white w-full">
                     <select
-                        className = "shadow-md rounded-xl p-2 px-4 w-full"
+                        className = "rounded-xl p-2 px-4" 
+                        style = {{ width: 'calc(100% - 12px)' }}
                         id = "gender"
                         {...register("gender", { required: "Gender specification is required" })}
                     >
@@ -97,18 +99,21 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                         <option value = "Male">Male</option>
                         <option value = "Female">Female</option>
                     </select>
+                    </div>
                     <p className = "error">{errors.gender?.message}</p>
                 </div>
 
                 <div className = "flex flex-col gap-1">
                     <label
                         htmlFor = "category"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-sm font-medium"
                     >
                         Age Category
                     </label>
+                    <div className = "shadow-md rounded-xl bg-white w-full">
                     <select
-                        className = "shadow-md rounded-xl p-2 pl-4 w-full"
+                        className = "rounded-xl p-2 pl-4 w-full"
+                        style = {{ width: 'calc(100% - 12px)' }}
                         id = "category"
                         {...register("category", {
                         required: "Category is required",
@@ -119,14 +124,14 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                         <option value = "U21">U21</option>
                         <option value = "Open">Open</option>
                     </select>
-
+                    </div>
                     <p className = "error">{errors.category?.message}</p>
                 </div>
 
                 <div className = "flex flex-col gap-1">
                     <label
                         htmlFor = "minElo"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-sm font-medium"
                     >
                         Elo Rating Range
                     </label>
@@ -140,7 +145,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                             required: "Minimum Elo rating is required",
                         })}
                         />
-                        <span>-</span>
+                        <span>_</span>
                         <input
                             className = "shadow-md rounded-xl p-2 pl-4 w-full"
                             type = "number"
@@ -159,7 +164,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                 <div className = "flex flex-col gap-1">
                     <label
                         htmlFor = "maxPlayers"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-sm font-medium"
                     >
                         Max Players
                     </label>
@@ -182,7 +187,7 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                 <div className = "flex flex-col gap-1">
                     <label
                         htmlFor = "remarks"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-sm font-medium"
                     >
                         Remarks
                     </label>
@@ -191,12 +196,13 @@ const CreateTournamentForm = ({ register, handleSubmit, errors, onSubmit }) => {
                         type = "text"
                         id = "remarks"
                         placeholder = "Enter Remarks"
+                        {...register("remarks")}
                     />
                 </div>
 
                 <div className = "flex justify-evenly gap-5 p-4">
                     <button
-                        className = "font-bold border px-14 py-2 bg-primary-color--light-green text-primary-color-white hover:bg-primary-color-green"
+                        className = "font-bold border px-14 py-2 bg-primary-color-light-green text-white hover:bg-primary-color-green"
                         type = "submit"
                     >
                         Create Tournament
@@ -245,26 +251,30 @@ function AdministratorCreateTournaments() {
             const today = new Date();
 
             const trimmedTournamentName = data.tournamentName.trim();
+            
+            const newTournament = {
+                tournamentName: trimmedTournamentName,
+                createdAt: today,
+                updatedAt: today,
+                createdBy: adminData.adminName,
+                startDate: data.startDate,
+                endDate: null,
+                location: data.venue,
+                minElo: data.minElo,
+                maxElo: data.maxElo,
+                gender: data.gender,
+                playersPool: [],
+                remarks: data.remarks,
+                category: data.category,
+                playerCapacity: data.maxPlayers,
+                bracket: null
+            };
+
+            console.log(newTournament);
 
             const response = await axios.post(
                 "http://localhost:8080/admins/tournaments",
-                {
-                    tournamentName: trimmedTournamentName,
-                    createdAt: today,
-                    updatedAt: today,
-                    createdBy: adminData.adminName,
-                    startDate: data.startDate,
-                    endDate: null,
-                    location: data.venue,
-                    minElo: data.minElo,
-                    maxElo: data.maxElo,
-                    gender: data.gender,
-                    playersPool: [],
-                    remarks: data.remarks,
-                    category: data.category,
-                    playerCapacity: data.maxPlayers,
-                    bracket: null
-                },
+                newTournament, 
                 {
                     withCredentials: true,
                     headers: {
@@ -340,7 +350,7 @@ function AdministratorCreateTournaments() {
         <div className="create-tournament-page main-container flex p-9 gap-2 justify-evenly h-main overflow-auto">
             <div className="row-container flex flex-col w-full gap-8">
 
-                <CreateTournamentForm register = {register} handleSubmit = {handleSubmit} errors = {errors} onSubmit = {onSubmit} />
+                <CreateTournamentForm register = {register} handleSubmit = {handleSubmit} errors = {errors} onSubmit = {onSubmit}/>
 
             </div>
         </div>

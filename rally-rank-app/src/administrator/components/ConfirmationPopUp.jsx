@@ -14,7 +14,7 @@ const ConfirmationPopUp = ({ message, onConfirm, onCancel }) => (
                 </button>
                 <button
                     onClick = {onConfirm}
-                    className = "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                    className = "px-4 py-2 bg-primary-color-light-green text-white rounded-lg hover:bg-primary-color-green"
                 >
                     Confirm
                 </button>
