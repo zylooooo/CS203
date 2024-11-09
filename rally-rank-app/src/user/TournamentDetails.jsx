@@ -1,3 +1,7 @@
+// Config imports
+import { API_URL } from '../../config';
+
+// Library imports
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -56,7 +60,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.post(
-                    `http://localhost:8080/users/tournaments/${tournamentName}/join`,
+                    `${API_URL}/users/tournaments/${tournamentName}/join`,
                     {},
                     {
                         withCredentials: true,
@@ -92,7 +96,7 @@ const TournamentDetails = () => {
                 }
 
                 const response = await axios.delete(
-                    `http://localhost:8080/users/tournaments/leave-${tournamentName}`,
+                    `${API_URL}/users/tournaments/leave-${tournamentName}`,
                     {
                         withCredentials: true,
                         headers: {
@@ -149,7 +153,7 @@ const TournamentDetails = () => {
             }
             
             const response = await axios.get(
-                `http://localhost:8080/users/tournaments/${tournamentName}`,
+                `${API_URL}/users/tournaments/${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {
