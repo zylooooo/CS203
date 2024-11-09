@@ -132,8 +132,8 @@ function AdministratorSignUp() {
                         <div
                             key = {stepNumber}
                             className = {`font-bold text-xl flex justify-center items-center rounded-full w-10 h-10 p-6
-                                ${completedSteps.includes(stepNumber) ? "bg-primary-color-light-green border-opacity-50" : "bg-primary-color-white"}
-                                ${step === stepNumber ? "scale-125" : ""}
+                                ${completedSteps.includes(stepNumber) ? "bg-primary-color-light-green border-opacity-50" : "bg-gray-300"}
+                                ${step === stepNumber ? "scale-110" : ""}
                                 ${clickableSteps.includes(stepNumber) ? "cursor-pointer" : "cursor-default"}`}
                             onClick = {() => handleStepClick(stepNumber)}
                         >
@@ -141,7 +141,7 @@ function AdministratorSignUp() {
                         </div>
                     ))}
                 </div>
-                <div className = "card rounded-none bg-primary-color-white flex justify-center border p-10">
+                <div className = "card rounded-[12px] bg-primary-color-white flex justify-center border p-10 mb-10">
                     <form onSubmit = {handleSubmit(onSubmit)}>
                         {step === 1 && <Step1 register = {register} errors = {errors} />}
                         {step === 2 && <Step2 register = {register} errors = {errors} watch = {watch} />}
