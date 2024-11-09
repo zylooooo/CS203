@@ -1,3 +1,6 @@
+// Config imports
+import { API_URL } from '../../config';
+
 // Package Imports
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
@@ -118,7 +121,7 @@ function UserFixtures() {
             }
 
             const response = await axios.get(
-                `http://localhost:8080/users/tournaments/${tournamentName}/bracket`,
+                `${API_URL}/users/tournaments/${tournamentName}/bracket`,
                 {
                     withCredentials: true,
                     headers: {
