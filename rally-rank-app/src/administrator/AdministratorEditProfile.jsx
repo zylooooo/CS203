@@ -240,7 +240,8 @@ function AdministratorEditProfile() {
     };
 
     const onSubmit = async (formData) => {
-        setAlertMessage("");
+        setWarningMessage("");
+        setSuccessMessage("");
         const firstResponse = await checkCredentialsAvailablity(formData);
         if (firstResponse) {
             const updatedData = {
@@ -270,7 +271,6 @@ function AdministratorEditProfile() {
             } else {
                 setSuccessMessage("Successfully updated your profile!")
                 setTimeout(() => {
-                    logoutAdmin();
                     navigate("/administrator-account");
                 }, 2000);
             }
@@ -414,7 +414,7 @@ function AdministratorEditProfile() {
                 {/* BACK TO PROFILE */}
                 <button
                     onClick = {handleBackButtonClick}
-                    className = "py-2 px-4 rounded-lg border w-1/3 text-center"
+                    className = "py-2 px-4 rounded-lg border w-1/3 text-center bg-primary-color-light-green text-primary-color-white hover:bg-primary-color-green hover:text-white transition duration-300 ease-in-out"
                 >
                     Back to Profile
                 </button>
