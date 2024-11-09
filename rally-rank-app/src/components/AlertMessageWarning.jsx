@@ -17,7 +17,7 @@ const AlertMessageWarning = ({ message, onClose, duration = 3000 }) => {
         
         const timer = setTimeout(() => {
             setIsVisible(false);
-            setTimeout(onClose, 300);
+            setTimeout(onClose, 3000);
         }, duration);
 
         return () => clearTimeout(timer);
