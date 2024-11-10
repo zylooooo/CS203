@@ -103,7 +103,7 @@ function UserVerification() {
     const onResendVerificationCodeSubmit = async (formData) => {
         const response = await resendVerificationCode(formData.email);
         if (response) {
-            setSuccessMessage("Verification code has been sent to your email.")
+            setSuccessMessage("Verification code has been sent to your email!")
             setTimeout(() => {}, 2000);
             setModalOpen(false);
         }
