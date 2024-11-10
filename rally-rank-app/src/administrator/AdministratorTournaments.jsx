@@ -7,16 +7,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Assets and Components Imports
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import AlertMessageWarning from '../components/AlertMessageWarning';
 import AdministratorTournamentCard from "../components/AdministratorTournamentCard";
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
 
 function AdministratorTournaments() {
     const [hovered, setHovered] = useState(false);
-    // For Alert Messages
-    const [warningMessage, setWarningMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const [warningMessage, setWarningMessage] = useState(false);
 
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
@@ -32,7 +31,7 @@ function AdministratorTournaments() {
             setTournaments(allTournaments);
         }, 300);
         setIsTransitioning(false);
-    }
+    };
 
     const handleMyCreatedTournamentsClick = () => {
         setIsTransitioning(true);
@@ -40,11 +39,11 @@ function AdministratorTournaments() {
             setTournaments(myCreatedTournaments);
         }, 300);
         setIsTransitioning(false);
-    }
+    };
 
     const handleCreateClick = () => {
         navigate("/administrator-create-tournaments");
-    }
+    };
 
     // ----------------------- API Call: Retrieve all tournaments created -----------------------
     async function getAllTournaments() {
@@ -60,7 +59,7 @@ function AdministratorTournaments() {
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`
+                        Authorization: `Bearer ${adminData.jwtToken}`,
                     },
                 },
             );
@@ -101,7 +100,6 @@ function AdministratorTournaments() {
             setWarningMessage("Unable to retrieve your created tournaments.");
             setMyCreatedTournaments([]); 
             setTournaments([]); 
-
         }
     };
 
@@ -122,6 +120,7 @@ function AdministratorTournaments() {
 
     return (
         <div className = {`tournaments-page main-container flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
             <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
                 {/* LABELS */}
                 <AdministratorTournamentsButtons
