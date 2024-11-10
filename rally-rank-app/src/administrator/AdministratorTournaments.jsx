@@ -15,7 +15,7 @@ import AdministratorTournamentsButtons from "../components/AdministratorTourname
 
 function AdministratorTournaments() {
     const [hovered, setHovered] = useState(false);
-    const [warningMessage, setWarningMessage] = useState(false);
+    const [warningMessage, setWarningMessage] = useState("");
 
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
