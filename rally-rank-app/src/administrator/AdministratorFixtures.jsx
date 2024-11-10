@@ -26,6 +26,12 @@ import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 
 function AdministratorFixtures() {
+
+    // TODO: need to include a path back to tournament details page
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const location = useLocation();
     const navigate = useNavigate();
     const tournamentName = location.state?.tournamentName;

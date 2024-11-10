@@ -20,6 +20,12 @@ import WinnersTable from "./components/WinnersTable";
 import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
 
 function UserFixtures() {
+
+    // TODO: Add tournament name to url
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const location = useLocation();
     const tournamentName = location.state?.tournamentName;
 

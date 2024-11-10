@@ -4,6 +4,11 @@ import React, { useState, useEffect} from "react";
 
 // Component: Tournament Card (for UserTournaments)
 const TournamentCard = ({ userPastTournaments }) => {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {

@@ -133,6 +133,11 @@ const ScheduledTournamentCard = ({ scheduledTournaments, isScheduledTournament }
 };
 
 function UserHome() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
 
     // ------------------------------------- Join Tournament Functions -------------------------------------

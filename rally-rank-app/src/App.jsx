@@ -35,7 +35,7 @@ import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
+import AdministratorTournamentDetails from "./administrator/TournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
 

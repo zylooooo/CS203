@@ -10,6 +10,11 @@ import React, { useState, useEffect } from "react";
 import { FaPen } from "react-icons/fa";
 
 function UserProfile() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
     const [pastTournaments, setPastTournaments] = useState([]);
     const [userProfileInformation, setUserProfileInformation] = useState([]);

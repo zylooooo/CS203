@@ -17,6 +17,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faListCheck, faMinusCircle, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
 
 function AdministratorEditTournaments() {
+
+    // TODO: add tournament name to url path
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const tournamentName = location.state || {};

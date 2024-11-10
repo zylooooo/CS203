@@ -33,7 +33,8 @@ function UserLogin() {
     // Used for persistent pages. Will redirect the user back to homepage upon reload of page
     useEffect(() => {
         if (isUserLoggedIn) {
-            navigate("/users/home")
+            const currUrl = localStorage.getItem("currUrl");
+            navigate(currUrl); 
         }
     }, [navigate, isUserLoggedIn])
 

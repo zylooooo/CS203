@@ -15,6 +15,11 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 const AdministratorTournamentDetails = () => {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const { tournamentName } = useParams();

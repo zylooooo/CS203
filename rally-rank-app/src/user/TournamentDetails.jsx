@@ -10,6 +10,12 @@ import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, fa
 
 // Component: Tournament Details Card
 const TournamentDetails = () => {
+
+    // TODO: doesn't work because state is lost on refresh
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const [isFull, setIsFull] = useState(false);
