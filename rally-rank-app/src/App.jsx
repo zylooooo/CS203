@@ -14,7 +14,7 @@ import MainHomepage from "./public/MainHomepage";
 // User Imports
 import UserHome from "./user/UserHome";
 import UserLogin from "./user/UserLogin";
-import UserVerify from "./user/UserVerify";
+import UserVerification from "./user/UserVerification";
 import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
 import UserEditProfile from "./user/UserEditProfile";
@@ -106,7 +106,7 @@ function App() {
                         path = "/auth/user-verification"
                         element = {
                             <MainLayout>
-                                <UserVerify />
+                                <UserVerification />
                             </MainLayout>
                         }
                     />
