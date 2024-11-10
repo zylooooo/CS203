@@ -1,4 +1,4 @@
-// Config imports
+// Configuration Imports
 import { API_URL } from '../../config';
 
 // Package Imports
@@ -14,38 +14,53 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // Authentication Imports
 import { useAuth } from "../authentication/AuthContext";
 
-import DeleteAccountCard from "./DeleteAccountCard";
+// Assets and Components Imports
+import ConfirmationPopUp from '../components/ConfirmationPopUp';
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import AlertMessageWarning from "../components/AlertMessageWarning";
 
 function UserEditProfile() {
     const navigate = useNavigate();
     const { logoutUser } = useAuth();
-    const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
-    // Constants to store the value of the original data
+    // Consts: Store the original data
     const [originalEmail, setOriginalEmail] = useState("");
     const [originalUsername, setOriginalUsername] = useState("");
     const [originalUserData, setOriginalUserData] = useState({});
 
-    // Constants to check or set the boolean value of any changes made to the email or username
+    // Consts: Check to see if important fields are changed
     const [isEmailChanged, setIsEmailChanged] = useState(false);
-    const [isUsernameChanged, setIsUsernameChanged] = useState(false);
     const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+    const [isUsernameChanged, setIsUsernameChanged] = useState(false);
 
-    // Constants to store the warning or success alert messages
-    // const [warningAlertMessage, setWarningAlertMessage] = useState("");
-    // const [successAlertMessage, setSuccessAlertMessage] = useState("");
+    // For Alert Messages
+    const [warningMessage, setWarningMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
-    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+    // For Confirmation Popup
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
 
-    const handleDeleteButtonClick = () => {
-        setShowDeleteAccountCard(true);
-    }
+    const handleDeleteAccount = () => {
+        setShowConfirmationPopUp(true);
+    };
+
+    const handleDeleteAccountConfirmation = async () => {
+        const result = await deleteUserProfile();
+        if (result) {
+            setSuccessMessage("Your profile has been deleted successfully! You will now be redirected out of RallyRank...");
+            setTimeout(() => {
+                logoutUser();
+                navigate("/auth/user-login");
+            }, 2000);
+            setShowConfirmationPopUp(false);
+        }
+    };
 
     const handleBackButtonClick = () => {
         navigate("/user/profile");
-    }
+    };
 
     const handleChange = () => {
         const formValues = getValues();
@@ -68,6 +83,40 @@ function UserEditProfile() {
     const handlePasswordChange = () => {
         handleChange();
         setIsPasswordChanged(true);
+    };
+
+    // Function to capitalize the first letter (for first name or last name)
+    const capitalizeFirstLetter = (name) => name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : "";
+
+    // ----------------------- API Call: Deleting the user's profile -----------------------
+    async function deleteUserProfile() {
+        try {
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData || !userData.jwtToken) {
+                console.error("No JWT Token found!");
+                return;
+            }
+
+            const response = await axios.delete(
+                `${API_URL}/users/profile`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`,
+                    },
+                },
+            );
+
+            if (response.status === 204) {
+                return true;
+            } else {
+                alert("Error deleteing account.");
+            }
+
+        } catch (error) {
+            setWarningMessage("Unable to delete your account. Please reload the page and try again.");
+            console.error("Error deleting user profile: ", error);
+        }
     };
 
     // ----------------------- API Call: Checking the availability of username and email address -----------------------
@@ -95,24 +144,21 @@ function UserEditProfile() {
                 return true;
             } else {
                 if (isUsernameChanged && isEmailChanged && !response.data.accountNameAvailable && !response.data.emailAvailable) {
-                    setAlertMessage("Both username and email address entered has already been taken.");
+                    setWarningMessage("Both username and email address entered has already been taken.");
                 }
                 else if (isUsernameChanged && !response.data.accountNameAvailable) {
-                    setAlertMessage("Username taken. Enter another one.");
+                    setWarningMessage("Username taken. Enter another one.");
                 }
                 else if (isEmailChanged && !response.data.emailAvailable) {
-                    setAlertMessage("Email address already in use. Please enter another one.");
+                    setWarningMessage("Email address already in use. Please enter another one.");
                 }
                 return false;
             }
         } catch (error) {
-            alert("catch error");
+            setWarningMessage("Unable to check credentials. Please reload the page and try again.");
             console.error("Error checking credentials:", error);
-            if (error.response) {
-                console.log(error.response.data.error);
-            }
         }
-    }
+    };
 
     // ----------------------- API Call: Retrieving the user's profile data -----------------------
     const fetchUserProfileData = async () => {
@@ -129,7 +175,7 @@ function UserEditProfile() {
                     headers: {
                         Authorization: `Bearer ${userData.jwtToken}`,
                     },
-                }
+                },
             );
             if (response.status === 200) {
                 setOriginalUserData(response.data);
@@ -142,7 +188,7 @@ function UserEditProfile() {
                 }
             }
         } catch (error) {
-            alert("Catch error");
+            setWarningMessage("Unable to fetch your profile information. Please reload the page and try again.");
             console.error("Error fetching user profile data: ", error);
             setOriginalUserData(null);
         }
@@ -166,8 +212,8 @@ function UserEditProfile() {
                 {
                     username: formData.username || originalUserData.username,
                     email: formData.email || originalUserData.email,
-                    firstName: formData.firstName || originalUserData.firstName,
-                    lastName: formData.lastName || originalUserData.lastName,
+                    firstName: capitalizeFirstLetter(formData.firstName) || originalUserData.firstName,
+                    lastName: capitalizeFirstLetter(formData.lastName) || originalUserData.lastName,
                     phoneNumber: formData.phoneNumber || originalUserData.phoneNumber,
                     dateOfBirth: formData.dateOfBirth || originalUserData.dateOfBirth,
                     gender: formData.gender || originalUserData.gender,
@@ -186,39 +232,55 @@ function UserEditProfile() {
                 return response.data;
             }
         } catch (error) {
-            alert("Catch error");
+            setWarningMessage("Unable to update details. Please reload the page and try again.");
             console.error("Error updating user profile: ", error.response.data.error);
-            setError(error.response?.data?.error || "An error occured while updating profile.");
         }
     };
 
     const onSubmit = async(formData) => {
+        setWarningMessage("");
+        setSuccessMessage("");
         const firstResponse = await checkCredentialsAvailability(formData);
         if (firstResponse) {
             const updatedData = {
                 username: formData.username || originalUserData.username,
                 email: formData.email || originalUserData.email,
-                firstName: formData.firstName || originalUserData.firstName,
-                lastName: formData.lastName || originalUserData.lastName,
+                firstName: capitalizeFirstLetter(formData.firstName) || originalUserData.firstName,
+                lastName: capitalizeFirstLetter(formData.lastName) || originalUserData.lastName,
                 phoneNumber: formData.phoneNumber || originalUserData.phoneNumber,
                 dateOfBirth: formData.dateOfBirth || originalUserData.dateOfBirth,
                 gender: formData.gender || originalUserData.gender,
                 password: formData.password || originalUserData.password,
             };
             await updateUserProfile(updatedData);
-            if (isUsernameChanged || isPasswordChanged || isEmailChanged) {
-                setIsEmailChanged(false);
+            if (isUsernameChanged) {
                 setIsUsernameChanged(false);
+                setSuccessMessage("Username successfully updated! Redirecting you to RallyRank's login page...");
+            } else if (isPasswordChanged) {
                 setIsPasswordChanged(false);
-                logoutUser();
-                navigate("/auth/user-login");
+                setSuccessMessage("Password successfully updated! Redirecting you to RallyRank's login page...");
+            } else if (isEmailChanged) {
+                setIsEmailChanged(false);
+                setSuccessMessage("Email address successfully updated! Redirecting you to RallyRank's login page...");
             }
-            navigate("/user/profile");
+            if (isUsernameChanged || isPasswordChanged || isEmailChanged) {
+                setTimeout(() => {
+                    logoutUser();
+                    navigate("/auth/user-login");
+                }, 2000);
+            } else {
+                setSuccessMessage("Successfully updated your profile!")
+                setTimeout(() => {
+                    navigate("/user/profile");
+                }, 2000);
+            }
         }
     };
 
     return (
         <div className = "edit-profile-information p-6 rounded-lg w-3/5 mx-auto my-5 ">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
@@ -278,8 +340,29 @@ function UserEditProfile() {
                             placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("password", { onChange: handlePasswordChange })}
+                            {...register("password", {
+                                onChange: handlePasswordChange,
+                                ...(isPasswordChanged && {
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
+                                    },
+                                    validate: {
+                                        alphanumeric: (value) =>
+                                            /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                                        uppercase: (value) =>
+                                            /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                                        lowercase: (value) =>
+                                            /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                                        symbol: (value) =>
+                                            /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                                    },
+                                }),
+                            })}
                         />
+                        {errors.password && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.password.message} </p>
+                        )}
                     </div>
                     {/* EMAIL ADDRESS */}
                     <div className = "mt-5 mb-3">
@@ -425,21 +508,26 @@ function UserEditProfile() {
                 </div>
             </form>
             {/* BACK TO PROFILE */}
-            <div className = "flex justify-between mt-4">
+            <div className = "flex justify-between mt-6">
                 <button
                     onClick = {handleBackButtonClick}
-                    className = "py-2 px-4 rounded-lg border w-1/3"
+                    className = "py-2 px-4 rounded-lg border w-1/3 text-center bg-primary-color-light-green text-primary-color-white hover:bg-primary-color-green hover:text-white transition duration-300 ease-in-out"
                 >
                     Back to Profile
                 </button>
                 <button
-                    onClick = {handleDeleteButtonClick}
-                    className = "py-2 px-4 rounded-lg border w-1/3 bg-secondary-color-red hover:bg-red-500 text-white"
+                    className = "bg-secondary-color-red hover:bg-red-600 font-semibold py-2 px-4 rounded-lg shadow-md w-1/3 text-white hover:shadow-md transition duration-300 ease-in-out text-center"
+                    onClick = {handleDeleteAccount}
                 >
                     Delete Account
                 </button>
-
-                {showDeleteAccountCard && <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard} />}
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        message = "Do you want to delete your RallyRank account? This action is irreversible!"
+                        onConfirm = {handleDeleteAccountConfirmation}
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                    />
+                )}
             </div>
         </div>
     );

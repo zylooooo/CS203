@@ -14,12 +14,11 @@ import MainHomepage from "./public/MainHomepage";
 // User Imports
 import UserHome from "./user/UserHome";
 import UserLogin from "./user/UserLogin";
-import UserVerify from "./user/UserVerify";
+import UserVerification from "./user/UserVerification";
 import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
 import UserEditProfile from "./user/UserEditProfile";
 import UserTournaments from "./user/UserTournaments";
-import OtherUserProfile from "./user/OtherUserProfile";
 import TournamentDetails from "./user/TournamentDetails";
 import UserPastTournaments from "./user/UserPastTournaments";
 import UserFixtures from "./user/UserFixtures";
@@ -106,7 +105,7 @@ function App() {
                         path = "/auth/user-verification"
                         element = {
                             <MainLayout>
-                                <UserVerify />
+                                <UserVerification />
                             </MainLayout>
                         }
                     />
@@ -208,18 +207,6 @@ function App() {
                             <PrivateRoute>
                                 <MainLayout>
                                     <UserEditProfile />
-                                </MainLayout>
-                            </PrivateRoute>
-                        }
-                    />
-
-                    {/* OTHER USER'S PROFILE PAGE */}
-                    <Route
-                        path = "/user-profile/1"
-                        element = {
-                            <PrivateRoute>
-                                <MainLayout>
-                                    <OtherUserProfile />
                                 </MainLayout>
                             </PrivateRoute>
                         }

@@ -1,5 +1,3 @@
-// Administrator Fixtures
-
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faTrophy } from '@fortawesome/free-solid-svg-icons';

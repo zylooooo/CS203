@@ -64,7 +64,7 @@ const Step1 = ({ register, errors }) => (
                         })}
                     />
                 </div>
-                    <p className = "error"> {errors.email?.message} </p>
+                <p className = "error"> {errors.email?.message} </p>
             </div>
             {/* ADMINNAME INPUT */}
             <div className = "flex flex-col gap-2">

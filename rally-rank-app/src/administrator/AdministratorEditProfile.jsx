@@ -197,12 +197,12 @@ function AdministratorEditProfile() {
         }
     };
 
-    // ------------------------------------- useEffect() -------------------------------------
+    // ----------------------- useEffect() -----------------------
     useEffect(() => {
         fetchAdminProfile();
     }, []);
 
-    // ----------------------- API Call: Updating user's edited data -----------------------
+    // ----------------------- API Call: Updating administrator's edited profile information -----------------------
     async function updateAdminProfile(formData) {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
@@ -325,7 +325,7 @@ function AdministratorEditProfile() {
                                 onChange: handleAdminNameChange,
                                 pattern: {
                                     value: /^[a-zA-Z0-9_]*$/,
-                                    message: "Admin username can only contain letters, numbers, and underscores."
+                                    message: "Username can only contain letters, numbers, and underscores."
                                 }
                             })}
                         />

@@ -30,8 +30,7 @@ function AdministratorLogin() {
             const currUrl = localStorage.getItem("currUrl");
             navigate(currUrl);  
         }
-    }, [navigate, isAdminLoggedIn])
-
+    }, [navigate, isAdminLoggedIn]);
 
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");

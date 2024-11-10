@@ -6,18 +6,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 // Package Imports
-import axios from "axios";
+import axios from 'axios';
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
 // Assets and Components Imports
 import rallyRankLogo from "../assets/Rally-Rank-Logo.svg";
-import background from "../assets/admin-sign-up-picture.jpg";
+import loginBackground from "../assets/login-picture.jpg";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 import AlertMessageWarning from "../components/AlertMessageWarning";
 
-function AdministratorVerification() {
+function UserVerification() {
     const form = useForm();
     const modalForm = useForm();
     const navigate = useNavigate();
@@ -28,21 +28,21 @@ function AdministratorVerification() {
     // Consts: State to manage modal visibility
     const [isModalOpen, setModalOpen] = useState(false);
     const [isResendDisabled, setResendDisabled] = useState(false);
-    
+
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // -------------------------- API Call: Verify administrator's account with OTP and username ---------------------------
-    async function verifyAdmin(adminName, verificationCode) {
+    // -------------------------- API Call: Verify user's account with OTP and username ---------------------------
+        async function verifyUser(username, verificationCode) {
         try {
             const response = await axios.post(
-                `${API_URL}/auth/admin-verification`,
+               `${API_URL}/auth/user-verification`,
                 {
-                    adminName,
-                    verificationCode,
+                    username,
+                    verificationCode
                 },
-                {
+                { 
                     withCredentials: true,
                 },
             );
@@ -54,17 +54,18 @@ function AdministratorVerification() {
         } catch (error) {
             setWarningMessage("Unable to verify credentials. Please reload and try again.");
         }
-    }
+    };
 
-    const onVerifyAdminSubmit = async (formData) => {
-        const response = await verifyAdmin(
-            formData.adminName,
+    const onVerifyUserSubmit = async (formData) => {
+        const response = await verifyUser(
+            formData.username,
             formData.verificationCode
         );
+
         if (response !== undefined) {
-            setSuccessMessage("Successfully verified! Redirecting you to RallyRank administrator login page...")
+            setSuccessMessage("Successfully verified! Redirecting you to RallyRank user login page...")
             setTimeout(() => {
-                navigate("/administrator-login");
+                navigate("/auth/user-login");
             }, 2000);
         }
     };
@@ -87,9 +88,9 @@ function AdministratorVerification() {
         } catch (error) {
             const status = error.status;
             if (status === 400) {
-                setWarningMessage("Administrator already verified!");
+                setWarningMessage("User already verified!");
             } else if (status === 404) {
-                setWarningMessage("Administrator is not found!");
+                setWarningMessage("User is not found!");
             } else if (status === 500) {
                 setWarningMessage("Internal Server Error. Please reload the page and try again.");
             }
@@ -102,7 +103,7 @@ function AdministratorVerification() {
     const onResendVerificationCodeSubmit = async (formData) => {
         const response = await resendVerificationCode(formData.email);
         if (response) {
-            setSuccessMessage("Verification code has been sent to your email.")
+            setSuccessMessage("Verification code has been sent to your email!")
             setTimeout(() => {}, 2000);
             setModalOpen(false);
         }
@@ -115,21 +116,21 @@ function AdministratorVerification() {
             {!isModalOpen && (
                 <div
                     className = "bg-cover bg-center h-main w-screen flex flex-col justify-center items-center"
-                    style = {{ backgroundImage: `url(${background})` }}
+                    style = {{ backgroundImage: `url(${loginBackground})` }}
                 >
                     <div className = "card rounded-[12px] bg-white border-none items-center mb-8">
                         <img className = "h-[60px] w-auto mb-2" src = {rallyRankLogo} alt = "RallyRank Logo" />
                         <h1 className = "font-bold text-2xl bg-special-blue">
-                            Administrator Verification
+                            User Verification
                         </h1>
                         <form
                             className = "card px-0 py-4 border-none shadow-none bg-white"
-                            onSubmit = {handleSubmit(onVerifyAdminSubmit)}
+                            onSubmit = {handleSubmit(onVerifyUserSubmit)}
                             noValidate
                         >
                             <div>
                                 <label
-                                    htmlFor = "adminName"
+                                    htmlFor = "username"
                                     className = "block text-sm font-medium text-gray-700 mb-2"
                                 >
                                 </label>
@@ -140,14 +141,14 @@ function AdministratorVerification() {
                                         borderBottomWidth: "1.5px",
                                     }}
                                     type = "text"
-                                    id = "adminName"
-                                    placeholder = "Administrator Username"
-                                    {...register("adminName", {
-                                        required: "Administrator Username is required!",
+                                    id = "username"
+                                    placeholder = "Username"
+                                    {...register("username", {
+                                        required: "Username is required!",
                                     })}
                                 />
                                 <p className = "error">
-                                    {errors.adminName?.message}
+                                    {errors.username?.message}
                                 </p>
                             </div>
 
@@ -193,7 +194,7 @@ function AdministratorVerification() {
                         <div className = "text-md flex flex-row justify-center align-item font-semibold">
                             Already verified?
                             <Link
-                                to = "/administrator-login"
+                                to = "/auth/user-login"
                                 className = "hover:text-primary-color-light-green font-bold underline pl-2 text-secondary-color-dark-green"
                             >
                                 Log in here!
@@ -257,6 +258,6 @@ function AdministratorVerification() {
             )}
         </>
     );
-};
+}
 
-export default AdministratorVerification;
+export default UserVerification;

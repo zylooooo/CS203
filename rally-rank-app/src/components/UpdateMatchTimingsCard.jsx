@@ -1,4 +1,5 @@
-// Used In: AdministratorFixtures.jsx
+// Configuration imports
+import { API_URL } from '../../config';
 
 // Package Imports
 import axios from "axios";
@@ -9,14 +10,18 @@ import { useForm } from "react-hook-form";
 import ConfirmationPopUp from "./ConfirmationPopUp";
 
 // Components and Assets Imports
-import AlertMessageSuccess from "../../components/AlertMessageSuccess";
-import AlertMessageWarning from "../../components/AlertMessageWarning";
+import AlertMessageSuccess from "./AlertMessageSuccess";
+import AlertMessageWarning from "./AlertMessageWarning";
 
 const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard }) => {
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
     const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const { handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
+
+   // For Alert Messages
+   const [warningMessage, setWarningMessage] = useState("");
+   const [successMessage, setSuccessMessage] = useState("");
 
     // ----------------------- API Call: Update a specific match timing information -----------------------
     async function updateMatchTimings(formData) {
@@ -31,7 +36,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
                 startDate: formData.startDate,
             };
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
+                `${API_URL}/admins/tournaments/match`,
                 updatedMatchStartDate,
                 {
                     withCredentials: true,
@@ -42,7 +47,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
             );
             return response.data;
         } catch (error) {
-            alert("Unable to update match timings.");
+            setWarningMessage('Unable to set match timings. Please try again.');
             console.error("Error updating match timings: ", error.response);
         }
     }
@@ -57,16 +62,7 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
         clearErrors("startDate");
     };
 
-    const onUpdateMatchTimingsSubmit = async (formData) => {
-        const startDate = new Date(`${date}T${time}`);
-        const now = new Date();
-        if (startDate > now) {
-            setError("startDate", {
-                type: "manual",
-                message: "Date and time cannot be in the future.",
-            });
-            return;
-        }
+    const onUpdateMatchTimingsSubmit = async () => {
         setShowConfirmationPopUp(true);
     };
 
@@ -74,13 +70,15 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
         const startDate = new Date(`${date}T${time}`);
         const response = await updateMatchTimings({ startDate: startDate.toISOString() });
         if (response !== undefined) {
-            alert("Match timings updated successfully");
+            setSuccessMessage("Match timings set!");
             setShowUpdateMatchTimingsCard(false);
         }
     };
 
     return (
         <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "update-match-results-card-template flex flex-col gap-4 p-9 rounded-[12px] max-w-[550px] bg-primary-color-white">
                 <form onSubmit = {handleSubmit(onUpdateMatchTimingsSubmit)}>
                     <div className = "flex flex-col gap-6">
