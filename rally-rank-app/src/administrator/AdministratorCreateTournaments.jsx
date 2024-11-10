@@ -122,6 +122,6 @@ function AdministratorCreateTournaments() {
             </div>
         </>
     );
-}
+};
 
 export default AdministratorCreateTournaments;

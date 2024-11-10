@@ -297,7 +297,7 @@ function AdministratorEditTournaments() {
     }, []);
 
     return (
-        <div className = "mt-5 edit-profile-information p-6 shadow-xl rounded-lg w-3/5 mx-auto mb-10">
+        <div className = "mt-5 edit-profile-information p-6 shadow-2xl rounded-[12px] w-3/5 mx-auto mb-10">
             <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
@@ -332,29 +332,20 @@ function AdministratorEditTournaments() {
                         type = "text"
                         id = "tournamentName"
                         placeholder =   {originalTournamentInformation.tournamentName || ""}
-                        className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
+                        className = "block w-full rounded-[12px] p-3 text-md font-semibold"
                         style = {{ backgroundColor: "#EBEBEB" }}
-                        {...register("tournamentName", { onChange: handleChange })}
+                        {...register("tournamentName", {
+                            onChange: handleChange,
+                            pattern: {
+                                value: /^[^/@#$%^&*()_+=[\]{};'"\\|,.<>?`~]*$/,
+                                message: "Special characters and leading or trailing whitespaces are not allowed"
+                            }
+                        })}
                     />
-                </div>
-                {/* START DATE */}
-                <div>
-                    <label
-                        htmlFor = "startDate"
-                        className = "block text-lg font-medium text-gray-700 ml-1 mb-2"
-                    >
-                        Tournament Start Date
-                    </label>
-                    <input
-                        type = "date"
-                        id = "startDate"
-                        className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
-                        style = {{ backgroundColor: "#EBEBEB" }}
-                        {...register("startDate", { onChange: handleChange })}
-                    />
+                    <p className = "error mt-2 ml-2"> {errors.tournamentName?.message} </p>
                 </div>
                 {/* LOCATION */}
-                <div>
+                <div className = "mt-6">
                     <label
                         htmlFor = "location"
                         className = "block text-lg font-medium text-gray-700 ml-1 mb-2"
@@ -369,6 +360,41 @@ function AdministratorEditTournaments() {
                         style = {{ backgroundColor: "#EBEBEB" }}
                         {...register("location", { onChange: handleChange })}
                     />
+                </div>
+                <div className = "flex flex-row gap-6 mb-1 mt-2 w-full">
+                    {/* START DATE */}
+                    <div className = "flex flex-col gap-1 w-1/2">
+                        <label
+                            htmlFor = "startDate"
+                            className = "block text-lg font-medium text-gray-700"
+                        >
+                            Tournament Start Date
+                        </label>
+                        <input
+                            type = "date"
+                            id = "startDate"
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
+                            style = {{ backgroundColor: "#EBEBEB" }}
+                            {...register("startDate", { onChange: handleChange })}
+                        />
+                    </div>
+                    {/* PLAYER CAPACITY */}
+                    <div className = "flex flex-col gap-1 w-1/2">
+                        <label
+                            htmlFor = "playerCapacity"
+                            className = "block text-lg font-medium text-gray-700"
+                        >
+                            Player Capacity
+                        </label>
+                        <input
+                            type = "number"
+                            id = "playerCapacity"
+                            placeholder = {originalTournamentInformation.playerCapacity || ""}
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
+                            style = {{ backgroundColor: "#EBEBEB" }}
+                            {...register("playerCapacity", { onChange: handleChange })}
+                        />
+                    </div>
                 </div>
                 {/* ELO RATINGS */}
                 <div className = "flex gap-8 mb-8">
@@ -463,23 +489,6 @@ function AdministratorEditTournaments() {
                         className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
                         style = {{ backgroundColor: "#EBEBEB" }}
                         {...register("remarks", { onChange: handleChange })}
-                    />
-                </div>
-                {/* PLAYER CAPACITY */}
-                <div>
-                    <label
-                        htmlFor = "playerCapacity"
-                        className = "block text-lg font-medium text-gray-700 ml-1 mb-2"
-                    >
-                        Player Capacity
-                    </label>
-                    <input
-                        type = "number"
-                        id = "playerCapacity"
-                        placeholder = {originalTournamentInformation.playerCapacity || ""}
-                        className = "block w-full rounded-[12px] p-3 text-md font-semibold mb-8"
-                        style = {{ backgroundColor: "#EBEBEB" }}
-                        {...register("playerCapacity", { onChange: handleChange })}
                     />
                 </div>
             </form>
