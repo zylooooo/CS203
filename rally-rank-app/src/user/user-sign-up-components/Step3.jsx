@@ -1,23 +1,22 @@
-import PropTypes from "prop-types";
+// Package Imports
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const Step3 = ({ register, errors, watch }) => {
-
     const password = watch("password");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setConfirmShowPassword] = useState(false);
 
     return (
         <div>
-            <h2 className = "text-xl font-extrabold"> Account Setup </h2>
-            <p> Last stage of your account registration! Please enter a username and password. </p>
+            <h2 className = "text-2xl font-bold mb-1"> Create Password </h2>
+            <p className = "text-sm font-semibold"> Last step of your RallyRank Administrator account registration! </p>
             <div className = "flex flex-col gap-5 mt-8">
-
                 {/* PASSWORD */}
-                <div className = "flex flex-col gap-2">
+                <div className = "flex flex-col">
                     <label
                         htmlFor = "password"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-md font-bold text-gray-700 mb-2"
                     >
                         Password
                     </label>
@@ -25,40 +24,43 @@ const Step3 = ({ register, errors, watch }) => {
                         className = "border p-2"
                         type = {showPassword ? "text" : "password"}
                         id = "password"
-                        placeholder = "Enter your password"
+                        placeholder = "Enter a password"
                         {...register("password", {
                             required: "A password is required.",
                             minLength: {
                                 value: 8,
                                 message: "Password must be at least 8 characters long.",
                             },
-                            // validate: {
-                            //     alphanumeric: value => /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
-                            //     uppercase: value => /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
-                            //     lowercase: value => /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
-                            //     symbol: value => /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
-                            // },
+                            validate: {
+                                alphanumeric: value => /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                                uppercase: value => /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                                lowercase: value => /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                                symbol: value => /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                            },
                         })}
                     />
                     <p className = "error"> {errors.password?.message} </p>
-                    <div className = "block text-sm font-normal text-gray-700 pl-3">
+                    <div className = "block text-sm font-normal text-gray-700 pl-3 mt-2">
                         <input
-                        type = "checkbox"
-                        id = "showPassword"
-                        checked = {showPassword}
-                        onChange = {() => setShowPassword(!showPassword)}
-                        />
-                        <label 
-                            htmlFor = "showPassword"> Show Password 
+                            type = "checkbox"
+                            id = "showPassword"
+                            checked = {showPassword}
+                            className="transform scale-110"
+                            onChange = {() => setShowPassword(!showPassword)}
+                            />
+                        <label
+                            className = "text-sm font-semibold ml-2"
+                            htmlFor = "showPassword"
+                        >
+                            Show Password
                         </label>
                     </div>
                 </div>
-
                 {/* CONFIRM PASSWORD */}
-                <div className = "flex flex-col gap-2">
+                <div className = "flex flex-col mt-2">
                     <label
                         htmlFor = "confirmPassword"
-                        className = "block text-sm font-medium text-gray-700"
+                        className = "block text-md font-bold text-gray-700 mb-2"
                     >
                         Confirm Password
                     </label>
@@ -74,15 +76,19 @@ const Step3 = ({ register, errors, watch }) => {
                         })}
                     />
                     <p className = "error"> {errors.confirmPassword?.message} </p>
-                <div className = "block text-sm font-normal text-gray-700 pl-3">
+                    <div className = "block text-sm font-normal text-gray-700 pl-3 mt-2">
                         <input
-                        type = "checkbox"
-                        id = "showConfirmPassword"
-                        checked = {showConfirmPassword}
-                        onChange = {() => setConfirmShowPassword(!showConfirmPassword)}
+                            type = "checkbox"
+                            id = "showConfirmPassword"
+                            checked = {showConfirmPassword}
+                            className="transform scale-110"
+                            onChange = {() => setConfirmShowPassword(!showConfirmPassword)}
                         />
                         <label 
-                            htmlFor = "showConfirmPassword"> Show Password 
+                            htmlFor = "showConfirmPassword"
+                            className = "text-sm font-semibold ml-2"
+                        >
+                            Show Password 
                         </label>
                     </div>
                 </div>
