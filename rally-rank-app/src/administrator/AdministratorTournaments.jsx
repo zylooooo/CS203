@@ -141,7 +141,7 @@ function AdministratorTournaments() {
                     {tournaments.length > 0 ? (
                         <AdministratorTournamentCard tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator}/>
                     ) : (
-                        <p className = "text-emerald-700 text-md font-semibold">
+                        <p className = "text-secondary-color-dark-green text-md font-semibold">
                             No tournaments found. Create a new tournament today!
                         </p>
                     )}

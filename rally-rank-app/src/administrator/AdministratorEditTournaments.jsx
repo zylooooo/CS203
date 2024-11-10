@@ -297,7 +297,7 @@ function AdministratorEditTournaments() {
     }, []);
 
     return (
-        <div className = "mt-5 edit-profile-information p-6 shadow-2xl rounded-[12px] w-3/5 mx-auto mb-10">
+        <div className = "mt-5 edit-profile-information p-6 shadow-2xl rounded-[12px] w-3/5 mx-auto mb-10 card-background">
             <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
