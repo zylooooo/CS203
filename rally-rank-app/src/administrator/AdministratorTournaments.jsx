@@ -125,8 +125,8 @@ function AdministratorTournaments() {
                 {/* LABELS */}
                 <AdministratorTournamentsButtons
                     buttons = {["All Tournaments", "My Created Tournaments"]}
-                    onAllTournamentsClick = {handleAllTournamentsClick}
-                    onMyCreatedTournamentsClick = {handleMyCreatedTournamentsClick}
+                    onAllClick = {handleAllTournamentsClick}
+                    onMyClick = {handleMyCreatedTournamentsClick}
                 />
                 <div className = "flex flex-col">
                     {/* SEARCH BAR */}
