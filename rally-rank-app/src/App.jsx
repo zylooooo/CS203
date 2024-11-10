@@ -19,7 +19,6 @@ import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
 import UserEditProfile from "./user/UserEditProfile";
 import UserTournaments from "./user/UserTournaments";
-import OtherUserProfile from "./user/OtherUserProfile";
 import TournamentDetails from "./user/TournamentDetails";
 import UserPastTournaments from "./user/UserPastTournaments";
 import UserFixtures from "./user/UserFixtures";
@@ -208,18 +207,6 @@ function App() {
                             <PrivateRoute>
                                 <MainLayout>
                                     <UserEditProfile />
-                                </MainLayout>
-                            </PrivateRoute>
-                        }
-                    />
-
-                    {/* OTHER USER'S PROFILE PAGE */}
-                    <Route
-                        path = "/user-profile/1"
-                        element = {
-                            <PrivateRoute>
-                                <MainLayout>
-                                    <OtherUserProfile />
                                 </MainLayout>
                             </PrivateRoute>
                         }

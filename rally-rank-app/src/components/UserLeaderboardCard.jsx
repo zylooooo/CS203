@@ -1,15 +1,7 @@
-// Package Imports
-import { useNavigate } from "react-router-dom";
-
 // Icons Imports
 import { FaCrown, FaMedal } from "react-icons/fa";
 
 const UserLeaderboardCard = ({ leaderboardPlayer, rank }) => {
-    const navigate = useNavigate();
-
-    const handleLeaderboardPlayerCardClick = () => {
-        navigate("/other-user-profile", { state : { player: leaderboardPlayer } });
-    };
 
     const getRankIcon = (rank) => {
         switch(rank) {
@@ -26,8 +18,7 @@ const UserLeaderboardCard = ({ leaderboardPlayer, rank }) => {
 
     return (
         <div
-            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-[1.02] hover:shadow-xl w-full h-2/5" 
-            onClick = {handleLeaderboardPlayerCardClick}
+            className = "leaderboard-card bg-white shadow-lg rounded-lg p-4 flex justify-between items-center transition-transform transform hover:scale-[1.02] hover:shadow-xl w-full h-2/5"
         >
             <div>
                 <h3 className = "text-lg font-bold mb-2"> {leaderboardPlayer.firstName} {leaderboardPlayer.lastName} </h3>
