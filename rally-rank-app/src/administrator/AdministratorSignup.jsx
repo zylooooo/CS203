@@ -6,12 +6,12 @@ import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Step1, Step2 } from "./administrator-sign-up-components/SignUpSteps";
 
 // Assets and Components Imports
 import signupPicture from "../assets/admin-sign-up-picture.jpg";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 import AlertMessageWarning from "../components/AlertMessageWarning";
+import { Step1, Step2 } from "./administrator-sign-up-components/SignUpSteps";
 
 
 function AdministratorSignUp() {
@@ -44,7 +44,7 @@ function AdministratorSignUp() {
             setStep(stepNumber);
         }
     };
-
+    // -------------------------- API Call: Check availability of credentials ---------------------------
     async function checkCredentialsAvailablity(formData) {
         try {
             const response = await axios.get(
