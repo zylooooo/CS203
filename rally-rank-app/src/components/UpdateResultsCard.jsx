@@ -1,4 +1,5 @@
-// Used In: AdministratorFixtures.jsx
+// Configuration imports
+import { API_URL } from '../../config';
 
 // Package Imports
 import axios from 'axios';
@@ -6,8 +7,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 // Assets and Components Imports
-import AlertMessageSuccess from '../../components/AlertMessageSuccess';
-import AlertMessageWarning from '../../components/AlertMessageWarning';
+import AlertMessageSuccess from './AlertMessageSuccess';
+import AlertMessageWarning from './AlertMessageWarning';
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,6 +23,10 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const [storedFormData, setStoredFormData] = useState(null);
     const { register, handleSubmit, formState: { errors }} = useForm();
     const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
+
+    // For Alerts
+    const [successMessage, setSuccessMessage] = useState("");
+    const [warningMessage, setWarningMessage] = useState("");
 
     const player1 = matchDetails.players[0];
     const player2 = matchDetails.players[1];
@@ -75,7 +80,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
             };
 
             const response = await axios.put(
-                "http://localhost:8080/admins/tournaments/match",
+                `${API_URL}/admins/tournaments/match`,
                 updatedMatchDetails,
                 {
                     withCredentials: true,
@@ -87,7 +92,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
             return response.data;
 
         } catch (error) {
-            alert("Unable to update match results.");
+            setWarningMessage("Unable to update match results. Please try again.");
             console.error("Error updating match results: ", error.response.data.error);
         }
     };
@@ -101,7 +106,7 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
         if (storedFormData) {
             const response = await updateMatchResults(storedFormData);
             if (response !== undefined) {
-                alert("Match details updated successfully");
+                setSuccessMessage("Match results updated successfully!");
                 setShowUpdateResultsCard(false);
             }
             setShowConfirmationPopUp(false);
@@ -127,6 +132,8 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
 
     return (
         <div className = "main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "update-match-results-card-template flex flex-col gap-4 p-8 rounded-[12px] w-2/5 bg-primary-color-white max-h-[80vh] overflow-y-auto">
                 <form onSubmit = {handleSubmit(onUpdateMatchDetailsSubmit)}>
                     <div className = "flex justify-between items-center mb-8">

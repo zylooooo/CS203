@@ -15,7 +15,7 @@ import UpdateMatchTimingsCard from '../components/UpdateMatchTimingsCard';
 import PreliminaryPlayersTable from '../components/PreliminaryPlayersTable';
 
 // Assets and Components Imports
-import ConfirmationPopUp from "./components/ConfirmationPopUp";
+import ConfirmationPopUp from "../components/ConfirmationPopUp";
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 

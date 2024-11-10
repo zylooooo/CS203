@@ -1,5 +1,3 @@
-// Used In: Administrator Fixtures.jsx
-
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrophy, faEye } from '@fortawesome/free-solid-svg-icons';
