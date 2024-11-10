@@ -1,4 +1,4 @@
-// Config imports
+// Configuration Imports
 import { API_URL } from '../../config';
 
 // Package Imports

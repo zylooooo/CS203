@@ -29,8 +29,7 @@ function AdministratorLogin() {
         if (isAdminLoggedIn) {
             navigate("/administrator-tournaments")
         }
-    }, [navigate, isAdminLoggedIn])
-
+    }, [navigate, isAdminLoggedIn]);
 
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");
