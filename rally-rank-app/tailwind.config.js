@@ -13,6 +13,21 @@ export default {
                 "secondary-color-red": "#FF6961",
                 "text-grey": "#242424",
             },
+
+            keyframes: {
+                dropDown: {
+                    '0%': { transform: 'translateY(-100%)', opacity: '0' },
+                    '100%': { transform: 'translateY(0)', opacity: '1' },
+                },
+                riseUp: {
+                    '0%': { transform: 'translateY(100%)', opacity: '0' },
+                    '100%': { transform: 'translateY(0)', opacity: '1' },
+                }
+            },
+            animation: {
+                dropDown: 'dropDown 1s ease-out forwards',
+                riseUp: 'riseUp 2s ease-out forwards',
+            },
         },
     },
     plugins: [],

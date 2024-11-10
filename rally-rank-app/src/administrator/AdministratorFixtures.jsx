@@ -25,7 +25,6 @@ import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 import React from 'react';
 
-
 function AdministratorFixtures() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -63,8 +62,13 @@ function AdministratorFixtures() {
     // Consts to hold updating match-related data
     const [currentMatch, setCurrentMatch] = useState({});
     const [showMatchResultsCard, setShowMatchResultsCard] = useState(false);
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
+
+    // For Alert Messages
+    const [warningMessage, setWarningMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     // Function: Format Date for easy readability
     const formatDate = (dateString) => {
@@ -102,6 +106,14 @@ function AdministratorFixtures() {
             mainFixturesRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
+
+    const handleEndTournament = () => {
+        setShowConfirmationPopUp(true);
+    }
+
+    const handleFinalConfirmation = async () => {
+        await updateTournamentEndDate();
+    }
 
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
@@ -213,16 +225,6 @@ function AdministratorFixtures() {
         getTournamentBracket();
     }, []);
 
-
-    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
-    const handleEndTournament = () => {
-        setShowConfirmationPopUp(true);
-    }
-
-    const handleFinalConfirmation = async () => {
-        await updateTournamentEndDate();
-    }
-
     // ----------------------- API Call: Update Tournament End Date -----------------------
     async function updateTournamentEndDate() {
         try {
@@ -258,6 +260,8 @@ function AdministratorFixtures() {
 
     return (
         <>
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "administrator-fixtures flex flex-row gap-8 p-9">
                 <div className = "w-full">
                     <button
@@ -369,7 +373,6 @@ function AdministratorFixtures() {
                         Stop Tournament
                     </button>
                 )}
-
                 {showConfirmationPopUp && (
                     <ConfirmationPopUp
                         message = "Do you want to confirm the end of the tournament?"

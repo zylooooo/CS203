@@ -1,5 +1,8 @@
-// Config imports
+// Configuration imports
 import { API_URL } from '../../config';
+
+// Authentication Imports
+import { useAuth } from "../authentication/AuthContext";
 
 // Package Imports
 import axios from "axios";
@@ -12,37 +15,51 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Assets and Components Imports
+import ConfirmationPopUp from '../components/ConfirmationPopUp';
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
 import AlertMessageWarning from "../components/AlertMessageWarning";
-import DeleteAccountCard from "./components/DeleteAccountCard";
-
-// Authentication Imports
-import { useAuth } from "../authentication/AuthContext";
 
 function AdministratorEditProfile() {
     const navigate = useNavigate();
     const { logoutAdmin } = useAuth();
-    const [error, setError] = useState(null);
     const [isChanged, setIsChanged] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm();
 
+    // Consts: Store the original data
     const [originalEmail, setOriginalEmail] = useState("");
     const [originalAdminName, setOriginalAdminName] = useState("");
     const [originalAdminData, setOriginalAdminData] = useState({});
 
+    // Consts: Check to see if important fields are changed
     const [isEmailChanged, setIsEmailChanged] = useState(false);
     const [isPasswordChanged, setIsPasswordChanged] = useState(false);
     const [isAdminNameChanged, setIsAdminNameChanged] = useState(false);
 
-    const [alertMessage, setAlertMessage] = useState("");
+    // For Alert Messages
+    const [warningMessage, setWarningMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
-    const [showDeleteAccountCard, setShowDeleteAccountCard] = useState(false);
+    // For Confirmation Popup
+    const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
 
-    const handleDeleteClick = () => {
-        setShowDeleteAccountCard(true);
-    };
-    
     const handleBackButtonClick = () => {
         navigate("/administrator-account");
+    };
+
+    const handleDeleteAccount = () => {
+        setShowConfirmationPopUp(true);
+    };
+
+    const handleDeleteAccountConfirmation = async () => {
+        const result = await deleteAdminProfile();
+        if (result) {
+            setSuccessMessage("Your profile has been deleted successfully! You will now be redirected out of RallyRank...");
+            setTimeout(() => {
+                logoutAdmin();
+                navigate("/administrator-login");
+            }, 2000);
+            setShowConfirmationPopUp(false);
+        }
     };
 
     const handleChange = () => {
@@ -56,16 +73,48 @@ function AdministratorEditProfile() {
     const handleAdminNameChange = () => {
         handleChange();
         setIsAdminNameChanged(true);
-    }
+    };
 
     const handleEmailChange = () => {
         handleChange();
         setIsEmailChanged(true);
-    }
+    };
 
     const handlePasswordChange = () => {
         handleChange();
         setIsPasswordChanged(true);
+    };
+
+    // Function to capitalize the first letter (for first name or last name)
+    const capitalizeFirstLetter = (name) => name ? name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() : "";
+
+    // -------------------------- API Call: Delete administrator's account ---------------------------
+    async function deleteAdminProfile() {
+        try {
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
+            if (!adminData || !adminData.jwtToken) {
+                console.error('No JWT token found');
+                return;
+            }
+
+            const response = await axios.delete(
+                `${API_URL}/admins/profile`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    },
+                },
+            );
+
+            if (response.status === 200) {
+                return true;
+            }
+
+        } catch (error) {
+            setWarningMessage("Unable to delete your account. Please reload the page and try again.");
+            console.error("Error deleting admin profile: ", error);
+        }
     };
 
     // ----------------------- API Call: Checking the availability of username and email address -----------------------
@@ -77,14 +126,15 @@ function AdministratorEditProfile() {
               return;
             }
             const response = await axios.get(
-            `${API_URL}/auth/credentials-availability`,
-            {
-                params: {
-                accountName: formData.adminName || originalAdminData.adminName,
-                email: formData.email || originalAdminData.email,
+                `${API_URL}/auth/credentials-availability`,
+                {
+                    params: {
+                        accountName: formData.adminName || originalAdminData.adminName,
+                        email: formData.email || originalAdminData.email,
+                    },
+                    withCredentials: true,
                 },
-                withCredentials: true,
-            });
+            );
             
             if ((response.data.accountNameAvailable && response.data.emailAvailable) ||
                 (!isAdminNameChanged && response.data.emailAvailable) ||
@@ -93,29 +143,27 @@ function AdministratorEditProfile() {
                 return true;
             } else {
                 if (isAdminNameChanged && isEmailChanged && !response.data.accountNameAvailable && !response.data.emailAvailable) {
-                    setAlertMessage("Both username and email address entered has already been taken.");
+                    setWarningMessage("Both username and email address entered has already been taken!");
                 }
                 else if (isAdminNameChanged && !response.data.accountNameAvailable) {
-                    setAlertMessage("Username taken. Enter another one.");
+                    setWarningMessage("Username taken! Please enter another one.");
                 }
                 else if (isEmailChanged && !response.data.emailAvailable) {
-                    setAlertMessage("Email address already in use. Please enter another one.");
+                    setWarningMessage("Email address already in use! Please enter another one.");
                 }
                 return false;
             }
+
         } catch (error) {
-            alert("catch error");
+            setWarningMessage("Unable to check credentials. Please reload the page and try again.");
             console.error("Error checking credentials:", error);
-            if (error.response) {
-                console.log(error.response.data.error);
-            }
         }
-    }
+    };
 
     // ----------------------- API Call: Retrieving the administrator's profile data -----------------------
     const fetchAdminProfile = async () => {
         try {
-            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
             if (!adminData || !adminData.jwtToken) {
                 console.error('No JWT token found');
                 return;
@@ -128,23 +176,22 @@ function AdministratorEditProfile() {
                     headers: {
                         Authorization: `Bearer ${adminData.jwtToken}`,
                     },
-                }
+                },
             );
 
             if (response.status === 200) {
                 setOriginalAdminData(response.data);
                 setOriginalEmail(response.data.email);
                 setOriginalAdminName(response.data.adminName);
-                console.log("admin profile: ", response.data);
-
                 for (const key in response.data) {
                     if (key !== "password") {
                         setValue(key, "");
                     }
-                }
-            }
+                };
+            };
 
         } catch (error) {
+            setWarningMessage("Unable to fetch your profile information. Please reload and try again.");
             console.error("Error fetching admin profile data: ", error.response.data.error);
             setOriginalAdminData(null);
         }
@@ -158,7 +205,7 @@ function AdministratorEditProfile() {
     // ----------------------- API Call: Updating user's edited data -----------------------
     async function updateAdminProfile(formData) {
         try {
-            const adminData = JSON.parse(localStorage.getItem('adminData'));
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
             if (!adminData || !adminData.jwtToken) {
                 console.error('No JWT token found');
                 return;
@@ -170,8 +217,8 @@ function AdministratorEditProfile() {
                     ...originalAdminData,
                     adminName: formData.adminName || originalAdminData.adminName,
                     email: formData.email || originalAdminData.email,
-                    firstName : formData.firstName || originalAdminData.firstName,
-                    lastName: formData.lastName || originalAdminData.lastName,
+                    firstName : capitalizeFirstLetter(formData.firstName) || originalAdminData.firstName,
+                    lastName: capitalizeFirstLetter(formData.lastName) || originalAdminData.lastName,
                     password: formData.password || originalAdminData.password,
 
                 },
@@ -180,82 +227,87 @@ function AdministratorEditProfile() {
                     headers: {
                         Authorization: `Bearer ${adminData.jwtToken}`,
                     },
-                }
+                },
             );
 
             if (response.status === 200) {
                 adminData.adminName = formData.adminName;
-                localStorage.setItem("adminData", JSON.stringify(adminData));     // Updates the new availability in the userData to be passed around
+                localStorage.setItem("adminData", JSON.stringify(adminData));
                 return response.data;
             }
-            
-
-            // return response.data;
 
         } catch (error) {
             console.error("Error updating admin profile: ", error.response.data.error);
-            const errorMessage = error.response?.data?.error || "An error occurred while updating the profile.";
-            setError(errorMessage);
+            setWarningMessage("Unable to update details. Please reload the page and try again.");
         }
     };
 
     const onSubmit = async (formData) => {
-        setAlertMessage("");
+        setWarningMessage("");
+        setSuccessMessage("");
         const firstResponse = await checkCredentialsAvailablity(formData);
-
-        // if new username and/or new email are available, allow admin to update profile
         if (firstResponse) {
             const updatedData = {
-                    ...originalAdminData,
-                    adminName: formData.adminName || originalAdminData.adminName,
-                    email: formData.email || originalAdminData.email,
-                    firstName : formData.firstName || originalAdminData.firstName,
-                    lastName: formData.lastName || originalAdminData.lastName,
-                    password: formData.password || originalAdminData.password,
+                ...originalAdminData,
+                adminName: formData.adminName || originalAdminData.adminName,
+                email: formData.email || originalAdminData.email,
+                firstName: capitalizeFirstLetter(formData.firstName) || originalAdminData.firstName,
+                lastName: capitalizeFirstLetter(formData.lastName) || originalAdminData.lastName,
+                password: formData.password || originalAdminData.password,
             };
-            
             await updateAdminProfile(updatedData);
-            if (isAdminNameChanged || isPasswordChanged || isEmailChanged) {
-                setIsPasswordChanged(false);
-                setIsEmailChanged(false);
+            if (isAdminNameChanged) {
                 setIsAdminNameChanged(false);
-                logoutAdmin();
-                navigate("/administrator-login");
-            } else {
-                navigate("/administrator-account");
+                setSuccessMessage("Administrator username successfully updated! Redirecting you to RallyRank's login page...");
+            } else if (isPasswordChanged) {
+                setIsPasswordChanged(false);
+                setSuccessMessage("Password successfully updated! Redirecting you to RallyRank's login page...");
+            } else if (isEmailChanged) {
+                setIsEmailChanged(false);
+                setSuccessMessage("Email address successfully updated! Redirecting you to RallyRank's login page...");
             }
-            
-
+            if (isAdminNameChanged || isPasswordChanged || isEmailChanged) {
+                setTimeout(() => {
+                    logoutAdmin();
+                    navigate("/administrator-login");
+                }, 2000);
+            } else {
+                setSuccessMessage("Successfully updated your profile!")
+                setTimeout(() => {
+                    navigate("/administrator-account");
+                }, 2000);
+            }
         }
-        
     };
 
     return (
         <div className = "mt-5 edit-profile-information p-6 rounded-lg w-3/5 mx-auto">
-            <AlertMessageWarning message = {alertMessage} onClose = {() => setAlertMessage("")} />
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
                 <FontAwesomeIcon
                     icon = {faArrowLeft}
                     onClick = {handleBackButtonClick}
-                    className = "back-icon cursor-pointer text-xl"
+                    className = "back-icon cursor-pointer text-2xl"
                 />
-                <h2 className = "text-xl font-bold mb-4 mt-3"> Edit Profile </h2>
+                <h2 className = "text-2xl font-bold mb-4 mt-3"> Edit Profile </h2>
             </div>
             <form onSubmit = {handleSubmit(onSubmit)} className = "grid grid-cols-1 gap-4">
                 {/* SAVE CHANGES BUTTON */}
                 <div className = "flex justify-end mt-4 mb-3">
                     <button
                         type = "submit"
-                        className = {`rounded-lg border w-1/3 py-2 px-4 text-md font-semibold text-white
+                        className = {`rounded-lg border w-1/4 py-2 px-4 text-md font-semibold text-white
                                     ${isChanged ? "bg-primary-color-green" : "bg-gray-300"}`}
                         disabled = {!isChanged}
                     >
                         Save Changes
                     </button>
                 </div>
+                {/* ACCOUNT INFORMATION */}
                 <div className = "p-6 shadow-lg rounded-[12px] card-background">
                     <h2 className = "text-2xl font-bold mt-2 ml-2"> Account Information </h2>
-                    {/* ADMINNAME */}
+                    {/* ADMINISTRATOR USERNAME */}
                     <div className = "mt-2">
                         <label
                             htmlFor = "adminName"
@@ -318,11 +370,33 @@ function AdministratorEditProfile() {
                             placeholder = "••••••••"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-4"
                             style = {{ backgroundColor: "#EBEBEB" }}
-                            {...register("password", { onChange: handlePasswordChange })}
+                            {...register("password", {
+                                onChange: handlePasswordChange,
+                                ...(isPasswordChanged && {
+                                    minLength: {
+                                        value: 8,
+                                        message: "Password must be at least 8 characters long.",
+                                    },
+                                    validate: {
+                                        alphanumeric: (value) =>
+                                            /^(?=.*[a-zA-Z])(?=.*[0-9])/.test(value) || "Password must be alphanumeric.",
+                                        uppercase: (value) =>
+                                            /(?=.*[A-Z])/.test(value) || "Password must contain at least one uppercase letter.",
+                                        lowercase: (value) =>
+                                            /(?=.*[a-z])/.test(value) || "Password must contain at least one lowercase letter.",
+                                        symbol: (value) =>
+                                            /(?=.*[!@#$%^&*(),.?":{}|<>])/.test(value) || "Password must contain at least one special character.",
+                                    },
+                                }),
+                            })}
                         />
+                        {errors.password && (
+                            <p className = "text-red-600 text-sm mt-2"> {errors.password.message} </p>
+                        )}
                     </div>
                 </div>
-                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background">
+                {/* PERSONAL INFORMATION */}
+                <div className = "p-6 shadow-lg rounded-[12px] mt-6 card-background mb-5">
                     <h2 className = "text-2xl font-bold mt-5 ml-2"> Personal Information </h2>
                     {/* FIRST NAME */}
                     <div className = "mt-2">
@@ -353,33 +427,34 @@ function AdministratorEditProfile() {
                             type = "text"
                             id = "lastName"
                             placeholder = {originalAdminData.lastName || ""}
-                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3"
+                            className = "block w-full rounded-[12px] p-3 text-md font-semibold mt-3 mb-5"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("lastName", { onChange: handleChange })}
                         />
                     </div>
-                    
                 </div>
             </form>
-            <div className = "flex justify-between mt-4">
+            <div className = "flex justify-between items-center mt-6">
                 {/* BACK TO PROFILE */}
                 <button
                     onClick = {handleBackButtonClick}
-                    className = "py-2 px-4 rounded-lg border w-1/3"
+                    className = "py-2 px-4 rounded-lg border w-1/3 text-center bg-primary-color-light-green text-primary-color-white hover:bg-primary-color-green hover:text-white transition duration-300 ease-in-out"
                 >
                     Back to Profile
                 </button>
-
                 {/* DELETE ACCOUNT BUTTON */}
                 <button
-                onClick = { handleDeleteClick }
-                className = " bg-secondary-color-red hover:bg-red-600 font-semibold py-2 px-4 rounded-lg shadow-md w-1/3 text-white hover:shadow-md transition duration-300 ease-in-out"
+                    className = "bg-secondary-color-red hover:bg-red-600 font-semibold py-2 px-4 rounded-lg shadow-md w-1/3 text-white hover:shadow-md transition duration-300 ease-in-out text-center"
+                    onClick = {handleDeleteAccount}
                 >
                     Delete Account
                 </button>
-
-                {showDeleteAccountCard && (
-                    <DeleteAccountCard setShowDeleteAccountCard = {setShowDeleteAccountCard}/>
+                {showConfirmationPopUp && (
+                    <ConfirmationPopUp
+                        message = "Do you want to delete your RallyRank administrator account? This action is irreversible!"
+                        onConfirm = {handleDeleteAccountConfirmation}
+                        onCancel = {() => setShowConfirmationPopUp(false)}
+                    />
                 )}
             </div>
         </div>

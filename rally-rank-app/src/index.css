@@ -57,6 +57,11 @@
         border-radius: 1rem;
     }
 
+    input::placeholder {
+        color: #808080;
+        font-weight: 600;
+    }
+
     .error {
         color: red;
     }
