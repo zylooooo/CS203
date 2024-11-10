@@ -20,10 +20,17 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 function AdministratorLogin() {
     const form = useForm();
     const navigate = useNavigate();
-    const { loginAdmin } = useAuth();
+    const { loginAdmin, isAdminLoggedIn } = useAuth();
 
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
+
+    useEffect(() => {
+        if (isAdminLoggedIn) {
+            navigate("/administrator-tournaments")
+        }
+    }, [navigate, isAdminLoggedIn])
+
 
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");
