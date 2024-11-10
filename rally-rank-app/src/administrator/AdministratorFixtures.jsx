@@ -25,7 +25,6 @@ import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 import React from 'react';
 
-
 function AdministratorFixtures() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -66,6 +65,10 @@ function AdministratorFixtures() {
     const [showConfirmationPopUp, setShowConfirmationPopUp] = useState(false);
     const [showUpdateResultsCard, setShowUpdateResultsCard] = useState(false);
     const [showUpdateMatchTimingsCard, setShowUpdateMatchTimingsCard] = useState(false);
+
+    // For Alert Messages
+    const [warningMessage, setWarningMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     // Function: Format Date for easy readability
     const formatDate = (dateString) => {
@@ -257,6 +260,8 @@ function AdministratorFixtures() {
 
     return (
         <>
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "administrator-fixtures flex flex-row gap-8 p-9">
                 <div className = "w-full">
                     <button
