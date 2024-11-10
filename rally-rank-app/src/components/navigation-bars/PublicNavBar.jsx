@@ -25,7 +25,7 @@ function PublicNavBar() {
                     
                     <div className="flex-shrink-0 flex items-center">
                         <NavLink to="/">
-                        <img className="h-10 w-auto" src="/src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
+                        <img className="h-10 w-auto" src="./public/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
                         </NavLink>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center" >
