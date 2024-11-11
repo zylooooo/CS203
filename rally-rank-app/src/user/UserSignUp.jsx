@@ -141,7 +141,7 @@ function UserSignUp() {
                     setSuccessMessage("Successfully registered! Redirecting you to the verification page...");
                     setTimeout(() => {
                         navigate("/auth/user-verification");
-                    }, 2000);
+                    }, 1500);
                 }
             }
         }

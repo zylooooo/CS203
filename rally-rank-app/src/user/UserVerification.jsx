@@ -66,7 +66,7 @@ function UserVerification() {
             setSuccessMessage("Successfully verified! Redirecting you to RallyRank user login page...")
             setTimeout(() => {
                 navigate("/auth/user-login");
-            }, 2000);
+            }, 1000);
         }
     };
 
@@ -104,7 +104,7 @@ function UserVerification() {
         const response = await resendVerificationCode(formData.email);
         if (response) {
             setSuccessMessage("Verification code has been sent to your email!")
-            setTimeout(() => {}, 2000);
+            setTimeout(() => {}, 1500);
             setModalOpen(false);
         }
     };

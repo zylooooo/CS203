@@ -11,6 +11,11 @@ import UserTournamentButtons from "../components/UserTournamentButtons";
 import UserTournamentCard from '../components/UserTournamentCard';
 
 function UserTournaments() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
     const [activeButton, setActiveButton] = useState(0);

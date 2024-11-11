@@ -12,6 +12,7 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faPen } from '@fortawesome/free-solid-svg-icons';
+import { set } from 'react-hook-form';
 
 function AdministratorProfile() {
 
@@ -20,7 +21,7 @@ function AdministratorProfile() {
     }, []);
 
     const navigate = useNavigate();
-    const [myCreatedTournaments, setMyCreatedTournaments] = useState({});
+    const [allMyTournaments, setAllMyTournaments] = useState({});
     const [administratorProfileInformation, setAdministratorProfileInformation] = useState({});
 
     // For Alert Messages
@@ -59,7 +60,7 @@ function AdministratorProfile() {
     };
 
     // ----------------------- API Call: Retrieve all tournaments created by the administrator -----------------------
-    async function getMyTournaments() {
+    async function fetchTournaments() {
         try {
             const adminData = JSON.parse(localStorage.getItem("adminData"));
             if (!adminData || !adminData.jwtToken) {
@@ -67,29 +68,42 @@ function AdministratorProfile() {
                 return;
             }
 
-            const response = await axios.get(
-                `${API_URL}/admins/tournaments/scheduled`,
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${adminData.jwtToken}`,
+            const [response1, response2] = await Promise.all([
+                axios.get(
+                    `${API_URL}/admins/tournaments/scheduled`,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${adminData.jwtToken}`,
+                        },
                     },
-                },
-            );
+                ),
+                axios.get(
+                    `${API_URL}/admins/tournaments/my-history`,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${adminData.jwtToken}`,
+                        },
+                    },
+                ),
+            ]);
 
-            setMyCreatedTournaments(response.data);
-            console.log(response.data);
+            const combinedData = [...response1.data, ...response2.data];
+            setAllMyTournaments(combinedData);
 
         } catch (error) {
-            setWarningMessage("Unable to retrieve your created tournaments.");
-            setMyCreatedTournaments([]); 
+            console.error('Error fetching tournaments:', error);
         }
     };
+
 
     // ----------------------- useEffect() -----------------------
     useEffect(() => {
         getAdminProfile();
-        getMyTournaments();
+        // getMyTournaments();
+        // getMyPastTournaments();
+        fetchTournaments();
     }, []);
 
     return (
@@ -136,9 +150,9 @@ function AdministratorProfile() {
             <div className = "container w-3/5 mx-auto mt-2 mb-10 p-6 card-background shadow-md rounded-[8px] relative">
                 <div className = "p-4">
                     <h2 className = "text-lg font-bold"> My Created Tournaments </h2>
-                    {myCreatedTournaments && myCreatedTournaments.length > 0 ? (
+                    {allMyTournaments && allMyTournaments.length > 0 ? (
                         <ol className = "mt-4 list pl-5">
-                            {myCreatedTournaments.map((tournament, index) => (
+                            {allMyTournaments.map((tournament, index) => (
                                 <li key = {index} className = "mt-3 text-md flex justify-between items-center">
                                     <div>
                                         <span className = "font-semibold"> {index + 1}. </span> 

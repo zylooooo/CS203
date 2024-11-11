@@ -53,7 +53,7 @@ function UserEditProfile() {
             setTimeout(() => {
                 logoutUser();
                 navigate("/auth/user-login");
-            }, 2000);
+            }, 1000);
             setShowConfirmationPopUp(false);
         }
     };
@@ -267,12 +267,12 @@ function UserEditProfile() {
                 setTimeout(() => {
                     logoutUser();
                     navigate("/auth/user-login");
-                }, 2000);
+                }, 1000);
             } else {
                 setSuccessMessage("Successfully updated your profile!")
                 setTimeout(() => {
                     navigate("/user/profile");
-                }, 2000);
+                }, 1000);
             }
         }
     };

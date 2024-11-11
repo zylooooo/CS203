@@ -57,7 +57,7 @@ function AdministratorEditProfile() {
             setTimeout(() => {
                 logoutAdmin();
                 navigate("/administrator-login");
-            }, 2000);
+            }, 1000);
             setShowConfirmationPopUp(false);
         }
     };
@@ -270,12 +270,12 @@ function AdministratorEditProfile() {
                 setTimeout(() => {
                     logoutAdmin();
                     navigate("/administrator-login");
-                }, 2000);
+                }, 1000);
             } else {
                 setSuccessMessage("Successfully updated your profile!")
                 setTimeout(() => {
                     navigate("/administrator-account");
-                }, 2000);
+                }, 1000);
             }
         }
     };
