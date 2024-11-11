@@ -17,12 +17,9 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     };
 
