@@ -17,17 +17,14 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     };
 
     return (
-        <div className = "space-y-4 text-center">
+        <div className="space-y-4">
             {scheduledTournaments.length > 0 ? (
                 scheduledTournaments.map((scheduledTournament, index) => (
                     <div
@@ -47,10 +44,11 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
                     </div>
                 ))
             ) : (
-                <p className = "text-gray-800 font-bold"> You have no scheduled tournaments. Join one today! </p>
+                <p className = "text-gray-800 font-bold text-center"> You have no scheduled tournaments. Join one today! </p>
             )}
         </div>
     );
+    
 };
 
 export default UserScheduledTournamentCard;
