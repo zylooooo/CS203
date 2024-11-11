@@ -4,7 +4,7 @@ import { API_URL } from '../../config';
 // Package Imports
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Assets and Components Imports
@@ -21,13 +21,13 @@ import PreliminaryPlayersTable from '../components/PreliminaryPlayersTable';
 
 function UserFixtures() {
 
-    // TODO: Add tournament name to url
-    // useEffect(() => {   
-    //     localStorage.setItem("currUrl", location.pathname);
-    // }, []);
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     const location = useLocation();
-    const tournamentName = location.state?.tournamentName;
+    const { tournamentName } = useParams();
+    console.log("tournamentName: ", tournamentName);
 
     // Const: Hold referance for scrolling
     const mainFixturesRef = useRef(null);

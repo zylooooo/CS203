@@ -137,7 +137,7 @@ const TournamentDetails = () => {
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
     const handleShowFixturesButtonClick = () => {
-        navigate("/user-fixtures", {
+        navigate(`/user-fixtures/${tournamentName}`, {
             state: { tournamentName }
         });
     };
@@ -347,7 +347,7 @@ const TournamentDetails = () => {
                         {tournamentDetails.playersPool && tournamentDetails.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournamentDetails.playersPool.map((player, index) => (
-                                    <li className = "mt-5 mb-5 font-semibold"> Username: {player} </li>
+                                    <li className = "mt-5 mb-5 font-semibold"> {player} </li>
                                     
                                 ))}
                             </ol>

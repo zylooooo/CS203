@@ -128,15 +128,6 @@ function App() {
                         }
                     />
 
-                    <Route
-                        path = "/user-fixtures"
-                        element = {
-                            <MainLayout>
-                                <UserFixtures />
-                            </MainLayout>
-                        }
-                    />
-
                     {/* ---------------------- PROTECTED: PLAYER ROUTES ---------------------- */}
                     {/* USER'S HOME PAGE */}
                     <Route
@@ -169,6 +160,18 @@ function App() {
                             <PrivateRoute>
                                 <MainLayout>
                                     <TournamentDetails />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* TOURNAMENT DETAILS */}
+                    <Route
+                        path = "/user-fixtures/:tournamentName"
+                        element = {
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserFixtures />
                                 </MainLayout>
                             </PrivateRoute>
                         }

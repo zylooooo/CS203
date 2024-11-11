@@ -291,13 +291,15 @@ function AdministratorFixtures() {
                             <PreliminaryPlayersTable preliminaryMatches = {preliminaryMatches} handleMatchClick = {handleMatchClick} />
                         )}
                     </div>
-                    {mainMatches.length > 0 && tournamentBracket !== null && tournamentWinner && (
+                    {mainMatches.length > 0 && tournamentBracket !== null && (
                         <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
                             <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
-                            <div className = "flex flex-col items-center text-center bg-green-100 p-4 rounded-lg w-1/3 shadow-md mb-10">
-                                <FontAwesomeIcon icon = {faTrophy} className = "text-yellow-500 text-3xl mb-2" />
-                                <h3 className = "text-2xl font-bold text-green-700"> Tournament Winner: {tournamentWinner} </h3>
-                            </div>
+                            {tournamentWinner && (
+                                <div className = "flex flex-col items-center text-center bg-green-100 p-4 rounded-lg w-1/3 shadow-md mb-10">
+                                    <FontAwesomeIcon icon = {faTrophy} className = "text-yellow-500 text-3xl mb-2" />
+                                    <h3 className = "text-2xl font-bold text-green-700"> Tournament Winner: {tournamentWinner} </h3>
+                                </div>
+                            )}
                             <Bracket
                                 rounds = {mainTournamentRounds}
                                 roundTitleComponent = {(title) => (

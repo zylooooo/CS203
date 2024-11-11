@@ -17,7 +17,7 @@ import StrikeReportCard from '../components/AdministratorStrikeReportCard';
 
 const AdministratorTournamentDetails = () => {
 
-    useEffect(() => {   
+    useEffect(() => {
         localStorage.setItem("currUrl", location.pathname);
     }, []);
 
@@ -289,8 +289,8 @@ const AdministratorTournamentDetails = () => {
                         {tournament.playersPool && tournament.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournament.playersPool.map((player, index) => (
-                                    <li key = {index} className = "mt-5 mb-5 flex justify-between items-center w-full">
-                                        {player} 
+                                    <li key = {index} className = "mt-5 mb-5 flex justify-between items-center w-full font-semibold">
+                                        {index + 1}. {player} 
                                         {/* ISSUE STRIKE BUTTON */}
                                         { isPastTournament && checkThisAdmin(tournament.createdBy) && isWithinOneWeek(tournament.endDate) && (
                                           <button 

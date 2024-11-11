@@ -12,7 +12,7 @@ import UserTournamentCard from '../components/UserTournamentCard';
 
 function UserTournaments() {
 
-    useEffect(() => {   
+    useEffect(() => {
         localStorage.setItem("currUrl", location.pathname);
     }, []);
 
