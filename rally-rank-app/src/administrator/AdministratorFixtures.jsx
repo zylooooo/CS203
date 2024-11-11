@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronCircleDown, faChevronCircleUp, faTrophy } from '@fortawesome/free-solid-svg-icons';
 
 import React from 'react';
+import { set } from 'react-hook-form';
 
 function AdministratorFixtures() {
 
@@ -33,7 +34,8 @@ function AdministratorFixtures() {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const { status, tournamentName } = useParams();
+    const { status, tournamentAdmin, tournamentName } = useParams();
+    const thisAdministrator = JSON.parse(localStorage.getItem("adminData")).adminName;
     const isPastTournament = (status === "history");
 
     // Const: Hold reference for scrolling
@@ -54,7 +56,7 @@ function AdministratorFixtures() {
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     const [tournamentBracket, setTournamentBracket] = useState(null);
     const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
-    const [thisAdministrator, setThisAdministrator] = useState(false);
+    // const [thisAdministrator, setThisAdministrator] = useState(null);
 
     // Consts: Hold winners of each important round (QF, SF and F)
     const [tournamentWinner, setTournamentWinner] = useState("");
@@ -204,9 +206,6 @@ function AdministratorFixtures() {
                 }
             );
 
-            const thisAdministrator = response.data.createdBy;
-            setThisAdministrator((thisAdministrator === adminData.adminName));
-
             if (response.data.error !== undefined) {
                 setWarningMessage(response.data);
             }
@@ -295,7 +294,10 @@ function AdministratorFixtures() {
             );
 
             if (response.status === 200) {
-                setSuccessMessage("Tournament has ended!")
+                setSuccessMessage("Tournament has ended!");
+                setTimeout(() => {
+                    navigate(`/administrator-tournaments/history`);
+                }, 1000);
             } else {
                 setWarningMessage("Error occured while updating tournament end date. Please try again.");
             }
@@ -413,7 +415,7 @@ function AdministratorFixtures() {
                 </div>
             </div>
             <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
-                {checkThisAdmin(mainMatches.createdBy) && !isPastTournament && (
+                {checkThisAdmin(tournamentAdmin) && !isPastTournament && (
                     <button
                         onClick = {handleGenerateBracketsClick}
                         className = "bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
@@ -422,9 +424,9 @@ function AdministratorFixtures() {
                     </button>
                 )}
             </div>
-            {!isPastTournament && thisAdministrator && (
-                <div className = "fixed bottom-20 right-12">
-                    {mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
+            {!isPastTournament && checkThisAdmin(tournamentAdmin) && (
+                <div className = "complete-tournament-button fixed bottom-20 right-12">
+                    {tournamentWinner ? (
                         <button
                             className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
                             onClick = {handleEndTournament}

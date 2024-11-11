@@ -153,8 +153,8 @@ const AdministratorTournamentDetails = () => {
         await generateBrackets();
     };
 
-    const handleShowFixturesClick = () => {
-        navigate(`/administrator/tournament-fixtures/${status}/${tournamentName}`, {
+    const handleShowFixturesClick = (tournamentAdmin) => {
+        navigate(`/administrator/tournament-fixtures/${status}/${tournamentAdmin}/${tournamentName}`, {
             state: { tournamentName }
         });
     };
@@ -320,7 +320,7 @@ const AdministratorTournamentDetails = () => {
                             </button>
                         )}
                         <button
-                            onClick = {handleShowFixturesClick}
+                            onClick={() => handleShowFixturesClick(tournament.createdBy)}
                             className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                         >
                             {isPastTournament ? "Show Results" : "Show Fixtures"}

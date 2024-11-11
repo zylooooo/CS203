@@ -288,7 +288,7 @@ function App() {
 
                     {/* VIEW FIXTURES */}
                     <Route
-                        path = "/administrator/tournament-fixtures/:status/:tournamentName"
+                        path = "/administrator/tournament-fixtures/:status/:tournamentAdmin/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>
