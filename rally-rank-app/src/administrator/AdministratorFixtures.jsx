@@ -122,6 +122,14 @@ function AdministratorFixtures() {
         await updateTournamentEndDate();
     };
 
+    const handleGenerateBracketsClick = async () => {
+        await generateBrackets();
+    };
+
+    const checkThisAdmin = (adminName) => {
+        return adminName === thisAdministrator;
+    };
+
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
         return (
@@ -142,6 +150,39 @@ function AdministratorFixtures() {
                 </SeedTime>
             </Seed>
         );
+    };
+
+    // -------------------------- API Call: Generate brackets ---------------------------
+    async function generateBrackets() {
+        try {
+        const adminData = JSON.parse(localStorage.getItem("adminData"));
+        if (!adminData || !adminData.jwtToken) {
+            console.error("No JWT token found");
+            return;
+        }
+
+        const response = await axios.put(
+            `${API_URL}/admins/tournaments/bracket/${tournamentName}`,
+            {},
+            {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${adminData.jwtToken}`,
+                },
+            },
+        );
+
+        if (response.data.error) {
+            setWarningMessage(response.data.error);
+        } else {
+            setSuccessMessage("Brackets generated successfully! View the fixtures below!");
+        }
+        return response.data;
+
+        } catch (error) {
+            setWarningMessage("Unable to generate brackets. Please reload and try again.");
+            console.error("Error generating brackets:", error.response.data.error);
+        }
     };
 
     // ----------------------- API Call: Get all matches in the tournament (for brackets use) -----------------------
@@ -223,7 +264,7 @@ function AdministratorFixtures() {
             return response;
 
         } catch (error) {
-            setWarningMessage("Unable to retrieve tournament brackets. Please try again.");
+            setWarningMessage("No match has been played yet.");
             const errorMessage = error.response?.data?.error || 'An unknown error occurred';
         }
     };
@@ -264,7 +305,7 @@ function AdministratorFixtures() {
             const errorMessage = error.response?.data?.error || 'An unknown error occurred';
             console.error('Error updating tournament end date:', errorMessage);
         }
-    }
+    };
 
     return (
         <>
@@ -369,19 +410,29 @@ function AdministratorFixtures() {
                     </div>
                 </div>
             </div>
+            <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
+                {checkThisAdmin(mainMatches.createdBy) && !isPastTournament && (
+                    <button
+                        onClick = {handleGenerateBracketsClick}
+                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+                    >
+                        Generate Brackets
+                    </button>
+                )}
+            </div>
             {!isPastTournament && thisAdministrator && (
                 <div className = "fixed bottom-20 right-12">
                     {mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
                         <button
                             className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
-                            onClick = { handleEndTournament }
+                            onClick = {handleEndTournament}
                         >
                             Complete Tournament
                         </button>
                     ) : (
                         <button
                             className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
-                            onClick = { handleEndTournament }
+                            onClick = {handleEndTournament}
                         >
                             Stop Tournament
                         </button>
