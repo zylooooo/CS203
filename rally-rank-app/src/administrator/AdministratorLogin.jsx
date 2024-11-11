@@ -27,7 +27,8 @@ function AdministratorLogin() {
 
     useEffect(() => {
         if (isAdminLoggedIn) {
-            navigate("/administrator-tournaments")
+            const currUrl = localStorage.getItem("currUrl");
+            navigate(currUrl);  
         }
     }, [navigate, isAdminLoggedIn]);
 

@@ -11,6 +11,11 @@ import AdministratorTournamentCard from '../components/AdministratorTournamentCa
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
 
 function AdministratorTournamentHistory() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const [tournaments, setTournaments] = useState([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [myPastTournaments, setMyPastTournaments] = useState([]);

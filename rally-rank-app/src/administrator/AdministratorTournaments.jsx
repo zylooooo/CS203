@@ -14,8 +14,15 @@ import AdministratorTournamentCard from "../components/AdministratorTournamentCa
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
 
 function AdministratorTournaments() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const [hovered, setHovered] = useState(false);
     const [warningMessage, setWarningMessage] = useState("");
+
+    const [animationClass, setAnimationClass] = useState('');
 
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
@@ -118,6 +125,16 @@ function AdministratorTournaments() {
             tournament.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleMouseEnter = () => {
+        setHovered(true);
+        setAnimationClass('animate-buttonExpand');
+    };
+
+    const handleMouseLeave = () => {
+        setHovered(false);
+        setAnimationClass('animate-buttonShrink');
+    };
+
     return (
         <div className = {`tournaments-page main-container flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
@@ -147,25 +164,24 @@ function AdministratorTournaments() {
                     )}
                 </div>
                 {/* CREATE TOURNAMENT BUTTON */}
-                <div className = "tournament-actions flex fixed right-14 bottom-16 justify-end cursor-pointer">
+                <div
+                    className={`tournament-actions flex fixed right-14 bottom-16 cursor-pointer font-semibold py-2 rounded-full shadow-md bg-primary-color-light-green text-white hover:shadow-md hover:bg-primary-color-green transition-all duration-300 ease-in-out ${animationClass}`}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                     <button
-                        onClick = {handleCreateClick}
-                        className = "font-semibold py-2 px-4 rounded-full shadow-md bg-primary-color-light-green text-white hover:shadow-md hover:bg-primary-color-green transition-all duration-300 ease-in-out"
-                        onMouseEnter = {() => setHovered(true)}
-                        onMouseLeave = {() => setHovered(false)}
-                        style = {{
-                            width: hovered ? 'auto' : '50px',
-                            height: '50px',
-                            paddingLeft: hovered ? '12px' : '0',
-                            paddingRight: hovered ? '12px' : '0',
-                        }}
+                        onClick={handleCreateClick}
+                        className="relative w-full h-50px flex items-center justify-center"
                     >
-                        <span className = {`transition-opacity duration-300 ease-in-out ${hovered ? 'opacity-0' : 'opacity-100'}`}>
-                            <FontAwesomeIcon icon = {faPlus} className = "text-2xl mt-1" />
-                        </span>
-                        <span className = {`mr-6 transition-opacity duration-300 ease-in-out ${hovered ? 'opacity-100' : 'opacity-0'}`}>
-                            Create Tournament
-                        </span>
+                        {hovered ? (
+                            <span className="flex p-1 animate-fadeIn animate-buttonExpand">
+                                Create Tournament
+                            </span>
+                        ) : (
+                            <span className="animate-fadeIn">
+                                <FontAwesomeIcon icon={faPlus} className="text-2xl mt-1 px-4" />
+                            </span>
+                        )}
                     </button>
                 </div>
             </div>

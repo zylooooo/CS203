@@ -26,7 +26,8 @@ function UserLogin() {
 
     useEffect(() => {
         if (isUserLoggedIn) {
-            navigate("/users/home")
+            const currUrl = localStorage.getItem("currUrl");
+            navigate(currUrl); 
         }
     }, [navigate, isUserLoggedIn]);
 

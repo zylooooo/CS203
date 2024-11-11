@@ -17,6 +17,11 @@ import UserLeaderboardButtons from "../components/UserLeaderboardButtons";
 import UserScheduledTournamentCard from "../components/UserScheduledTournamentCard";
 
 function UserHome() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
     const [successMessage, setSuccessMessage] = useState("");
     const [warningMessage, setWarningMessage] = useState("");
