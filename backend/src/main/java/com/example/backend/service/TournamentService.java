@@ -357,7 +357,8 @@ public class TournamentService {
                isUserEloInRange(user, tournament) &&
                isUserGenderMatching(user, tournament) &&
                isUserNotStriked(user, tournament) &&
-               isUserAgeEligible(user, tournament);
+               isUserAgeEligible(user, tournament) &&
+               isBracketGenerated(tournament);
     }
 
     // Checks if the signup is open for the tournament
@@ -390,6 +391,7 @@ public class TournamentService {
         return tournament.getGender().equalsIgnoreCase(user.getGender());
     }
 
+    // Checks if the user has been striked by the tournament admin
     private boolean isUserNotStriked(User user, Tournament tournament) {
         List<User.StrikeReport> strikeReports = user.getStrikeReports();
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
@@ -425,6 +427,11 @@ public class TournamentService {
                 logger.warn("Unknown tournament category: {}", tournament.getCategory());
                 return false;
         }
+    }
+    
+    // Checks if there is any brackets already generated for the tournament
+    private boolean isBracketGenerated(Tournament tournament) {
+        return tournament.getBracket() != null;
     }
 
      /**
