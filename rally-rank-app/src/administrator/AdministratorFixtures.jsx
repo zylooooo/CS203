@@ -27,7 +27,7 @@ import React from 'react';
 
 function AdministratorFixtures() {
 
-    useEffect(() => {   
+    useEffect(() => {
         localStorage.setItem("currUrl", location.pathname);
     }, []);
 
@@ -77,13 +77,13 @@ function AdministratorFixtures() {
     const [warningMessage, setWarningMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // Function: Format Date for easy readability
+    // Function: Format Date to date and time for easy readability
     const formatDate = (dateString) => {
         if (dateString === null) {
             return;
         }
         const date = new Date(dateString);
-        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
+        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
 
     // Function: Handle click for each seed
@@ -116,11 +116,11 @@ function AdministratorFixtures() {
 
     const handleEndTournament = () => {
         setShowConfirmationPopUp(true);
-    }
+    };
 
     const handleFinalConfirmation = async () => {
         await updateTournamentEndDate();
-    }
+    };
 
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
@@ -392,10 +392,8 @@ function AdministratorFixtures() {
                             onCancel = {() => setShowConfirmationPopUp(false)}
                         />
                     )}
-                    
                 </div>
             )}
-
         </>
     );
 };
