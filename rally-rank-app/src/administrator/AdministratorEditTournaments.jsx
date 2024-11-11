@@ -409,7 +409,7 @@ function AdministratorEditTournaments() {
                         <input
                             type = "number"
                             id = "minElo"
-                            placeholder = {originalTournamentInformation.minElo || ""}
+                            placeholder = {originalTournamentInformation.minElo !== undefined ? originalTournamentInformation.minElo : ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("minElo", { onChange: handleChange })}
