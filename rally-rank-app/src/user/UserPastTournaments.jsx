@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect} from "react";
+import { API_URL } from "../../config";
 
 // Component: Tournament Card (for UserTournaments)
 const TournamentCard = ({ userPastTournaments }) => {
@@ -88,7 +89,7 @@ function UserPastTournaments() {
             }
 
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/history",
+                `${API_URL}/users/tournaments/history`,
                 {
                     withCredentials: true,
                     headers: {
