@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { API_URL } from "../constants";
 
 // Component: Tournament Buttons
 const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick }) => {
@@ -137,7 +138,7 @@ function UserTournaments() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/available",
+                `${API_URL}/users/tournaments/available`,
                 {
                     withCredentials: true,
                     headers: {
