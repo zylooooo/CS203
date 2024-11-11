@@ -152,7 +152,7 @@ function App() {
 
                     {/* USER'S TOURNAMENTS PAGE */}
                     <Route
-                        path = "/users/tournaments"
+                        path = "/users/tournaments/:tab"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>
@@ -164,7 +164,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/tournament-details/:tournamentName"
+                        path = "/tournament-details/:status/:tournamentName"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>

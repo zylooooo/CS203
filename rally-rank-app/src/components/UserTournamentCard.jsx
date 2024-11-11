@@ -5,13 +5,23 @@ const UserTournamentCard = ({ tournamentType, isAvailableTournament, isScheduled
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate(`/tournament-details/${tournament.tournamentName}`, {
-            state: {
-                tournamentName: tournament.tournamentName,
-                isAvailableTournament,
-                isScheduledTournament,
-            }
-        });
+        if (isAvailableTournament) {
+            navigate(`/tournament-details/avail/${tournament.tournamentName}`, {
+                state: {
+                    tournamentName: tournament.tournamentName,
+                    isAvailableTournament,
+                    isScheduledTournament,
+                }
+            })
+        } else if (isScheduledTournament) {
+            navigate(`/tournament-details/sched/${tournament.tournamentName}`, {
+                state: {
+                    tournamentName: tournament.tournamentName,
+                    isAvailableTournament,
+                    isScheduledTournament,
+                }
+            })
+        }
     };
 
     const formatDate = (dateString) => {

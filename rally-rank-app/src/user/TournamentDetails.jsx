@@ -21,13 +21,11 @@ const TournamentDetails = () => {
 
     const [isFull, setIsFull] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
-    const { tournamentName } = useParams();
-
-    // const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
+    const { tournamentName } = useParams();                             // To be used as parameter for getting the tournament details by name (following backend api)
     const [tournamentDetails, setTournamentDetails] = useState(null);
-    const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
-    const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
-    const isScheduledTournament = location.state?.isScheduledTournament;
+    const isPastTournament = useParams().status === "history";         // To be used for changes in tournament details for past tournaments
+    const isAvailableTournament = useParams().status === "avail";      // To be used for displaying 'Join Tournament' button or not
+    const isScheduledTournament = useParams().status === "sched";
     const [joinedForScheduled, setJoinedForScheduled] = useState(true);
     
 
@@ -128,7 +126,13 @@ const TournamentDetails = () => {
     }
 
     const handleBackButtonClick = () => {
-        navigate("/users/Tournaments");
+        if (isAvailableTournament) {
+            navigate("/users/Tournaments/0");
+        } else if (isScheduledTournament) {
+            navigate("/users/Tournaments/1");
+        } else if (isPastTournament) {
+            navigate("/past-tournaments");
+        }
     };
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.

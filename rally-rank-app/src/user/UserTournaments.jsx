@@ -3,7 +3,7 @@ import { API_URL } from '../../config';
 
 // Package Imports
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 // Assets and Components Imports
@@ -16,19 +16,24 @@ function UserTournaments() {
         localStorage.setItem("currUrl", location.pathname);
     }, []);
 
+    const navigate = useNavigate();
+
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
+    const { tab } = useParams();
     const [activeButton, setActiveButton] = useState(0);
     const [availableTournaments, setAvailableTournaments] = useState([]);
     const [displayTournamentType, setDisplayTournamentType] = useState([]);
     const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
 
     const handleAvailableTournamentClick = () => {
+        navigate(`/users/Tournaments/${0}`);
         setActiveButton(0);
         getAvailableTournaments();
     }
 
     const handleMyScheduledTournamentsClick = () => {
+        navigate(`/users/Tournaments/${1}`);
         setActiveButton(1);
         getMyScheduledTournaments();
         setDisplayTournamentType(myScheduledTournaments)
