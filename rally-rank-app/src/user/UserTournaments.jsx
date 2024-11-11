@@ -166,7 +166,7 @@ function UserTournaments() {
                 return;
             }
             const response = await axios.get(
-                "http://localhost:8080/users/tournaments/scheduled",
+                `${API_URL}/users/tournaments/scheduled`,
                 {
                     withCredentials: true,
                     headers: {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { API_URL } from "../../config";
 
 
 // Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
@@ -25,7 +26,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
             }
 
             const response = await axios.post(
-                "http://localhost:8080/admins/strikes",
+                `${API_URL}/admins/strikes`,
                 {
                     username: strikePlayer,
                     tournamentName: tournamentName,
@@ -182,7 +183,7 @@ const AdministratorPastTournamentDetails = () => {
             }
 
             const response = await axios.get(
-                `http://localhost:8080/admins/tournaments/${tournamentName}`,
+                `${API_URL}/admins/tournaments/${tournamentName}`,
                 {
                     withCredentials: true,
                     headers: {
