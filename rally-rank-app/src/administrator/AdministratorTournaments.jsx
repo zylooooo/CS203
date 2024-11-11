@@ -174,7 +174,7 @@ function AdministratorTournaments() {
                         className="relative w-full h-50px flex items-center justify-center"
                     >
                         {hovered ? (
-                            <span className="flex p-1 animate-fadeIn animate-buttonExpand">
+                            <span className="flex p-1 animate-fadeIn">
                                 Create Tournament
                             </span>
                         ) : (

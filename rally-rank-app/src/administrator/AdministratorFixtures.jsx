@@ -270,6 +270,7 @@ function AdministratorFixtures() {
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "administrator-fixtures flex flex-row gap-8 p-9">
                 <div className = "w-full">
+                    <h2 className = "m-5 text-2xl font-bold">Tournament Name: {tournamentName}</h2>
                     <button
                         onClick = {scrollToMainFixtures}
                         className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-6 w-full font-semibold ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
