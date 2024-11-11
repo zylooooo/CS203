@@ -9,6 +9,10 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 // Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
 const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
 
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const { register, handleSubmit, formState: { errors }} = useForm();
 
     // API Call: Create and issue strike to user

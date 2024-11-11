@@ -15,6 +15,11 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 const AdministratorTournamentDetails = () => {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const { tournamentName } = useParams();
@@ -69,7 +74,7 @@ const AdministratorTournamentDetails = () => {
         if (response.status === 200) {
             setTournaments(response.data);
             setPlayersPool(response.data.playersPool);
-            //setPlayersPoolLength(response.data.playersPool.length);
+            // setPlayersPoolLength(response.data.playersPool.length);
             console.log("re", response.data)
         }
         } catch (error) {
@@ -202,7 +207,7 @@ const AdministratorTournamentDetails = () => {
                         </p>
                         {playersPool && playersPoolLength > 0 ? (
                         <ol className = "list-decimal pl-5">
-                            {tournaments.playersPool.map((player, index) => (
+                            {playersPool.map((player, index) => (
                                 <li key = {index} className = "mt-5 mb-5">
                                     {" "}{player}{" "}
                                 </li>

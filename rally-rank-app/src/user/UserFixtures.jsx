@@ -15,11 +15,17 @@ import AlertMessageSuccess from "../components/AlertMessageSuccess";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-import MatchResultsCard from "./components/MatchResultsCard";
-import WinnersTable from "./components/WinnersTable";
-import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
+import WinnersTable from '../components/WinnersTable';
+import MatchResultsCard from '../components/MatchResultsCard';
+import PreliminaryPlayersTable from '../components/PreliminaryPlayersTable';
 
 function UserFixtures() {
+
+    // TODO: Add tournament name to url
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const location = useLocation();
     const tournamentName = location.state?.tournamentName;
 

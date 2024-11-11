@@ -17,6 +17,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck, faListCheck, faMinusCircle, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
 
 function AdministratorEditTournaments() {
+
+    // TODO: add tournament name to url path
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const tournamentName = location.state || {};
@@ -297,7 +303,7 @@ function AdministratorEditTournaments() {
     }, []);
 
     return (
-        <div className = "mt-5 edit-profile-information p-6 shadow-2xl rounded-[12px] w-3/5 mx-auto mb-10">
+        <div className = "mt-5 edit-profile-information p-6 shadow-2xl rounded-[12px] w-3/5 mx-auto mb-10 card-background">
             <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex items-center gap-4">
@@ -409,7 +415,7 @@ function AdministratorEditTournaments() {
                         <input
                             type = "number"
                             id = "minElo"
-                            placeholder = {originalTournamentInformation.minElo || ""}
+                            placeholder = {originalTournamentInformation.minElo !== undefined ? originalTournamentInformation.minElo : ""}
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold"
                             style = {{ backgroundColor: "#EBEBEB" }}
                             {...register("minElo", { onChange: handleChange })}

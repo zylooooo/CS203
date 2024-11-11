@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setIsUserLoggedIn(false);
         localStorage.removeItem('userData');
+        localStorage.removeItem('currUrl');
+        localStorage.removeItem('jwtToken');
     };
 
     // Logout admin
@@ -57,6 +59,8 @@ export const AuthProvider = ({ children }) => {
         setAdmin(null);
         setIsAdminLoggedIn(false);
         localStorage.removeItem('adminData');
+        localStorage.removeItem('currUrl');
+        localStorage.removeItem('jwtToken');
     };
 
     return (

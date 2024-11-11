@@ -8,16 +8,16 @@ import { useLocation, useNavigate} from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Administrator Components Imports
-import WinnersTable from "./components/WinnersTable";
-import MatchResultsCard from "./components/MatchResultsCard";
-import UpdateResultsCard from "./components/UpdateResultsCard";
-import UpdateMatchTimingsCard from "./components/UpdateMatchTimingsCard";
-import PreliminaryPlayersTable from "./components/PreliminaryPlayersTable";
+import WinnersTable from '../components/WinnersTable';
+import MatchResultsCard from '../components/MatchResultsCard';
+import UpdateResultsCard from '../components/UpdateResultsCard';
+import UpdateMatchTimingsCard from '../components/UpdateMatchTimingsCard';
+import PreliminaryPlayersTable from '../components/PreliminaryPlayersTable';
 
 // Assets and Components Imports
+import ConfirmationPopUp from "../components/ConfirmationPopUp";
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
-import ConfirmationPopUp from "./components/ConfirmationPopUp";
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,6 +26,12 @@ import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 
 function AdministratorFixtures() {
+
+    // TODO: need to include a path back to tournament details page
+    // useEffect(() => {   
+    //     localStorage.setItem("currUrl", location.pathname);
+    // }, []);
+
     const location = useLocation();
     const navigate = useNavigate();
     const tournamentName = location.state?.tournamentName;

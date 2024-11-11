@@ -27,10 +27,10 @@ function AdministratorLogin() {
 
     useEffect(() => {
         if (isAdminLoggedIn) {
-            navigate("/administrator-tournaments")
+            const currUrl = localStorage.getItem("currUrl");
+            navigate(currUrl);  
         }
-    }, [navigate, isAdminLoggedIn])
-
+    }, [navigate, isAdminLoggedIn]);
 
     // For Alert Messages
     const [warningMessage, setWarningMessage] = useState("");

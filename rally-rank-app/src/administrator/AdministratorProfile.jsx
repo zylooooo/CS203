@@ -14,6 +14,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle, faPen } from '@fortawesome/free-solid-svg-icons';
 
 function AdministratorProfile() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     const navigate = useNavigate();
     const [myCreatedTournaments, setMyCreatedTournaments] = useState({});
     const [administratorProfileInformation, setAdministratorProfileInformation] = useState({});
