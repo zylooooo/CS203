@@ -6,7 +6,7 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
     const navigate = useNavigate();
 
     const handleScheduledTournamentCardClick = (scheduledTournament) => {
-        navigate(`/tournament-details/${scheduledTournament.tournamentName}`, {
+        navigate(`/tournament-details/sched/${scheduledTournament.tournamentName}`, {
             state: {
                 ...scheduledTournament,
                 from: window.location.pathname,
