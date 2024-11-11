@@ -3,6 +3,7 @@ import { useState } from "react";
 
 // Authentication
 import { useAuth } from "../../authentication/AuthContext";
+import rallyRankLogo from "../../assets/Rally-Rank-Logo.svg";
 
 // React Router
 import { NavLink, useNavigate } from "react-router-dom";
@@ -31,7 +32,7 @@ function AdministratorNavBar() {
                 <div className="flex justify-between h-20">
                     <div className="flex-shrink-0 flex items-center">
                         <NavLink to="/users/home">
-                            <img className="h-10 w-auto" src="/src/assets/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
+                        <img className="h-10 w-auto" src={rallyRankLogo}  alt="RallyRank Logo" />
                         </NavLink>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">

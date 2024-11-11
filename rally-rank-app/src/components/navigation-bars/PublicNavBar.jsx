@@ -1,5 +1,6 @@
 // Navigation
 import { useNavigate, NavLink } from 'react-router-dom';
+import rallyRankLogo from "../../assets/Rally-Rank-Logo.svg";
 
 function PublicNavBar() {
     const navigate = useNavigate();
@@ -25,7 +26,11 @@ function PublicNavBar() {
                     
                     <div className="flex-shrink-0 flex items-center">
                         <NavLink to="/">
+<<<<<<< HEAD
                         <img className="h-10 w-auto" src="./public/Rally-Rank-Logo.svg" alt="RallyRank Logo" />
+=======
+                        <img className="h-10 w-auto" src={rallyRankLogo}  alt="RallyRank Logo" />
+>>>>>>> devMain
                         </NavLink>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center" >
