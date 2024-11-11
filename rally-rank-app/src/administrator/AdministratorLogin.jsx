@@ -28,7 +28,7 @@ function AdministratorLogin() {
     useEffect(() => {
         if (isAdminLoggedIn) {
             const currUrl = localStorage.getItem("currUrl");
-            navigate(currUrl);  
+            navigate(currUrl, {replace: true });  
         }
     }, [navigate, isAdminLoggedIn]);
 

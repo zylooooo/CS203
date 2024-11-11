@@ -4,7 +4,7 @@ import { API_URL } from '../../config';
 // Library imports
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, faVenus, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
@@ -12,15 +12,18 @@ import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, fa
 const TournamentDetails = () => {
 
     // TODO: doesn't work because state is lost on refresh
-    // useEffect(() => {   
-    //     localStorage.setItem("currUrl", location.pathname);
-    // }, []);
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     const navigate = useNavigate();
     const location = useLocation();
+
     const [isFull, setIsFull] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
-    const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
+    const { tournamentName } = useParams();
+
+    // const tournamentName = location.state?.tournamentName;                  // To be used as parameter for getting the tournament details by name (following backend api)
     const [tournamentDetails, setTournamentDetails] = useState(null);
     const isPastTournament = location.state?.isPastTournament || false;     // To be used for changes in tournament details for past tournaments
     const isAvailableTournament = location.state?.isAvailableTournament;                        // To be used for displaying 'Join Tournament' button or not
@@ -125,10 +128,7 @@ const TournamentDetails = () => {
     }
 
     const handleBackButtonClick = () => {
-        navigate(-1);
-        if (!window.history.state) {
-            navigate("/users/home");
-        }
+        navigate("/users/Tournaments");
     };
 
     // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.

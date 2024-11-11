@@ -1,7 +1,7 @@
 // Package Imports
 import { useNavigate } from "react-router-dom";
 
-const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator }) => {
+const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator, tab, isPastTournament }) => {
     const navigate = useNavigate();
 
     // Function: Check if the current date is before the start date of tournament
@@ -31,7 +31,11 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
     const handleTournamentCardClick = (tournamentName) => {
         setIsTransitioning(true);
         setTimeout(() => {
-            navigate(`/administrator/tournament-details/${tournamentName}`, { state: { tournamentName } });
+            if (isPastTournament) {
+                navigate(`/administrator-tournaments/details/history/${tab}/${tournamentName}`, { state: { tournamentName } });
+            } else {
+                navigate(`/administrator-tournaments/details/ongoing/${tab}/${tournamentName}`, { state: { tournamentName } });
+            }
         }, 200);
     };
 
@@ -85,7 +89,7 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
 
                         {/* EDIT TOURNAMENT BUTTON */}
                         <div className = "edit-tournament-button mt-auto ml-auto">
-                            {checkThisAdmin(tournament.createdBy) && isBeforeStartDate(tournament.startDate) && !isBracketsGenerated(tournament.bracket) && (
+                            {checkThisAdmin(tournament.createdBy) && !isPastTournament && isBeforeStartDate(tournament.startDate) && !isBracketsGenerated(tournament.bracket) && (
                                 <button
                                     onClick = {(e) => {
                                         e.stopPropagation();

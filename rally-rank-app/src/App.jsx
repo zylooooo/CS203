@@ -34,7 +34,7 @@ import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorTournamentDetails from "./administrator/TournamentDetails";
+import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
 
 
@@ -227,7 +227,7 @@ function App() {
 
                     {/* ADMINISTRATOR'S (ALL) TOURNAMENT HISTORY PAGE */}
                     <Route
-                        path = "/administrator-tournament-history"
+                        path = "/administrator-tournaments/:status"
                         element = {
                             <AdminRoute>
                                 <MainLayout>
@@ -238,7 +238,7 @@ function App() {
                     />
 
                     {/* ADMINISTRATOR'S (CREATED) PAST TOURNAMENTS PAGE */}
-                    <Route
+                    {/* <Route
                         path = "/administrator-past-tournament-details"
                         element = {
                             <AdminRoute>
@@ -247,7 +247,7 @@ function App() {
                                 </MainLayout>
                             </AdminRoute>
                         }
-                    />
+                    /> */}
 
                     {/* ADMINISTRATOR'S CREATE TOURNAMENTS PAGE */}
                     <Route
@@ -263,7 +263,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/administrator/tournament-details/:tournamentName"
+                        path = "/administrator-tournaments/details/:status/:tab/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>

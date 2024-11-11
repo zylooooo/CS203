@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AlertMessageWarning from '../components/AlertMessageWarning';
 import AdministratorTournamentCard from "../components/AdministratorTournamentCard";
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
+import { tabClasses } from '@mui/material';
 
 function AdministratorTournaments() {
 
@@ -27,6 +28,7 @@ function AdministratorTournaments() {
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
     const [tournaments, setTournaments] = useState([]);
+    const [tab, setTab] = useState(0);
     const [allTournaments, setAllTournaments] = useState([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [thisAdministrator, setThisAdministrator] = useState(null);
@@ -35,6 +37,7 @@ function AdministratorTournaments() {
     const handleAllTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
+            setTab(0);
             setTournaments(allTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -43,6 +46,7 @@ function AdministratorTournaments() {
     const handleMyCreatedTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
+            setTab(1);
             setTournaments(myCreatedTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -144,6 +148,7 @@ function AdministratorTournaments() {
                     buttons = {["All Tournaments", "My Created Tournaments"]}
                     onAllClick = {handleAllTournamentsClick}
                     onMyClick = {handleMyCreatedTournamentsClick}
+                    active = {tab}
                 />
                 <div className = "flex flex-col">
                     {/* SEARCH BAR */}
@@ -156,7 +161,12 @@ function AdministratorTournaments() {
                     />
                     {/* TOURNAMENT LIST */}
                     {tournaments.length > 0 ? (
-                        <AdministratorTournamentCard tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator}/>
+                        <AdministratorTournamentCard 
+                            tournaments = {filteredTournaments} 
+                            setIsTransitioning = {setIsTransitioning} 
+                            thisAdministrator = {thisAdministrator} 
+                            isPastTournament = {false} 
+                            tab = {tab} />
                     ) : (
                         <p className = "text-secondary-color-dark-green text-md font-semibold">
                             No tournaments found. Create a new tournament today!

@@ -4,7 +4,7 @@ import { API_URL } from '../../config';
 // Package Imports
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Administrator Components Imports
@@ -27,14 +27,13 @@ import React from 'react';
 
 function AdministratorFixtures() {
 
-    // TODO: need to include a path back to tournament details page
-    // useEffect(() => {   
-    //     localStorage.setItem("currUrl", location.pathname);
-    // }, []);
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     const location = useLocation();
     const navigate = useNavigate();
-    const tournamentName = location.state?.tournamentName;
+    const tournamentName = useParams().tournamentName;
 
     // Const: Hold reference for scrolling
     const mainFixturesRef = useRef(null);

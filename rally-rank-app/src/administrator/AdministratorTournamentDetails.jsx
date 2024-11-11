@@ -21,7 +21,9 @@ const AdministratorTournamentDetails = () => {
     }, []);
 
     const navigate = useNavigate();
-    const { tournamentName } = useParams();
+    const { status, tab, tournamentName } = useParams();
+    const isPastTournament = (status === "history"); 
+
     const fromPage = location.state?.from || "/administrator-tournaments";
 
     const [thisAdministrator, setThisAdministrator] = useState("");
@@ -32,7 +34,11 @@ const AdministratorTournamentDetails = () => {
     const [successMessage, setSuccessMessage] = useState("");
     
     const handleBackButtonClick = () => {
-        navigate(fromPage);
+        if (status === "history") {
+            navigate(`/administrator-tournaments/history` );
+        } else {
+            navigate(`/administrator-tournaments`);
+        }
     };
 
     const checkThisAdmin = (adminName) => {
@@ -152,21 +158,23 @@ const AdministratorTournamentDetails = () => {
                         <h1 className = "text-2xl font-bold mt-2"> {tournament.tournamentName} </h1>
                     </div>
                     {/* SLOTS LEFT */}
-                    <div 
-                        className = "text-lg font-bold text-right mr-5" 
-                        style = {{ color: tournament.playerCapacity - tournament.playersPool?.length < 10 ? 'red' : 'inherit' }}
-                    >
-                        {tournament.playerCapacity - tournament.playersPool?.length > 0 ? (
-                            <>
-                                Slots Left: {tournament.playerCapacity - tournament.playersPool?.length}
-                                
-                            </>
-                        ) : (
-                            <span>
-                                Slots are full!
-                            </span>
-                        )}
-                    </div>
+                    {!isPastTournament && (
+                        <div 
+                            className = "text-lg font-bold text-right mr-5" 
+                            style = {{ color: tournament.playerCapacity - tournament.playersPool?.length < 10 ? 'red' : 'inherit' }}
+                        >
+                            {tournament.playerCapacity - tournament.playersPool?.length > 0 ? (
+                                <>
+                                    Slots Left: {tournament.playerCapacity - tournament.playersPool?.length}
+                                    
+                                </>
+                            ) : (
+                                <span>
+                                    Slots are full!
+                                </span>
+                            )}
+                     </div>
+                    )}
                 </div>
 
                 {/* LINE DIVIDER */}
@@ -181,7 +189,10 @@ const AdministratorTournamentDetails = () => {
                                 icon = {faCalendarAlt}
                                 className = "mr-4 h-5 w-5 align-middle"
                             />
-                            {formatDate(tournament.startDate)}
+                            {!isPastTournament
+                                ? formatDate(tournament.startDate)
+                                : `${formatDate(tournament.startDate)} to ${formatDate(tournament.endDate)}`
+                            }
                         </p>
                         {/* TOURNAMENT ELO RATING RANGE */}
                         <p className = "mb-5 text-lg">
@@ -244,7 +255,7 @@ const AdministratorTournamentDetails = () => {
                 <div className = "flex justify-between items-start">
                     <div className = "players-list mt-2 p-4 shadow-lg rounded-[8px] w-2/3 relative ml-8">
                         <h2 className = "text-xl font-semibold mb-2"> 
-                            Current Players
+                            {isPastTournament ? "Players" : "Current Players"} 
                         </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
                         {tournament.playersPool && tournament.playersPool.length > 0 ? (
@@ -261,7 +272,7 @@ const AdministratorTournamentDetails = () => {
 
                     {/* GENERATE BRACKETS BUTTON / SHOW RESULTS/FIXTURES BUTTON */}
                     <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
-                        {checkThisAdmin(tournament.createdBy) && (
+                        {checkThisAdmin(tournament.createdBy) && !isPastTournament && (
                             <button
                                 onClick = {handleGenerateBracketsClick}
                                 className = "bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
@@ -273,7 +284,7 @@ const AdministratorTournamentDetails = () => {
                             onClick = {handleShowFixturesClick}
                             className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                         >
-                            Show Fixtures
+                            {isPastTournament ? "Show Results" : "Show Fixtures"}
                         </button>
                     </div>
                 </div>
