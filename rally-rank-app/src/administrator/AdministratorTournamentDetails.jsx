@@ -24,9 +24,8 @@ const AdministratorTournamentDetails = () => {
     const navigate = useNavigate();
     const { status, tab, tournamentName } = useParams();
     const isPastTournament = (status === "history"); 
-    console.log("isPastTournament: ", isPastTournament, "status: ", status);
 
-    const fromPage = location.state?.from || "/administrator-tournaments";
+    // const fromPage = location.state?.from || "/administrator-tournaments";
 
     const [thisAdministrator, setThisAdministrator] = useState("");
     const [tournament, setTournament] = useState({});
