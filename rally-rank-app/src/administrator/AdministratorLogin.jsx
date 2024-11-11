@@ -85,7 +85,7 @@ function AdministratorLogin() {
             setSuccessMessage("Login Successful! Redirecting...");
             setTimeout(() => {
                 navigate("/administrator-tournaments");
-            }, 2000);
+            }, 1000);
         }
     };
 

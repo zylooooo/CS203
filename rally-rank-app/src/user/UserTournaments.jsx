@@ -110,6 +110,11 @@ const TournamentCard = ({ tournamentType, isAvailableTournament, isScheduledTour
 };
 
 function UserTournaments() {
+
+    useEffect(() => {   
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
+
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
     const [activeButton, setActiveButton] = useState(0);

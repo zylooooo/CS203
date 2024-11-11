@@ -265,7 +265,7 @@ function AdministratorEditTournaments() {
             setSuccessMessage("Tournament updated successfully!");
             setTimeout(() => {
                 navigate("/administrator-tournaments");
-            }, 3000);
+            }, 1500);
         }
     };
 
@@ -283,7 +283,7 @@ function AdministratorEditTournaments() {
             setSuccessMessage("Tournament deleted successfully!");
             setTimeout(() => {
                 navigate("/administrator-tournaments");
-            }, 2000);
+            }, 1000);
         }
         setShowConfirmationPopUp(false);
     };

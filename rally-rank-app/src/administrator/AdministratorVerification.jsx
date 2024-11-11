@@ -65,7 +65,7 @@ function AdministratorVerification() {
             setSuccessMessage("Successfully verified! Redirecting you to RallyRank administrator login page...")
             setTimeout(() => {
                 navigate("/administrator-login");
-            }, 2000);
+            }, 1000);
         }
     };
 
@@ -103,7 +103,7 @@ function AdministratorVerification() {
         const response = await resendVerificationCode(formData.email);
         if (response) {
             setSuccessMessage("Verification code has been sent to your email.")
-            setTimeout(() => {}, 2000);
+            setTimeout(() => {}, 1000);
             setModalOpen(false);
         }
     };
