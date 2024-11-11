@@ -13,6 +13,7 @@ import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, fa
 // Assets and Components Imports
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import StrikeReportCard from '../components/AdministratorStrikeReportCard';
 
 const AdministratorTournamentDetails = () => {
 
@@ -23,6 +24,7 @@ const AdministratorTournamentDetails = () => {
     const navigate = useNavigate();
     const { status, tab, tournamentName } = useParams();
     const isPastTournament = (status === "history"); 
+    console.log("isPastTournament: ", isPastTournament, "status: ", status);
 
     const fromPage = location.state?.from || "/administrator-tournaments";
 
@@ -62,6 +64,26 @@ const AdministratorTournamentDetails = () => {
         return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
     };
 
+    // -------------------------- STRIKE REPORT FUNCTIONS ------------------------------
+
+    const [strikeOpen, setStrikeOpen] = useState(false);
+
+    const [strikePlayer, setStrikePlayer] = useState("");
+
+    const handleIssueStrikeClick = (player) => {
+        setStrikePlayer(player);
+        setStrikeOpen(true);
+    }
+
+    // function to check if tournament end date is within one week from system date
+    const isWithinOneWeek = (endDate) => {
+        const currentDate = new Date();
+        const tournamentEndDate = new Date(endDate);
+        const timeDifference = currentDate - tournamentEndDate; 
+        const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+        return daysDifference >= 0 && daysDifference <= 7;
+    };
+
     // -------------------------- API Call: Retrieve tournament details by the tournament name ---------------------------
     async function getTournamentByName() {
         try {
@@ -86,6 +108,7 @@ const AdministratorTournamentDetails = () => {
         if (response.status === 200) {
             setTournament(response.data);
         }
+
         } catch (error) {
             setWarningMessage("Unable to fetch tournaments. Please reload and try again.");
             console.error("Error fetching tournament:", error.response.data.error);
@@ -132,7 +155,7 @@ const AdministratorTournamentDetails = () => {
     };
 
     const handleShowFixturesClick = () => {
-        navigate(`/administrator/tournament-fixtures/${tournamentName}`, {
+        navigate(`/administrator/tournament-fixtures/${status}/${tournamentName}`, {
             state: { tournamentName }
         });
     };
@@ -140,7 +163,6 @@ const AdministratorTournamentDetails = () => {
     // -------------------------- useEffect() ---------------------------
     useEffect(() => {
         getTournamentByName(tournamentName);
-        // setPlayersPoolLength(playersPool.length);
     }, [tournamentName]);
 
     return (
@@ -258,10 +280,28 @@ const AdministratorTournamentDetails = () => {
                             {isPastTournament ? "Players" : "Current Players"} 
                         </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
+                        { isPastTournament && checkThisAdmin(tournament.createdBy) && !isWithinOneWeek(tournament.endDate) &&  (
+                            <div className = "flex justify-center items-center">
+                                <p className = "text-md text-secondary-color-red font-semibold">
+                                    Unable to issue strikes to players at this time as your tournament has ended more than a week ago.
+                                </p>
+                        </div>
+                        )}
                         {tournament.playersPool && tournament.playersPool.length > 0 ? (
                             <ol className = "list-decimal pl-5">
                                 {tournament.playersPool.map((player, index) => (
-                                    <li className = "mt-5 mb-5 font-semibold"> {player} </li>
+                                    <li key = {index} className = "mt-5 mb-5 flex justify-between items-center w-full">
+                                        {player} 
+                                        {/* ISSUE STRIKE BUTTON */}
+                                        { isPastTournament && checkThisAdmin(tournament.createdBy) && isWithinOneWeek(tournament.endDate) && (
+                                          <button 
+                                          className = "px-4 py-2 mr-6 rounded-[8px] shadow-md bg-secondary-color-red hover:shadow-inner font-semibold self-end text-primary-color-white"
+                                          onClick = {() => handleIssueStrikeClick(player) }
+                                          >
+                                              Issue Strike
+                                          </button>
+                                        )}
+                                    </li>
                                     
                                 ))}
                             </ol>
@@ -289,6 +329,12 @@ const AdministratorTournamentDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* STRIKE REPORT CARD */}
+            {strikeOpen && (
+                <StrikeReportCard tournamentName = {tournament.tournamentName} strikePlayer = {strikePlayer} setStrikeOpen = {setStrikeOpen} />
+            )}
+
         </div>
     );
 

@@ -35,8 +35,6 @@ import AdministratorEditTournaments from "./administrator/AdministratorEditTourn
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
 import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
-import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
-
 
 // Authentication Imports
 import AdminRoute from "./authentication/AdminRoute";
@@ -287,7 +285,7 @@ function App() {
 
                     {/* VIEW FIXTURES */}
                     <Route
-                        path = "/administrator/tournament-fixtures/:tournamentName"
+                        path = "/administrator/tournament-fixtures/:status/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>

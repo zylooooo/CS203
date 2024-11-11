@@ -33,7 +33,8 @@ function AdministratorFixtures() {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const tournamentName = useParams().tournamentName;
+    const { status, tournamentName } = useParams();
+    const isPastTournament = (status === "history");
 
     // Const: Hold reference for scrolling
     const mainFixturesRef = useRef(null);
@@ -53,6 +54,7 @@ function AdministratorFixtures() {
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     const [tournamentBracket, setTournamentBracket] = useState(null);
     const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
+    const [thisAdministrator, setThisAdministrator] = useState(false);
 
     // Consts: Hold winners of each important round (QF, SF and F)
     const [tournamentWinner, setTournamentWinner] = useState("");
@@ -160,6 +162,9 @@ function AdministratorFixtures() {
                     },
                 }
             );
+
+            const thisAdministrator = response.data.createdBy;
+            setThisAdministrator((thisAdministrator === adminData.adminName));
 
             // Warning Message Alerts
             if (response.data.error !== undefined) {
@@ -363,31 +368,33 @@ function AdministratorFixtures() {
                 </div>
             </div>
 
-            <div className = "fixed bottom-20 right-12">
-                { mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
-                    <button
-                        className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
-                        onClick = { handleEndTournament }
-                    >
-                        Complete Tournament
-                    </button>
-                ) : (
-                    <button
-                        className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
-                        onClick = { handleEndTournament }
-                    >
-                        Stop Tournament
-                    </button>
-                )}
-                {showConfirmationPopUp && (
-                    <ConfirmationPopUp
-                        message = "Do you want to confirm the end of the tournament?"
-                        onConfirm = {handleFinalConfirmation}
-                        onCancel = {() => setShowConfirmationPopUp(false)}
-                    />
-                )}
-                
-            </div>
+            {!isPastTournament && thisAdministrator && (
+                <div className = "fixed bottom-20 right-12">
+                    { mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
+                        <button
+                            className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
+                            onClick = { handleEndTournament }
+                        >
+                            Complete Tournament
+                        </button>
+                    ) : (
+                        <button
+                            className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
+                            onClick = { handleEndTournament }
+                        >
+                            Stop Tournament
+                        </button>
+                    )}
+                    {showConfirmationPopUp && (
+                        <ConfirmationPopUp
+                            message = "Do you want to confirm the end of the tournament?"
+                            onConfirm = {handleFinalConfirmation}
+                            onCancel = {() => setShowConfirmationPopUp(false)}
+                        />
+                    )}
+                    
+                </div>
+            )}
 
         </>
     );

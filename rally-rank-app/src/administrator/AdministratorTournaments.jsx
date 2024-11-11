@@ -184,13 +184,11 @@ function AdministratorTournaments() {
                         className="relative w-full h-50px flex items-center justify-center"
                     >
                         {hovered ? (
-                            <span className="flex p-1 animate-fadeIn">
+                            <span className="flex p-1">
                                 Create Tournament
                             </span>
                         ) : (
-                            <span className="animate-fadeIn">
-                                <FontAwesomeIcon icon={faPlus} className="text-2xl mt-1 px-4" />
-                            </span>
+                            <span><FontAwesomeIcon icon={faPlus} className="text-2xl mt-1 px-4" /></span>
                         )}
                     </button>
                 </div>
