@@ -358,7 +358,7 @@ public class TournamentService {
                isUserGenderMatching(user, tournament) &&
                isUserNotStriked(user, tournament) &&
                isUserAgeEligible(user, tournament) &&
-               isBracketGenerated(tournament);
+               !isBracketGenerated(tournament);
     }
 
     // Checks if the signup is open for the tournament
@@ -431,7 +431,7 @@ public class TournamentService {
     
     // Checks if there is any brackets already generated for the tournament
     private boolean isBracketGenerated(Tournament tournament) {
-        return tournament.getBracket() != null;
+        return tournament.getBracket() != null; // Returns true if the bracket is already generated
     }
 
      /**
