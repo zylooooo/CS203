@@ -27,7 +27,7 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
     };
 
     return (
-        <div className = "space-y-4 text-center">
+        <div className="space-y-4">
             {scheduledTournaments.length > 0 ? (
                 scheduledTournaments.map((scheduledTournament, index) => (
                     <div
@@ -47,10 +47,11 @@ const UserScheduledTournamentCard = ({ scheduledTournaments, isScheduledTourname
                     </div>
                 ))
             ) : (
-                <p className = "text-gray-800 font-bold"> You have no scheduled tournaments. Join one today! </p>
+                <p className = "text-gray-800 font-bold text-center"> You have no scheduled tournaments. Join one today! </p>
             )}
         </div>
     );
+    
 };
 
 export default UserScheduledTournamentCard;
