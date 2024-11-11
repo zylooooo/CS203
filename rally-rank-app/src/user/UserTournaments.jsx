@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { API_URL } from "../constants";
+import { API_URL } from "../../config";
 
 // Component: Tournament Buttons
 const TournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick }) => {
