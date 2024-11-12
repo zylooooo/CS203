@@ -79,6 +79,9 @@ function AdministratorFixtures() {
     const [warningMessage, setWarningMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    // Const: For retrieving the updated tournament details upon change
+    const [refreshData, setRefreshData] = useState(false);
+
     // Function: Format Date to date and time for easy readability
     const formatDate = (dateString) => {
         if (dateString === null) {
@@ -260,6 +263,7 @@ function AdministratorFixtures() {
                 }
                 setMainTournamentRounds(roundsArr);
             }
+            setRefreshData((prev) => !prev);
             return response;
 
         } catch (error) {
@@ -271,7 +275,7 @@ function AdministratorFixtures() {
     // ----------------------- UseEffect() -----------------------
     useEffect(() => {
         getTournamentBracket();
-    }, []);
+    }, [refreshData]);
 
     // ----------------------- API Call: Update Tournament End Date -----------------------
     async function updateTournamentEndDate() {
