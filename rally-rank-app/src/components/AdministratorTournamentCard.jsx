@@ -1,6 +1,10 @@
 // Package Imports
 import { useNavigate } from "react-router-dom";
 
+// Icons Import
+import { faP, faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator, tab, isPastTournament }) => {
     const navigate = useNavigate();
 
@@ -53,20 +57,19 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
                     onClick = {() => handleTournamentCardClick(tournament.tournamentName)}
                 >
                     <div className = "flex-1 pr-4">
-                        <h3 className = "text-xl font-bold mb-2"> {tournament.tournamentName} </h3>
-                        <div className = "flex items-center mb-2 justify-between">
-                            <p> Organiser: {tournament.createdBy} </p>
+                        <h3 className = "text-xl font-bold mb-5"> {tournament.tournamentName} </h3>
+                        <div className = "flex items-center mb-3">
+                            <p><span className = "font-semibold"> Organiser: </span> {tournament.createdBy} </p>
                         </div>
-                        <p className = "mb-2"> Date: 
+                        <p className = "mb-3"> <span className = "font-semibold"> Date: </span>
                             {!isPastTournament
                                 ? ` ${formatDate(tournament.startDate)} `
                                 : ` ${formatDate(tournament.startDate)} to ${formatDate(tournament.endDate)}`
                             } 
                         </p>
-                        <p className = "mb-2"> Elo Rating Criteria: {tournament.minElo} to {tournament.maxElo} </p>
-                        <p className = "mb-2"> Game: {tournament.category} </p>
-                        <p className = "mb-2"> Gender: {tournament.gender} </p>
-                        <p className = "mb-2"> Player Capacity: {tournament.playerCapacity} </p>
+                        <p className = "mb-3"><span className = "font-semibold"> Elo Rating Criteria: </span> {tournament.minElo} to {tournament.maxElo} </p>
+                        <p className = "mb-3"><span className = "font-semibold"> Gender: </span> {tournament.gender} </p>
+                        <p className = "mb-3"><span className = "font-semibold"> Player Capacity: </span> {tournament.playerCapacity} </p>
                         <p>
                             <strong>
                                 (
@@ -80,16 +83,10 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
                             </strong>
                         </p>
                     </div>
-                    <div className = "card-section-two border-l pl-4 flex-none w-1/3 flex flex-col text-text-grey">
+                    <div className = "card-section-two border-l pl-4 flex-none w-2/5 flex flex-col text-text-grey">
                         <div>
-                        <p className = "font-semibold"> Venue: </p>
-                        <p> {tournament.location} </p>
-                        {tournament.remarks && (
-                            <>
-                                <p className = "font-semibold mt-2"> Remarks: </p>
-                                <p> {tournament.remarks} </p>
-                            </>
-                        )}
+                            <p className = "mb-3"><span className = "font-semibold"> Venue: </span> {tournament.location} </p>
+                            <p className = "mb-3"><span className = "font-semibold"> Game: </span> {tournament.category} </p>
                         </div>
 
                         {/* EDIT TOURNAMENT BUTTON */}
@@ -100,9 +97,10 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
                                         e.stopPropagation();
                                         handleEditClick(tournament.tournamentName);
                                     }}
-                                    className = "font-semibold p-2 rounded-lg shadow-md transition duration-300 ease-in-out ml-4 transform text-primary-color-green hover:shadow-xl hover:text-primary-color-light-green"
+                                    className = "font-bold p-2 rounded-lg shadow-md transition duration-300 ease-in-out ml-4 transform text-primary-color-green hover:shadow-xl hover:text-primary-color-light-green mr-2"
+                                    style = {{ backgroundColor: "#FFFEF2" }}
                                 >
-                                    Edit Tournament
+                                    <FontAwesomeIcon icon = {faPen} className = "mr-2 text-sm ml-2" /> <span className = "mr-2"> Edit Tournament </span>
                                 </button>
                             )}
                         </div>

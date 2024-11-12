@@ -7,16 +7,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 // Assets and Components Imports
-import UserTournamentButtons from "../components/UserTournamentButtons";
 import UserTournamentCard from '../components/UserTournamentCard';
+import UserTournamentButtons from "../components/UserTournamentButtons";
 
 function UserTournaments() {
+    const navigate = useNavigate();
 
     useEffect(() => {
         localStorage.setItem("currUrl", location.pathname);
     }, []);
-
-    const navigate = useNavigate();
 
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
@@ -30,14 +29,14 @@ function UserTournaments() {
         navigate(`/users/Tournaments/${0}`);
         setActiveButton(0);
         getAvailableTournaments();
-    }
+    };
 
     const handleMyScheduledTournamentsClick = () => {
         navigate(`/users/Tournaments/${1}`);
         setActiveButton(1);
         getMyScheduledTournaments();
         setDisplayTournamentType(myScheduledTournaments)
-    }
+    };
 
     // ------------------------------------- API Call: Retrieiving available tournaments -------------------------------------
     async function getAvailableTournaments() {
@@ -124,7 +123,7 @@ function UserTournaments() {
                     placeholder = "Search for tournaments..."
                     value = {searchTerm}
                     onChange = { (e) => setSearchTerm(e.target.value) }
-                    className = "border rounded-xl p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className = "p-3 border mb-5 rounded-[16px] w-full card-background focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {loading ? (
                     <p> Loading tournaments... </p>

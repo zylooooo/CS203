@@ -41,13 +41,13 @@ const UserTournamentCard = ({ tournamentType, isAvailableTournament, isScheduled
                     onClick = {() => handleTournamentCardClick(tournament)}
                 >
                     <div className = "flex-1 pr-4 py-1">
-                        <h3 className = "text-xl font-bold mb-3"> {tournament.tournamentName} </h3>
+                        <h3 className = "text-xl font-bold mb-5"> {tournament.tournamentName} </h3>
                         <div className = "flex items-center mb-3">
                             <p><span className = "font-semibold"> Organiser: </span> {tournament.createdBy} </p>
                         </div>
                         <p className = "mb-3"><span className = "font-semibold"> Date: </span> {formatDate(tournament.startDate)} </p>
                         <p className = "mb-3"><span className = "font-semibold"> Elo Rating Criteria: </span> {tournament.minElo} to {tournament.maxElo} </p>
-                        <p className = "mb-2"><span className = "font-semibold"> Gender: </span> {tournament.gender} </p>
+                        <p className = "mb-3"><span className = "font-semibold"> Gender: </span> {tournament.gender} </p>
                     </div>
                     <div className = "card-section-two border-l pl-4 flex-none w-2/5 relative">
                         <p className = "mb-3"><span className = "font-semibold"> Venue: </span> {tournament.location} </p>
