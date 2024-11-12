@@ -1,6 +1,10 @@
 // Package Imports
 import { useNavigate } from "react-router-dom";
 
+// Icons Imports
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator, isPastTournament }) => {
     const navigate = useNavigate();
 
