@@ -117,6 +117,8 @@ function AdministratorEditTournaments() {
                 },
             );
 
+            console.log(response.data);
+
             if (response.status === 200) {
                 setAvailablePlayers(response.data);
             }

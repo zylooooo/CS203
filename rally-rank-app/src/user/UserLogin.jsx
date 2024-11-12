@@ -8,7 +8,7 @@ import { useAuth } from "../authentication/AuthContext";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 // Assets and Components Imports
 import loginBackground from "../assets/login-picture.jpg";
@@ -19,6 +19,8 @@ import AlertMessageWarning from "../components/AlertMessageWarning";
 function UserLogin() {
     const form = useForm();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [username, setUsername] = useState(location.state?.username || "");
     const { loginUser, isUserLoggedIn } = useAuth();
 
     const { register, handleSubmit, formState } = form;
@@ -139,6 +141,8 @@ function UserLogin() {
                             type = "text"
                             id = "username"
                             placeholder = "Username"
+                            defaultValue = {username}
+                            onChange = {(e) => setUsername(e.target.value)}
                             {...register("username", {required: "Username is required"})}
                         />
                         <p className = "error"> {errors.username?.message} </p>

@@ -84,12 +84,30 @@ function AdministratorFixtures() {
 
     // Function: Format Date to date and time for easy readability
     const formatDate = (dateString) => {
+        console.log("dateString: ", dateString);
         if (dateString === null) {
             return;
         }
         const date = new Date(dateString);
+        date.setHours(date.getHours() + 8); // Add 8 hours
         return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
+
+    function convertToOriginalTimeZone(isoDateString, timeZone) {
+        const date = new Date(isoDateString);
+        const options = {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: timeZone,
+            timeZoneName: 'short',
+        };
+        return date.toLocaleString('en-US', options);
+    }
 
     // Function: Handle click for each seed
     const handleClick = (id) => {
@@ -358,15 +376,6 @@ function AdministratorFixtures() {
                             />
                         </div>
                     )}
-                    {showUpdateMatchTimingsCard && (
-                        <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
-                    )}
-                    {showUpdateResultsCard && (
-                        <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
-                    )}
-                    {showMatchResultsCard && (
-                        <MatchResultsCard matchDetails = {currentMatch} setShowMatchResultsCard = {setShowMatchResultsCard}/>
-                    )}
                 </div>
                 <div className = "flex flex-col w-1/3 gap-5 mt-12">
                     <div className = "flex flex-col">
@@ -453,6 +462,15 @@ function AdministratorFixtures() {
                         />
                     )}
                 </div>
+            )}
+            {showUpdateMatchTimingsCard && (
+                        <UpdateMatchTimingsCard matchDetails = {currentMatch} setShowUpdateMatchTimingsCard = {setShowUpdateMatchTimingsCard} />
+                    )}
+                    {showUpdateResultsCard && (
+                        <UpdateResultsCard matchDetails = {currentMatch} setShowUpdateResultsCard = {setShowUpdateResultsCard} />
+                    )}
+                    {showMatchResultsCard && (
+                        <MatchResultsCard matchDetails = {currentMatch} setShowMatchResultsCard = {setShowMatchResultsCard}/>
             )}
         </>
     );

@@ -66,6 +66,7 @@ function UserFixtures() {
             return;
         }
         const date = new Date(dateString);
+        date.setHours(date.getHours() + 8); // Add 8 hours
         return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
 

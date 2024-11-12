@@ -67,7 +67,9 @@ const UpdateMatchTimingsCard = ({ matchDetails, setShowUpdateMatchTimingsCard })
     };
 
     const handleFinalConfirmation = async () => {
+        console.log("Date: ", date, time);
         const startDate = new Date(`${date}T${time}`);
+        console.log("staetDate: ", startDate);
         const response = await updateMatchTimings({ startDate: startDate.toISOString() });
         if (response !== undefined) {
             setSuccessMessage("Match timings set!");

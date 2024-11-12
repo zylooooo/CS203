@@ -9,7 +9,7 @@ import { faSync, faTimes } from "@fortawesome/free-solid-svg-icons";
 import axios from 'axios';
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 // Assets and Components Imports
 import rallyRankLogo from "../assets/Rally-Rank-Logo.svg";
@@ -21,6 +21,8 @@ function UserVerification() {
     const form = useForm();
     const modalForm = useForm();
     const navigate = useNavigate();
+    const location = useLocation(); 
+    const [username, setUsername] = useState(location.state?.username || "");
 
     const { register, handleSubmit, formState } = form;
     const { errors } = formState;
@@ -65,7 +67,7 @@ function UserVerification() {
         if (response !== undefined) {
             setSuccessMessage("Successfully verified! Redirecting you to RallyRank user login page...")
             setTimeout(() => {
-                navigate("/auth/user-login");
+                navigate("/auth/user-login", {state: {username: formData.username}});
             }, 1000);
         }
     };
@@ -143,6 +145,8 @@ function UserVerification() {
                                     type = "text"
                                     id = "username"
                                     placeholder = "Username"
+                                    defaultValue = {username}
+                                    onChange = {(e) => setUsername(e.target.value)}
                                     {...register("username", {
                                         required: "Username is required!",
                                     })}
