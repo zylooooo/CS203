@@ -13,21 +13,19 @@ import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronUp, faChevronDown, faChevronCircleUp, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons';
 
 import WinnersTable from '../components/WinnersTable';
 import MatchResultsCard from '../components/MatchResultsCard';
 import PreliminaryPlayersTable from '../components/PreliminaryPlayersTable';
 
 function UserFixtures() {
-
-    useEffect(() => {   
-        localStorage.setItem("currUrl", location.pathname);
-    }, []);
-
     const location = useLocation();
     const { tournamentName } = useParams();
-    console.log("tournamentName: ", tournamentName);
+
+    useEffect(() => {
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     // Const: Hold referance for scrolling
     const mainFixturesRef = useRef(null);
@@ -68,7 +66,7 @@ function UserFixtures() {
             return;
         }
         const date = new Date(dateString);
-        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
+        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
 
     // Function: Handle click for each seed
@@ -99,7 +97,7 @@ function UserFixtures() {
     const CustomSeed = ({ seed, breakpoint }) => {
         return (
             <Seed mobileBreakpoint = {breakpoint} style = {{ fontSize: "12px" }}>
-                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px" }}>
+                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px", width: "250px" }}>
                     <div>
                         <SeedTeam style = {{ color: "#444444", fontWeight: "700", fontSize: "14px"}}>
                             {seed.teams[0]?.name || "TBD"}
@@ -215,7 +213,7 @@ function UserFixtures() {
                         style = {{ backgroundColor: !tournamentBracket ? 'gray' : 'grey' }}
                         disabled = {!tournamentBracket}
                     >
-                        Go to Main Tournament Fixtures
+                        Go to Main Tournament Fixtures <FontAwesomeIcon icon = {faChevronDown} />
                     </button>
                     <div className = "flex flex-col items-center gap-4">
                         {tournamentBracket === null && (
@@ -230,6 +228,12 @@ function UserFixtures() {
                     {mainMatches.length > 0 && tournamentBracket !== null && (
                         <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
                             <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
+                            {tournamentWinner && (
+                                <div className = "flex flex-col items-center text-center bg-green-100 p-4 rounded-lg w-1/3 shadow-md mb-10">
+                                    <FontAwesomeIcon icon = {faTrophy} className = "text-yellow-500 text-3xl mb-2" />
+                                    <h3 className = "text-2xl font-bold text-green-700"> Tournament Winner: {tournamentWinner} </h3>
+                                </div>
+                            )}
                             <Bracket
                                 rounds = {mainTournamentRounds}
                                 roundTitleComponent = {(title) => (
@@ -250,7 +254,7 @@ function UserFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
                             View Quarter Finals
                             <span className = "text-lg ml-2">
-                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
@@ -263,7 +267,7 @@ function UserFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
                             View Semi Finals
                             <span className = "text-xl ml-2">
-                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
@@ -276,7 +280,7 @@ function UserFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
                             View Finals
                             <span className="text-lg ml-2">
-                                <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showFinals && (

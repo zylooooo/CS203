@@ -1,34 +1,45 @@
-// Config imports
+// Configuration Imports
 import { API_URL } from '../../config';
 
-// Library imports
+// Package Imports
 import axios from "axios";
-import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+
+// Icons Imports
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faStar, faMapMarkerAlt, faUserTie, faGamepad, faMars, faVenus, faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
-// Component: Tournament Details Card
+// Assets and Components Imports
+import AlertMessageSuccess from "../components/AlertMessageSuccess";
+import AlertMessageWarning from "../components/AlertMessageWarning";
+
 const TournamentDetails = () => {
-
-    // TODO: doesn't work because state is lost on refresh
-    useEffect(() => {   
-        localStorage.setItem("currUrl", location.pathname);
-    }, []);
-
     const navigate = useNavigate();
     const location = useLocation();
+    const { tournamentName } = useParams();
+    const [tournamentDetails, setTournamentDetails] = useState(null);
 
+    // Const: For retrieving the updated tournament details upon change
+    const [refreshData, setRefreshData] = useState(false);
+
+    // Consts: For conditional rendering
     const [isFull, setIsFull] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
-    const { tournamentName } = useParams();                             // To be used as parameter for getting the tournament details by name (following backend api)
-    const [tournamentDetails, setTournamentDetails] = useState(null);
-    const isPastTournament = useParams().status === "history";         // To be used for changes in tournament details for past tournaments
-    const isAvailableTournament = useParams().status === "avail";      // To be used for displaying 'Join Tournament' button or not
-    const isScheduledTournament = useParams().status === "sched";
     const [joinedForScheduled, setJoinedForScheduled] = useState(true);
-    
 
+    // Consts: Check the type of tournament, to be set into URL
+    const isPastTournament = useParams().status === "history";
+    const isAvailableTournament = useParams().status === "avail";
+    const isScheduledTournament = useParams().status === "sched";
+
+    // For Alerts
+    const [successMessage, setSuccessMessage] = useState("");
+    const [warningMessage, setWarningMessage] = useState("");
+    
+    useEffect(() => {
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     const isTwoWeeks = (startDate) => {
         const currentDate = new Date();
@@ -36,9 +47,9 @@ const TournamentDetails = () => {
         const timeDifference = tournamentStartDate - currentDate;
         const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
         return daysDifference === 14;
-    }
+    };
 
-    // Function to be used to display the gender icon for tournament details.
+    // Function: Display the gender icon for tournament details.
     const getGenderIcon = (gender) => {
         switch (gender.toLowerCase()) {
             case 'male':
@@ -80,50 +91,52 @@ const TournamentDetails = () => {
                 if (response.status == 200) {
                     setHasJoined(true);
                     setJoinedForScheduled(true);
-                    console.log(response.data);
-                    // Success Message
+                    setSuccessMessage("Tournament joined!");
+                    setRefreshData((prev) => !prev);
+
                 }
             } catch (error) {
+                setWarningMessage("Unable to join tournament. Please try again.");
                 console.error("Error joining tournament:", error.response ? error.response.data : error.message);
             }
         } else {
             console.log("Tournament is full. Button shouldn't even appear.");
-            // Alert Message
+            setWarningMessage("Tournament is full!");
         }
-    }
+    };
 
-    // ----------------------- API Call: Removing user's username when leaving a tournament  ----------------------- (WAIT FOR ROUTER FROM BACKEND)
+    // ----------------------- API Call: Removing user's username when leaving a tournament  -----------------------
     const handleLeaveTournamentClick = async () => {
-            try {
-                const userData = JSON.parse(localStorage.getItem("userData"));
-                if (!userData || !userData.jwtToken) {
-                    console.error("No JWT Token found!");
-                    // Alert Message
-                    return;
-                }
-
-                const response = await axios.delete(
-                    `${API_URL}/users/tournaments/leave-${tournamentName}`,
-                    {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: `Bearer ${userData.jwtToken}`,
-                        },
-                    }
-                );
-
-                if (response.status == 200) {
-                    setHasJoined(false);
-                    setJoinedForScheduled(false);
-                    console.log(response.data);
-                    // Success Message
-                }
-            } catch (error) {
-                console.error("Error leaving tournament:", error.response ? error.response.data : error.message);
-                console.log("GOES HERE");
+        try {
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData || !userData.jwtToken) {
+                console.error("No JWT Token found!");
+                return;
             }
 
-    }
+            const response = await axios.delete(
+                `${API_URL}/users/tournaments/leave-${tournamentName}`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${userData.jwtToken}`,
+                    },
+                },
+            );
+
+            if (response.status == 200) {
+                setHasJoined(false);
+                setJoinedForScheduled(false);
+                console.log(response.data);
+                setSuccessMessage("You have left the tournament.");
+                setRefreshData((prev) => !prev);
+            }
+
+        } catch (error) {
+            console.error("Error leaving tournament:", error.response ? error.response.data : error.message);
+            console.log("GOES HERE");
+        }
+    };
 
     const handleBackButtonClick = () => {
         if (isAvailableTournament) {
@@ -135,7 +148,6 @@ const TournamentDetails = () => {
         }
     };
 
-    // WIP: Function to navigate to the fixtures page after clicking "Show Fixtures" button.
     const handleShowFixturesButtonClick = () => {
         navigate(`/user-fixtures/${tournamentName}`, {
             state: { tournamentName }
@@ -144,12 +156,9 @@ const TournamentDetails = () => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });
-
         return `${day} ${month} ${year}`;
     };
 
@@ -177,14 +186,15 @@ const TournamentDetails = () => {
             }
             
         } catch (error) {
+            setWarningMessage("Unable to retrieve tournament details. Please reload the page and try again.");
             console.error("Error fetching tournament details: ", error);
         }
-    }
+    };
 
     // ------------------------------------- useEffect() -------------------------------------
     useEffect(() => {
         getTournamentDetailsByName();
-    }, []);
+    }, [refreshData]);
 
     if (!tournamentDetails) {
         return (
@@ -194,8 +204,9 @@ const TournamentDetails = () => {
 
     return (
         <div className = "tournament-card-template main-container flex">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "flex flex-col w-2/3 gap-4 shadow-xl p-8 rounded-[12px] card-background border">
-
                 <div className = "flex justify-between items-center mb-4">
                     {/* BACK BUTTON */}
                     <div className="flex items-center gap-4 flex-grow">
@@ -227,9 +238,9 @@ const TournamentDetails = () => {
                     {/* JOIN/LEAVE BUTTON */}
                     {!isFull && isAvailableTournament && !isScheduledTournament && (
                         <button
-                            onClick={hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                            className="border text-white px-4 py-2 rounded font-semibold"
-                            style={{
+                            onClick = {hasJoined ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                            className = "border text-white px-4 py-2 rounded font-semibold"
+                            style = {{
                                 backgroundColor: hasJoined ? "#FF6961" : "#56AE57",
                                 border: "none",
                                 color: "white",
@@ -243,13 +254,12 @@ const TournamentDetails = () => {
                             {hasJoined ? "Leave Tournament" : "Join Tournament"}
                         </button>
                     )}
-
                     {/* LEAVE BUTTON FOR SCHEDULED TOURNAMENT */}
                     {isScheduledTournament && !isTwoWeeks(tournamentDetails.startDate) && (
                         <button
-                        onClick={joinedForScheduled ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
-                        className="border text-white px-4 py-2 rounded font-semibold"
-                        style={{
+                        onClick = {joinedForScheduled ? handleLeaveTournamentClick : handleJoinTournamentButtonClick}
+                        className = "border text-white px-4 py-2 rounded font-semibold"
+                        style = {{
                             backgroundColor: joinedForScheduled ? "#FF6961" : "#56AE57",
                             border: "none",
                             color: "white",
@@ -264,10 +274,8 @@ const TournamentDetails = () => {
                     </button>
                     )}
                 </div>
-
                 {/* LINE DIVIDER */}
                 <div style = {{ height: "1px", backgroundColor: "#DDDDDD" }} />
-
                 <div className = "flex flex-row gap-20 mt-4 mb-1">
                     {/* LEFT SECTION */}
                     <div className = "ml-10 w-1/2">
@@ -327,10 +335,8 @@ const TournamentDetails = () => {
                         </p>
                     </div>
                 </div>
-
                 {/* LINE DIVIDER */}
                 <div style = {{ height: "1px", backgroundColor: "#DDDDDD" }} />
-
                 {/* TOURNAMENT REMARKS */}
                 <div className = "ml-10 w-1/2">
                     {tournamentDetails.remarks && (
@@ -338,9 +344,8 @@ const TournamentDetails = () => {
                     )}
                     <p className = "mt-2 text-lg"> Max Players: <span className = "text-xl" style = {{ color: "red" }}> <strong>{tournamentDetails.playerCapacity}</strong> </span> </p>
                 </div>
-
                 {/* LIST OF PLAYERS ENROLLED IN TOURNAMENT */}
-                <div className = "flex justify-between items-start">
+                <div className = "flex items-start gap-10">
                     <div className = "players-list mt-2 p-4 shadow-lg rounded-[8px] w-2/3 relative ml-8">
                         <h2 className = "text-xl font-semibold mb-2"> {isPastTournament ? "Players" : "Current Players"} </h2>
                         <div style = {{ height: "1px", backgroundColor: "#DDDDDD", margin: "10px 0" }} />
@@ -356,11 +361,10 @@ const TournamentDetails = () => {
                         )}
                     </div>
                     <button
-                        // WIP: To be updated when API call for fixtures (brackets) are finalised.
                         onClick = {handleShowFixturesButtonClick}
-                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
+                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white px-4 py-2 rounded-[8px] w-2/6 font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
-                        {isPastTournament ? "Show Results" : "Show Fixtures"}
+                        {isPastTournament ? "Show Results" : "Show Current Fixtures"}
                     </button>
                 </div>
             </div>
