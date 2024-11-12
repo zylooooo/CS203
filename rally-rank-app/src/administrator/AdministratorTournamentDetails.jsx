@@ -308,9 +308,8 @@ const AdministratorTournamentDetails = () => {
                             <p> No players have joined this tournament yet. </p>
                         )}
                     </div>
-
                     {/* GENERATE BRACKETS BUTTON / SHOW RESULTS/FIXTURES BUTTON */}
-                    <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
+                    <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-14">
                         {checkThisAdmin(tournament.createdBy) && !isPastTournament && (
                             <button
                                 onClick = {handleGenerateBracketsClick}
@@ -333,11 +332,8 @@ const AdministratorTournamentDetails = () => {
             {strikeOpen && (
                 <StrikeReportCard tournamentName = {tournament.tournamentName} strikePlayer = {strikePlayer} setStrikeOpen = {setStrikeOpen} />
             )}
-
         </div>
     );
-
-
-}
+};
 
 export default AdministratorTournamentDetails;
