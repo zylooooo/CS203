@@ -20,7 +20,7 @@ function UserTournaments() {
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
     const { tab } = useParams();
-    const [activeButton, setActiveButton] = useState(0);
+    const [activeButton, setActiveButton] = useState(parseInt(localStorage.getItem("userActiveTab")) || 0);
     const [availableTournaments, setAvailableTournaments] = useState([]);
     const [displayTournamentType, setDisplayTournamentType] = useState([]);
     const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);

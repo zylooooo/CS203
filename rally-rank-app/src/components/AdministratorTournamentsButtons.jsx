@@ -1,11 +1,11 @@
 // Package Imports
 import { useState } from "react";
 
-const AdministratorTournamentsButtons = ({ buttons, onAllClick, onMyClick, active }) => {
-    const [activeButton, setActiveButton] = useState(active);
+const AdministratorTournamentsButtons = ({ buttons, onAllClick, onMyClick, activeButton }) => {
+    // const [activeButton, setActiveButton] = useState(active);
 
     const handleButtonClick = (index) => {
-        setActiveButton(index);
+        // setActiveButton(index);
         if (index === 0) {
             onAllClick();
         } else if (index === 1) {

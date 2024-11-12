@@ -49,18 +49,14 @@ export const AuthProvider = ({ children }) => {
     const logoutUser = () => {
         setUser(null);
         setIsUserLoggedIn(false);
-        localStorage.removeItem('userData');
-        localStorage.removeItem('currUrl');
-        localStorage.removeItem('jwtToken');
+        localStorage.clear();
     };
 
     // Logout admin
     const logoutAdmin = () => {
         setAdmin(null);
         setIsAdminLoggedIn(false);
-        localStorage.removeItem('adminData');
-        localStorage.removeItem('currUrl');
-        localStorage.removeItem('jwtToken');
+        localStorage.clear();
     };
 
     return (

@@ -9,6 +9,7 @@ import React, { useState, useEffect } from "react";
 import AlertMessageWarning from "../components/AlertMessageWarning";
 import AdministratorTournamentCard from '../components/AdministratorTournamentCard';
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
+import { set } from 'react-hook-form';
 
 function AdministratorTournamentHistory() {
 
@@ -17,7 +18,7 @@ function AdministratorTournamentHistory() {
     }, []);
 
     const [tournaments, setTournaments] = useState([]);
-    const [tab, setTab] = useState(0);
+    const [activeButton, setActiveButton] = useState(parseInt(localStorage.getItem("adminHistoryTab") || 0));
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [thisAdministrator, setThisAdministrator] = useState("");
     const [myPastTournaments, setMyPastTournaments] = useState([]);
@@ -29,7 +30,8 @@ function AdministratorTournamentHistory() {
     const handleAllClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTab(0);
+            setActiveButton(0);
+            localStorage.setItem("adminHistoryTab", 0);
             setTournaments(allPastTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -38,11 +40,20 @@ function AdministratorTournamentHistory() {
     const handleMyClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTab(1);
+            setActiveButton(1);
+            localStorage.setItem("adminHistoryTab", 1);
             setTournaments(myPastTournaments);
         }, 300);
         setIsTransitioning(false);
     };
+
+    useEffect(() => {
+        if (activeButton === 0) {
+            getAllPastTournaments();
+        } else {
+            getMyPastTournaments();
+        }
+    }, [activeButton]);
 
     // -------------------------- API Call: Retrieve all past and completed tournaments ---------------------------
     async function getAllPastTournaments() {
@@ -95,6 +106,7 @@ function AdministratorTournamentHistory() {
             );
 
             setMyPastTournaments(response.data);
+            setTournaments(response.data);
 
         } catch (error) {
             setWarningMessage("Unable to fetch your past tournaments. Please reload and try again.");
@@ -106,9 +118,8 @@ function AdministratorTournamentHistory() {
 
     // -------------------------- useEffect() ---------------------------
     useEffect(() => {
-        getAllPastTournaments();
-        getMyPastTournaments();
-    }, []);
+        setTournaments(activeButton === 0 ? allPastTournaments : myPastTournaments);
+    }, [tournaments]);
 
     //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
     const [searchTerm, setSearchTerm] = useState("");
@@ -123,7 +134,12 @@ function AdministratorTournamentHistory() {
         <div className = {`tournaments-page flex w-full p-9 gap-2 justify-evenly transition-opacity duration-300 ${ isTransitioning ? "opacity-0" : "opacity-100"}`}>
             <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
             <div className = "row-container flex flex-col w-5/6 p-14 gap-8">
-                <AdministratorTournamentsButtons buttons = {["All Past Tournaments", "My Past Tournaments"]} onAllClick = {handleAllClick} onMyClick = {handleMyClick} active = {tab}/>
+                <AdministratorTournamentsButtons 
+                    buttons = {["All Past Tournaments", "My Past Tournaments"]} 
+                    onAllClick = {handleAllClick} 
+                    onMyClick = {handleMyClick} 
+                    activeButton = {activeButton}
+                />
                 <div className = "flex flex-col gap-5">
                     <input
                         type = "text"
@@ -138,7 +154,7 @@ function AdministratorTournamentHistory() {
                             setIsTransitioning = {setIsTransitioning} 
                             thisAdministrator = {thisAdministrator} 
                             isPastTournament = {true} 
-                            tab = {tab} />
+                        />
                     ) : (
                         <p> No tournaments found.</p>
                     )}

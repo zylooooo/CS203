@@ -140,9 +140,9 @@ const TournamentDetails = () => {
 
     const handleBackButtonClick = () => {
         if (isAvailableTournament) {
-            navigate("/users/tournaments/0");
+            navigate("/users/Tournaments");
         } else if (isScheduledTournament) {
-            navigate("/users/tournaments/1");
+            navigate("/users/Tournaments");
         } else if (isPastTournament) {
             navigate("/past-tournaments");
         }

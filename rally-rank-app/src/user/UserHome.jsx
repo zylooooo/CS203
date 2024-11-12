@@ -33,7 +33,7 @@ function UserHome() {
         setIsTransitioning(true);
         setTimeout(() => {
             navigate("/users/tournaments");
-        }, 2000);
+        }, 800);
     };
 
     // ------------------------------------- Availability Functions -------------------------------------

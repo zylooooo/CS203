@@ -143,7 +143,8 @@ function App() {
 
                     {/* USER'S TOURNAMENTS PAGE */}
                     <Route
-                        path = "/users/tournaments/:tab"
+                        // path = "/users/tournaments/:tab"
+                        path = "/users/tournaments"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>
@@ -264,7 +265,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/administrator-tournaments/details/:status/:tab/:tournamentName"
+                        path = "/administrator-tournaments/details/:status/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>

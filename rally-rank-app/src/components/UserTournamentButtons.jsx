@@ -1,11 +1,11 @@
 // Package Imports
 import { useEffect, useState } from "react";
 
-const UserTournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick, active }) => {
-    const [activeButton, setActiveButton] = useState(0);
+const UserTournamentButtons = ({ buttons, onAvailableTournamentsClick, onMyScheduledTournamentsClick, activeButton }) => {
+    // const [activeButton, setActiveButton] = useState(0);
 
     const handleTournamentButtonClick = (index) => {
-        setActiveButton(index);
+        // setActiveButton(index);
         if (index === 0) {
             onAvailableTournamentsClick();
         } else {
