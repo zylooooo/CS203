@@ -26,14 +26,14 @@ function UserTournaments() {
     const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
 
     const handleAvailableTournamentClick = () => {
-        navigate(`/users/Tournaments/${0}`);
+        navigate(`/users/Tournaments`);
         setActiveButton(0);
-        localStorage.setItem("ugit serActiveTab", 0);
+        localStorage.setItem("userActiveTab", 0);
         getAvailableTournaments();
     };
 
     const handleMyScheduledTournamentsClick = () => {
-        navigate(`/users/Tournaments/${1}`);
+        navigate(`/users/Tournaments`);
         setActiveButton(1);
         localStorage.setItem("userActiveTab", 1);
         getMyScheduledTournaments();
