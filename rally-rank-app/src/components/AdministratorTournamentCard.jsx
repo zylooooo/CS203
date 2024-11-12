@@ -1,7 +1,7 @@
 // Package Imports
 import { useNavigate } from "react-router-dom";
 
-const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator, tab, isPastTournament }) => {
+const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdministrator, isPastTournament }) => {
     const navigate = useNavigate();
 
     // Function: Check if the current date is before the start date of tournament
@@ -32,9 +32,9 @@ const AdministratorTournamentCard = ({ tournaments, setIsTransitioning, thisAdmi
         setIsTransitioning(true);
         setTimeout(() => {
             if (isPastTournament) {
-                navigate(`/administrator-tournaments/details/history/${tab}/${tournamentName}`, { state: { tournamentName } });
+                navigate(`/administrator-tournaments/details/history/${tournamentName}`, { state: { tournamentName } });
             } else {
-                navigate(`/administrator-tournaments/details/ongoing/${tab}/${tournamentName}`, { state: { tournamentName } });
+                navigate(`/administrator-tournaments/details/ongoing/${tournamentName}`, { state: { tournamentName } });
             }
         }, 200);
     };

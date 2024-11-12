@@ -28,16 +28,26 @@ function AdministratorTournaments() {
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
     const [tournaments, setTournaments] = useState([]);
-    const [tab, setTab] = useState(0);
+    const [activeButton, setActiveButton] = useState(parseInt(localStorage.getItem("adminTournamentsTab")) || 0);
     const [allTournaments, setAllTournaments] = useState([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [thisAdministrator, setThisAdministrator] = useState(null);
     const [myCreatedTournaments, setMyCreatedTournaments] = useState([]);
 
+    useEffect(() => {
+        if (activeButton === 0) {
+            getAllTournaments();
+        } else {
+            getMyTournaments();
+        }
+    }, [activeButton]);
+
+
     const handleAllTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTab(0);
+            setActiveButton(0);
+            localStorage.setItem("adminTournamentsTab", 0);
             setTournaments(allTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -46,7 +56,8 @@ function AdministratorTournaments() {
     const handleMyCreatedTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setTab(1);
+            setActiveButton(1);
+            localStorage.setItem("adminTournamentsTab", 1);
             setTournaments(myCreatedTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -105,6 +116,7 @@ function AdministratorTournaments() {
             );
 
             setMyCreatedTournaments(response.data);
+            setTournaments(response.data);
             setThisAdministrator(adminData.adminName);
 
         } catch (error) {
@@ -116,9 +128,8 @@ function AdministratorTournaments() {
 
     // ----------------------- useEffect() -----------------------
     useEffect(() => {
-        getAllTournaments();
-        getMyTournaments();
-    }, []);
+        setTournaments(activeButton === 0 ? allTournaments : myCreatedTournaments);
+    }, [tournaments]);
 
     //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
     const [searchTerm, setSearchTerm] = useState("");
@@ -148,7 +159,7 @@ function AdministratorTournaments() {
                     buttons = {["All Tournaments", "My Created Tournaments"]}
                     onAllClick = {handleAllTournamentsClick}
                     onMyClick = {handleMyCreatedTournamentsClick}
-                    active = {tab}
+                    activeButton = {activeButton}
                 />
                 <div className = "flex flex-col">
                     {/* SEARCH BAR */}
@@ -166,7 +177,7 @@ function AdministratorTournaments() {
                             setIsTransitioning = {setIsTransitioning} 
                             thisAdministrator = {thisAdministrator} 
                             isPastTournament = {false} 
-                            tab = {tab} />
+                        />
                     ) : (
                         <p className = "text-secondary-color-dark-green text-md font-semibold">
                             No tournaments found. Create a new tournament today!

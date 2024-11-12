@@ -37,7 +37,7 @@ function UserNavBar() {
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">
                         <NavLink to="/users/home" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Home</NavLink>
-                        <NavLink to="/users/Tournaments/0" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournaments</NavLink>
+                        <NavLink to="/users/Tournaments" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournaments</NavLink>
                         <NavLink to="/past-tournaments" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}> My Past Tournaments</NavLink>
                         <NavLink to="/user/profile" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Your Profile</NavLink>
                         <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-bold bg-primary-color-light-green hover:bg-primary-color-green transition-colors duration-200" style = {{ color: "white" }}>Logout</button>

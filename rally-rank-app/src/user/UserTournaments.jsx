@@ -21,22 +21,22 @@ function UserTournaments() {
     // ------------------------------------- Tournament Functions -------------------------------------
     const [loading, setLoading] = useState(true);
     const { tab } = useParams();
-    const [activeButton, setActiveButton] = useState(0);
+    const [activeButton, setActiveButton] = useState(parseInt(localStorage.getItem("userActiveTab")) || 0);
     const [availableTournaments, setAvailableTournaments] = useState([]);
     const [displayTournamentType, setDisplayTournamentType] = useState([]);
     const [myScheduledTournaments, setMyScheduledTournaments] = useState([]);
 
     const handleAvailableTournamentClick = () => {
-        navigate(`/users/Tournaments/${0}`);
         setActiveButton(0);
+        localStorage.setItem("userActiveTab", 0);
         getAvailableTournaments();
     }
 
     const handleMyScheduledTournamentsClick = () => {
-        navigate(`/users/Tournaments/${1}`);
         setActiveButton(1);
+        localStorage.setItem("userActiveTab", 1);
         getMyScheduledTournaments();
-        setDisplayTournamentType(myScheduledTournaments)
+        setDisplayTournamentType(myScheduledTournaments);
     }
 
     // ------------------------------------- API Call: Retrieiving available tournaments -------------------------------------
@@ -98,8 +98,12 @@ function UserTournaments() {
 
     // ------------------------------------- useEffect() -------------------------------------
     useEffect(() => {
-        getAvailableTournaments();
-    }, []);
+        if (activeButton === 0) {
+            getAvailableTournaments();
+        } else {
+            getMyScheduledTournaments();
+        }
+    }, [activeButton]);
 
     //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
     const [searchTerm, setSearchTerm] = useState("");
@@ -117,6 +121,7 @@ function UserTournaments() {
                     buttons = {["Available Tournaments", "My Scheduled Tournaments"]}
                     onAvailableTournamentsClick = {handleAvailableTournamentClick}
                     onMyScheduledTournamentsClick = {handleMyScheduledTournamentsClick}
+                    activeButton = {activeButton}
                 />
                 {/* SEARCH BAR */}
                 <input
