@@ -2,8 +2,12 @@ package com.example.backend.dto;
 
 import java.time.LocalDate;
 
+import org.springframework.data.annotation.Transient;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
+
+
 
 /**
  * DTO for registering a new user.
@@ -11,6 +15,7 @@ import lombok.Data;
 
 @Data
 public class UserRegisterDto {
+    
     @NotBlank(message = "Username is required!")
     private String username;
 
@@ -32,9 +37,6 @@ public class UserRegisterDto {
     @NotBlank(message = "Phone number is required!")
     @Pattern(regexp = "^(?:6\\d{7}|[89]\\d{7}|1800\\d{7}|1900\\d{7})$", message = "Invalid phone number!")
     private String phoneNumber;
-    
-    
-    private int elo = 400;
 
     @NotBlank(message = "Gender is required!")
     @Pattern(regexp = "^(M|F|Male|Female)$", message = "Gender must be either 'M', 'F', 'Male', or 'Female'.")

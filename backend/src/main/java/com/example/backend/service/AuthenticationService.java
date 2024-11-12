@@ -91,7 +91,6 @@ public class AuthenticationService {
             user.setFirstName(userRegisterDto.getFirstName());
             user.setLastName(userRegisterDto.getLastName());
             user.setPhoneNumber(userRegisterDto.getPhoneNumber());
-            user.setElo(userRegisterDto.getElo());
             user.setGender(userRegisterDto.getGender());
             user.setDateOfBirth(userRegisterDto.getDateOfBirth());
             user.setAge(userRegisterDto.getAge());
