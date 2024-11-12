@@ -106,7 +106,7 @@ function AdministratorCreateTournaments() {
                 setSuccessMessage("Tournament created! Redirecting...");
                 setTimeout(() => {
                     navigate("/administrator-tournaments");
-                }, 2000);
+                }, 1000);
             }
         }
     };

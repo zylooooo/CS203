@@ -105,7 +105,7 @@ function UserLogin() {
             loginUser(userData);
             setTimeout(() => {
                 navigate("/users/home");
-            }, 2000);
+            }, 1000);
         }
     };
 

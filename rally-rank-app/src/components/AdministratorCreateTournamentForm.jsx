@@ -5,6 +5,26 @@ import { useNavigate } from "react-router-dom";
 const AdministratorCreateTournamentForm = ({ register, handleSubmit, errors, onSubmit, getValues }) => {
     const navigate = useNavigate();
 
+    const calculateMinStartDate = () => {
+        const today = new Date();
+        today.setMonth(today.getMonth() + 1);
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const getTodayDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const todayDate = getTodayDate();
+    const minStartDate = calculateMinStartDate();
+
     return (
         <>
             <div className = "create-tournament-card p-6 rounded-[12px] shadow-xl w-3/5 mx-auto mb-28">
@@ -40,7 +60,6 @@ const AdministratorCreateTournamentForm = ({ register, handleSubmit, errors, onS
                                         message: "Special characters and leading or trailing whitespaces are not allowed"
                                     }
                                 })}
-                                
                             />
                             <p className = "error mt-1 ml-2"> {errors.tournamentName?.message} </p>
                         </div>
@@ -76,7 +95,21 @@ const AdministratorCreateTournamentForm = ({ register, handleSubmit, errors, onS
                                         type = "date"
                                         id = "startDate"
                                         placeholder = "Start Date"
-                                        {...register("startDate", { required: "Start date is required" })}
+                                        {...register("startDate", {
+                                            required: "Start date is required",
+                                            validate: (value) => {
+                                                const selectedDate = new Date(value);
+                                                const minDate = new Date(minStartDate);
+                                                const today = new Date(todayDate);
+                                                if (selectedDate < today) {
+                                                    return "Start date cannot be in the past";
+                                                }
+                                                if (selectedDate < minDate) {
+                                                    return "Start date must be at least one month from today";
+                                                }
+                                                return true;
+                                            },
+                                        })}
                                     />
                                 </div>
                                 <p className = "error mt-1 ml-2"> {errors.startDate?.message} </p>

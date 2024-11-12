@@ -4,7 +4,7 @@ import { API_URL } from '../../config';
 // Package Imports
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Bracket, Seed, SeedItem, SeedTeam, SeedTime } from "react-brackets";
 
 // Administrator Components Imports
@@ -21,20 +21,22 @@ import AlertMessageSuccess from "../components/AlertMessageSuccess";
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronCircleDown, faChevronCircleUp, faTrophy } from '@fortawesome/free-solid-svg-icons';
 
 import React from 'react';
+import { set } from 'react-hook-form';
 
 function AdministratorFixtures() {
 
-    // TODO: need to include a path back to tournament details page
-    // useEffect(() => {   
-    //     localStorage.setItem("currUrl", location.pathname);
-    // }, []);
+    useEffect(() => {
+        localStorage.setItem("currUrl", location.pathname);
+    }, []);
 
     const location = useLocation();
     const navigate = useNavigate();
-    const tournamentName = location.state?.tournamentName;
+    const { status, tournamentAdmin, tournamentName } = useParams();
+    const thisAdministrator = JSON.parse(localStorage.getItem("adminData")).adminName;
+    const isPastTournament = (status === "history");
 
     // Const: Hold reference for scrolling
     const mainFixturesRef = useRef(null);
@@ -54,6 +56,7 @@ function AdministratorFixtures() {
     const [preliminaryMatches, setPreliminaryMatches] = useState([]);
     const [tournamentBracket, setTournamentBracket] = useState(null);
     const [mainTournamentRounds, setMainTournamentRounds] = useState([]);
+    // const [thisAdministrator, setThisAdministrator] = useState(null);
 
     // Consts: Hold winners of each important round (QF, SF and F)
     const [tournamentWinner, setTournamentWinner] = useState("");
@@ -76,13 +79,16 @@ function AdministratorFixtures() {
     const [warningMessage, setWarningMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // Function: Format Date for easy readability
+    // Const: For retrieving the updated tournament details upon change
+    const [refreshData, setRefreshData] = useState(false);
+
+    // Function: Format Date to date and time for easy readability
     const formatDate = (dateString) => {
         if (dateString === null) {
             return;
         }
         const date = new Date(dateString);
-        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}`;
+        return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
 
     // Function: Handle click for each seed
@@ -115,17 +121,25 @@ function AdministratorFixtures() {
 
     const handleEndTournament = () => {
         setShowConfirmationPopUp(true);
-    }
+    };
 
     const handleFinalConfirmation = async () => {
         await updateTournamentEndDate();
-    }
+    };
+
+    const handleGenerateBracketsClick = async () => {
+        await generateBrackets();
+    };
+
+    const checkThisAdmin = (adminName) => {
+        return adminName === thisAdministrator;
+    };
 
     // Component: Custom Seed from React Package (react-brackets)
     const CustomSeed = ({ seed, breakpoint }) => {
         return (
             <Seed mobileBreakpoint = {breakpoint} style = {{ fontSize: "12px" }}>
-                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px" }}>
+                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px", width: "250px" }}>
                     <div>
                         <SeedTeam style = {{ color: "#444444", fontWeight: "700", fontSize: "14px"}}>
                             {seed.teams[0]?.name || "TBD"}
@@ -143,6 +157,39 @@ function AdministratorFixtures() {
         );
     };
 
+    // -------------------------- API Call: Generate brackets ---------------------------
+    async function generateBrackets() {
+        try {
+        const adminData = JSON.parse(localStorage.getItem("adminData"));
+        if (!adminData || !adminData.jwtToken) {
+            console.error("No JWT token found");
+            return;
+        }
+
+        const response = await axios.put(
+            `${API_URL}/admins/tournaments/bracket/${tournamentName}`,
+            {},
+            {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${adminData.jwtToken}`,
+                },
+            },
+        );
+
+        if (response.data.error) {
+            setWarningMessage(response.data.error);
+        } else {
+            setSuccessMessage("Brackets generated successfully! View the fixtures below!");
+        }
+        return response.data;
+
+        } catch (error) {
+            setWarningMessage("Unable to generate brackets. Please reload and try again.");
+            console.error("Error generating brackets:", error.response.data.error);
+        }
+    };
+
     // ----------------------- API Call: Get all matches in the tournament (for brackets use) -----------------------
     async function getTournamentBracket() {
         try {
@@ -150,7 +197,7 @@ function AdministratorFixtures() {
             if (!adminData || !adminData.jwtToken) {
                 console.error("No JWT token found");
                 return;
-            }
+            };
 
             const response = await axios.get(
                 `${API_URL}/admins/tournaments/${tournamentName}/bracket`,
@@ -162,9 +209,8 @@ function AdministratorFixtures() {
                 }
             );
 
-            // Warning Message Alerts
             if (response.data.error !== undefined) {
-                console.log("error: ", response.data);
+                setWarningMessage(response.data);
             }
             if (response.data.rounds.length !== 0) {
                 setTournamentBracket(response.data);
@@ -175,7 +221,7 @@ function AdministratorFixtures() {
             if (response.data.rounds.length > 1) {
                 setMainMatches(response.data.rounds.slice(1));
                 const roundsArr = [];
-                const currentFixtures = response.data.rounds.slice(1);  // starts from the index 1 - main match
+                const currentFixtures = response.data.rounds.slice(1);
                 for (let roundIndex = 0; roundIndex < currentFixtures.length; roundIndex++) {
                     const seeds = [];
                     const matchesPerRound = currentFixtures[roundIndex]?.matches;
@@ -217,19 +263,19 @@ function AdministratorFixtures() {
                 }
                 setMainTournamentRounds(roundsArr);
             }
+            setRefreshData((prev) => !prev);
             return response;
 
         } catch (error) {
-            // Warning Message Alert: Error fetching tournament brackets data
+            setWarningMessage("No match has been played yet.");
             const errorMessage = error.response?.data?.error || 'An unknown error occurred';
-            console.error('Error updating match results:', errorMessage);
         }
     };
 
     // ----------------------- UseEffect() -----------------------
     useEffect(() => {
         getTournamentBracket();
-    }, []);
+    }, [refreshData]);
 
     // ----------------------- API Call: Update Tournament End Date -----------------------
     async function updateTournamentEndDate() {
@@ -252,17 +298,20 @@ function AdministratorFixtures() {
             );
 
             if (response.status === 200) {
-                alert("Tournament has been ended successfully!");
+                setSuccessMessage("Tournament has ended!");
+                setTimeout(() => {
+                    navigate(`/administrator-tournaments/history`);
+                }, 1000);
             } else {
-                alert("An error occurred while ending the tournament.");
+                setWarningMessage("Error occured while updating tournament end date. Please try again.");
             }
 
         } catch (error) {
-            // Warning Message Alert: Error Updating Tournament End Date
+            setWarningMessage("Unable to update tournament end date. Please try again.");
             const errorMessage = error.response?.data?.error || 'An unknown error occurred';
             console.error('Error updating tournament end date:', errorMessage);
         }
-    }
+    };
 
     return (
         <>
@@ -270,17 +319,18 @@ function AdministratorFixtures() {
             <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "administrator-fixtures flex flex-row gap-8 p-9">
                 <div className = "w-full">
+                    <h2 className = "m-5 text-2xl"><span className = "font-bold"> Tournament Name: </span> {tournamentName}</h2>
                     <button
                         onClick = {scrollToMainFixtures}
-                        className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-6 w-full font-semibold ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
+                        className = {`scroll-button p-2 text-white rounded-lg shadow-md mb-6 w-full font-semibold text-lg ${!tournamentBracket ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600'}`}
                         style = {{ backgroundColor: !tournamentBracket ? 'gray' : 'grey' }}
                         disabled = {!tournamentBracket}
                     >
-                        Go to Main Tournament Fixtures
+                        Go to Main Tournament Fixtures <FontAwesomeIcon icon = {faChevronDown} />
                     </button>
                     <div className = "flex flex-col items-center gap-4">
                         {tournamentBracket === null && (
-                            <p className = "font-bold text-xl"> Preliminary Rounds and Main Tournament Fixtures has not been generated yet. </p>
+                            <p className = "font-bold text-xl mt-8"> Preliminary Rounds and Main Tournament Fixtures has not been generated yet. </p>
                         )}
                     </div>
                     <div className = "mb-12">
@@ -291,6 +341,12 @@ function AdministratorFixtures() {
                     {mainMatches.length > 0 && tournamentBracket !== null && (
                         <div ref = {mainFixturesRef} className = "main-tournament-brackets mb-20">
                             <h2 className = "text-2xl font-bold mb-10"> Main Tournament Fixtures and Results </h2>
+                            {tournamentWinner && (
+                                <div className = "flex flex-col items-center text-center bg-green-100 p-4 rounded-lg w-1/3 shadow-md mb-10">
+                                    <FontAwesomeIcon icon = {faTrophy} className = "text-yellow-500 text-3xl mb-2" />
+                                    <h3 className = "text-2xl font-bold text-green-700"> Tournament Winner: {tournamentWinner} </h3>
+                                </div>
+                            )}
                             <Bracket
                                 rounds = {mainTournamentRounds}
                                 roundTitleComponent = {(title) => (
@@ -317,7 +373,7 @@ function AdministratorFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleQuarterFinals}>
                             View Quarter Finals
                             <span className = "text-lg ml-2">
-                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showQuarterFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showQuarterFinals && quarterFinalsWinners.length > 0 && quarterFinalMatches.length > 0 && (
@@ -330,7 +386,7 @@ function AdministratorFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleSemiFinals}>
                             View Semi Finals
                             <span className = "text-xl ml-2">
-                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showSemiFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showSemiFinals && semiFinalsWinners.length > 0 && semiFinalMatches.length > 0 && (
@@ -343,7 +399,7 @@ function AdministratorFixtures() {
                         <button className = "text-xl font-bold shadow-lg p-2 rounded-[12px]" onClick = {toggleFinals}>
                             View Finals
                             <span className="text-lg ml-2">
-                                <FontAwesomeIcon icon = {showFinals ? faChevronUp : faChevronDown} />
+                                <FontAwesomeIcon icon = {showFinals ? faChevronCircleUp : faChevronCircleDown} />
                             </span>
                         </button>
                         {showFinals && (
@@ -362,33 +418,42 @@ function AdministratorFixtures() {
                     </div>
                 </div>
             </div>
-
-            <div className = "fixed bottom-20 right-12">
-                { mainMatches.length > 0 && tournamentBracket !== null && mainMatches[mainMatches?.length - 1].matches?.length === 1  ? (
+            <div className = "flex flex-col gap-4 ml-2 self-start mt-4 mr-6">
+                {checkThisAdmin(tournamentAdmin) && !isPastTournament && (
                     <button
-                        className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
-                        onClick = { handleEndTournament }
+                        onClick = {handleGenerateBracketsClick}
+                        className = "bg-primary-color-light-green hover:bg-primary-color-green text-white border px-4 py-2 rounded-[8px] font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-110"
                     >
-                        Complete Tournament
-                    </button>
-                ) : (
-                    <button
-                        className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
-                        onClick = { handleEndTournament }
-                    >
-                        Stop Tournament
+                        Generate Brackets
                     </button>
                 )}
-                {showConfirmationPopUp && (
-                    <ConfirmationPopUp
-                        message = "Do you want to confirm the end of the tournament?"
-                        onConfirm = {handleFinalConfirmation}
-                        onCancel = {() => setShowConfirmationPopUp(false)}
-                    />
-                )}
-                
             </div>
-
+            {!isPastTournament && checkThisAdmin(tournamentAdmin) && (
+                <div className = "complete-tournament-button fixed bottom-20 right-12">
+                    {tournamentWinner ? (
+                        <button
+                            className = "font-bold rounded-lg px-10 py-2 text-white bg-primary-color-light-green hover:bg-primary-color-green"
+                            onClick = {handleEndTournament}
+                        >
+                            Complete Tournament
+                        </button>
+                    ) : (
+                        <button
+                            className = "font-bold rounded-lg px-10 py-2 text-white bg-secondary-color-red hover:bg-red-600"
+                            onClick = {handleEndTournament}
+                        >
+                            Stop Tournament
+                        </button>
+                    )}
+                    {showConfirmationPopUp && (
+                        <ConfirmationPopUp
+                            message = "Do you want to confirm the end of the tournament?"
+                            onConfirm = {handleFinalConfirmation}
+                            onCancel = {() => setShowConfirmationPopUp(false)}
+                        />
+                    )}
+                </div>
+            )}
         </>
     );
 };

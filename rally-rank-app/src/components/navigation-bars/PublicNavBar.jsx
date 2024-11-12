@@ -1,6 +1,8 @@
 // Navigation
 import { useNavigate, NavLink } from 'react-router-dom';
 import rallyRankLogo from "../../assets/Rally-Rank-Logo.svg";
+import { useEffect } from 'react';
+import { useAuth } from "../../authentication/AuthContext";
 
 function PublicNavBar() {
     const navigate = useNavigate();
@@ -12,6 +14,13 @@ function PublicNavBar() {
     const handleSignUpClick = () => {
         navigate('/auth/user-signup'); 
     };
+
+    const { logoutAdmin, logoutUser } = useAuth();
+
+    useEffect(() => {
+        logoutAdmin();
+        logoutUser();
+    }, []);
  
     return (
         <nav className="shadow-md">

@@ -13,7 +13,7 @@ const TournamentCard = ({ userPastTournaments }) => {
     const navigate = useNavigate();
 
     const handleTournamentCardClick = (tournament) => {
-        navigate(`/tournament-details/${tournament.tournamentName}`, {
+        navigate(`/tournament-details/history/${tournament.tournamentName}`, {
             state: {
                 ...tournament,
                 isPastTournament: true

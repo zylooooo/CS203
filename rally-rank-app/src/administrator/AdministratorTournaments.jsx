@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AlertMessageWarning from '../components/AlertMessageWarning';
 import AdministratorTournamentCard from "../components/AdministratorTournamentCard";
 import AdministratorTournamentsButtons from "../components/AdministratorTournamentsButtons";
+import { tabClasses } from '@mui/material';
 
 function AdministratorTournaments() {
 
@@ -27,14 +28,26 @@ function AdministratorTournaments() {
     //--------------------- ADMINISTRATOR TOURNAMENTS FUNCTIONS --------------------------
     const navigate = useNavigate();
     const [tournaments, setTournaments] = useState([]);
+    const [activeButton, setActiveButton] = useState(parseInt(localStorage.getItem("adminTournamentsTab")) || 0);
     const [allTournaments, setAllTournaments] = useState([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [thisAdministrator, setThisAdministrator] = useState(null);
     const [myCreatedTournaments, setMyCreatedTournaments] = useState([]);
 
+    useEffect(() => {
+        if (activeButton === 0) {
+            getAllTournaments();
+        } else {
+            getMyTournaments();
+        }
+    }, [activeButton]);
+
+
     const handleAllTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
+            setActiveButton(0);
+            localStorage.setItem("adminTournamentsTab", 0);
             setTournaments(allTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -43,6 +56,8 @@ function AdministratorTournaments() {
     const handleMyCreatedTournamentsClick = () => {
         setIsTransitioning(true);
         setTimeout(() => {
+            setActiveButton(1);
+            localStorage.setItem("adminTournamentsTab", 1);
             setTournaments(myCreatedTournaments);
         }, 300);
         setIsTransitioning(false);
@@ -101,6 +116,7 @@ function AdministratorTournaments() {
             );
 
             setMyCreatedTournaments(response.data);
+            setTournaments(response.data);
             setThisAdministrator(adminData.adminName);
 
         } catch (error) {
@@ -112,9 +128,8 @@ function AdministratorTournaments() {
 
     // ----------------------- useEffect() -----------------------
     useEffect(() => {
-        getAllTournaments();
-        getMyTournaments();
-    }, []);
+        setTournaments(activeButton === 0 ? allTournaments : myCreatedTournaments);
+    }, [tournaments]);
 
     //---------------------------- SEARCH BAR FUNCTIONS ----------------------------------
     const [searchTerm, setSearchTerm] = useState("");
@@ -144,6 +159,7 @@ function AdministratorTournaments() {
                     buttons = {["All Tournaments", "My Created Tournaments"]}
                     onAllClick = {handleAllTournamentsClick}
                     onMyClick = {handleMyCreatedTournamentsClick}
+                    activeButton = {activeButton}
                 />
                 <div className = "flex flex-col">
                     {/* SEARCH BAR */}
@@ -156,7 +172,12 @@ function AdministratorTournaments() {
                     />
                     {/* TOURNAMENT LIST */}
                     {tournaments.length > 0 ? (
-                        <AdministratorTournamentCard tournaments = {filteredTournaments} setIsTransitioning = {setIsTransitioning} thisAdministrator = {thisAdministrator}/>
+                        <AdministratorTournamentCard 
+                            tournaments = {filteredTournaments} 
+                            setIsTransitioning = {setIsTransitioning} 
+                            thisAdministrator = {thisAdministrator} 
+                            isPastTournament = {false} 
+                        />
                     ) : (
                         <p className = "text-secondary-color-dark-green text-md font-semibold">
                             No tournaments found. Create a new tournament today!
@@ -174,13 +195,11 @@ function AdministratorTournaments() {
                         className="relative w-full h-50px flex items-center justify-center"
                     >
                         {hovered ? (
-                            <span className="flex p-1 animate-fadeIn animate-buttonExpand">
+                            <span className="flex p-1">
                                 Create Tournament
                             </span>
                         ) : (
-                            <span className="animate-fadeIn">
-                                <FontAwesomeIcon icon={faPlus} className="text-2xl mt-1 px-4" />
-                            </span>
+                            <span><FontAwesomeIcon icon={faPlus} className="text-2xl mt-1 px-4" /></span>
                         )}
                     </button>
                 </div>

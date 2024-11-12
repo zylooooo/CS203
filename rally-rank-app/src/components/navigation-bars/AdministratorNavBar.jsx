@@ -36,8 +36,8 @@ function AdministratorNavBar() {
                         </NavLink>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                        <NavLink to="/administrator-tournaments" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournaments</NavLink>
-                        <NavLink to="/administrator-tournament-history" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournament History</NavLink>
+                        <NavLink to="/administrator-tournaments" end className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournaments</NavLink>
+                        <NavLink to="/administrator-tournaments/history" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Tournament History</NavLink>
                         <NavLink to="/administrator-account" className={({ isActive }) => `${isActive ? activeNavLinkClasses : navLinkClasses} px-3 py-2 rounded-md text-sm`}>Your Account</NavLink>
                         <button onClick={handleLogout} className="ml-4 px-4 py-2 rounded-xl text-sm font-bold text-white bg-primary-color-light-green hover:bg-primary-color-green transition-colors duration-200"  >Logout</button>
                     </div>

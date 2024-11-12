@@ -34,9 +34,7 @@ import AdministratorEditProfile from "./administrator/AdministratorEditProfile";
 import AdministratorEditTournaments from "./administrator/AdministratorEditTournaments";
 import AdministratorTournamentHistory from "./administrator/AdministratorTournamentHistory";
 import AdministratorCreateTournaments from "./administrator/AdministratorCreateTournaments";
-import AdministratorTournamentDetails from "./administrator/TournamentDetails";
-import AdministratorPastTournamentDetails from "./administrator/AdministratorPastTournamentDetails";
-
+import AdministratorTournamentDetails from "./administrator/AdministratorTournamentDetails";
 
 // Authentication Imports
 import AdminRoute from "./authentication/AdminRoute";
@@ -130,15 +128,6 @@ function App() {
                         }
                     />
 
-                    <Route
-                        path = "/user-fixtures"
-                        element = {
-                            <MainLayout>
-                                <UserFixtures />
-                            </MainLayout>
-                        }
-                    />
-
                     {/* ---------------------- PROTECTED: PLAYER ROUTES ---------------------- */}
                     {/* USER'S HOME PAGE */}
                     <Route
@@ -154,6 +143,7 @@ function App() {
 
                     {/* USER'S TOURNAMENTS PAGE */}
                     <Route
+                        // path = "/users/tournaments/:tab"
                         path = "/users/tournaments"
                         element = {
                             <PrivateRoute>
@@ -166,11 +156,23 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/tournament-details/:tournamentName"
+                        path = "/tournament-details/:status/:tournamentName"
                         element = {
                             <PrivateRoute>
                                 <MainLayout>
                                     <TournamentDetails />
+                                </MainLayout>
+                            </PrivateRoute>
+                        }
+                    />
+
+                    {/* TOURNAMENT DETAILS */}
+                    <Route
+                        path = "/user-fixtures/:tournamentName"
+                        element = {
+                            <PrivateRoute>
+                                <MainLayout>
+                                    <UserFixtures />
                                 </MainLayout>
                             </PrivateRoute>
                         }
@@ -227,7 +229,7 @@ function App() {
 
                     {/* ADMINISTRATOR'S (ALL) TOURNAMENT HISTORY PAGE */}
                     <Route
-                        path = "/administrator-tournament-history"
+                        path = "/administrator-tournaments/:status"
                         element = {
                             <AdminRoute>
                                 <MainLayout>
@@ -238,7 +240,7 @@ function App() {
                     />
 
                     {/* ADMINISTRATOR'S (CREATED) PAST TOURNAMENTS PAGE */}
-                    <Route
+                    {/* <Route
                         path = "/administrator-past-tournament-details"
                         element = {
                             <AdminRoute>
@@ -247,7 +249,7 @@ function App() {
                                 </MainLayout>
                             </AdminRoute>
                         }
-                    />
+                    /> */}
 
                     {/* ADMINISTRATOR'S CREATE TOURNAMENTS PAGE */}
                     <Route
@@ -263,7 +265,7 @@ function App() {
 
                     {/* TOURNAMENT DETAILS */}
                     <Route
-                        path = "/administrator/tournament-details/:tournamentName"
+                        path = "/administrator-tournaments/details/:status/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>
@@ -287,7 +289,7 @@ function App() {
 
                     {/* VIEW FIXTURES */}
                     <Route
-                        path = "/administrator/tournament-fixtures/:tournamentName"
+                        path = "/administrator/tournament-fixtures/:status/:tournamentAdmin/:tournamentName"
                         element = {
                             <AdminRoute>
                                 <MainLayout>

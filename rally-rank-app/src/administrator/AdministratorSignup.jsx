@@ -116,7 +116,7 @@ function AdministratorSignUp() {
                     setSuccessMessage("Successfully registered! Redirecting you to the verification page...");
                     setTimeout(() => {
                         navigate("/auth/admin-verification");
-                    }, 2000);
+                    }, 1000);
                 }
             }
         }
