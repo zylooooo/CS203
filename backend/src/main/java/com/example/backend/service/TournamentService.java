@@ -395,7 +395,7 @@ public class TournamentService {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
         long recentStrikeCount = strikeReports.stream()
-            .filter(strike -> strike.getIssuedBy().equals(tournament.getCreatedBy()))
+            .filter(strike -> strike.getIssuedBy() != null &&strike.getIssuedBy().equals(tournament.getCreatedBy()))
             .filter(strike -> strike.getDateCreated().isAfter(oneMonthAgo))
             .count();
 
