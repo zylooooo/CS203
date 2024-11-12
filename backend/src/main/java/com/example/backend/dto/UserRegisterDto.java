@@ -2,8 +2,6 @@ package com.example.backend.dto;
 
 import java.time.LocalDate;
 
-import org.springframework.data.annotation.Transient;
-
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
