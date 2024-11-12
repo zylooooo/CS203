@@ -90,7 +90,6 @@ class AuthenticationServiceTest {
         validUserDto.setFirstName("John");
         validUserDto.setLastName("Doe");
         validUserDto.setPhoneNumber("1234567890");
-        validUserDto.setElo(1000);
         validUserDto.setGender("Male");
         validUserDto.setDateOfBirth(LocalDate.of(1990, 1, 1));
         validUserDto.setAge(30);
