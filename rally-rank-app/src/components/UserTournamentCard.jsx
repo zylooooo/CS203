@@ -26,6 +26,7 @@ const UserTournamentCard = ({ tournamentType, isAvailableTournament, isScheduled
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
+        date.setHours(date.getHours() + 8); // Add 8 hours
         const day = date.toLocaleString('en-US', { day: '2-digit' });
         const month = date.toLocaleString('en-US', { month: 'long' });
         const year = date.toLocaleString('en-US', { year: 'numeric' });

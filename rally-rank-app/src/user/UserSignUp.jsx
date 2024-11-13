@@ -140,7 +140,7 @@ function UserSignUp() {
                 if (response !== undefined) {
                     setSuccessMessage("Successfully registered! Redirecting you to the verification page...");
                     setTimeout(() => {
-                        navigate("/auth/user-verification");
+                        navigate("/auth/user-verification", {state: {username: formData.username}});
                     }, 1500);
                 }
             }
