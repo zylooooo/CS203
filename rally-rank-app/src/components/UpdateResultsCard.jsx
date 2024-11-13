@@ -97,6 +97,35 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
         }
     };
 
+    // ----------------------- API Call: Update player's Elo Rating -------------------------
+    async function updateEloRating(matchId) {
+        try {
+            const adminData = JSON.parse(localStorage.getItem("adminData"));
+            if (!adminData || !adminData.jwtToken) {
+                console.error("No JWT Token found!");
+                return;
+            }
+
+            const response = await axios.put(
+                `${API_URL}/admins/tournaments/${matchId}/update-elo`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${adminData.jwtToken}`,
+                    },
+                },
+            );
+            console.log("elo:", response);
+            console.log("staus:", response.status);
+            return response;
+
+        } catch (error) {
+            setWarningMessage("Unable to update player's elo ratings. Please try again.");
+            console.error("Error updating player's elo: ", error.response.data.error);
+        }
+    };
+
     const onUpdateMatchDetailsSubmit = async (formData) => {
         setStoredFormData(formData);
         setShowConfirmationPopUp(true);
@@ -105,7 +134,8 @@ const UpdateResultsCard = ({ matchDetails, setShowUpdateResultsCard }) => {
     const handleFinalConfirmation = async () => {
         if (storedFormData) {
             const response = await updateMatchResults(storedFormData);
-            if (response !== undefined) {
+            const response2 = await updateEloRating(matchDetails.id);
+            if (response !== undefined && response2 !== undefined) {
                 setSuccessMessage("Match results updated successfully!");
                 setShowUpdateResultsCard(false);
             }

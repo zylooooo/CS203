@@ -93,22 +93,6 @@ function AdministratorFixtures() {
         return `${date.toLocaleString('en-US', { day: '2-digit' })} ${date.toLocaleString('en-US', { month: 'long' })} ${date.toLocaleString('en-US', { year: 'numeric' })}, ${date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
     };
 
-    function convertToOriginalTimeZone(isoDateString, timeZone) {
-        const date = new Date(isoDateString);
-        const options = {
-            weekday: 'short',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: timeZone,
-            timeZoneName: 'short',
-        };
-        return date.toLocaleString('en-US', options);
-    }
-
     // Function: Handle click for each seed
     const handleClick = (id) => {
         for (let i = 0; i < mainMatches.length; i++) {
@@ -122,13 +106,24 @@ function AdministratorFixtures() {
 
     const handleMatchClick = (match) => {
         setCurrentMatch(match);
-        if (match.startDate === null) {
+        if (match.startDate === null && checkThisAdmin(tournamentAdmin)) {
             setShowUpdateMatchTimingsCard(true);
-        } else if (match.matchWinner === null) {
+        } else if (match.matchWinner === null && checkThisAdmin(tournamentAdmin)) {
             setShowUpdateResultsCard(true);
         } else if (match.startDate !== null && match.matchWinner !== null) {
             setShowMatchResultsCard(true);
         }
+    };
+
+    const getCursorStyle = (match) => {
+        if (match.startDate === null && checkThisAdmin(tournamentAdmin)) {
+            return 'pointer';
+        } else if (match.matchWinner === null && checkThisAdmin(tournamentAdmin)) {
+            return 'pointer';
+        } else if (match.startDate !== null && match.matchWinner !== null) {
+            return 'pointer';
+        }
+        return 'default';
     };
 
     const scrollToMainFixtures = () => {
@@ -157,7 +152,7 @@ function AdministratorFixtures() {
     const CustomSeed = ({ seed, breakpoint }) => {
         return (
             <Seed mobileBreakpoint = {breakpoint} style = {{ fontSize: "12px" }}>
-                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px", width: "250px" }}>
+                <SeedItem onClick = {() => handleClick(seed.id)} style = {{ backgroundColor: "#E7F5E8", padding: "10px", borderRadius: "12px", width: "250px", cursor: getCursorStyle(seed.id)}}>
                     <div>
                         <SeedTeam style = {{ color: "#444444", fontWeight: "700", fontSize: "14px"}}>
                             {seed.teams[0]?.name || "TBD"}
