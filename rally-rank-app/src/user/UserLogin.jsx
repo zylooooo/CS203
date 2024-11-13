@@ -64,7 +64,7 @@ function UserLogin() {
             } else if (errorMessage === "Your account is not enabled. Please check your email to enable your account.") {
                 setWarningMessage(errorMessage);
             } else {
-                setWarningMessage("Unable to log in. Please reload the page and try again.");
+                setWarningMessage("You have been banned from RallyRank!");
             }
         }
     };
