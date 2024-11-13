@@ -1,11 +1,19 @@
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { API_URL } from "../../config";
+
+
+// Assets and Components Imports
+import AlertMessageWarning from '../components/AlertMessageWarning';
+import AlertMessageSuccess from '../components/AlertMessageSuccess';
 
 
 // Component: Strike Report Card (for AdministratorPastTournamentDetails, under My Past Tournaments)
 const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
+
+    const [successMessage, setSuccessMessage] = useState("");
+    const [warningMessage, setWarningMessage] = useState("");
 
     useEffect(() => {   
         localStorage.setItem("currUrl", location.pathname);
@@ -43,7 +51,7 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
         } catch (error) {
 
             // WIP: EDIT DISPLAY ERROR MESSAGE
-            alert(error.response.data.error);
+            setWarningMessage(error.response.data.error);
             console.error('Error submiting strike:', error.response.data.error);
     
         }
@@ -53,13 +61,15 @@ const StrikeReportCard = ({ tournamentName, strikePlayer, setStrikeOpen }) => {
         const response = await strikeUser(data.reason);
 
         if (response !== undefined) {
-            alert("Strike successfully issued!");
+            setSuccessMessage("Strike successfully issued!");
             setStrikeOpen(false);
         }
     }
 
     return (
         <div className="main-container absolute inset-0 flex items-center justify-center bg-primary-color-black bg-opacity-50">
+            <AlertMessageWarning message = {warningMessage} onClose = {() => setWarningMessage("")} />
+            <AlertMessageSuccess message = {successMessage} onClose = {() => setSuccessMessage("")} />
             <div className = "strike-report-card-template flex flex-col gap-4 p-12 rounded-[8px] max-w-[550px] bg-primary-color-white">
                 <form onSubmit = { handleSubmit(onSubmit) }>
                     <div className = "flex flex-col gap-6"> 
