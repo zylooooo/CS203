@@ -747,4 +747,156 @@ class UserServiceTest {
         verify(userRepository).findByUsername(username);
         verify(userRepository).save(user);
     }
+
+    @Test
+    void getDefaultLeaderboard_ValidUsername_ReturnsTopTenSameGenderUsers() {
+        // Arrange
+        String username = "testUser";
+        User requestingUser = new User();
+        requestingUser.setUsername(username);
+        requestingUser.setGender("Male");
+        requestingUser.setElo(1000);
+
+        List<User> allUsers = new ArrayList<>();
+        // Add requesting user
+        allUsers.add(requestingUser);
+        
+        // Add 15 male users with different ELO ratings
+        for (int i = 0; i < 15; i++) {
+            User user = new User();
+            user.setUsername("male" + i);
+            user.setGender("Male");
+            user.setElo(1500 - i * 50); // ELO ratings: 1500, 1450, 1400, ...
+            allUsers.add(user);
+        }
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(requestingUser));
+        when(userRepository.findAll()).thenReturn(allUsers);
+
+        // Act
+        List<User> result = userService.getDefaultLeaderboard(username);
+
+        // Assert
+        assertEquals(10, result.size());
+        assertTrue(result.stream().allMatch(user -> user.getGender().equals("Male")));
+        assertTrue(isSortedByEloDescending(result));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).findAll();
+    }
+
+    @Test
+    void getOppositeGenderLeaderboard_ValidUsername_ReturnsTopTenOppositeGenderUsers() {
+        // Arrange
+        String username = "testUser";
+        User requestingUser = new User();
+        requestingUser.setUsername(username);
+        requestingUser.setGender("Male");
+        requestingUser.setElo(1000);
+
+        List<User> allUsers = new ArrayList<>();
+        allUsers.add(requestingUser);
+        
+        // Add 15 female users with different ELO ratings
+        for (int i = 0; i < 15; i++) {
+            User user = new User();
+            user.setUsername("female" + i);
+            user.setGender("Female");
+            user.setElo(1500 - i * 50);
+            allUsers.add(user);
+        }
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(requestingUser));
+        when(userRepository.findAll()).thenReturn(allUsers);
+
+        // Act
+        List<User> result = userService.getOppositeGenderLeaderboard(username);
+
+        // Assert
+        assertEquals(10, result.size());
+        assertTrue(result.stream().allMatch(user -> user.getGender().equals("Female")));
+        assertTrue(isSortedByEloDescending(result));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).findAll();
+    }
+
+    @Test
+    void getMixedGenderLeaderboard_ValidUsername_ReturnsTopTenMixedUsers() {
+        // Arrange
+        String username = "testUser";
+        User requestingUser = new User();
+        requestingUser.setUsername(username);
+        requestingUser.setGender("Male");
+        requestingUser.setElo(1200);
+
+        List<User> allUsers = new ArrayList<>();
+        allUsers.add(requestingUser);
+        
+        // Add mixed gender users with different ELO ratings
+        for (int i = 0; i < 15; i++) {
+            User user = new User();
+            user.setUsername("user" + i);
+            user.setGender(i % 2 == 0 ? "Male" : "Female");
+            user.setElo(1500 - i * 50);
+            allUsers.add(user);
+        }
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(requestingUser));
+        when(userRepository.findAll()).thenReturn(allUsers);
+
+        // Act
+        List<User> result = userService.getMixedGenderLeaderboard(username);
+
+        // Assert
+        assertEquals(10, result.size());
+        assertTrue(isSortedByEloDescending(result));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).findAll();
+    }
+
+    @Test
+    void getDefaultLeaderboard_EmptyRepository_ThrowsUserNotFoundException() {
+        // Arrange
+        String username = "testUser";
+        User requestingUser = new User();
+        requestingUser.setUsername(username);
+        requestingUser.setGender("Male");
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(requestingUser));
+        when(userRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userService.getDefaultLeaderboard(username));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).findAll();
+    }
+
+    @Test
+    void getDefaultLeaderboard_NullUsername_ThrowsIllegalArgumentException() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> userService.getDefaultLeaderboard(null));
+        verify(userRepository, never()).findByUsername(any());
+        verify(userRepository, never()).findAll();
+    }
+
+    @Test
+    void getDefaultLeaderboard_UserNotFound_ThrowsUserNotFoundException() {
+        // Arrange
+        String username = "nonexistentUser";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userService.getDefaultLeaderboard(username));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository, never()).findAll();
+    }
+
+    // Helper method to check if a list of users is sorted by ELO in descending order
+    private boolean isSortedByEloDescending(List<User> users) {
+        for (int i = 0; i < users.size() - 1; i++) {
+            if (users.get(i).getElo() < users.get(i + 1).getElo()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
