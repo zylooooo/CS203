@@ -653,4 +653,98 @@ class UserServiceTest {
         assertThrows(RuntimeException.class, 
             () -> userService.updateUser(username, updatedUser));
     }
+
+    @Test
+    void updateUserAvailability_ValidUsername_ReturnsUpdatedUser() {
+        // Arrange
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+        user.setAvailable(false);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        // Act
+        User result = userService.updateUserAvailability(username, true);
+
+        // Assert
+        assertTrue(result.isAvailable());
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateUserAvailability_NonexistentUsername_ThrowsUserNotFoundException() {
+        // Arrange
+        String username = "nonExistentUser";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, 
+            () -> userService.updateUserAvailability(username, true));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUserAvailability_DatabaseError_ThrowsRuntimeException() {
+        // Arrange
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenThrow(new RuntimeException("Database error"));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, 
+            () -> userService.updateUserAvailability(username, true));
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateUserAvailability_NullUsername_ThrowsUserNotFoundException() {
+        // Arrange
+        when(userRepository.findByUsername(null)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, 
+            () -> userService.updateUserAvailability(null, true));
+        verify(userRepository).findByUsername(null);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUserAvailability_EmptyUsername_ThrowsUserNotFoundException() {
+        // Arrange
+        when(userRepository.findByUsername("")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, 
+            () -> userService.updateUserAvailability("", true));
+        verify(userRepository).findByUsername("");
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUserAvailability_SameAvailabilityStatus_ReturnsUnchangedUser() {
+        // Arrange
+        String username = "testUser";
+        User user = new User();
+        user.setUsername(username);
+        user.setAvailable(true);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        // Act
+        User result = userService.updateUserAvailability(username, true);
+
+        // Assert
+        assertTrue(result.isAvailable());
+        verify(userRepository).findByUsername(username);
+        verify(userRepository).save(user);
+    }
 }
