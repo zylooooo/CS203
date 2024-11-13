@@ -248,7 +248,6 @@ public class UserService {
             Optional.ofNullable(newUserDetails.getUsername()).ifPresent(user::setUsername);
             Optional.ofNullable(newUserDetails.getFirstName()).ifPresent(user::setFirstName);
             Optional.ofNullable(newUserDetails.getLastName()).ifPresent(user::setLastName);
-            user.setAvailable(newUserDetails.isAvailable());
 
             response.put("user", userRepository.save(user));
         } catch (Exception e) {
