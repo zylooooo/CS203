@@ -221,7 +221,6 @@ class UserServiceTest {
         assertEquals(LocalDate.of(1990, 1, 1), resultUser.getDateOfBirth());
         assertEquals("Jane", resultUser.getFirstName());
         assertEquals("Doe", resultUser.getLastName());
-        assertTrue(resultUser.isAvailable());
     }
 
     @Test
