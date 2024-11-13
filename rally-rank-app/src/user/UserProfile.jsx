@@ -9,6 +9,8 @@ import React, { useState, useEffect } from "react";
 // Icons Imports
 import { FaPen } from "react-icons/fa";
 
+import profilePic from "../assets/profilepic.jpg";
+
 function UserProfile() {
 
     useEffect(() => {   
@@ -26,7 +28,6 @@ function UserProfile() {
         elo,
         gender,
         dateOfBirth,
-        profilePic,
         username,
         firstName,
         lastName,
@@ -131,7 +132,7 @@ function UserProfile() {
                     <>
                         <div className = "flex items-center mb-6">
                             <img
-                                src = {"https://via.placeholder.com/150"}
+                                src = {profilePic}
                                 alt = "Profile Picture"
                                 className = "rounded-full h-32 w-32 object-cover border-4"
                             />

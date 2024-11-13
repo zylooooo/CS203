@@ -8,6 +8,7 @@ import React, { useState, useEffect } from "react";
 
 // Assets and Components Imports
 import AlertMessageWarning from "../components/AlertMessageWarning";
+import AdminProfilePic from "../assets/adminprofilepic.png";
 
 // Icons Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -124,7 +125,7 @@ function AdministratorProfile() {
                     <>
                         <div className = "flex items-center mb-6">
                             <img
-                                src = {"https://via.placeholder.com/150"}
+                                src = {AdminProfilePic}
                                 alt = "Profile Picture"
                                 className = "rounded-full h-32 w-32 object-cover border-4"
                             />
