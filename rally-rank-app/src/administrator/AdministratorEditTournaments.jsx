@@ -453,7 +453,7 @@ function AdministratorEditTournaments() {
                         <select
                             id = "gender"
                             className = "block w-full rounded-[12px] p-3 text-md font-semibold"
-                            style = {{ backgroundColor: "#EBEBEB", paddingRight: "2rem" }}
+                            style = {{ backgroundColor: "#EBEBEB"}}
                             {...register("gender", { onChange: handleChange })}
                         >
                             <option value = ""> Select your gender </option>
