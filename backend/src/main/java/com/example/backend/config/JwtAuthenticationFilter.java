@@ -24,27 +24,43 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Filter component that handles JWT-based authentication for incoming requests.
+ * Validates JWT tokens and sets up Spring Security context for authenticated users.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
-
     private final JwtService jwtService;
-
     private final UserDetailsService userDetailsService;
-
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    public JwtAuthenticationFilter( 
-                                    JwtService jwtService, 
-                                    UserDetailsService userDetailsService) {
-
-    this.jwtService = jwtService;
-    this.userDetailsService = userDetailsService;
-
+    /**
+     * Constructs a JwtAuthenticationFilter with required services.
+     *
+     * @param jwtService Service for JWT token operations
+     * @param userDetailsService Service for loading user details
+     */
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }    
 
+    /**
+     * Processes each incoming HTTP request to validate JWT tokens and authenticate users.
+     * Extracts JWT from Authorization header, validates it, and sets up security context.
+     *
+     * @param request The HTTP request
+     * @param response The HTTP response
+     * @param filterChain The filter chain for request processing
+     * @throws ServletException If a servlet error occurs
+     * @throws IOException If an I/O error occurs
+     */
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request, 
+            @NonNull HttpServletResponse response, 
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -93,6 +109,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
+    /**
+     * Sends an error response to the client with the specified status and message.
+     *
+     * @param response The HTTP response
+     * @param status The HTTP status code
+     * @param message The error message
+     * @throws IOException If an I/O error occurs while writing the response
+     */
     private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");

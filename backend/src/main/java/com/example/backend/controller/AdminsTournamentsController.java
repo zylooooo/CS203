@@ -80,7 +80,7 @@ public class AdminsTournamentsController {
         }
     }
 
-        /**
+    /**
      * Creates a new tournament in the database.
      * 
      * @param tournament the tournament object to be created.
@@ -108,7 +108,7 @@ public class AdminsTournamentsController {
         }
     }
 
-        /**
+    /**
      * Checks if a tournament name is available for use.
      * 
      * @param tournamentName the name of the tournament to check for availability.
@@ -134,7 +134,7 @@ public class AdminsTournamentsController {
         }
     }
 
-        /**
+    /**
      * Retrieves all tournaments history.
      * 
      * @return a ResponseEntity with the list of all tournaments history or an error message if an exception occurs.
@@ -410,7 +410,16 @@ public class AdminsTournamentsController {
         }
     }
 
-    // Function to view the bracket of a tournament
+    /**
+     * Retrieves the bracket view for a specific tournament.
+     * 
+     * @param tournamentName The name of the tournament to view the bracket for
+     * @return ResponseEntity containing either:
+     *         - 200 OK with the tournament bracket data
+     *         - 404 NOT_FOUND if the tournament doesn't exist
+     *         - 500 INTERNAL_SERVER_ERROR if an unexpected error occurs
+     * @throws TournamentNotFoundException if the specified tournament is not found
+     */
     @GetMapping("/{tournamentName}/bracket")
     public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
         try {

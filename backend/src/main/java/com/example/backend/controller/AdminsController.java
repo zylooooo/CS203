@@ -155,7 +155,4 @@ public class AdminsController {
                 .body(Map.of("error", "An unexpected error occurred while issuing the strike"));
         }
     }
-
-
-
 }

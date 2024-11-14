@@ -238,6 +238,16 @@ public class UsersTournamentsController {
         }
     }
 
+    /**
+     * Retrieves the bracket view for a specific tournament for users.
+     * 
+     * @param tournamentName The name of the tournament to view the bracket for
+     * @return ResponseEntity containing either:
+     *         - 200 OK with the tournament bracket data
+     *         - 404 NOT_FOUND if the tournament doesn't exist
+     *         - 500 INTERNAL_SERVER_ERROR if an unexpected error occurs
+     * @throws TournamentNotFoundException if the specified tournament is not found
+     */
     @GetMapping("/{tournamentName}/bracket")
     public ResponseEntity<?> viewTournamentBracket(@PathVariable String tournamentName) {
         try {

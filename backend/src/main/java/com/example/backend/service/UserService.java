@@ -258,7 +258,6 @@ public class UserService {
         return response;
     }
 
-
     /**
      * Helper method used by updateUser to update the matches for a tournament.
      * 
@@ -300,8 +299,6 @@ public class UserService {
             }
         }
     }
-
-
 
     /**
      * Updates the availability of a user based on the username.
