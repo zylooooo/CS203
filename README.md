@@ -1,6 +1,6 @@
 # Rally Rank
 
-Rally Rank is a full-stack web application designed to help tennis tournament organizers manage their tournaments efficiently while providing players with an easy way to participate and track their matches.
+RallyRank is a website-based application that serves as a user-friendly tennis tournament management system, for both Players and administrators alike. Using an Elo ranking algorithm, RallyRank ensures competitive balance and fairness across all skill levels. With RallyRank, players are offered an interactive platform designed to motivate continuous skill improvement - through consistent participation in competitive matches. In addition, it offers RallyRank administrators a tool to streamline the creation of tournaments and provides effortless support for both tournaments and participants.
 
 ## Getting Started
 
@@ -17,15 +17,17 @@ To use this application, visit [Rally Rank Frontend](https://rally-rank-frontend
 - View tournament history and player statistics
 - Delete or modify tournament details
 - Generate tournament brackets automatically
+- Issue strike to players who exhibit unsportsmanlike behaviour
 
 ### For Players
 
 - Browse available tournaments
 - Register for tournaments matching their skill level
+- Indicate availability for upcoming tournaments
 - View tournament brackets and match schedules
 - Track match results and personal performance
 - View tournament history and statistics
-- Manage player profile and ELO rating
+- Manage player profile
 - Join or leave tournaments before they start
 
 ## Technology Stack
