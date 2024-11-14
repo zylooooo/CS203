@@ -32,7 +32,7 @@ class EmailServiceTest {
     }
 
     @Test
-    void sendVerificationEmail_Success() throws MessagingException {
+    void sendVerificationEmail_withValidEmail_Success() throws MessagingException {
         // Arrange
         String to = "test@example.com";
         MimeMessage mimeMessage = mock(MimeMessage.class);

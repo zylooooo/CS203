@@ -131,7 +131,7 @@ class JwtServiceTest {
     }
 
     @Test
-    void getJwtExpiration_returnsConfiguredValue() {
+    void getJwtExpiration_whenCalled_returnsConfiguredValue() {
         // Arrange
         long expectedExpiration = JWT_EXPIRATION;
 
@@ -341,16 +341,4 @@ class JwtServiceTest {
         verify(userDetails, times(1)).getUsername();
         verify(spyJwtService, times(1)).isTokenExpired(token);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }

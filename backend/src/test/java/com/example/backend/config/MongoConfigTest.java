@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MongoConfigTest {
 
     @Test
-    void localDateToDateConverter_ShouldConvertCorrectly() {
+    void convertLocalDate_toDate_whenLocalDateProvided_shouldConvertCorrectly() {
         // Arrange
         LocalDate localDate = LocalDate.of(2023, 5, 15);
         MongoConfig.LocalDateToDateConverter converter = new MongoConfig.LocalDateToDateConverter();
@@ -25,7 +25,7 @@ class MongoConfigTest {
     }
 
     @Test
-    void dateToLocalDateConverter_ShouldConvertCorrectly() {
+    void convertDate_toLocalDate_whenDateProvided_shouldConvertCorrectly() {
         // Arrange
         Date date = new Date();
         MongoConfig.DateToLocalDateConverter converter = new MongoConfig.DateToLocalDateConverter();
@@ -39,7 +39,7 @@ class MongoConfigTest {
     }
 
     @Test
-    void localDateToStringConverter_ShouldConvertCorrectly() {
+    void convertLocalDate_toString_whenLocalDateProvided_shouldConvertCorrectly() {
         // Arrange
         LocalDate localDate = LocalDate.of(2023, 5, 15);
         MongoConfig.LocalDateToStringConverter converter = new MongoConfig.LocalDateToStringConverter();
@@ -53,7 +53,7 @@ class MongoConfigTest {
     }
 
     @Test
-    void stringToLocalDateConverter_ShouldConvertCorrectly() {
+    void convertString_toLocalDate_whenStringProvided_shouldConvertCorrectly() {
         // Arrange
         String dateString = "2023-05-15";
         MongoConfig.StringToLocalDateConverter converter = new MongoConfig.StringToLocalDateConverter();

@@ -780,12 +780,4 @@ class AdminServiceTest {
         );
         assertEquals("Tournament deletion error", exception.getMessage());
     }
-
-
-
-    
-    
-
-    
-
 }

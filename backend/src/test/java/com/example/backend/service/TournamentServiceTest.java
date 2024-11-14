@@ -238,7 +238,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getUserAvailableTournaments_Success() throws UserNotFoundException {
+    void getUserAvailableTournaments_availableEligibleTournament_returnsTournament() throws UserNotFoundException {
         String username = "testUser";
         User user = createValidUser(username);
         user.setElo(1500);
@@ -287,10 +287,10 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getCurrentAndFutureTournaments_Success() {
+    void getCurrentAndFutureTournaments_validTournaments_returnsListofTournaments() {
         Tournament future1 = createValidTournament("Future1");
         Tournament future2 = createValidTournament("Future2");
-        future1.setStartDate(LocalDate.now().plusDays(1));
+        future1.setStartDate(LocalDate.now().minusDays(1));
         future2.setStartDate(LocalDate.now().plusDays(2));
 
         when(tournamentRepository.findAll())
@@ -304,7 +304,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminHistory_Success() {
+    void getAdminHistory_withPastTournaments_returnsListofTournaments() {
         String adminName = "admin";
         Tournament past1 = createValidTournament("Past1");
         Tournament past2 = createValidTournament("Past2");
@@ -677,7 +677,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminUpcomingTournaments_Success() {
+    void getAdminUpcomingTournaments_withMixedUpcomingTournaments_returnsListofAdminTournaments() {
         String adminName = "testAdmin";
         
         Tournament upcomingTournament1 = createValidTournament("Upcoming1");
@@ -715,7 +715,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminUpcomingTournaments_NoTournaments() {
+    void getAdminUpcomingTournaments_NoTournaments_ReturnsEmptyList() {
         String adminName = "testAdmin";
         when(tournamentRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -725,7 +725,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminUpcomingTournaments_OnlyEndedTournaments() {
+    void getAdminUpcomingTournaments_OnlyEndedTournaments_ReturnsEmptyList() {
         String adminName = "testAdmin";
         
         Tournament endedTournament1 = createValidTournament("Ended1");
@@ -745,7 +745,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminUpcomingTournaments_RepositoryThrowsException() {
+    void getAdminUpcomingTournaments_emptyRepository_ThrowsRuntimeException() {
         String adminName = "testAdmin";
         when(tournamentRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
@@ -757,7 +757,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_Success() {
+    void createTournament_validTournamentCreated_returnsValidTournament() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(tournament, "tournament");
@@ -778,7 +778,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_StartDateTooEarly() {
+    void createTournament_StartDateTooEarly_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         tournament.setStartDate(LocalDate.now().plusDays(15));
@@ -793,7 +793,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_ValidationErrors() {
+    void createTournament_ValidationErrors_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(tournament, "tournament");
@@ -815,7 +815,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_DuplicateName() {
+    void createTournament_DuplicateName_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Existing Tournament");
         BeanPropertyBindingResult errors = new BeanPropertyBindingResult(tournament, "tournament");
@@ -832,7 +832,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void joinTournament_Success() throws TournamentNotFoundException, InvalidJoinException {
+    void joinTournament_userJoinedSucessfully_returnsUpdatedTournament() throws TournamentNotFoundException, InvalidJoinException {
         String username = "testUser";
         String tournamentName = "Test Tournament";
         
@@ -864,7 +864,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void joinTournament_TournamentNotFoundInAvailableList() {
+    void joinTournament_TournamentNotFoundInAvailableList_throwsTournamentNotFoundException() {
         String username = "testUser";
         String tournamentName = "Test Tournament";
         
@@ -888,7 +888,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void joinTournament_SuccessfulJoin() throws TournamentNotFoundException, InvalidJoinException {
+    void joinTournament_SuccessfulJoin_returnsUpdatedTournament() throws TournamentNotFoundException, InvalidJoinException {
         String username = "testUser";
         String tournamentName = "Test Tournament";
         Tournament tournament = createValidTournament(tournamentName);
@@ -910,7 +910,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void joinTournament_EmptyAvailableTournaments() {
+    void joinTournament_noAvailableTournaments_throwsInvalidJoinException() {
         String username = "testUser";
         String tournamentName = "Test Tournament";
         User user = createValidUser(username);
@@ -927,7 +927,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_UnexpectedError() {
+    void createTournament_UnexpectedError_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         // BeanPropertyBindingResult errors = new BeanPropertyBindingResult(tournament, "tournament");
@@ -945,7 +945,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_NullTournament() {
+    void createTournament_NullTournament_returnsErrorMap() {
         String adminName = "testAdmin";
         
         Pair<Optional<Tournament>, Map<String, String>> result = 
@@ -957,7 +957,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_InvalidClosingSignupDate() {
+    void createTournament_InvalidClosingSignupDate_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         tournament.setStartDate(LocalDate.now().plusMonths(2));
@@ -977,7 +977,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_InvalidPlayerCapacity() {
+    void createTournament_InvalidPlayerCapacity_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         tournament.setPlayerCapacity(1);
@@ -998,7 +998,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void createTournament_InvalidEloRange() {
+    void createTournament_InvalidEloRange_returnsErrorMap() {
         String adminName = "testAdmin";
         Tournament tournament = createValidTournament("Test Tournament");
         tournament.setMinElo(2000);
@@ -1020,7 +1020,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminHistory_NoTournaments() {
+    void getAdminHistory_NoTournaments_returnsEmptyList() {
         String adminName = "admin";
         when(tournamentRepository.findAll())
             .thenReturn(Collections.emptyList());
@@ -1031,7 +1031,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminHistory_OnlyCurrentTournaments() {
+    void getAdminHistory_OnlyCurrentTournaments_returnsEmptyList() {
         String adminName = "admin";
         Tournament current1 = createValidTournament("Current1");
         Tournament current2 = createValidTournament("Current2");
@@ -1048,7 +1048,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminHistory_MixedTournaments() {
+    void getAdminHistory_MixedTournaments_returnsPastTournaments() {
         String adminName = "admin";
         
         // Past tournaments
@@ -1081,7 +1081,7 @@ class TournamentServiceTest {
     }
 
     @Test
-    void getAdminHistory_RepositoryThrowsException() {
+    void getAdminHistory_noTournamentsinRepository_throwsRuntimeException() {
         String adminName = "admin";
         when(tournamentRepository.findAll())
             .thenThrow(new RuntimeException("Database error"));

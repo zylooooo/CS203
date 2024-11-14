@@ -136,7 +136,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void userSignup_ValidationErrors() throws MessagingException {
+    void userSignup_ValidationErrors_ReturnsErrors() throws MessagingException {
         // Arrange
         doAnswer(invocation -> {
             Errors errors = invocation.getArgument(1);
@@ -303,7 +303,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_Success() {
+    void verifyUser_Success_EnablesUser() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("testuser");
@@ -329,7 +329,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_UserNotFound() {
+    void verifyUser_UserNotFound_ThrowsException() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("nonexistentuser");
@@ -344,7 +344,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_AlreadyVerified() {
+    void verifyUser_AlreadyVerified_ThrowsException() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("testuser");
@@ -363,7 +363,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_ExpiredCode() {
+    void verifyUser_ExpiredCode_ThrowsException() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("testuser");
@@ -384,7 +384,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_InvalidCode() {
+    void verifyUser_InvalidCode_ThrowsException() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("testuser");
@@ -405,7 +405,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyUser_NullExpirationCode() {
+    void verifyUser_NullExpirationCode_ThrowsException() {
         // Arrange
         UserVerifyDto verifyDto = new UserVerifyDto();
         verifyDto.setUsername("testuser");
@@ -436,7 +436,7 @@ class AuthenticationServiceTest {
      */
 
      @Test
-    void userAuthenticate_Success() {
+    void userAuthenticate_Success_ReturnsUserPrincipal() {
         // Arrange
         UserLoginDto loginDto = new UserLoginDto();
         loginDto.setUsername("testuser");
@@ -499,7 +499,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void userAuthenticate_WithDisabledUser_ShouldThrowUserNotEnabledException() {
+    void userAuthenticate_WithDisabledUser_ThrowsUserNotEnabledException() {
         // Arrange
         UserLoginDto loginDto = new UserLoginDto();
         loginDto.setUsername("testuser");
@@ -519,7 +519,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void userAuthenticate_WithInvalidCredentials_ShouldThrowBadCredentialsException() {
+    void userAuthenticate_WithInvalidCredentials_ThrowsBadCredentialsException() {
         // Arrange
         UserLoginDto loginDto = new UserLoginDto();
         loginDto.setUsername("testuser");
@@ -541,7 +541,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void userAuthenticate_WithUnexpectedException_ShouldPropagateException() {
+    void userAuthenticate_WithUnexpectedException_ThrowsException() {
         // Arrange
         UserLoginDto loginDto = new UserLoginDto();
         loginDto.setUsername("testuser");
@@ -608,7 +608,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void adminSignup_ValidationErrors() throws MessagingException {
+    void adminSignup_ValidationErrors_ReturnsErrors() throws MessagingException {
         // Arrange
         doAnswer(invocation -> {
             Errors errors = invocation.getArgument(1);
@@ -783,7 +783,7 @@ class AuthenticationServiceTest {
      */
 
      @Test
-    void adminAuthenticate_WithValidCredentials_ShouldReturnUserPrincipal() {
+    void adminAuthenticate_WithValidCredentials_ReturnsUserPrincipal() {
         // Arrange
         AdminLoginDto loginDto = new AdminLoginDto();
         loginDto.setAdminName("testadmin");
@@ -808,7 +808,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void adminAuthenticate_WithNonexistentAdmin_ShouldThrowAdminNotFoundException() {
+    void adminAuthenticate_WithNonexistentAdmin_ThrowsAdminNotFoundException() {
         // Arrange
         AdminLoginDto loginDto = new AdminLoginDto();
         loginDto.setAdminName("nonexistentadmin");
@@ -823,7 +823,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void adminAuthenticate_WithDisabledAdmin_ShouldThrowAdminNotEnabledException() {
+    void adminAuthenticate_WithDisabledAdmin_ThrowsAdminNotEnabledException() {
         // Arrange
         AdminLoginDto loginDto = new AdminLoginDto();
         loginDto.setAdminName("testadmin");
@@ -843,7 +843,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void adminAuthenticate_WithInvalidCredentials_ShouldThrowBadCredentialsException() {
+    void adminAuthenticate_WithInvalidCredentials_ThrowsBadCredentialsException() {
         // Arrange
         AdminLoginDto loginDto = new AdminLoginDto();
         loginDto.setAdminName("testadmin");
@@ -865,7 +865,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void adminAuthenticate_WithUnexpectedException_ShouldPropagateException() {
+    void adminAuthenticate_WithUnexpectedException_ThrowsException() {
         // Arrange
         AdminLoginDto loginDto = new AdminLoginDto();
         loginDto.setAdminName("testadmin");
@@ -899,7 +899,7 @@ class AuthenticationServiceTest {
      */
 
      @Test
-    void verifyAdmin_Success() {
+    void verifyAdmin_Success_EnablesAdmin() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("testadmin");
@@ -925,7 +925,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyAdmin_AdminNotFound() {
+    void verifyAdmin_AdminNotFound_ThrowsException() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("nonexistentadmin");
@@ -940,7 +940,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyAdmin_AlreadyVerified() {
+    void verifyAdmin_AlreadyVerified_ThrowsException() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("testadmin");
@@ -959,7 +959,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyAdmin_ExpiredCode() {
+    void verifyAdmin_ExpiredCode_ThrowsException() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("testadmin");
@@ -980,7 +980,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyAdmin_InvalidCode() {
+    void verifyAdmin_InvalidCode_ThrowsException() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("testadmin");
@@ -1001,7 +1001,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void verifyAdmin_NullExpirationCode() {
+    void verifyAdmin_NullExpirationCode_ThrowsException() {
         // Arrange
         AdminVerifyDto verifyDto = new AdminVerifyDto();
         verifyDto.setAdminName("testadmin");
@@ -1077,7 +1077,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void resendVerificationCode_AccountNotFound() throws MessagingException {
+    void resendVerificationCode_AccountNotFound_ThrowsException() throws MessagingException {
         // Arrange
         String email = "nonexistent@example.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -1091,7 +1091,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void resendVerificationCode_UserAlreadyVerified() throws MessagingException {
+    void resendVerificationCode_UserAlreadyVerified_ThrowsException() throws MessagingException {
         // Arrange
         String email = "user@example.com";
         User user = new User();
@@ -1108,7 +1108,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void resendVerificationCode_AdminAlreadyVerified() throws MessagingException {
+    void resendVerificationCode_AdminAlreadyVerified_ThrowsException() throws MessagingException {
         // Arrange
         String email = "admin@example.com";
         Admin admin = new Admin();
@@ -1127,7 +1127,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void resendVerificationCode_EmailSendingFails() throws MessagingException {
+    void resendVerificationCode_EmailSendingFails_ThrowsException() throws MessagingException {
         // Arrange
         String email = "user@example.com";
         User user = new User();
@@ -1167,9 +1167,4 @@ class AuthenticationServiceTest {
         verify(adminRepository).save(admin);
         verify(emailService).sendVerificationEmail(eq(email), anyString(), anyString());
     }
-
 }
-
-
-    
-

@@ -508,6 +508,4 @@ class EloRatingServiceTest {
         assertTrue(Math.abs(player1.getElo() - 1000) >= 8);
         assertTrue(Math.abs(player2.getElo() - 1000) >= 8);
     }
-
-
 }
