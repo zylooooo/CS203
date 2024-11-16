@@ -208,10 +208,6 @@ class EloRatingServiceTest {
         int player1EloDiff = Math.abs(player1.getElo() - 1000);
         int player2EloDiff = Math.abs(player2.getElo() - 1400);
         
-        // Log the actual changes for debugging
-        System.out.println("Player1 Elo change: " + player1EloDiff);
-        System.out.println("Player2 Elo change: " + player2EloDiff);
-        
         // Final round should have higher K-factor, resulting in larger Elo changes
         // Lowered threshold to 15 to account for actual K-factor calculation
         assertTrue(player1EloDiff > 15, 
